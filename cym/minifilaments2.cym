@@ -1,0 +1,97 @@
+%
+% Here, bi-functional motors are build using a Solid with two points,
+% and additional motors are anchored to intermediate positions in-between.
+%
+% F. Nedelec, 04.03.2018
+
+set simul system
+{
+    dim = 2
+    kT = 0.0042;
+    time_step = 0.002;
+    viscosity = 0.02;
+    precondition = 0;
+}
+
+set space cell
+{
+    shape = periodic;
+}
+
+new cell
+{
+    length = 24, 24
+}
+
+set fiber actin
+{
+    display = ( color = white; end_style = 0; line_width = 0.5; );
+    rigidity = 0.07;
+    segmentation = 0.4;
+}
+
+set hand binder
+{
+    binding = 15, 0.005;
+    display = ( color = light_blue, 0x0000FF88; size = 3; );
+    unbinding = 0.3, 3;
+}
+
+set hand myosin
+{
+    activity = move;
+    binding = 10, 0.01;
+    display = ( color = green, 0x00FF0088; size = 3; );
+    hold_growing_end = 1;
+    unloaded_speed = 2;
+    stall_force = 5;
+    unbinding = 0.5, inf;
+}
+
+set single motor
+{
+    hand = myosin;
+    stiffness = 100;
+}
+
+set couple actinin
+{
+    diffusion = 5;
+    hand1 = binder;
+    hand2 = binder;
+    stiffness = 50;
+    fast_diffusion = 1;
+}
+
+set solid minifilament
+{
+    display = ( color = 0x00FF0044; width = 2; style = 16; );
+}
+
+new 250 actin
+{
+    length = 13;
+    equilibrate = 17;
+}
+
+new 12500 actinin
+{
+}
+
+new 20 minifilament
+{
+    point1 = -0.4 0 0, 0.005, motor;
+    point2 = +0.4 0 0, 0.005, motor;
+    anchor1 = point1, point2, 0.1, motor;
+    anchor2 = point1, point2, 0.2, motor;
+    anchor3 = point1, point2, 0.3, motor;
+    anchor4 = point1, point2, 0.7, motor;
+    anchor5 = point1, point2, 0.8, motor;
+    anchor6 = point1, point2, 0.9, motor;
+}
+
+run 25000 system
+{
+    nb_frames = 50;
+}
+

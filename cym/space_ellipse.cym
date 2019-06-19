@@ -1,0 +1,42 @@
+% A confined fiber
+% F. Nedelec, April 2010
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.02
+    display = ( fog=1, 0.5, 0x000000FF; style=3; window_size=1024,512; )
+}
+
+set space cell
+{
+    shape = ellipse
+    display = ( color=white; )
+}
+
+new cell
+{
+    length = 30, 10, 10
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    activity = grow
+    growing_speed = 0.1
+    confine = inside, 100
+    display = ( color=white; line_width=10; )
+}
+
+new 1 microtubule
+{
+    length = 6
+    position = center
+    direction = 1 0 0
+}
+
+run 10000 system
+{
+    nb_frames = 10
+}

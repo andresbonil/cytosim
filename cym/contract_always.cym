@@ -1,0 +1,78 @@
+% Contraction
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.1
+    precondition = 0
+    display = ( style=2; delay=4; zoom=0.6; label="Nedelec et al. 1998 -" )
+}
+
+set space cell
+{
+    shape = circle
+}
+
+set fiber filament
+{
+    rigidity = 0.5
+    segmentation = 0.3
+    confine = inside, 100
+    display = ( width = 0.5; )
+}
+
+set hand kinesin
+{
+    binding = 4, 0.025
+    unbinding = 0.1, 4
+    
+    activity = move
+    unloaded_speed = 1.0
+    stall_force = 10
+
+    display = ( color=green; size=7; width=7; )
+}
+
+set couple motor
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    stiffness = 100
+    diffusion = 10
+}
+
+set hand binder
+{
+    binding = 4, 0.025
+    unbinding = 0.2, inf
+    display = ( color=blue; size=7; width=7; )
+}
+
+set couple crosslinker
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 250
+    diffusion = 10
+}
+
+new cell
+{
+    radius = 7
+}
+
+new 512 filament
+{
+    length = 3
+}
+
+new 2048 motor
+new 2048 crosslinker
+
+run 10000 system
+{
+    nb_frames = 50
+    event = 25, ( delete 1 filament; new filament { length=3; } )
+}
+
+

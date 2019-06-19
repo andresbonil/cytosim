@@ -1,0 +1,102 @@
+% Fiber forces to make multiple bends
+% F. Nedelec, 10.05.2019
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.01
+    precondition = 0
+    binding_grid_step = 1.0
+    display = ( window_size = 1024,512; )
+}
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 10
+    radius = 2
+}
+
+set fiber filament
+{
+    rigidity = 10
+    segmentation = 0.0625
+    confine = inside, 100
+    display = ( color=blue; point=3,1; line=10,2; tension=10; )
+}
+
+set hand binder
+{
+    binding = 10, 0.05
+    unbinding = 0, inf
+    display = ( width=5; size=12; color=green; )
+}
+
+set single link
+{
+    hand = binder
+    activity = fixed
+    stiffness = 1000
+}
+
+new filament
+{
+    length = 8
+    position = 0 0 0
+    orientation = 1 0 0
+}
+
+new link
+{
+    position = discYZ 2 at -3.2
+    attach = filament1, 0
+}
+new link
+{
+    position = discYZ 2 at -2.4
+    attach = filament1, 1
+}
+new link
+{
+    position = discYZ 2 at -1.6
+    attach = filament1, 2
+}
+new link
+{
+    position = discYZ 2 at -0.8
+    attach = filament1, 3
+}
+new link
+{
+    position = discYZ 2
+    attach = filament1, 4
+}
+new link
+{
+    position = discYZ 2 at 0.8
+    attach = filament1, 5
+}
+new link
+{
+    position = discYZ 2 at 1.6
+    attach = filament1, 6
+}
+new link
+{
+    position = discYZ 2 at 2.4
+    attach = filament1, 7
+}
+new link
+{
+    position = discYZ 2 at 3.2
+    attach = filament1, 8
+}
+
+run 4 system
+{
+    nb_frames = 2
+}

@@ -1,0 +1,84 @@
+% A humorous model of Cytoplasmic streaming found in drosophila oocyte
+% F. Nedelec, April 2010
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.02
+    steric = 1, 100
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 10
+}
+
+set hand strong_hand
+{
+    unbinding = 0, inf
+}
+
+set single pivot
+{
+    hand = strong_hand
+    stiffness = 1000
+    activity = fixed
+}
+
+set fiber filament
+{
+    rigidity = 20
+    segmentation = 1
+    confine = inside, 100
+}
+
+new 20 filament
+{
+    orientation = 0.8 0.5 0, random
+    position = ( -5 0 0 )
+    length = 9
+    attach1 = pivot,   0, minus_end
+    attach2 = pivot, 0.5, minus_end
+}
+
+set hand kinesin 
+{
+    binding_rate = 10
+    binding_range = 0.01
+    unbinding_rate = 0.2
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = 1
+    stall_force = 6
+    display = ( size=8; color=0x00FF00FF; )
+}
+
+set single grafted 
+{
+    hand = kinesin
+    stiffness = 100
+}
+
+set bead dirt
+{
+    confine = inside, 100
+    steric = 1
+    display = ( coloring=1; )
+}
+
+new 301 dirt
+{
+    point1 = center, 0.4, grafted
+}
+
+run system
+{
+    nb_steps = 5000
+    nb_frames = 100
+}

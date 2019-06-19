@@ -1,0 +1,64 @@
+% Francois Nedelec, January 27, 2010 
+
+set simul system
+{
+    time_step = 0.001
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( color = 0x99999944 )
+}
+
+new cell
+{
+    length = 30
+    radius = 5
+}
+
+set field blue
+{
+    step = 0.25
+    diffusion = 0.5
+    positive = 1
+    display_scale = 1
+}
+
+new blue
+{
+    value = 1
+}
+
+set fiber filament
+{
+    rigidity = 20
+    segmentation = 0.5
+
+    field = blue
+    lattice = 2, 0.05
+    lattice_binding_rate = 1
+    lattice_cut_fiber = 1
+
+    display = ( color=green; line_style=0; lattice=1, 0.1; line_width=8; )
+}
+    
+new 5 filament
+{
+    length = 10
+}
+
+
+set system display
+{
+    window_size = 1200, 600
+}
+
+
+run system
+{
+    nb_steps  = 2000
+    nb_frames = 25
+}
+
+

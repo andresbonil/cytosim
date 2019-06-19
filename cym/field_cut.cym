@@ -1,0 +1,59 @@
+% Francois Nedelec, January 27, 2010 
+
+set simul system
+{
+    time_step = 0.005
+}
+
+set space cell
+{
+    shape = sphere
+    display = ( color = 0x99999944 )
+}
+
+new cell
+{
+    radius = 6
+}
+
+set field blue
+{
+    step = 0.5
+    diffusion = 0.5
+    transport = 1, 5
+    cut_fibers = 1
+    display_scale = 1
+}
+
+new blue
+{
+    value = 0.4
+}
+
+set fiber filament
+{
+    rigidity = 20
+    segmentation = 0.5
+        
+    display = ( color=0xFFFFFFAA; interval=1.0; line_width=1; end_size=4,4 )
+}
+    
+new 5 filament
+{
+    length = 10
+}
+
+
+set system display
+{
+    window_size = 1200, 600
+}
+
+
+run system
+{
+    nb_steps  = 2000
+    nb_frames = 25
+}
+
+

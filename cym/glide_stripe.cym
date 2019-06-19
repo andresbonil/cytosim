@@ -1,0 +1,95 @@
+% A gliding assay, with stripes of two motors of opposite directionality
+% run in 2D
+
+
+set simul system
+{
+    dim = 2
+    time_step = 0.005
+    viscosity = 0.5
+    display = { window_size=800,400 }
+}
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 20, 10
+}
+
+set fiber microtubule
+{
+    %taxol-stabilized microtubule are more flexible 
+    rigidity = 10
+    segmentation = 0.5
+    display = { line_width=6 }
+}
+
+set hand kinesin
+{
+    binding_rate = 5
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 3
+        
+    activity = move
+    unloaded_speed = 0.6
+    stall_force = 6
+
+    display = { color=0x0000FF99; size=8 }
+}
+
+set hand dynein
+{
+    binding_rate = 5
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = -0.6
+    stall_force = 6
+
+    display = { color=0xFF990099; size=8 }
+}
+
+set single gKinesin
+{
+    hand = kinesin
+    stiffness = 100
+    activity = fixed
+}
+
+set single gDynein
+{
+    hand = dynein
+    stiffness = 100
+    activity = fixed
+}
+
+new 2 microtubule
+{
+    length = 12
+}
+
+new 2500 gKinesin ( stripe  -5  5  )
+new 1200 gDynein  ( stripe   5  10 )
+new 1200 gDynein  ( stripe -10 -5  )
+
+set system display
+{
+    label = (Motor stripes -)
+    delay = 10
+    tile  = 1, 1
+    style = 2
+}
+
+run system
+{
+    nb_steps = 10000
+    nb_frames = 50
+}
+

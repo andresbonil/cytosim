@@ -1,0 +1,111 @@
+% An adaptation of the model described in:
+% Self-organization of dynein motors generates meiotic nuclear oscillations.
+% Vogel, Pavin, Maghelli, Juelicher & Tolic-Norrelykke
+% PLoS Biol 7, e1000087 (2009).
+%
+%
+% F. Nedelec, Strasbourg, 12 March 2015
+
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 1
+    display = ( style=2; point_size=9; window_size=1024,256; )
+}
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 14
+    radius = 1
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    confine = inside, 500
+    segmentation = 0.33
+    
+    activity       = classic
+    growing_speed  = 0.0333
+    shrinking_speed = -0.041
+    catastrophe_rate = 0.005
+    catastrophe_rate_stalled = 0.05
+    growing_force  = 1.67
+    min_length     = 0.5
+    persistent     = 1
+    rebirth_rate   = 1
+
+    display = ( line=6, 2; plus_end=16, 2; minus_end=16, 1; )
+}
+
+new microtubule
+{
+    position = ( 2 0 0 )
+    orientation = ( 1 0 0 )
+    length = 4
+    plus_end = grow
+}
+
+new microtubule
+{
+    position = ( -2 0 0 )
+    orientation = ( -1 0 0 )
+    length = 4
+    plus_end = grow
+}
+
+set hand dynein 
+{
+    binding = 1, 0.02
+    unbinding = 0.05, 1
+    
+    activity    = move
+    unloaded_speed   = -0.041
+    stall_force = 7
+    display = ( size=8; color=orange )
+}
+
+set single anchored
+{
+    hand = dynein
+    activity = fixed
+    stiffness = 100
+}
+
+set hand binder 
+{
+    binding = 10, 0.001
+    unbinding = 0, inf
+    display = ( color=blue; )
+}
+
+set couple link
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 5000
+    diffusion = 0
+}
+
+new link
+{
+    position = ( 0 0 0 )
+    attach1 = fiber1, 0
+    attach2 = fiber2, 0
+}
+
+new 150 anchored
+
+run system
+{
+    nb_steps = 200000
+    nb_frames = 100
+}
+
+

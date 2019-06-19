@@ -1,0 +1,41 @@
+% A test to measure the diffusion of fiber
+% F. Nedelec, 01.02.2019 in Cambridge, UK
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.01
+}
+
+set space cell
+{
+    shape = rectangle
+}
+
+set hand head
+{
+
+}
+
+set single particle
+{
+    hand = head
+    diffusion = 1
+}
+
+new cell
+{
+    length = 10, 10, 10
+}
+
+new 100 particle
+{
+    position = 0 0 0
+}
+
+run 10000 system
+{
+    nb_frames = 10
+}
+
+report single:position *

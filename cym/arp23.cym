@@ -1,0 +1,80 @@
+/**
+ @example arp23
+ Basic implementation of the Arp23 complex:
+ - a Couple with activity=fork is used to impose the angle
+ - a trans-activated nucleator is used to create new filaments
+
+ F. Nedelec, 10.09.2015
+*/
+
+set simul system
+{
+    time_step = 0.0001
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 0.3
+}
+
+set fiber actin
+{
+    rigidity = 0.1
+    segmentation = 0.05
+    confine = inside, 1000
+    hydrodynamic_radius = 0.0035
+
+    activity = grow
+    growing_speed = 0.275
+    growing_force = inf
+ 
+    display = ( plus_end = 8,2 )
+}
+
+set hand binder
+{
+    binding = 100, 0.05
+    unbinding = 0, inf
+    display = ( size=10; color=white, gray; )
+}
+
+set hand nucleator
+{
+    unbinding = 0, inf
+    activity = nucleate
+    nucleate = 10, actin, ( length=0.02; reference=minus_end; plus_end=grow )
+    display = ( size=10; color=red; )
+}
+
+set couple arp23
+{
+    hand1 = binder
+    hand2 = nucleator
+    diffusion = 10
+    stiffness = 1000
+    activity = fork
+    torque = 0.5, 1.22     % 1.22 radian is 70 degrees
+    trans_activated = 1
+}
+
+new actin
+{
+    orientation = 0 1 0
+    position = 0 0 0
+    length = 0.5
+}
+
+new 10 arp23
+
+run system
+{
+    nb_steps = 2000
+    nb_frames = 100
+}
+

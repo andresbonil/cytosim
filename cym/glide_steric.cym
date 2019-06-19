@@ -1,0 +1,52 @@
+% A gliding assay with steric interactions
+% Motors are not represented explicitely,
+% And we use 'colinear_force' to push them forward.
+%
+% F. Nedelec, 31 May 2016
+
+set simul system
+{
+    dim = 2
+    time_step = 0.005
+    viscosity = 1
+    steric = 1, 100
+    display = ( style=3 )
+}
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 40, 40
+}
+
+set fiber microtubule
+{
+    steric = 1, 0.1
+    rigidity = 10
+    segmentation = 0.2
+    colinear_force = -10
+    
+    activity = grow
+    growing_speed = 9
+    max_length = 10
+    display = ( line_width=3 )
+}
+
+new 10 microtubule
+{
+    length = 1
+    plus_end = grow
+}
+
+run 200 system 
+{
+}
+
+run 20000 system
+{
+    nb_frames = 100
+}

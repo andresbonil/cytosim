@@ -1,0 +1,87 @@
+% A dynein-coated nucleus encounters an aster
+% F. Nedelec, Jan 2016
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 10
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 1
+    confine = inside, 100
+
+    display = { line_width=3; }
+}
+
+set hand dynein 
+{
+    binding = 10, 0.05
+    unbinding = 0.2, 3
+    
+    activity = move
+    unloaded_speed = -1
+    stall_force = 4
+
+    display = { size=7; color=pink; }
+}
+
+set single grafted
+{
+    hand = dynein
+    stiffness = 200
+}
+
+set sphere envelope
+{
+    point_mobility = 1
+    confine        = all_inside, 100
+    
+    display = ( color=blue; size=2; style=2 )
+}
+
+new envelope
+{
+    radius = 2
+    point1 = 100, surface, grafted
+    position = -5 0 0
+}
+
+
+set solid core
+{
+    display = ( style=3 )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+}
+
+new centrosome
+{
+    solid = core
+    radius = 0.5
+    point1 = center, 0.5
+    fibers = 32, microtubule, ( plus_end=grow; length = 9; )
+    position = 0 0 0
+}
+
+
+run system
+{
+    nb_steps = 20000
+    nb_frames = 100
+}

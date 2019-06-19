@@ -1,0 +1,76 @@
+% Mobile Single (for Douglas W. Houston)
+% F. Nedelec, Cambridge 07.05.2019
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.02
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 200, cell
+}
+
+set hand binder
+{
+}
+
+set single holder
+{
+    hand = binder
+}
+
+new 100 holder
+
+new 1 microtubule
+{
+    length = 12
+}
+
+run 100 system
+{
+    nb_frames = 10
+}
+
+change holder
+{
+    speed = 1 0
+}
+
+run 100 system
+{
+    nb_frames = 10
+}
+
+change holder
+{
+    speed = 0 1
+}
+
+run 100 system
+{
+    nb_frames = 10
+}
+
+change holder
+{
+    speed = -1 0
+}
+
+run 100 system
+{
+    nb_frames = 10
+}

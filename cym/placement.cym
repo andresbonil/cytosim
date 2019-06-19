@@ -1,0 +1,84 @@
+% A test for 'placement' options
+% F. Nedelec 22 May 2018
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.05
+}
+
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 8
+}
+
+set fiber actin
+{
+    rigidity = 0.1
+    segmentation = 0.2
+    confine = off, 100
+    display = ( line=2, 1; )
+}
+
+set hand myosin
+{
+    binding_rate = 10
+    binding_range = 0.005
+    unbinding_rate = 0.02
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = 1
+    stall_force = 6
+    display = ( size=4; color=orange )
+}
+
+set hand binder
+{
+    binding_rate = 10
+    binding_range = 0.005
+    unbinding_rate = 0.02
+    unbinding_force = 3
+    display = ( size=4; color=blue )
+}
+
+set couple motor
+{
+    hand1 = myosin
+    hand2 = myosin
+    stiffness = 500
+    diffusion = 1
+}
+
+set couple crosslinker
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 500
+    diffusion = 1
+}
+
+new 100 actin
+{
+    length = 5
+    position = circle 5 0
+    placement = inside, cell, ( x > -1 )
+}
+
+run 5 system
+
+new 1000 motor { position = inside; placement = inside, cell, ( x < -1 ); }
+new 1000 motor { position = inside; placement = inside, cell, ( y > x ); }
+new 1000 crosslinker { position = inside; placement = inside, cell, ( r > 6 ); }
+new 1000 crosslinker { position = inside; placement = inside, cell, ( y < -5 ); }
+
+run 1000 system
+{   
+    nb_frames = 10
+}

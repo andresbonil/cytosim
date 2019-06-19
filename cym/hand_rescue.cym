@@ -1,0 +1,70 @@
+/**
+ @example hand_rescue.cym
+ We create a Rescuer with `hand:activity=rescue`
+
+ F. Nedelec, September 2012
+*/
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 8
+    radius = 2
+}
+
+set fiber microtubule
+{
+    rigidity     = 20
+    segmentation = 0.5
+    confine      = inside, 200
+    
+    activity        = dynamic
+    unit_length     = 0.008
+    growing_speed   = 0.06
+    shrinking_speed = -0.15
+    hydrolysis_rate = 0.25
+    growing_force   = 1.7
+    display = { line_width=2; plus_end=16, 2; }
+}
+
+new 5 microtubule
+{
+    length = 5
+    end_state = red
+}
+
+set hand rescuer
+{
+    binding_rate = 10
+    binding_range = 0.1
+    unbinding_rate = 0.1
+    unbinding_force = 10
+    
+    activity = rescue
+    rescue_prob = 0.1
+    display = { width=3; size=6; color=green }
+}
+
+set single simplex
+{
+    hand = rescuer
+    diffusion = 10
+}
+
+new 500 simplex
+
+run system
+{
+    nb_steps = 100000
+    nb_frames = 10
+}

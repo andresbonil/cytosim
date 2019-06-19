@@ -1,0 +1,89 @@
+% 3D network of filaments with multivalent motors made on beads
+% Francois Nedelec for Yossi Eliaz, June 2018
+
+set simul system
+{
+    dim = 3
+    time_step = 0.002
+    viscosity = 0.5
+}
+
+set space cell
+{
+    shape = strip
+}
+
+set fiber filament
+{
+    rigidity = 0.5
+    segmentation = 0.25
+    confine = inside, 100
+    display = ( line=0.5, 1; color=orange; )
+}
+
+set hand motor
+{
+    binding = 10, 0.02
+    unbinding = 0.1, inf
+
+    activity = move
+    unloaded_speed = -0.2
+    stall_force = 6
+    display = ( size=2; color=green; )
+}
+
+set single grafted
+{
+    hand = motor
+    stiffness = 200
+}
+
+set hand binder
+{
+    binding = 10, 0.02
+    unbinding = 0.2, inf
+    display = ( size=2; color=blue; )
+}
+
+set couple crosslinker
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 250
+    diffusion = 10
+    fast_diffusion = 1
+}
+
+new cell
+{
+    length = 14, 14, 1
+}
+
+new 500 filament
+{
+    length = 5
+    orientation = orthogonal 0 0 1  % parallel to XY
+}
+
+set solid blob
+{
+    confine = inside, 100
+    display = ( style=7; coloring=0; color=0x88888888; )
+}
+
+new 5000 crosslinker
+
+% radius 250 nm with 4 spots, each 4 motors
+new 100 blob
+{
+    separation = 0.240
+    deviation = 0.010
+    sphere1 = 0 0 0, 0.150, 4 grafted, 4 grafted, 4 grafted, 4 grafted
+}
+
+run system
+{
+    nb_steps  = 100000
+    nb_frames = 100
+}
+

@@ -1,0 +1,75 @@
+% A directional gliding assay using arcs
+% run in 2D
+
+set simul system
+{
+    dim = 2
+    viscosity = 0.02
+    time_step = 0.01
+    display = {
+        tile = 1, 1;
+        zoom = 0.5;
+        style = 2;
+        delay = 10;
+        point_size = 6
+    }
+}
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 8, 16.8
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.25
+    display = { line=2, 0; point=6, 1; plus_end=16, 2; }
+}
+
+set hand kinesin
+{
+    binding_rate = 8
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 3
+        
+    activity = move
+    unloaded_speed = 1
+    stall_force = 6
+    display = {
+        color = 0xE69F00FF;
+        size = 5
+    }
+}
+
+set single graftedK
+{
+    hand = kinesin
+    stiffness = 100
+    activity = fixed
+}
+
+
+new 1 microtubule
+{
+    length = 10
+    orientation = XY
+}
+
+new 500 graftedK ( arc 12.56 3.14 at -1 4.2 )
+
+new 500 graftedK ( arc 12.56 3.14 at 3 -4.2 )
+
+
+run system
+{
+    nb_frames = 400
+    nb_steps = 20000
+}
+

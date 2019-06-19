@@ -1,0 +1,97 @@
+% Transport of granules inside a radial array of microtubules
+% Francois Nedelec, Zurich 5.11.2016
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = dice
+}
+
+new cell
+{
+    length = 3, 3, 1.5
+    radius = 0.5
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.25
+    confine = inside, 100
+
+    activity       = grow
+    growing_speed  = 1
+    min_length     = 0.1
+    max_length     = 12
+
+% make filaments shrink if they are outside the Space:
+    shrink_outside = 1
+    shrinking_speed = -1;
+    
+    display = ( line=0.5 )
+}
+
+set hand nucleator
+{
+    unbinding = 0, 3
+    activity = nucleate
+    nucleate = 0.1, microtubule, ( length=0.1; )
+    display = { size=5; color=blue, gray; }
+}
+
+set single simplex
+{
+    hand = nucleator
+    activity = fixed
+    stiffness = 1000
+}
+
+set hand motor
+{
+    binding_rate = 0
+    binding_range = 0.05
+    unbinding_rate = 0.5
+    unbinding_force = 3
+
+    activity = move
+    unloaded_speed = -0.2
+    stall_force = 5
+    display = { width=3; size=24; color=green; }
+}
+
+set single cargo
+{
+    hand = motor
+    diffusion = 0.01
+}
+
+new 40 simplex
+{
+    position = disc 0.25
+}
+
+run 2000 system
+
+new 150 cargo
+
+run 500 system
+{
+    solve = 0
+    nb_frames = 50
+}
+
+change motor
+{
+    binding_rate = 1
+}
+
+run 2500 system
+{
+    solve = 0
+    nb_frames = 250
+}

@@ -1,0 +1,72 @@
+% This tests different ways to change object Property values
+% F. Nedelec, 5 November 2017
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+    display = ( back_color=black; )
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+	radius = 1
+}
+
+set fiber actin
+{
+    rigidity = 0.05
+    segmentation = 0.055
+    confine = off
+    display = ( color=red; )
+}
+
+set fiber microtubule
+{
+    rigidity = 0.05
+    segmentation = 0.256
+    confine = off
+    display = ( color=green; )
+}
+
+change system { viscosity = 0.5; }
+change all simul { viscosity = 0.5; }
+change system display { back_color=0x00FFA7FF }
+change all simul { display = (back_color=red;) }
+change all simul display { back_color=0x00FFA7FF }
+
+change actin { rigidity=1; }
+change microtubule { rigidity = 20; }
+change all fiber { confine = inside, 10; }
+change all fiber { display = ( color = white; ) }
+
+set actin { display = ( size=2; color=orange; ) }
+set actin { rigidity = 1 }
+change actin { rigidity = 1 }
+
+
+%%%%%%%%%%%% old syntax:
+
+change fiber actin { rigidity=1; }
+change fiber microtubule { rigidity=20; }
+change simul:display * { back_color=black; }
+change simul * { viscosity = 1; }
+
+set simul:display * { back_color = blue; }
+set fiber:segmentation actin { 0.5 }
+set fiber:rigidity actin { 1 }
+
+new 10 actin
+{
+    length = 1
+}
+
+run 5000 system
+{
+    nb_frames = 10
+}

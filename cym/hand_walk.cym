@@ -1,0 +1,176 @@
+/**
+ @example hand_walk.cym
+ test Walker with `hand:activity=walk`
+
+ F. Nedelec, 2010
+*/
+
+
+% This is using 'binding_key' in Fiber and Hand
+% a Hand can bind if bitwise_and(fiber_key, hand_key) == true
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.1
+    display = { window_size=1024,256 }
+}
+
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 2
+    radius = 0.25
+}
+
+set fiber fiber1
+{
+    rigidity = 30
+    segmentation = 1
+    lattice = 1, 0.010
+    binding_key = 1
+    display = ( show_lattice=1; line=10, 0; )
+}
+
+set fiber fiber2
+{
+    rigidity = 30
+    segmentation = 1
+    lattice = 1, 0.010
+    binding_key = 2 
+    display = ( show_lattice=1; line=10, 0; )
+}
+
+set fiber fiber3
+{
+    rigidity = 30
+    segmentation = 1
+    lattice = 1, 0.010
+    binding_key = 3  % this means both key=1 and key=2 can bind
+    display = ( show_lattice=1; line=10, 0; )
+}
+
+set hand motor1
+{
+    binding_key = 1
+    binding_rate = 10
+    binding_range = 0.02
+    unbinding_rate = 0.1
+    unbinding_force = 3
+
+    hold_growing_end = 0
+    
+    activity = walk
+    use_lattice = 1
+    step_size = 0.01
+    unloaded_speed = 0.8
+    stall_force = 5
+    unbinding_chance = 0.01;
+    hold_growing_end = 0
+
+    display = { size=10; color=orange; }
+}
+
+set hand motor2
+{
+    binding_key = 2
+    binding_rate = 10
+    binding_range = 0.02
+    unbinding_rate = 0.1
+    unbinding_force = 300
+    
+    activity = walk
+    use_lattice = 1
+    step_size = 0.01
+    unloaded_speed = -0.8
+    stall_force = 5
+    unbinding_chance = 0.01;
+    hold_growing_end = 1
+
+    display = { size=10; color=sky_blue }
+}
+
+
+set single single1
+{
+    hand = motor1
+    diffusion = 1
+}
+
+set single single2
+{
+    hand = motor2
+    diffusion = 1
+}
+
+new fiber1
+{
+    length = 1.5
+    orientation = 1 0 0
+    position = 0 -0.1 0
+}
+
+new fiber2
+{
+    length = 1.5
+    orientation = 1 0 0
+    position = 0 0.1 0
+}
+
+new fiber3
+{
+    length = 1.5
+    orientation = -1 0 0
+    position = 0 0 0
+}
+
+new 256 single1
+new 256 single2
+
+run 5000 system
+{
+    nb_frames = 10
+    solve = 0
+}
+
+delete 128 single1
+delete 128 single2 
+
+run 5000 system
+{
+    nb_frames = 10
+    solve = 0
+}
+
+delete 64 single1
+delete 64 single2 
+
+run 5000 system
+{
+    nb_frames = 10
+    solve = 0
+}
+
+delete 32 single1
+delete 32 single2 
+
+run 5000 system
+{
+    nb_frames = 10
+    solve = 0
+}
+
+delete 16 single1
+delete 16 single2 
+
+run 50000 system
+{
+    nb_frames = 10
+    solve = 0
+}
+

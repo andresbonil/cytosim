@@ -1,0 +1,40 @@
+% Create new Fibers from within the 'run' command
+% F. Nedelec, April 2011
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.1
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 100
+    
+    activity        = dynamic
+    unit_length     = 0.008
+    growing_speed   = 0.2
+    shrinking_speed = -0.5
+    hydrolysis_rate = 1
+    growing_force   = 1.7
+    
+    display = ( plus_end = 2 )
+}
+
+run 100000 system
+{
+    nb_frames = 10
+    event = 2, ( new microtubule { position=(rectangle 2 5); length=0.05; end_state=grow; } )
+}

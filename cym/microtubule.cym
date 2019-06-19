@@ -1,0 +1,43 @@
+% Actin filaments with advanced rendering
+% F. Nedelec, November 2015
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 10
+    display = ( point_value=0.001; style=3; )
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 0.2
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.064    %0.064 is 8 dimers
+    confine = inside, 200
+    activity = grow
+    growing_speed = 0.1
+    display = ( style=microtubule; point=7, 0; color=green, dark_green; end_color=white,purple; )
+}
+
+new 1 microtubule
+{
+    position = -0.5 0 0
+    orientation = 1 0 0
+    length = 0.25
+    plus_end = grow
+}
+
+run 5000 system
+{
+    solve = 0
+    nb_frames = 10
+}

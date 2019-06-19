@@ -1,0 +1,54 @@
+% The Space 'disc' can grow or shrink from forces exerted by Fibers
+% F. Nedelec, 29 Jan 2017
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+    display = ( zoom = 0.5 )
+}
+
+set space cell
+{
+    shape = disc
+    viscosity = 100
+}
+
+new cell
+{
+    radius = 2
+}
+
+set fiber microtubule
+{
+    confine = inside, 100
+    rigidity = 30
+    segmentation = 0.25
+}
+
+new microtubule
+{
+    position = 0 -0.75 0
+    orientation = 1 0 0, 1 0 0
+    length = 5
+}
+
+new microtubule
+{
+    position = 0 -0.75 0
+    orientation = 1 0 0, -1 -1.732
+    length = 5
+}
+
+new microtubule
+{
+    position = 0 -0.75 0
+    orientation = 1 0 0, -1 1.732
+    length = 5
+}
+
+run 1000 system
+{
+    nb_frames = 20
+}
+

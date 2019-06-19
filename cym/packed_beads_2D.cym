@@ -1,0 +1,37 @@
+% F. Nedelec, updated November 4 2015
+% 16 beads confined within a sphere
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.02
+    steric = 1, 200
+}
+
+set space embryo
+{
+    shape = rectangle
+}
+
+new embryo
+{
+    length = 10, 2
+}
+
+set bead cell
+{
+    confine = inside, 200
+    steric = 1
+    display = ( coloring=1; color=0xFFFFFF77; size=6; style=7; )
+}
+
+new 34 cell
+{
+    radius = 1
+    placement = anywhere
+}
+
+run 1000 system
+{
+    nb_frames = 10
+}

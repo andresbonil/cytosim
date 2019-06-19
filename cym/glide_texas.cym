@@ -1,0 +1,71 @@
+% Gliding assay within a polygonal shape
+% Woods-hole, 23 July 2009
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.1
+}
+
+set space cell
+{
+    shape = polygon
+}
+
+new cell
+{
+    file = texas.txt
+    height = 2
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 100
+}
+
+set hand kinesin
+{
+    binding_rate = 5
+    binding_range = 0.01
+    unbinding_rate = 0.2
+    unbinding_force = 3
+  
+    activity = move
+    unloaded_speed = 0.8
+    stall_force = 6
+}
+
+set hand dynein
+{
+    binding_rate = 5
+    binding_range = 0.01
+    unbinding_rate = 0.2
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = -0.8
+    stall_force = 6
+}
+
+set single grafted
+{
+    hand = dynein
+    stiffness = 100
+    activity = fixed
+}
+
+new 10 microtubule
+{
+    length = 10
+}
+
+new 2000 grafted ( stripe -5 5 ) 
+
+run system
+{
+    nb_steps = 5000
+    nb_frames = 50
+}
+

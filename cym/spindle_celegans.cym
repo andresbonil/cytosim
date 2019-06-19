@@ -1,0 +1,163 @@
+% Distance between spindle poles for a simplified C.elegans spindle
+% Benjamin LACROIX and Gaelle LETORT 02.2017
+% Adapted for 3D on 10.3.2017, F NEDELEC
+
+
+set simul system
+{
+    precondition = 2
+    time_step = 0.01       %% Nedelec 2007 
+    kT = 0.0042            %% 25 C
+    viscosity = 1          %% viscosity inside embryo 
+    steric = 0             %% no interaction (faster)
+    display = { line_width=3; couple_select=0; single_select=3; point_size=5;}
+}
+
+
+set space cell
+{
+    shape = circle
+    display = { visible=0; }
+}
+
+new cell
+{
+    radius = 5
+}
+
+set space plate
+{
+    shape = ellipse
+    display = { color=0xFFFFFF22; visible=2; }
+}
+
+new plate
+{
+    length = 1, 5, 5
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% MICROTUBULES
+
+set fiber microtubule
+{
+    confine = outside, 100, plate
+
+    rigidity = 25                    %% Lp~5200µm, Gittes 1993
+    segmentation = 0.5
+    activity = classic
+    growing_force = 1.67             %% Dogterom 1997 
+    persistent = 1
+    rebirth_rate = inf
+    min_length = 0.005
+
+    growing_speed = 0.4              %% Sera moins en pratique car force opposee
+    catastrophe_rate = 0.3, 0.3      %% meme valeur pour MT stall ou free 
+    shrinking_speed = -0.65           
+    rescue_rate = 0.5                   
+
+    total_polymer = inf              %% illimite
+    display = { color=blue; line=1; }
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CHROMOSOMES
+
+set hand map
+{
+    binding = 20, 0.05        %% binding rapide
+    unbinding_rate = 0
+    activity = track
+    track_end = plus_end      %% reste proche de la plus_end du microtubule
+    bind_only_end = plus_end, 0.1  %% bind seulement pres de la plus_end du MT, a une distance max de 0.2
+    bind_only_free_end = 1    %% bind seulement s'il n'y a pas deja une autre Hand sur le MT
+}
+
+set single grafted
+{
+    hand = map
+    stiffness = 150
+    activity = fixed
+}
+
+% OPTION 1: MAPs at fixed position
+new 4444 grafted
+{
+    position = ellipse_surface 0.5 2.5 2.5
+}
+
+set solid DNA
+{
+    confine = inside, 100, plate
+    display = ( color = dark_blue;)
+}
+
+% OPTION 2: MAPs attached on beads
+new 0 DNA
+{
+%define a chromosome of length 3 um with 3 beads of diameter 1, and 100 MAP on each bead:
+    sphere0 = -1 0 0, 0.5, 100 grafted
+    sphere1 =  0 0 0, 0.5, 100 grafted
+    sphere2 =  1 0 0, 0.5, 100 grafted
+    position = cylinder 1 4
+}
+
+new 0 DNA
+{
+%define a chromosome of length 3 um with 6 beads of diameter 1, and 100 MAP on each bead:
+    sphere0 = -1 -0.5 0, 0.5, 100 grafted
+    sphere1 =  0  0.5 0, 0.5, 100 grafted
+    sphere2 =  1 -0.5 0, 0.5, 100 grafted
+    sphere3 = -1  0.5 0, 0.5, 100 grafted
+    sphere4 =  0 -0.5 0, 0.5, 100 grafted
+    sphere5 =  1  0.5 0, 0.5, 100 grafted
+    position = cylinder 1 4
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CENTROSOMES
+
+set solid core
+{
+    viscosity = 200       %% controlle la mobilite des poles
+    display = { color=0x00880044; }
+}
+
+set aster centrosome
+{
+    stiffness = 500, 500   %% ancrage des MTs sur les poles (position, rotation)
+}
+
+
+new centrosome
+{
+    solid = core
+    type = astral
+    %aster_angle = 0.6      %% definit l'angle du pole, 30°, moy of measure
+    position = 2 0
+    orientation = -1 0 0
+    point1 = center, 0.5
+    radius = 0.5, 0.2
+    fibers = 500, microtubule, ( length = 0.5, 0.1; plus_end = grow; )
+}
+
+new centrosome
+{
+    solid = core
+    type = astral
+    %aster_angle = 0.6      %% definit l'angle du pole, 30°, moy of measure
+    position = -2 0
+    orientation = 1 0 0
+    point1 = center, 0.5
+    radius = 0.5, 0.2
+    fibers = 500, microtubule, ( length = 0.5, 0.1; plus_end = grow; )
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SIMULATION
+
+run system
+{
+    nb_steps = 1000
+    nb_frames = 10
+}
+

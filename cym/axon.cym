@@ -1,0 +1,72 @@
+% Microtubules growing within an axon growthcone
+% F. Nedelec, July 24th 2014
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 10
+    display = ( window_size=1024,512 )
+}
+
+set space cell
+{
+    shape = polygon
+    display = ( line = 5 )
+}
+
+new cell
+{
+    file = axon.txt
+    height = 2
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.75
+    confine = inside, 100
+
+    
+    activity         = classic
+    growing_speed    = 0.1
+    shrinking_speed  = -0.25
+    catastrophe_rate = 0.004
+    catastrophe_rate_stalled = 0.2
+    rescue_rate      = 0.05
+    growing_force    = 1.67
+    persistent       = 1
+    min_length       = 2
+    
+    display = ( line=3; )
+}
+
+new 10 microtubule
+{
+    length = 7, exponential
+    orientation = 1 0 0
+    position = rectangle 0 0.5 at -19 -1.5
+    reference = minus_end
+}
+
+set hand binder
+{
+    binding = 10, 0.05
+    unbinding = 0.2, 2.5
+}
+
+set single grafted
+{
+    hand = binder
+    stiffness = 200
+    activity = fixed
+}
+
+new 900 grafted
+{
+    position = gradient 19 -19
+}
+
+run 100000 system
+{
+    nb_frames = 250
+}

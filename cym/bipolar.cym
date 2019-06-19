@@ -1,0 +1,136 @@
+% A set of objects that will self-assemble into a bipolar structure
+% F. Nedelec, 29 May 2014
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.1
+    steric = 0, 100
+}
+
+set system display
+{
+    delay=3;
+    period=8;
+    point_size=8; 
+    style=2;
+}
+
+set space cell
+{
+    shape = sphere
+    display = ( visible=1; width=2; )
+}
+
+new cell
+{
+    radius = 8
+}
+
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.75
+    steric = 1, 0.03
+    confine = inside, 1
+    display = ( color=white; line_width=3; )
+}
+
+set hand numa 
+{
+    binding = 500, 0.25
+    unbinding = 0, 6
+    display = ( color=gray )
+}
+
+set hand dynein 
+{
+    binding = 10, 0.15
+    unbinding = 0.2, 6
+    
+    activity    = move
+    unloaded_speed   = -1
+    stall_force = 5
+
+    display = ( color=green )
+}
+
+set couple motor
+{
+    hand1 = numa
+    hand2 = dynein
+    diffusion = 0
+    stiffness = 200
+}
+
+set hand kinesin 
+{
+    binding = 10, 0.02
+    unbinding = 0.2, 6
+    
+    activity    = move
+    unloaded_speed   = 0.1
+    stall_force = 6
+
+    display = ( color=orange )
+}
+
+set couple kinesin5 
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    diffusion = 5
+    stiffness = 200
+}
+
+
+set solid core
+{
+    display=(style=5;)
+}
+
+set aster chromosome
+{
+    focus = plus_end
+    stiffness = 1000, 500
+}
+
+set aster centrosome
+{
+    focus = minus_end
+    stiffness = 1000, 500
+}
+
+repeat 10
+{
+new core
+{
+    point1 = center, 0.5
+}
+
+new chromosome
+{
+    solid = last
+    radius = 0.5, 0.3
+    fibers = 2, microtubule, ( length=4; attach = 13 motor, 0.5, minus_end, exponential; )
+    type = regular
+    placement = off
+}
+}
+
+new 2 centrosome
+{
+    solid = core
+    radius = 0.5, 0.2
+    type = radial
+    fibers = 24, microtubule, ( length = 3.5 )
+}
+
+new 1000 kinesin5
+
+
+run 100000 system 
+{
+    nb_frames = 500
+}

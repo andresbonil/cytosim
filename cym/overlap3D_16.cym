@@ -1,0 +1,133 @@
+% An antiparallel bundle extending under the action of crosslinking motors
+% Francois Nedelec, January 11, 2019
+
+set simul system
+{
+    dim = 3
+    viscosity = 1
+    time_step = 0.001
+    steric = 1, 1000
+    display = (
+        window_size = 1024, 512;
+        point_value = 0.010
+        point_size = 1.0
+        line_width = 0.5
+        label = (3D sliding bundle -)
+        zoom = 8;
+        style = 3;
+        stencil = 0;
+        back_color = darker_red;
+    )
+}
+
+set space cell 
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 4
+    radius = 0.5
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.128
+    steric = 1, 0.030
+    lattice = 1, 0.008
+    display = ( line=2.5, 1; color=white, blue; lattice=1; )
+}
+
+set hand kinesin
+{
+    binding = 10, 0.06
+    unbinding = 0.3, 3
+    
+    activity = walk
+    step_size = 0.008
+    hold_growing_end = 1
+    unloaded_speed = 0
+    stall_force = 6
+}
+
+set couple complex
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    stiffness = 200
+    diffusion = 20
+    length = 0.050
+    specificity = antiparallel
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.025 -0.075, 0 0.075 -0.075
+    orientation = +1 0
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.075 -0.075, 0 0.025 -0.075
+    orientation = -1 0
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.025 -0.025, 0 0.075 -0.025
+    orientation = -1 0
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.075 -0.025, 0 0.025 -0.025
+    orientation = +1 0
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.025 +0.025, 0 0.075 +0.025
+    orientation = +1 0
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.075 +0.025, 0 0.025 +0.025
+    orientation = -1 0
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.025 +0.075, 0 0.075 +0.075
+    orientation = -1 0
+}
+
+new 2 microtubule
+{
+    length = 2
+    distribute = 0 -0.075 +0.075, 0 0.025 +0.075
+    orientation = +1 0
+}
+
+new 4000 complex
+
+run 1000 system 
+{
+    solve = 0
+}
+
+change kinesin { unloaded_speed = 0.1 }
+
+run 5000 system
+{
+    nb_frames = 100
+}

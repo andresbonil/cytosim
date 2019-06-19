@@ -1,0 +1,49 @@
+% 3D ellipse filled with short filaments
+% F. Nedelec, March 2015
+
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 10
+    steric = 1, 10, 1
+    display = ( style=1; )
+}
+
+%------------------------CELL
+
+set space spindle
+{
+    shape = ellipse
+    display = ( color=0x0000FF33; visible=1; )
+}
+new spindle
+{
+    length = 12, 10, 10
+}
+
+%-------------------------MICROTUBULES
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 2
+    confine = inside, 10, spindle
+    steric = 1, 0.15
+
+    display = ( line=2.5, 1; )
+}
+
+%-------------------------RUN
+
+new 5000 microtubule
+{
+    orientation=horizontal;
+    position = inside, spindle
+    length=2;
+}
+
+run 10000 system
+{
+    nb_frames = 10
+}

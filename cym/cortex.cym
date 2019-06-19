@@ -1,0 +1,107 @@
+% Thin actomyosin network in 3D
+% FJN, Strasbourg, 18 Feb. 2019
+
+set simul contract 
+{
+    time_step = 0.001
+    viscosity = 1
+    steric = 1, 1000
+    steric_max_range = 0.05
+    display = ( style=3; point_value=0.001; point_size=2; back_color=white; )
+}
+
+set space cell
+{
+    shape = strip
+    display = ( visible = 0; )
+}
+
+set fiber filament
+{
+    confine = inside, 100
+    rigidity = 0.05
+    segmentation = 0.0275
+    max_length = 4
+    steric = 1, 0.004  % should be greater than 0.0035 nm
+    display = ( line=7, 1; color=red; inner_color=red; )
+}
+
+set hand binder
+{
+    binding = 10, 0.050
+    unbinding = 0.5, inf
+    display = ( size=9; color=blue; )
+}
+
+set couple crosslinker
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 250
+    diffusion = 100
+    confine = inside,, cell
+}
+
+set hand motor_head
+{
+    binding = 10, 0.01
+    unbinding = 0.5, inf
+    
+    activity = move
+    max_speed = 0
+    stall_force = 6
+    
+    display = ( size=11; color=green, dark_green; )
+}
+
+set single motor
+{
+    hand = motor_head
+    stiffness = 100
+}
+
+set solid minifilament
+{
+    confine = inside, 100
+    display = ( color=0x00FF0044; width=8; style=17; );
+}
+
+new cell
+{
+	length = 2, 2, 0.2;
+}
+
+new 1000 filament
+{
+    length = 0.75, exponential
+    equilibrate = 17
+    direction = XY
+}
+
+new 50 minifilament
+{
+    point1 = -0.150 0 0, 0.005, motor;
+    point2 = +0.150 0 0, 0.005, motor;
+    anchor1 = point1, point2, 0.05, motor;
+    anchor2 = point1, point2, 0.10, motor;
+    anchor3 = point1, point2, 0.15, motor;
+    anchor4 = point1, point2, 0.85, motor;
+    anchor5 = point1, point2, 0.90, motor;
+    anchor6 = point1, point2, 0.95, motor;
+    orientation = horizontal;
+    placement = inside, cell, ( z > p )
+}
+
+new 1000 crosslinker
+%call equilibrate
+
+change motor_head
+{
+    max_speed = 0.5
+}
+
+run simul *
+{   
+    nb_frames = 2
+    nb_steps = 2000
+}

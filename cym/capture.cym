@@ -1,0 +1,95 @@
+% Maria Burdyniuk and Francois Nedelec, September 2015, Sep 2016
+% Chromosome capture in oocyte!
+
+set simul system
+{
+    time_step = 0.02
+    viscosity = 1
+    steric = 0, 500
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 30
+}
+
+set hand glue
+{
+    binding_rate = 100      % very very fast!
+    binding_range = 0.5     % that is a diameter of 1 um
+    unbinding = 0, inf      % never unbind!
+    hold_shrinking_end = 1
+    display = ( size=12; color=green; )
+}
+
+set single kinetochore
+{
+    hand = glue
+    stiffness = 100
+}
+
+set solid chromosome
+{
+    confine = inside, 100
+    steric = 1
+    display = ( style=7; color=0xFFFFFF44; width=1; )
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 2
+    confine = inside, 100
+    
+    activity         = classic
+    growing_speed    = 0.2
+    shrinking_speed  = -0.5
+    catastrophe_rate = 0.025
+    rescue_rate      = 0
+    growing_force    = 1.67
+    persistent       = 1
+    rebirth_rate     = 1
+    min_length       = 0.25
+}
+
+set solid core
+{
+    display = ( style=3 )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+}
+
+% ----------------- PLACEMENTS ------------------
+
+new 22 chromosome
+{
+    point1 = center, 1.5
+    point2 = +1.5 0 0, 0, kinetochore
+    point3 = -1.5 0 0, 0, kinetochore
+    position = edge 5
+}
+
+new centrosome
+{
+    solid = core
+    radius = 1
+    fibers = 127, microtubule, ( length = 2; plus_end = grow; )
+    position = 15 0 0
+}
+
+% -----------------SIMULATION------------------
+
+run system
+{
+    solve = 1              % set to zero, and nothing can move.
+    nb_steps  = 100000
+    nb_frames = 100
+}

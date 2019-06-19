@@ -1,0 +1,72 @@
+% A test of steric interactions between fibers and beads
+% F. Nedelec, 23 Jan 2010
+
+
+set simul system
+{
+    dim = 3
+    steric = 1, 100
+    precondition = 0
+    time_step = 0.005
+    kT = 0.0042
+    steric_max_range = 0.5
+    
+    display = ( style=3; point_value=0.01; window_size=1000, 800; )
+}
+
+set space cell
+{
+    shape = circle
+    display = ( color=0xFFFFFF11 )
+}
+
+new cell
+{
+    radius = 1
+}
+
+set fiber filament
+{
+    rigidity = 1
+    confine = inside, 100
+    segmentation = 0.2
+    steric = 1, 0.05
+    
+    activity = classic
+    growing_speed     = 0.2,  0.2
+    shrinking_speed   = -0.8, -0.8
+    catastrophe_rate  = 0.02, 0.02
+    rescue_rate       = 0,    0
+    growing_force     = 1.7,  1.7
+    persistent     = 1
+    rebirth_rate   = 5
+    min_length     = 0.1
+    
+    display = ( line_width=6; coloring=1; )
+}
+
+
+new 20 filament
+{
+    length = 0.05
+    end_state = grow, grow
+}
+
+set bead ball
+{
+    steric = 1
+    confine = inside, 100
+    display = ( coloring=1; )
+}
+
+new 40 ball
+{
+    radius = 0.25
+}
+
+run system
+{
+    nb_steps  = 10000
+    nb_frames = 100
+}
+

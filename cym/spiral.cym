@@ -1,0 +1,49 @@
+% A growing fiber on the surface of a cylinder
+% F. Nedelec, 20 March 2015
+
+set simul system
+{
+    dim = 3
+    time_step = 0.01
+    viscosity = 1
+    steric = 1, 100
+    display = ( style=3; zoom=0.9; )
+ }
+
+set space cell
+{
+    shape = ring
+    display = ( color=0x0000FFAA; visible=3 )
+}
+
+new cell
+{
+    length = 2
+    radius = 2
+}
+
+set fiber microtubule
+{
+    steric = 1, 0.1
+    rigidity = 10
+    segmentation = 0.5
+    confine = surface, 200
+
+    activity = grow
+    growing_speed = 1,   1
+    growing_force = inf, inf
+
+    display = ( line=5 )
+}
+
+new 1 microtubule
+{
+    length = 2
+    position = surface
+    direction = tangent
+}
+
+run 5000 system
+{
+    nb_frames = 25
+}

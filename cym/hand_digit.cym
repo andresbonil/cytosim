@@ -1,0 +1,128 @@
+/**
+ @example hand_digit.cym
+ We create a Digit with `hand:activity=digit`
+
+ F. Nedelec, 2012
+*/
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.05
+    display = ( window_size=1025,256 )
+}
+
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 1.50
+    radius = 0.25
+}
+
+set fiber fiber1
+{
+    rigidity = 30
+    segmentation = 1
+    lattice = 1, 0.01
+    binding_key = 1
+}
+
+set fiber fiber2
+{
+    rigidity = 30
+    segmentation = 1
+    lattice = 1, 0.01
+    binding_key = 3
+    display = ( show_lattice=1; line=8, 0; )
+}
+
+set fiber fiber3
+{
+    rigidity = 30
+    segmentation = 1
+    lattice = 1, 0.01
+    binding_key = 2
+}
+
+set hand hand1
+{
+    binding_key = 1
+    binding_rate = 10
+    binding_range = 0.02
+    unbinding_rate = 1
+    unbinding_force = 3
+
+    hold_growing_end = 0
+    
+    activity = digit
+    use_lattice = 1
+    step_size = 0.01
+ 
+    display = ( size=9; color=orange; )
+}
+
+set hand hand2
+{
+    binding_key = 2
+    binding_rate = 10
+    binding_range = 0.02
+    unbinding_rate = 1
+    unbinding_force = 3
+    
+    hold_growing_end = 0
+
+    activity = digit
+    use_lattice = 1
+    step_size = 0.01
+
+    display = ( size=9; color=sky_blue; )
+}
+
+
+set single single1
+{
+    hand = hand1
+    diffusion = 1
+}
+
+set single single2
+{
+    hand = hand2
+    diffusion = 1
+}
+
+new 1 fiber1
+{
+    length = 1
+    orientation = 1 0 0
+    position = 0 -0.1 0
+}
+new 1 fiber2
+{
+    length = 1
+    orientation = 1 0 0
+    position = 0 0 0
+}
+new 1 fiber3
+{
+    length = 1
+    orientation = 1 0 0
+    position = 0 0.1 0
+}
+
+new 200 single1
+new 200 single2
+
+run system
+{
+    nb_steps  = 50000
+    nb_frames = 100
+    solve = 0
+}
+

@@ -1,0 +1,58 @@
+% A buckled fiber
+% F. Nedelec, February 2017
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.02
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber microtubule
+{
+    rigidity = 100
+    segmentation = 0.5
+}
+
+new microtubule
+{
+    length = 10
+    orientation = 1 0 0
+}
+
+set hand binder
+{
+}
+
+set single holder
+{
+    hand = binder
+    activity = fixed
+    stiffness = 1000
+}
+
+new holder
+{
+    position = 4 0 0
+    attach = fiber1, 0, plus_end
+}
+
+new holder
+{
+    position = -4 0 0
+    attach = fiber1, 0, minus_end
+}
+
+run 1000 system
+
+report single:force *
+report fiber:force *

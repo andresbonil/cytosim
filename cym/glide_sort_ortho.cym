@@ -1,0 +1,112 @@
+% A length sorter
+% run in 2D
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 10, 10, 2
+}
+
+set simul system
+{
+    dim = 2
+    viscosity = 0.02
+    time_step = 0.005
+    random_seed = 9509
+    display = {
+        tile = 1, 1;
+        zoom = 0.5;
+        style = 2;
+        delay = 10;
+        point_size = 6
+    }
+    precondition = 0
+}
+
+set fiber microtubule
+{
+    rigidity = 10 
+    segmentation = 0.5
+    display = { line_width = 10; plus_end=24, 2; }
+}
+
+
+set hand kinesin
+{
+    binding_rate = 8
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 4
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = 0.5
+    display = {
+        color = 0xE69F00FF;
+        size = 5
+    }
+}
+
+set hand anti_kinesin
+{
+    binding_rate = 8
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 4
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = -1
+    display = {
+        size = 5
+        color = 0x0072B2FF;
+    }
+}
+
+set single graftedK
+{
+    hand = kinesin
+    stiffness = 100
+    activity = fixed
+}
+
+set single graftedA
+{
+    hand = anti_kinesin
+    stiffness = 100
+    activity = fixed
+}
+
+
+new 1 microtubule
+{
+    length = 5  
+}
+
+new 1 microtubule
+{
+    length = 10  
+}
+
+% d: motor density multiplicator
+
+
+%new 490 graftedA ( arc 9.80765547658 1.08028188465 turn angle 2.43344008941 at -4.31814017228 -1.69700339278 ) 
+
+new 581 graftedA ( arc 11.6363048686 2.88411855053 turn angle 0.889120564703 at 6.80019535328 -3.85342326844 )
+
+new 520 graftedA ( arc 10.4076113771 0.441299117151 turn angle 4.81759033376 at 9.88628342054 -7.04823713713 ) 
+
+new 488 graftedA ( arc 9.77448209962 2.79663232199 turn angle 1.98656876637 at 1.26752592964 -0.377819148264 )
+
+%new 73 graftedA ( arc 1.47378272625 2.1667128357 turn angle 1.83848837749 at -6.20035528949 -8.82120786494 ) 
+
+run system
+{
+    nb_frames = 5 
+    nb_steps = 20000
+}

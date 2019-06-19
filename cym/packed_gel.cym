@@ -1,0 +1,90 @@
+% A gel compressed by additional actin polymerization
+% F. Nedelec, in Roscoff Brittany, 29.05.2015
+
+
+set simul system
+{
+    dim = 3
+    time_step = 0.001
+    kT        = 0.0001
+    viscosity = 1000
+    steric    = 1, 1e5
+    display = ( point_value=0.001; style=3; tile=0; fold=0; )
+}
+
+set space cell
+{
+    shape = strip
+    display = ( color=0x0000FF94; visible=3; )
+}
+
+new cell
+{
+    length = 0.2, 0.2, 0.1
+}
+
+set fiber actin
+{
+    rigidity     = 0.1
+    confine      = inside, 1e5
+    steric       = 1, 0.0035
+    segmentation = 0.00825
+
+    activity      = grow
+    growing_speed = 0.05
+    max_length    = 0.065
+ 
+    display = ( lines=7, 1, 1; color=white, 0xFFFFFF16; coloring=3; points=1,0; )
+}
+
+set hand binder
+{
+    binding = 100, 0.009
+    unbinding = 0, 3
+    display = ( size=1; color=blue )
+}
+
+set couple crosslink
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 5000
+    diffusion = 0.1
+}
+
+new 700 actin
+{
+    position = inside
+    length = 0.065
+    mark = 1
+    plus_end = grow
+}
+
+run 1000 system
+{
+}
+
+new 3000 crosslink
+
+run 100 system
+
+delete couple crosslink
+{
+    state1 = 0
+}
+delete couple crosslink
+{
+    state2 = 0
+}
+
+new event
+{
+    rate = 50;
+    code = ( new actin { position=rectangle 0.1 0.1 0.01 at 0 0 -0.05; length=0.005; plus_end=grow; } )
+}
+
+run 2000 system
+{
+    nb_frames = 100
+}
+

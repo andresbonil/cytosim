@@ -1,0 +1,117 @@
+% F. Nedelec, June 2011
+
+
+set space cell
+{
+    shape = rectangle
+}
+
+new cell
+{
+    length = 32, 32
+}
+
+set simul system
+{
+    viscosity = 0.01
+    time_step = 0.0025
+%    random_seed = 87 
+    display = {
+        tile = 1, 1;
+        zoom = 0.75;
+        style = 2;
+        delay = 10;
+        point_size = 6
+    }
+    precondition = 0
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.5
+    display = { line_width = 10; plus_end=24, 2; }
+}
+
+set hand kinesin
+{
+    binding_rate = 8
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 3
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = 1
+    display = {
+        color = 0xE69F00FF;
+        size = 5
+    }
+}
+
+set hand anti_kinesin
+{
+    binding_rate = 8
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 3
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = -1.0
+    display = {
+        size = 5
+        color = 0x0072B2FF;
+    }
+}
+
+set single graftedK
+{
+    hand = kinesin
+    stiffness = 200
+    activity = fixed
+}
+
+set single graftedA
+{
+    hand = anti_kinesin
+    stiffness = 200
+    activity = fixed
+}
+
+new 1 microtubule
+{
+    length = 5
+    position = ( 0 0 0 )
+    orientation = ( 1 0 0 )
+}
+
+% --------------
+
+new 1000 graftedK {
+    position = ( circle 14 ) 
+}
+
+new 400 graftedA {
+    position = ( arc 32 3.2 turn angle 0.14 at 11 1.5 ) 
+}
+
+new 400 graftedA {
+    position = ( arc 32 3.2 turn angle -3.0016 at -11 -1.5 ) 
+}
+
+new 200 graftedA {
+    position = ( arc 15.708 3.1416 at 5 -5 ) 
+}
+
+new 200 graftedA {
+    position = ( arc 15.708 3.1416 turn -1 0 0 at -5 5 ) 
+}
+
+run system
+{
+    nb_frames = 400
+    nb_steps = 20000
+}
+
+

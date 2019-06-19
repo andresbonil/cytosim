@@ -1,0 +1,72 @@
+% Crushing a ball made of a network of crosslinked filament 
+% Made for 3D
+% F. Nedelec, November 2013
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.025
+    precondition = 0
+    display = ( style=2; point_size=2; fog=2,2,0x000000FF; )
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber actin
+{
+    rigidity = 0.1
+    segmentation = 0.2
+    confine = surface, 200
+    display = ( line = 1,2; )
+}
+
+new 5000 actin
+{
+    length = 2
+    position = surface
+    orientation = tangent
+}
+
+set hand binder
+{
+    binding = 100, 0.02
+    unbinding = 1, 3
+    display = { size = 2; color=green }
+}
+
+set couple crosslink
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 250
+    diffusion = fast
+}
+
+new 50000 crosslink
+
+run 1000 system { nb_frames = 1; }
+
+change actin { confine = inside; }
+
+% Prevent further unbinding of crosslinks
+change binder { unbinding = 0, inf; }
+
+% Remove Couple that have Hand1 unbound:
+delete crosslink { state1 = 0; }
+
+% Remove Couple that have Hand2 unbound:
+delete crosslink { state2 = 0; }
+
+% Compress cell:
+change cell { radius = 4; }
+
+run 1000 system { nb_frames = 10; }
+

@@ -1,0 +1,47 @@
+% A confined fiber, at zero temperature
+% F. Nedelec, Heidelberg, Mai 2015
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.02
+    kT = 0
+    tolerance = 0.00001
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 200
+}
+
+new 1 microtubule
+{
+    length = 12
+}
+
+run 1000 system
+{
+    nb_frames = 10
+}
+
+change microtubule
+{
+    segmentation = 0.1
+}
+
+run 1000 system
+{
+    nb_frames = 10
+}

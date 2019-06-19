@@ -1,0 +1,40 @@
+% Francois Nedelec, March, 2013
+% dumbell solids confined on a surface with steric
+% Made for 3D 
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.01
+    steric = 1, 500
+}
+
+set space cell
+{
+    shape = ellipse
+}
+
+new cell
+{
+    length = 24, 20, 20
+}
+
+
+set solid blob
+{
+    confine = inside, 1
+    steric = 1
+    display = ( coloring=1; style=7; color=0xFFFFFF88; )
+}
+
+new 250 blob
+{
+    point1 = -1 0 0, 1
+    point2 =  1 0 0, 1
+}
+
+run system
+{
+    nb_steps  = 10000
+    nb_frames = 100
+}

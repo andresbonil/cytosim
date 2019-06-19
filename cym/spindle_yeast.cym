@@ -1,0 +1,453 @@
+%% Anaphase S.pombe spindle
+%% Jonathan Ward, 2012, 
+%% Expanded and adapted for PI - Francois Nedelec, 01.2015
+%% Manuel Lera Ramirez, 02.2017
+
+
+set simul system
+{
+    dim = 3
+    time_step = 0.005
+    viscosity = 1
+    steric = 1, 50
+    steric_max_range = 0.75
+    display = ( style=3; window_size=1024, 256; point_value=0.01; zoom=2; back_color=black; )
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( visible=0; )
+}
+
+new cell
+{
+    length = 15
+    radius = 1.62
+}
+
+set space squeeze
+{
+    shape = capsule
+    display = ( color=0xFF000055; visible=1; )
+}
+
+new squeeze
+{
+    length = 4.2
+    radius = 0.1
+}
+
+
+%% ----------------------------------------------------------------------
+set fiber chromosome
+{
+    steric = 1, 0.05
+    rigidity = 0.5
+    segmentation = 0.025
+    display = (color=blue; lines = 10, 1, 2;)
+    binding_key = 0
+}
+
+set fiber k_fiber
+{
+    activity = classic
+    confine = surface, 10, squeeze
+    growing_speed = 0.0
+    shrinking_speed = 0.0
+    rigidity = 20
+    min_length = 0.2
+    rebirth_rate = 10000
+    display = ( line_width=2.5; color=blue; )
+}
+
+set hand holder
+{
+    hold_shrinking_end = 1
+    unbinding = 0
+}
+
+set single pole_glue
+{
+    hand = holder
+    stiffness = 2000
+}
+
+set couple kinetochore
+{
+    hand1 = holder
+    hand2 = holder
+    stiffness = 50
+}
+
+set hand cohesin_hand
+{
+    unbinding = 0
+    binding = 0, 0.1
+}
+
+set couple cohesin
+{
+    hand1 = cohesin_hand
+    hand2 = cohesin_hand
+    length = 0.1
+    stiffness = 50
+}
+
+%% ----------------------------------------------------------------------
+set fiber microtubule
+{
+    rigidity = 2000
+    segmentation = 0.25
+    confine = inside, 10, squeeze
+    
+    steric = 1, 0.03
+
+    activity = classic
+    catastrophe_rate         = 0      % static during equilibration
+    catastrophe_rate_stalled = 1.0
+    growing_force            = 1.67   % characteristic force
+    growing_speed            = 0      % static during equilibration
+    
+    total_polymer = 180   % total available=180; critical concentration ?
+    min_length  = 0.01
+
+    display = ( line_width=2.5; plus_end=5, 2; color=white; )
+}
+
+set solid core
+{
+    confine = inside, 10, cell
+    viscosity = 10
+    display = ( style=2; visible=1; )
+}
+
+set aster pole_body
+{
+    stiffness = 1000, 1000
+}
+
+%%----------------------------- CREATE CHROMOSOMES AND K-FIBERS
+new 3 k_fiber
+{
+    length = 1.9
+    position = -1.05 0 0
+    orientation = 1 0 0
+    end_state = shrinking
+}
+new 3 k_fiber
+{
+    length = 1.9
+    position = 1.05 0 0
+    orientation = -1 0 0    
+    end_state = shrinking
+}
+new 2 chromosome
+{
+    position = 0 0.15 0
+    orientation = 0 0 1
+    length = 0.3
+}
+new 2 chromosome
+{
+    position = 0 -0.05 -0.15
+    orientation = 0 0.7 -0.2
+    length = 0.5
+}
+new 2 chromosome
+{
+    position = 0 -0.05 0.15
+    orientation = 0 1 0.5
+    length = 0.8
+}
+
+%%----------------------------- ASSOCIATE SISTER CHROMATIDS
+new cohesin
+{
+    attach1 = fiber7, 0, center
+    attach2 = fiber8, 0, center
+}
+new cohesin
+{
+    attach1 = fiber7, 0, plus_end
+    attach2 = fiber8, 0, plus_end
+}
+new cohesin
+{
+    attach1 = fiber7, 0, minus_end
+    attach2 = fiber8, 0, minus_end
+}
+%% 
+new cohesin
+{
+    attach1 = fiber9, 0, center
+    attach2 = fiber10, 0, center
+}
+new cohesin
+{
+    attach1 = fiber9, 0, plus_end
+    attach2 = fiber10, 0, plus_end
+}
+new cohesin
+{
+    attach1 = fiber9, 0, minus_end
+    attach2 = fiber10, 0, minus_end
+}
+%% 
+new cohesin
+{
+    attach1 = fiber11, 0, center
+    attach2 = fiber12, 0, center
+}
+new cohesin
+{
+    attach1 = fiber11, 0, plus_end
+    attach2 = fiber12, 0, plus_end
+}
+new cohesin
+{
+    attach1 = fiber11, 0, minus_end
+    attach2 = fiber12, 0, minus_end
+}
+
+%%----------------------------- SPINDLE HALFS
+new 1 pole_body
+{
+    solid = core
+    point1 = center, 0.2
+    radius = 0.06, 0.04
+    type = disc
+    fibers = 6, microtubule, ( length=3.0; )
+    seed_diameter = 0.025
+    position = -2.0 0 0
+    orientation = 1 0 0
+}
+
+new 1 pole_body
+{
+    solid = core
+    point1 = center, 0.2
+    radius = 0.06, 0.04
+    type = disc
+    fibers = 6, microtubule, ( length=3.0; )
+    seed_diameter = 0.025
+    position = 2.0 0 0
+    orientation = -1 0 0
+}
+
+new pole_glue
+{
+    base = solid1, point1
+    attach = fiber1, 0
+}
+
+new kinetochore
+{
+    attach1 = fiber1, 0, plus_end
+    attach2 = fiber7, 0, center
+}
+
+new pole_glue
+{
+    base = solid1, point3
+    attach = fiber2, 0
+}
+new kinetochore
+{
+    attach1 = fiber2, 0, plus_end
+    attach2 = fiber9, 0, center
+}
+%% --
+new pole_glue
+{
+    base = solid1, point4
+    attach= fiber3, 0
+}
+new kinetochore
+{
+    attach1 = fiber3, 0, plus_end
+    attach2 = fiber11, 0, center
+}
+
+%%----------------------------- RIGHT K-FIBERS
+
+
+%% --
+new pole_glue
+{
+    base = solid2, point2
+    attach= fiber4, 0
+}
+new kinetochore
+{
+    attach1 = fiber4, 0, plus_end
+    attach2 = fiber8, 0, center
+}
+%% --
+new pole_glue
+{
+    base = solid2, point3
+    attach= fiber5, 0
+}
+new kinetochore
+{
+    attach1 = fiber5, 0, plus_end
+    attach2 = fiber10, 0, center
+}
+%% --
+new pole_glue
+{
+    base = solid2, point4
+    attach= fiber6, 0
+}
+new kinetochore
+{
+    attach1 = fiber6, 0, plus_end
+    attach2 = fiber12, 0, center
+}
+
+%% ----------------------------------------------------------------------
+set hand dis1_hand
+{
+    binding = 5, 0.055
+    unbinding = 1, 6
+    display = ( size=3; color=gray; )
+}
+
+set couple dis1
+{
+    length = 0.05
+    hand1 = dis1_hand
+    hand2 = dis1_hand
+    diffusion = 10
+    stiffness = 100
+}
+
+set hand ase1_clasp_hand
+{
+    binding = 100, 0.055
+    unbinding = 1, 6
+    activity = rescue
+    rescue_prob = 0.05
+    display = ( size=3; color=purple; )
+}
+
+set couple ase1_clasp
+{
+    activity = slide
+    length = 0.05
+    hand1 = ase1_clasp_hand
+    hand2 = ase1_clasp_hand
+    diffusion = 10
+    specificity = antiparallel
+    stiffness = 500
+}
+
+set hand klp9_hand
+{
+    binding = 5, 0.055
+    unbinding = 0.5, 6
+    stall_force = 5
+    unloaded_speed  = 0.008       % spindle elongates ~ 1 um / minute
+    activity = move
+    display = ( size=3; color=green; )
+}
+
+set couple klp9
+{
+    activity = bridge
+    length = 0.05
+    hand1 = klp9_hand
+    hand2 = klp9_hand
+    diffusion = 10
+    specificity = antiparallel
+    stiffness = 1000
+}
+
+%% -----------------------------------
+%% gradually build a metaphase overlap
+%% -----------------------------------
+
+% total 1800 ase1 dimers per cell
+
+%new 50 ase1_clasp
+%run 1000 system
+
+%new 100 ase1_clasp
+%run 1000 system
+
+%new 100 ase1_clasp
+%run 1000 system
+
+%new 250 ase1_clasp
+%run 1000 system
+
+%new 500 ase1_clasp
+%run 1000 system
+
+%new 800 ase1_clasp
+%run 1000 system
+
+new 2200 ase1_clasp
+run 1000 system
+
+%% --------------------------------------
+%% metaphase is completed, start anaphase
+%% --------------------------------------
+change core
+{
+    viscosity = 1
+}
+
+change microtubule
+{
+    confine = 0
+}
+change k_fiber
+{
+    confine = 0
+}
+delete space squeeze
+run 1000 system
+{
+    nb_frames = 5
+}
+
+%% Start Anaphase B
+change k_fiber
+{
+    shrinking_speed = -0.08
+}
+
+change ase1_clasp_hand
+{
+    unbinding_rate = 0.01;   % reduce turnover of ase1
+}
+delete cohesin
+
+run 1000 system
+{
+    nb_frames = 5
+}
+change k_fiber
+{
+    shrinking_speed = 0.0
+}
+
+change microtubule
+{
+    confine = 0
+    growing_speed            =  0.03    % growth speed ~ 1.7um / minute
+    shrinking_speed          = -0.08    % shrinkage ~ 4um / minute
+    catastrophe_rate         =  0.04    % lifetime ~ 25s
+    catastrophe_rate_stalled =  1.0
+}
+
+% total 1300 klp9 dimers per cell
+%new 400 klp9
+%new 400 dis1
+
+run 2000 system
+{
+    nb_frames = 100
+}

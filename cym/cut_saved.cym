@@ -1,0 +1,90 @@
+% a laser cut with file storage
+% F. Nedelec
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.05
+}
+
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber actin
+{
+    rigidity = 0.1
+    segmentation = 0.25
+    confine = inside, 100
+}
+
+set hand myosin
+{
+    binding_rate = 10
+    binding_range = 0.01
+    unbinding_rate = 0.01
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = 1
+    stall_force = 5
+    display = { size = 4; color=green }
+}
+
+set hand binder
+{
+    binding_rate = 10
+    binding_range = 0.01
+    unbinding_rate = 0.01
+    unbinding_force = 3
+    display = { size = 2; color=blue }
+}
+
+
+set couple motor
+{
+    hand1 = myosin
+    hand2 = myosin
+    stiffness = 250
+    diffusion = fast
+}
+
+set couple crosslinker
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 250
+    diffusion = fast
+}
+
+new 100 actin
+{
+    length = 5
+}
+
+new 2500 motor
+new 2500 crosslinker
+
+run 500 system
+
+export objects cut.cmo { append=0; binary=0 }
+
+cut actin { plane = 1 0 0, 0 }
+cut actin { plane = 0 1 0, 0 }
+
+run 1000 system
+
+export objects cut.cmo { append=1; binary=0 }
+import objects cut.cmo { append=0; frame=1; }
+
+run 1000 system
+
+export objects cut.cmo { append=1; binary=0 }
+

@@ -1,0 +1,123 @@
+% Gliding assay where a microtubule is pushing on a drag
+% For Veikko Geyer, Cambridge, 5.3.2019
+
+set simul system
+{
+    dim = 2
+    time_step = 0.01
+    viscosity = 0.1
+    precondition = 0
+    display = ( size = 768, 256 )
+}
+
+set space cell
+{
+    shape = periodic
+}
+
+set space rail
+{
+    shape = square
+    display = ( color = red )
+}
+
+new cell
+{
+    length = 30, 10
+}
+
+new rail
+{
+    length = 30, 0
+}
+
+set fiber microtubule
+{
+    rigidity = 5
+    segmentation = 0.2
+    display = ( line = 1, 1; )
+}
+
+set hand kinesin
+{
+    binding_rate = 10
+    binding_range = 0.01
+    unbinding_rate = 1.0
+    unbinding_force = 2.5
+    
+    activity = move
+    unloaded_speed = 0.4
+    stall_force = 6
+    display = ( size=3; color=light_blue, dark_blue )
+}
+
+set single grafted
+{
+    hand = kinesin
+    stiffness = 100
+    activity = fixed
+}
+
+set hand holder
+{
+    binding = 0, 0.25
+    unbinding = 0, inf     % never unbinds
+    display = ( width=7; size=7; color=red )
+}
+
+set single linker
+{
+    hand = holder
+    stiffness = 1000
+}
+
+set bead particle
+{
+    drag = 20.0        % drag_coefficient per bead:  speed = force / drag
+    confine = on, 1000, rail
+    display = ( color = red; style = 4 )
+}
+
+new microtubule
+{
+    length = 16
+    position = 8 0
+    orientation = 1 0
+}
+
+new particle
+{
+    radius = 0.25
+    position = 0.0 0
+}
+
+new particle
+{
+    radius = 0.25
+    position = 1.0 0
+}
+
+new linker
+{
+    base = particle1, point1
+    attach = microtubule1, 0.0
+}
+
+new linker
+{
+    base = particle2, point1
+    attach = microtubule1, 1.0
+}
+
+new 3200 grafted
+
+repeat 100
+{
+    run 100 system
+    {
+        nb_frames = 100
+    }
+    report fiber:force fiber.txt
+    report bead bead.txt
+}
+

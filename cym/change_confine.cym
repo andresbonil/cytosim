@@ -1,0 +1,58 @@
+% Changing the confining space
+% Francois Nedelec, 26.01.2012
+
+
+set simul system
+{
+    viscosity = 1
+    time_step = 0.001
+    steric = 1, 100
+}
+
+set space large
+{
+    shape = sphere
+}
+
+set space small
+{
+    shape = sphere
+}
+
+new large
+{
+	radius = 2
+}
+
+new small
+{
+	radius = 1
+}
+
+set bead balls
+{
+    confine = inside, 10, large
+    steric = 1
+    display = ( coloring=1; style=5 )
+}
+
+new 100 balls
+{
+    radius = 0.1
+}
+
+run 1000 system
+{   
+    nb_frames = 10
+}
+
+change balls
+{
+    confine = inside, 50, small
+}
+
+
+run 1000 system
+{   
+    nb_frames = 10
+}

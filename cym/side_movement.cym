@@ -1,0 +1,63 @@
+% Francois Nedelec, Hagueneau October 11, 2013
+
+set simul system
+{
+    time_step = 0.001
+    kT = 0.00001 
+    viscosity = 0.1
+    precondition = 1
+    display = ( delay=200 )
+}
+
+set space cell
+{
+    shape = rectangle
+    display = ( visible=1 )
+}
+
+new cell
+{
+    length = 8, 8, 6
+}
+
+set fiber filament
+{
+    rigidity     = 10
+    segmentation = 0.5
+    display = ( line=10,2; point=16,1 )
+}
+
+new filament
+{
+    length = 6
+    position = -2 0 0
+    orientation = 0 1 0
+}
+
+set hand map
+{
+    binding = 10, 0.05
+    unbinding = 0, inf
+ 
+    display = ( width=7; size=10; color=green )
+}
+
+set single link
+{
+    hand = map
+    activity = fixed
+    stiffness = 1000
+}
+
+new link
+{
+    position = 2 -3 0 
+    attach = fiber1, 0
+}
+
+run 10 system
+{
+    nb_frames = 100
+}
+
+

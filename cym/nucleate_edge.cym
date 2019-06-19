@@ -1,0 +1,61 @@
+% Objects moving on the edge of the Space
+% F. Nedelec, Strasbourg February 2018
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.01
+}
+
+set space cell
+{
+    shape = sphere
+    display = ( color = gray; width = 5; )
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber filament
+{
+    rigidity = 30
+    segmentation = 1
+    confine = inside, 100
+
+    display = ( line_width=3; plus_end=10 )
+}
+
+set hand nucleator
+{
+    binding = 5, 0.010
+    unbinding = 0, inf
+    activity = nucleate
+    nucleate = 1, filament, ( length = 1; orientation = inward; )
+    hold_growing_end = 1
+}
+
+set single molecule
+{
+    hand = nucleator
+    stiffness = 100
+}
+
+set solid core
+{
+    display = ( style=3 )
+    confine = surface, 500
+}
+
+new 10 core
+{
+    point1 = center, 0.1, molecule
+    position = surface
+}
+
+run system
+{
+    nb_steps = 2000
+    nb_frames = 100
+}

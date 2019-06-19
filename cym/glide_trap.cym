@@ -1,0 +1,127 @@
+% F. Nedelec, July 2011
+% in the plane, above Mountains Stanovoi
+
+set space cell
+{
+    shape = rectangle
+}
+
+new cell
+{
+    length = 60, 28, 2
+}
+
+set simul system
+{
+    viscosity = 0.01
+    time_step = 0.0025
+    precondition = 0
+    display = {
+        style = 2;
+        delay = 10;
+        point_size = 10
+        period = 4
+    }
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.5
+    display = { line_width = 10; plus_end=24, 2; }
+}
+
+set hand kinesin
+{
+    binding_rate = 8
+    binding_range = 0.03
+    unbinding_rate = 0.3
+    unbinding_force = 3
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = 1
+    display = {
+        color = 0xE69F00FF;
+        size = 5
+    }
+}
+
+set single graftedK
+{
+    hand = kinesin
+    stiffness = 200
+    activity = fixed
+}
+
+set hand slider
+{
+    binding_rate = 10
+    binding_range = 0.05
+    unbinding_rate = 0.1
+    unbinding_force = 10
+    activity = slide
+    mobility = 1
+    stiffness = 20
+    display = { width=3; size=6; color=blue }
+}
+
+set single graftedS
+{
+    hand = slider
+    activity = fixed
+    stiffness = 20
+}
+
+set couple complex
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    diffusion = 1
+    stiffness = 200
+}
+
+new 2000 complex
+
+% --------------
+
+new 30 graftedK ( -31  9.6 to -17  9.6 )
+new 30 graftedK ( arc 15 0.785 turn degree  68 at -10.3  8.2 )
+new 30 graftedK ( -4.5 4.5 to 8 -8 )
+
+new 100 graftedK ( -31 -9.6 to -17 -9.6  )
+new 100 graftedK ( arc 15 0.785 turn degree -68 at -10.3 -8.2 )
+new     graftedS ( -3.5 -3.5 )
+new     graftedS ( -2.5 -2.5 )
+new     graftedS ( -1.5 -1.5 )
+new     graftedS ( 1.5 1.5 )
+new     graftedS ( 2.5 2.5 )
+new     graftedS ( 3.5 3.5 )
+new 20  graftedK ( line 6  turn 1  1 at 6.36  6.36 )
+
+new 500 graftedK ( arc 56.4 4.7122 at 28.9 0 )
+
+% --------------
+
+new 1 microtubule
+{
+    length = 10
+    position = -20 9.6 0
+    orientation = -1 0 0
+}
+
+run 40000 system
+
+new 1 microtubule
+{
+    length = 10
+    position = -20 9.6 0
+    orientation = -1 0 0
+}
+
+run 100000 system
+{
+    nb_frames = 100
+}
+
+

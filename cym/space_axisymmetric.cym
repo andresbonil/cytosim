@@ -1,0 +1,55 @@
+% Test for SpacePolygonZ
+% F. Nedelec, in Switzerland towards Bern, 27.11.2013
+
+
+set simul system
+{
+    dim = 3
+    time_step = 0.01
+    viscosity = 0.5
+    steric = 1, 100
+}
+
+set space cell
+{
+    shape = polygonZ
+    display = ( color=blue, dark_blue; visible=3; )
+}
+
+new cell
+{
+    file = endocytosis.txt
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 100
+}
+
+new 0 microtubule
+{
+    length = 10
+}
+
+set bead balls
+{
+    confine = inside, 1000
+    steric = 1
+    display = ( size=5; color=white; style=6 )
+}
+
+new 300 balls
+{
+    radius = 5
+    position = sphere 1
+    placement = anywhere
+}
+
+run system
+{
+    nb_steps = 5000
+    nb_frames = 50
+}
+

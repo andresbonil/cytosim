@@ -1,0 +1,77 @@
+% Basic sphere objects
+% Francois Nedelec, March 29, 2013
+
+
+set simul system
+{
+    dim = 3
+    time_step  = 0.01
+    viscosity  = 0.01
+    display = ( delay=5; period=4; point_size=16; )
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( color = 0xFFFFFF22; )
+}
+
+new cell
+{
+    length = 20
+    radius = 5
+}
+
+set hand molecule
+{
+    binding = 10, 0.05
+    unbinding = 0, 3
+    display = { size=10; color=green, green; }
+}
+
+set single grafted
+{
+    hand = molecule
+    stiffness = 100
+}
+
+set sphere blob
+{
+    point_mobility = 1
+    confine        = inside, 200
+    
+    display = ( color=blue; coloring=1; size=7; width=1; style=6 )
+}
+
+new 1 blob
+{
+    radius = 1
+    point1 = 2, surface
+    attach = 1 grafted each
+    position = -5 0 0
+}
+
+new 1 blob
+{
+    radius = 1
+    point1   =  1  0  0, grafted
+    point2   = -1  0  0, grafted
+    point3   =  0  1  0
+    point4   =  0 -1  0
+    point5   =  0  0 -1, grafted
+    point6   =  0  0  1, grafted
+    position = 0 0 0
+}
+
+new 1 blob
+{
+    radius = 1
+    point1 = 64, surface
+    attach = 1 grafted each
+    position = 5 0 0
+}
+
+run 10000 system
+{
+    nb_frames  = 2
+}

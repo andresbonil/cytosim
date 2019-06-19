@@ -1,0 +1,82 @@
+% Two asters, and couples made of a tip-tracking and a motor
+% F. Nedelec, April 2010
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.1
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 10
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    display = { line_width=0.5 }
+}
+
+set hand dynein 
+{
+    binding_rate = 5
+    binding_range = 0.01
+    unbinding_rate = 0.5
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = -1
+    stall_force = 6
+}
+
+set hand end_binder 
+{
+    binding_rate = 15
+    binding_range = 0.01
+    unbinding_rate = 0.5
+    unbinding_force = 3
+    
+    activity = track
+    bind_only_end = plus_end, 0.5
+}
+
+set couple complex 
+{
+    hand1 = end_binder
+    hand2 = dynein
+    stiffness = 100
+    diffusion = fast
+}
+
+set solid core
+{
+    display = ( style=3 )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+}
+
+new 2 centrosome
+{
+    solid = core
+    radius = 1
+    point1 = center, 1
+    fibers = 32, microtubule, ( length = 7; plus_end = grow; )
+}
+
+new 10000 complex
+
+run system
+{
+    nb_steps = 5000
+    nb_frames = 50
+}

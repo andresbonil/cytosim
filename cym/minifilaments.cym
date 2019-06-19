@@ -1,0 +1,103 @@
+%
+% Here, multifunctional motors are build using a rigid mini-filament backbone,
+% % and these mini-filaments can then crosslink two longer flexible filament,
+% which are clamped at their ends. This scenario is used to study force production
+% in actin networks where the force generators are myosin mini-filaments.
+%
+% F. Nedelec, 6.04.2016
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.1
+    display = ( style=2; point_size=9; line_width=4; )
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 1
+}
+
+set fiber filament
+{
+    binding_key = 1
+    rigidity = 1
+    segmentation = 0.1
+    display = ( line=1, 1; color=white; tension=10;)
+}
+
+set fiber myofilament
+{
+    binding_key = 2
+    confine = inside, 1
+    rigidity = 100
+    segmentation = 1
+    display = ( line=3; color=dark_green; tension=1; )
+}
+
+set hand binder
+{
+    binding_key = 3
+    binding = 5, 0.01
+    unbinding = 0, inf
+    display = ( color=green; )
+}
+
+set hand motor
+{
+    binding_key = 1
+    binding = 5, 0.1
+    unbinding = 1, inf
+    
+    activity = move
+    unloaded_speed = 0.5
+    stall_force = 6
+    
+    display = ( color=green, 0x00FF00B0; )
+}
+
+set single holder
+{
+    hand = binder
+    stiffness = 250
+    activity = fixed
+}
+
+set couple myosin
+{
+    hand1 = binder
+    hand2 = motor
+    stiffness = 400
+    diffusion = 100
+}
+
+new 2 filament
+{
+    length = 2
+    position = 0 0 0
+    % immobilize the two ends:
+    attach1 = holder, 0, plus_end
+    attach2 = holder, 0, minus_end
+}
+
+new 16 myofilament
+{
+    length = 0.3
+    % attach a motor at each end:
+    attach1 = myosin, 0   , minus_end
+    attach2 = myosin, 0.02, minus_end
+    attach3 = myosin, 0.02, plus_end
+    attach4 = myosin, 0   , plus_end
+}
+
+run 10000 system
+{   
+    nb_frames = 20
+}
+
+

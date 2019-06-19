@@ -1,0 +1,102 @@
+% An antiparallel bundle extending under the action of crosslinking motors
+% Francois Nedelec, 2010-12-10
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+    steric = 1, 1000, 100
+}
+
+set space cell 
+{
+    shape = rectangle
+    display = ( visible = 0 )
+}
+
+new cell
+{
+    length = 2, 1, 2
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    lattice = 1, 0.010
+    steric = 1, 0.025, 0.050
+    display = { speckles = 1; point_size = 10; minus_end=4 }
+}
+
+set hand kinesin
+{
+    binding_rate = 10
+    binding_range = 0.06
+    unbinding_rate = 0.3
+    unbinding_force = 3
+    
+    activity = walk
+    unloaded_speed = 0
+    stall_force = 6
+    step_size = 0.010
+    use_lattice = 1
+    
+    unbinding_chance = 0
+    hold_growing_end = 1
+    hold_shrinking_end = 0
+}
+
+set couple complex
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    stiffness = 100
+    diffusion = 20
+    length = 0.05
+}
+
+new microtubule
+{
+    length = 1
+    position = 0 -0.025
+    orientation = +1 0
+}
+    
+new microtubule
+{
+    length = 1
+    position = 0 +0.025
+    orientation = -1 0
+}
+
+new microtubule
+{
+    length = 1
+    position = 0 +0.075
+    orientation = +1 0
+}
+
+new 100 complex
+
+run system 
+{
+    nb_steps = 100
+    solve    = 0
+}
+
+change kinesin { unloaded_speed = 0.1 }
+
+set system display
+{
+    window_size = 1024, 256
+    label = (Sliding bundle (walkers)-)
+    style = 2
+    point_size = 6
+    line_width = 2
+}
+
+run system
+{
+    nb_steps = 5000
+    nb_frames = 100
+}

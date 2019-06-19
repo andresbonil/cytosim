@@ -1,0 +1,81 @@
+% A cortical system of steric filaments with active crosslinkers
+% Sanchez et al.
+% Spontaneous motion in hierarchically assembled active matter
+% Nature 491, 431–434 (2012).
+%
+% This configuration by F. Nedelec, June 5, 2014
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+    steric = 1, 500
+    display = ( style=2 )
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 2.5
+}
+
+set fiber microtubule
+{
+    rigidity = 1
+    segmentation = 0.20
+    confine = surface, 1000
+    activity = grow
+    growing_speed = 0.1, 0.1
+    growing_force = 1, 1
+    max_length = 5
+    steric = 1, 0.02, 0.01
+    display = ( line_width=1.5 )
+}
+
+set hand kinesin
+{
+    binding = 10, 0.05
+    unbinding = 0.1, 6
+    
+    activity = move
+    unloaded_speed = 1
+    stall_force = 5
+    display = ( size = 4; color=0xFFFF0088 )
+}
+
+set couple motor
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    length = 0.040
+    stiffness = 100
+    diffusion = fast
+}
+
+
+new 400 microtubule
+{
+    length = 0.1
+    position = surface
+    direction = tangent
+    plus_end = grow
+    minus_end = grow
+}
+
+% Let Fiber grow to cover the sphere:
+run 25000 system
+{   
+    nb_frames = 10
+}
+
+% add motors and simulate further
+new 10000 motor
+
+run 10000 system
+{   
+    nb_frames = 50
+}

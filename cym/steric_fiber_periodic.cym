@@ -1,0 +1,52 @@
+% A test for steric interaction
+% run in 2D
+% F. Nedelec, 23 Jan 2010
+
+
+set simul system
+{
+    dim = 2
+    time_step = 0.01
+    steric = 1, 1000
+    kT = 0.0002
+    
+    display = { delay=8; point_value=0.01; window_size=1000, 800; tile=2 }
+}
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 4, 4
+}
+
+set fiber filament
+{
+    rigidity = 20
+    confine = inside, 100
+    segmentation = 0.1
+    steric = 1, 0.05
+
+    activity = grow
+    growing_speed = 0.2
+    total_polymer = 250
+
+    display = { line=6,2; tension=4 }
+}
+
+
+new 125 filament
+{
+    length = 0.01
+    orientation = horizontal
+}
+
+run system
+{
+    nb_steps  = 10000
+    nb_frames = 100
+}
+

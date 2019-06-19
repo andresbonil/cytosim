@@ -1,0 +1,70 @@
+% F. Nedelec, Saarbrucken 26 June 2013
+% This illustrates how to assemble objects
+
+set simul system
+{
+    steric = 1, 100
+    
+    time_step = 0.001
+    viscosity = 1
+    precondition = 0
+    display = ( style=3; point_value=0.01; )
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber rod
+{
+    rigidity = 20
+    segmentation = 0.25
+    steric = 1, 0.25
+    confine = inside, 100
+
+    activity      = grow
+    growing_speed = 10
+    max_length    = 2
+    display = ( line=20; )
+}
+
+set solid ball
+{
+    confine = inside, 100
+    steric = 1
+    display = ( style=5 )
+}
+
+set hand holder
+{
+    binding = 10, 0.02
+    unbinding = 0, inf
+}
+
+set single link
+{
+    hand = holder
+    stiffness = 1000
+}
+
+new event
+{
+    rate = 10;
+    code = (
+        new rod  { length=0.25; plus_end=grow; }
+        new ball { point1=center, 0.25; point2=0.24 0 0; point3=0.49 0 0 }
+        new link { base=solid0, point2; attach=fiber0, 0 }
+        new link { base=solid0, point3; attach=fiber0, 0.25 }
+    )
+}
+
+run 10000 system
+{
+    nb_frames = 100
+}

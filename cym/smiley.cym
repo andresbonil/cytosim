@@ -1,0 +1,105 @@
+% Fiber under compression to measure buckling force
+% F. Nedelec, 21.02.2018
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.01
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber filament
+{
+    rigidity = 10
+    segmentation = 0.1
+    display = ( point=6,1; line=10,2; )
+}
+
+set hand binder
+{
+    binding = 10, 0.05
+    unbinding = 0, inf
+    bind_also_end = 1
+ 
+    display = ( width=3; size=12; color=green )
+}
+
+set single link
+{
+    hand = binder
+    activity = fixed
+    stiffness = 1000
+}
+
+% mouth
+new filament
+{
+    length = 10
+    position = 0 -1 0
+    orientation = 1 0 0
+}
+new link
+{
+    position = -4.5 -1 0 
+    attach = fiber1, 0
+}
+new link
+{
+    position = +4.5 -1 0 
+    attach = fiber1, 10
+}
+new link
+{
+    position = 0 -3 0 
+    attach = fiber1, 5
+}
+
+% right eye
+new filament
+{
+    length = 3
+    position = 2 2 0
+    orientation = 1 0 0
+}
+new link
+{
+    position = 2 2 0 
+    attach = fiber2, 0
+}
+new link
+{
+    position = 2.1 2 0 
+    attach = fiber2, 3
+}
+
+% left eye
+new filament
+{
+    length = 3
+    position = -2 2 0
+    orientation = -1 0 0
+}
+new link
+{
+    position = -2 2 0 
+    attach = fiber3, 0
+}
+new link
+{
+    position = -2.1 2 0 
+    attach = fiber3, 3
+}
+
+run 10000 system
+{
+    nb_frames = 10
+}

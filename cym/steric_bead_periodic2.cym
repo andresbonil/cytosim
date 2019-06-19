@@ -1,0 +1,40 @@
+
+
+
+set simul system
+{
+    steric = 1, 500
+    
+    steric_max_range = 2
+    time_step = 0.001
+    viscosity = 0.1
+    precondition = 0
+    display = ( tile=1 )
+}
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 5, 6, 8
+}
+
+set bead balls
+{
+    steric = 1
+    display = ( coloring=1; style=5 )
+}
+
+new 12 balls
+{
+    radius = 1
+}
+
+run system
+{
+    nb_steps = 5000
+    nb_frames = 10
+}

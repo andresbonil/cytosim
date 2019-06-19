@@ -1,0 +1,62 @@
+/**
+ @example hand_nucleate.cym
+ We create a Nucleator with `hand:activity=nucleate`
+
+ F. Nedelec, April 2011
+*/
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 10
+}
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 6
+    radius = 2
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 100
+
+    activity        = dynamic
+    unit_length     = 0.008
+    growing_speed   = 0.2
+    shrinking_speed = -0.5
+    hydrolysis_rate = 1
+    growing_force   = 1.7
+}
+
+set hand nucleator
+{
+    unbinding = 0, 3
+    activity = nucleate
+    nucleate = 0.1, microtubule, ( length=0.1; plus_end=grow; )
+    display = { size=5; color=green, gray; }
+}
+
+set single simplex
+{
+    hand = nucleator
+    activity = fixed
+    stiffness = 1000
+}
+
+new 100 simplex
+{
+    position = 1 0 0
+}
+
+run 10000 system
+{
+    nb_frames = 10
+}

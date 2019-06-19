@@ -1,0 +1,63 @@
+% Dense packing of cylinders
+% F. Nedelec, Roscoff May 2015
+
+
+set simul system
+{
+    dim = 3
+    time_step = 0.00001
+    viscosity = 10
+    steric = 1, 100
+    display = ( point_value=0.001; style=3; tile=0; zoom=0.5; stencil=1; )
+}
+
+set space cell
+{
+    shape = periodic
+    display = ( color=blue; width=1; )
+}
+
+new cell
+{
+    length = 0.1, 0.1, 0.1
+}
+
+set fiber actin
+{
+    rigidity = 0.1
+    steric = 1, 0.0035
+    segmentation = 0.0028
+    display = ( line=7, 1; color=red, blue; interval=0.074; point_style=0; )
+}
+
+new 200 actin
+{
+    position = inside
+    length = 0.065
+}
+
+run 100 system
+{
+    nb_frames = 5
+}
+
+change system { steric = 1, 1000; }
+
+run 100 system
+{
+    nb_frames = 5
+}
+
+change system { steric = 1, 10000; }
+
+run 100 system
+{
+    nb_frames = 5
+}
+
+change system { steric = 1, 100000; }
+
+run 100 system
+{
+    nb_frames = 5
+}

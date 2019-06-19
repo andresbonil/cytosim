@@ -1,0 +1,51 @@
+% This illustrates an instability that occurs with confinement,
+% when the time_step is large, and the confinement stiffness is high
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 10
+    precondition = 1
+    display = ( delay=100 )
+}
+
+set space cell
+{
+    shape = rectangle
+    display = ( visible=1 )
+}
+
+new cell
+{
+    length = 20, 20, 6
+}
+
+set fiber filament
+{
+    rigidity       = 1
+    segmentation   = 0.25
+
+    activity         = classic
+    growing_speed    = 4
+    shrinking_speed  = -1
+    catastrophe_rate = 10
+    rescue_rate      = 0
+    growing_force    = 1
+    confine          = inside, 2000, cell
+    display = ( lines = 2, 2; plus_end = 6, 2; speckles = 1, 1; )
+}
+
+
+new filament
+{
+    position = 0 0 0
+    orientation = identity
+    shape = -5 -5 0, -5 5 0, 5 5 0
+}
+
+run 10000 system
+{
+    nb_frames = 100
+}
+

@@ -1,0 +1,60 @@
+% A static tensegrity model (3D only)
+% F. Nedelec, April 2010
+%
+% Note: run with 'play cd cym/toy '
+%
+
+set simul system
+{
+    dim = 3
+    time_step = 0.005
+    viscosity = 1
+    kT = 0.01
+
+    display = ( style = 3 )
+}
+
+set space cell
+{
+    shape = sphere
+    display = ( visible=0 )
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber 0 beam
+{
+    rigidity = 1000
+    segmentation = 10
+    confine = inside, 100
+    display = ( line_width=20; coloring=1; )
+}
+
+set hand fix
+{
+    unbinding = 0, inf
+    hold_growing_end = 1
+    hold_shrinking_end = 1
+    binding_range = 2
+}
+
+set couple link
+{
+    hand1 = fix
+    hand2 = fix
+    activity = crosslink
+    length = 2
+    stiffness = 200
+}
+
+%initial configuration is stored in a file:
+import objects toy_start.cmi
+
+run 5000 system
+{
+    nb_frames = 50
+}
+

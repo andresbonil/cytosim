@@ -1,0 +1,69 @@
+% Francois Nedelec, January 27, 2010 
+
+set simul system
+{
+    time_step = 0.001
+    display = ( window_size = 1024, 384 )
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( visible=0 )
+}
+
+new cell
+{
+    length = 12
+    radius = 2
+}
+
+set field blue
+{
+    step = 0.1
+    diffusion = 0.5
+    display_scale = 0.25
+}
+
+new blue
+{
+    value = 1
+}
+
+set fiber filament
+{
+    lattice = 1
+    lattice_unit = 0.1
+    lattice_flux_speed = -1
+    lattice_binding_rate = 2
+    lattice_unbinding_rate = 0.25
+    rigidity = 20
+    segmentation = 0.5
+    field = blue
+    
+    display = ( lattice=1, 1; lines=10, 1; )
+}
+    
+new 4 filament
+{
+    length = 8
+    distribute = 0 0.66 0, 0 -0.66 0
+    orientation = -1 0 0
+}
+
+new 3 filament
+{
+    length = 8
+    distribute = 0 -0.44 0, 0 0.44 0
+    orientation = 1 0 0
+}
+
+
+run system
+{
+    nb_steps  = 30000
+    nb_frames = 50
+    solve = 0
+}
+
+

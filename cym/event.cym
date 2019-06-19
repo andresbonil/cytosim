@@ -1,0 +1,121 @@
+% test stochastic events in config file
+% F. Nedelec, 8 Feb 2011
+
+set simul system
+{
+    steric = 1, 100
+    steric_max_range = 0.5
+    
+    time_step = 0.001
+    viscosity = 0.1
+    precondition = 0
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 3
+}
+
+set bead ball
+{
+    confine = inside, 1000
+    steric = 1
+    display = ( style=9; coloring=1; )
+}
+
+new 100 ball
+{
+    radius = 0.1
+    position = ( 0 0 0 )
+    mark = 1
+}
+
+new 100 ball
+{
+    radius = 0.1
+    position = ( 0 0 0 )
+    mark = 2
+}
+
+new event
+{
+   rate = 30
+   code = ( change system display { back_color=dark_blue } )
+   mark = 2
+}
+
+new event
+{
+   rate = 100
+   code = ( change system display { back_color=black } )
+   mark = 2
+}
+
+run 100 system
+
+delete ball
+{   
+    mark = 2
+}
+
+new event
+{
+   rate = 100
+   code = ( delete ball )
+}
+
+run 100 system
+{
+    event = 50, ( new ball { radius=0.25; position=0 0 0; } )
+}
+
+delete all event
+{
+    mark = 2
+}
+
+delete 1 event
+{
+}
+
+delete all ball
+{   
+    mark = 1
+}
+
+new event
+{
+   rate = 60
+   code = ( new ball { radius=0.1; position=0 0 0; } )
+   mark = 1
+}
+
+new event
+{
+   rate = 50
+   code = ( new ball { radius=0.15; position=0 0 0; } )
+   mark = 1
+}
+
+% including 'event' inside 'run' is an old format,
+% that should be supported for backward compatibility
+run 100 system
+{
+    event = 50, ( new ball { radius=0.25; position=0 0 0; } )
+}
+
+delete all event
+{
+    mark = 1
+}
+
+run 100 system
+{
+    nb_frames = 10
+}
+

@@ -1,0 +1,70 @@
+% Example illustrating Lattice aging
+% FJN, Strasbourg 19.09.2018
+
+% Cytosim should be compiled specifically with:
+% #define NEW_AGING_LATTICE  1
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.1
+    display = ( window_size = 1024, 384 )
+}
+
+set space cell
+{
+    shape = sphere
+    display = ( color = 0x0000FF11; )
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber microtubule
+{
+    lattice = 1
+    lattice_unit = 0.01
+    lattice_aging_rate = 0.1
+
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 100
+
+    activity = classic
+    growing_speed    = 1.0
+    growing_force    = 1.67
+    shrinking_speed  = -3.0
+    catastrophe_rate = 0.2, 1.0
+    rescue_rate      = 0
+    min_length       = 0.5
+
+    display = ( color=white; lattice=1, 100; lines=10, 1; )
+}
+
+set solid core
+{
+    display = ( style = 3 )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+    nucleate = 1, microtubule, ( end_state=grow; length=1; )
+}
+
+new centrosome
+{
+    solid = core
+    radius = 0.25
+    point1 = center, 0.5
+    fibers = 32, microtubule, ( plus_end=grow; length = 1; )
+}
+
+run 100000 system
+{
+    nb_frames = 50
+}
+
+

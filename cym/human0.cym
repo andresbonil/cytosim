@@ -1,0 +1,119 @@
+% F. Nedelec, April 2012
+% 3D spindle with Human characteristics
+
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.2
+    steric = 1, 500, 20
+    display = { point_value=0.01; }
+}
+
+%------------------------CHROMATIN
+
+set space plate
+{
+    shape = cylinder
+    display = ( color=0x0000FF11; visible=0; )
+}
+
+new plate
+{
+    length = 2
+    radius = 5
+}
+
+set bead ball
+{
+    confine = inside, 500, plate
+    steric = 1
+    display = { coloring=1; size=1; style=7; }
+}
+
+new 21 ball
+{
+    radius = 1
+}
+
+run 200 system
+
+%------------------------CELL
+
+set space cell
+{
+    shape = cylinder
+    display = ( color=0xFFFFFF10; )
+}
+
+new cell
+{
+    length = 30
+    radius = 6
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 1
+    steric = 1, 0.04, 0.02
+
+    activity = dynamic
+    growing_speed = 0.18
+    shrinking_speed = -0.4
+    hydrolysis_rate = 0.43, 1
+    % catastrophe_rate = 0.024
+    growing_force  = 5
+    zone_radius = 5
+
+    display = { line_width=2.5; coloring=2; }
+}
+
+new 500 microtubule
+{
+    orientation = horizontal
+    position = ( cylinder 0 4 )
+    length = 6
+    plus_end = grow
+}
+
+run 200 system
+
+%------------------------ASTERS
+
+set solid core
+{
+    display = ( style=3 )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+    nucleate = 1, microtubule, ( length = 1 )
+}
+
+
+new centrosome
+{
+    solid = core
+    radius = 0.5
+    point1 = center, 0.5
+    fibers = 64, microtubule, ( length = 4; plus_end = grow; )
+    position = ( 5 0 0 )
+}
+
+new centrosome
+{
+    solid = core
+    radius = 0.5
+    point1 = center, 0.5
+    fibers = 64, microtubule, ( length = 4; plus_end = grow; )
+    position = ( -5 0 0 )
+}
+
+%-------------------------RUN
+
+run 10000 system
+{
+    nb_frames = 100
+}

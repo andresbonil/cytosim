@@ -1,0 +1,78 @@
+% Francois Nedelec, Hagueneau October 11, 2013
+
+set simul system
+{
+    time_step = 0.001
+    kT = 0.0042
+    viscosity = 0.1
+    flow = 1 0 0
+}
+
+set space cell
+{
+    shape = strip
+}
+
+new cell
+{
+    length = 8, 8, 8
+}
+
+set bead balls
+{
+    confine = inside, 1000
+    display = ( coloring=1; style=5 )
+}
+
+new 10 balls
+{
+    radius = 0.1
+}
+
+set fiber filament
+{
+    rigidity     = 20
+    segmentation = 0.5
+    display = ( line=8,2; )
+}
+
+set hand map
+{
+    binding = 10, 0.05
+    unbinding = 0, inf
+ 
+    display = ( width=7; size=16; color=yellow )
+}
+
+set single link
+{
+    hand = map
+    activity = fixed
+    stiffness = 1000
+}
+
+new filament
+{
+    length = 6
+    position = 0 0 0
+    orientation = 0 1 0
+}
+
+new link
+{
+    position = 0 -3 0 
+    attach = fiber1, 0
+}
+
+new link
+{
+    position = 0 -2 0
+    attach = fiber1, 1
+}
+
+run 100000 system
+{
+    nb_frames = 100
+}
+
+

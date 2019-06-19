@@ -1,0 +1,171 @@
+/**
+ @example fork.cym
+ A fork creates an angle between two fibers with a given angular stiffness
+
+ First version by Antonio Z Politi, 2013
+ Reviewed by F. Nedelec, who added explicit Torque functions, Aug. 2015
+ New implicit Torque in 3D and 2D by Serge Dmitrieff and FJN, 31.01.2019
+*/
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.1
+    kT = 0.00042
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 2.5
+}
+
+set fiber filament
+{
+    rigidity = 100
+    segmentation = 10
+    display = ( plus_end = 10,2; forces=0.1,yellow )
+}
+
+set hand binder
+{
+    binding = 10, 0.05
+    unbinding = 0, 3
+    display = ( size=16 )
+}
+
+set single anchor
+{
+    hand = binder
+    activity = fixed
+    stiffness = 100
+}
+
+set couple fork
+{
+    flip = 0
+    hand1 = binder
+    hand2 = binder
+    diffusion = 0
+    stiffness = 1000
+    activity = fork
+
+    %torque = 100, 0         % parallel
+    %torque = 100, 0.5234     % 0.5234 radian is 30 degrees
+    %torque = 100, 1.0472   % 1.0472 radian is 60 degrees
+    %torque = 100, 1.2566   % 1.2566 radian is 72 degrees
+    torque = 100, 1.5708    % 1.5708 radian is 90 degrees
+    %torque = 100, 2.0944   % 2.0944 radian is 120 degrees
+    %torque = 100, 3.1415   % pi radian is 180 degrees
+}
+
+set couple link
+{
+    hand1 = binder
+    hand2 = binder
+    diffusion = 0
+    stiffness = 1
+}
+
+
+new filament
+{
+    orientation = 0 1 0
+    position = 0 0 0
+    length = 3
+}
+
+new filament
+{
+    direction = 1 0
+    position = 0 0 0
+    length = 2.5
+}
+
+new fork
+{
+    attach1 = filament1, 1.5
+    attach2 = filament2, 1.25
+}
+
+
+new link
+{
+    attach1 = filament1, 3.0
+    attach2 = filament2, 2.5
+}
+
+
+new anchor
+{
+    position = 0 0 0
+    attach = filament1, 1.5
+}
+
+run 1000 system { nb_frames = 1; }
+
+repeat 7
+{
+
+change fork { torque = 10, 0 }        % 0 degrees
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 0.35 }     % 0.35 radian is 20 degrees
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 0.70 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 1.05 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 1.40 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 1.75 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 2.10 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 2.45 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 2.80 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 3.1416 }
+run 1000 system { nb_frames = 1; }
+
+% continue turning beyond 180 degree:
+
+change fork { torque = 10, 3.49 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 3.84 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 4.19 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 4.54 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 4.89 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 5.24 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 5.59 }
+run 1000 system { nb_frames = 1; }
+
+change fork { torque = 10, 5.94 }
+run 1000 system { nb_frames = 1; }
+
+}

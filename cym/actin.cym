@@ -1,0 +1,37 @@
+% Actin filaments with advanced rendering
+% F. Nedelec, November 2015
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+    display = ( point_value=0.001; style=3; )
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 0.125
+}
+
+set fiber actin
+{
+    rigidity = 0.05
+    segmentation = 0.0055      %that is 4 monomers
+    confine = inside, 200
+    display = ( style=actin; color=red, dark_red; end_color=yellow; )
+}
+
+new 10 actin
+{
+    length = 0.25
+}
+
+run 5000 system
+{
+    nb_frames = 10
+}

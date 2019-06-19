@@ -1,0 +1,74 @@
+% Simplest Couple
+% F. Nedelec
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.05
+}
+
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 1
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 0.1
+    confine = inside, 100
+    display = ( line_width=1; )
+}
+
+set hand kinesin
+{
+    binding_rate = 10
+    binding_range = 0.025
+    unbinding_rate = 0.3
+    unbinding_force = 2.5
+    
+    activity = move
+    unloaded_speed = 0.8
+    stall_force = 5
+    
+    hold_growing_end = 1
+    display = ( size=10; )
+}
+
+set couple complex
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    stiffness = 100
+    diffusion = 10
+    length = 0.050
+}
+
+new 1 microtubule
+{
+    position = 0 0 0
+    orientation = horizontal
+    length = 2
+}
+
+new 1 microtubule
+{
+    position = 0 0 0
+    orientation = vertical
+    length = 2
+}
+
+new 100 complex
+
+run system
+{
+    nb_frames  = 100
+    nb_steps   = 4000
+}
+

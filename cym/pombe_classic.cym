@@ -1,0 +1,79 @@
+% Microtubules in interphase S.pombe
+% Francois Nedelec, 2011-02-17
+% NOTE: parameters use units of picoNewton, micrometer, second
+
+
+set simul system
+{
+    time_step  = 0.01
+    kT         = 0.0042
+    viscosity  = 0.9
+    display = ( window_size=1024,256 )
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( color=0xFFFFFF33, 0x11111188; visible=3; )
+}
+
+set fiber microtubule
+{
+    rigidity       = 20
+    segmentation   = 0.5
+    confine        = inside, 200
+    
+    activity       = classic
+    growing_speed            = 0.06
+    shrinking_speed          = -0.15
+    catastrophe_rate         = 0.004
+    catastrophe_rate_stalled = 0.04
+    catastrophe_length       = 5
+    rescue_rate              = 0
+    growing_force  = 1.67
+    persistent     = 1
+    rebirth_rate   = 1
+    min_length     = 0.5
+   
+    display = {show_average=2}
+}
+
+set sphere envelope
+{
+    point_mobility = 0.05
+    confine        = all_inside, 200
+    piston_effect  = 1
+    
+    display = ( color=0x0000FF55; size=12; style=15 )
+}
+
+set bundle bunch
+{
+    overlap   = 0.5
+    stiffness = 1000
+}
+
+set nucleus noyau
+{
+    stiffness  = 200
+}
+
+new cell
+{
+    length = 10
+    radius = 1.62
+}
+
+new noyau
+{
+    sphere     = envelope
+    bundles    = 4, bunch, (fibers=2, microtubule, (length=0.5; plus_end=grow;))
+    radius     = 1.1
+    position   = 3.5 0 0
+}
+
+run system
+{
+    nb_steps   = 50000
+    nb_frames  = 100
+}

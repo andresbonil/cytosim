@@ -1,0 +1,117 @@
+% F. Nedelec, June 2011
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 30, 10
+}
+
+set simul system
+{
+    dim = 2
+    viscosity = 0.01
+    time_step = 0.0025
+    display = {
+        style = 2;
+        delay = 10;
+        point_size = 8
+        tile = 1, 1
+        zoom = 0.5
+    }
+    precondition = 0
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.5
+    display = { line_width = 10; plus_end=24, 2; }
+}
+
+set hand fast
+{
+    binding_rate = 8
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 3
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = 1
+    display = {
+        color = 0xE69F00FF;
+        size = 5
+    }
+}
+
+set hand slow
+{
+    binding_rate = 8
+    binding_range = 0.01
+    unbinding_rate = 0.3
+    unbinding_force = 3
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = 0.1
+    display = {
+        color = 0x0072B2FF;
+        size = 5
+    }
+
+}
+
+set single graftedF
+{
+    hand = fast
+    activity = fixed
+    stiffness = 100
+}
+
+set single graftedS
+{
+    hand = slow
+    activity = fixed
+    stiffness = 200
+}
+
+new 1 microtubule
+{
+    length = 10
+    position = -6 0 0
+    orientation = -1 0 0
+}
+
+% --------------
+
+% first module
+new 250  graftedF ( line 8 at -8.7 0 )
+new 100  graftedS ( line 2 at 0 0 )
+new 350  graftedF ( arc 8 1.2 turn angle 3.3 at -5 -1 )
+new 150  graftedF ( line 6 at 3  5 )
+new 150  graftedF ( line 6 at 3 -5 )
+new 150  graftedF ( arc 6 0.6 turn -1 2.6 0 at -3.0 4.36 )
+new 150  graftedF ( arc 7 0.5 turn 1 -2.4 0 at -8.55 1.2 )
+
+% second module (top right)
+new 250  graftedF ( line 6 at 7.3 5 )
+new 100  graftedS ( line 2 at 15 5 )
+new 350  graftedF ( arc 8 1.2 turn angle 3.0 at 10 6 )
+new 150  graftedF ( line 6 at 18 10 )
+new 150  graftedF ( line 6 at 18 0 )
+
+new 150  graftedF ( arc 6 0.6 turn -1 -2.6 0 at 12 0.64 )
+new 100  graftedF ( arc 7 0.5 turn 1 2.4 0 at 6.45 3.8 ) 
+
+
+run system
+{
+    nb_frames = 400
+    nb_steps = 80000
+}
+
+

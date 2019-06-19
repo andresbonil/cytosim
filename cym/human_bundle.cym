@@ -1,0 +1,184 @@
+% F. Nedelec, April 2012
+% 3D spindle with Human characteristics
+
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 1
+    steric = 1, 500, 50
+    steric_max_range = 1.5
+    display = ( point_value=0.01; )
+}
+
+set space cell
+{
+    shape = cylinder
+    display = ( color=0xFFFFFF10 )
+}
+
+new cell
+{
+    length = 20
+    radius = 2
+}
+
+set space plate
+{
+    shape = cylinder
+    display = ( color=0x0000FF11; visible=0 )
+}
+
+new plate
+{
+    length = 1
+    radius = 1
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 1
+    steric = 1, 0.04, 0.02
+
+    activity = dynamic
+    growing_speed = 0.18
+    shrinking_speed = -0.4
+    hydrolysis_rate = 0.43, 1
+    % catastrophe_rate = 0.024
+    growing_force  = 5
+    zone_radius = 5
+
+    display = ( line_width=2.5; coloring=2; )
+}
+
+new 1 microtubule
+{
+    orientation = horizontal
+    position = ( cylinder 0 0 )
+    length = 4
+    plus_end = grow
+}
+
+run 0 system
+
+set solid core
+{
+    confine = inside, 100, cell
+    display = ( style=3; )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+    nucleate = 1, microtubule, ( length = 1 )
+}
+
+new 0 centrosome
+{
+    solid = core
+    radius = 0.5
+    point1 = center, 0.5
+    fibers = 64, microtubules, ( length = 4; plus_end = grow; )
+    position = ( 5 0 0 )
+}
+
+new 0 centrosome
+{
+    solid = core
+    radius = 0.5
+    point1 = center, 0.5
+    fibers = 64, microtubules, ( length = 4; plus_end = grow; )
+    position = ( -5 0 0 )
+}
+
+set hand activator
+{
+    binding = 5, 0.05
+    unbinding = 0.01, 3
+
+    display = ( color=green; size=5; width=1; )
+}
+
+set hand nucleator
+{
+    unbinding = 0, 3
+    hold_growing_end = 1;
+
+    activity = nucleate
+    specificity = parallel
+    nucleate = 5, microtubule, ( length=0.2; plus_end=grow; )
+    display = ( color=white; size=5; width=1; )
+}
+
+set couple gamma
+{
+    hand1 = activator
+    hand2 = nucleator
+    diffusion = 5
+    stiffness = 100
+    length = 0
+    activity = duo
+    activation_space = plate
+    deactivation_rate = 0.25
+}
+
+new 100 gamma
+
+
+set hand kinesin5_motor
+{
+    binding_rate = 10
+    binding_range = 0.11
+    unbinding_rate = 0.1
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = 0.05
+    stall_force = 6
+
+    display = ( color=0xFFA500AA; size=3; width=0.5; )
+}
+
+set couple kinesin5
+{
+    hand1 = kinesin5_motor
+    hand2 = kinesin5_motor
+    stiffness = 200
+    diffusion = fast
+    
+    specificity = antiparallel
+    length = 0.1
+}
+
+new 1000 kinesin5
+
+set hand dynein 
+{
+    binding_rate = 10
+    binding_range = 0.09
+    unbinding_rate = 0.2
+    unbinding_force = 3
+    
+    activity = move
+    unloaded_speed = -1
+    stall_force = 3
+
+    display = ( color=blue; size=3; width=0.5; )
+}
+
+set couple dynein_complex 
+{
+    hand1 = dynein
+    hand2 = dynein
+    diffusion = fast
+    stiffness = 100
+}
+
+new 100 dynein_complex
+
+run 10000 system
+{
+    event = 1, ( new microtubule { position=cylinder 0 0; orientation=horizontal; length=0.1; } )
+    nb_frames = 100
+}

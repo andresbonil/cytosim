@@ -1,0 +1,84 @@
+% A confined aster of dynamic Microtubules
+% F. Nedelec, April 2010, Sep 2016
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = ellipse
+    display = ( visible=3; color=0x22222222; )
+}
+
+new cell
+{
+    length = 30, 20, 20
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 1
+    confine = inside, 100
+
+    activity         = classic
+    growing_speed    = 0.2
+    shrinking_speed  = -0.5
+    catastrophe_rate = 0.025
+    rescue_rate      = 0
+    growing_force    = 1.67
+    persistent       = 1
+    rebirth_rate     = 1
+    min_length       = 1.5
+}
+
+set solid core
+{
+    display = ( style=1; coloring=1 )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+}
+
+set fake spindle
+{
+    stiffness = 500
+}
+
+new 1 centrosome
+{
+    solid = core
+    radius = 1
+    point1 = center, 1
+    fibers = 32, microtubule, ( plus_end=grow; length = 1.5; )
+    position = -4 0 0
+}
+
+new 1 centrosome
+{
+    solid = core
+    radius = 1
+    point1 = center, 1
+    fibers = 42, microtubule, ( plus_end=grow; length = 1.5; )
+    position = 4 0 0
+}
+
+new spindle
+{
+    aster1 = aster1
+    aster2 = aster2
+    radius = 0.1
+    placement = off
+}
+
+run system
+{
+    nb_steps = 20000
+    nb_frames = 10
+}
+

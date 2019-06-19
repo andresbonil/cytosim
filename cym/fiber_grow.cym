@@ -1,0 +1,48 @@
+/**
+ @example fiber_grow.cym
+ We create a dynamic fiber with activity=grow
+
+ F. Nedelec, November 2013
+*/
+
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 5
+    radius = 0.5
+}
+
+set fiber microtubule
+{
+    rigidity     = 20
+    segmentation = 0.2
+    confine      = inside, 1000
+    
+    activity          = grow
+    growing_speed     = 0.1
+    growing_off_speed = 0
+    growing_force     = 3
+
+    display = ( speckles=7, 1, 0.1; line=4, 1; )
+}
+
+new 2 microtubule
+{
+    length = 3
+}
+
+run 100000 system
+{
+    nb_frames = 10
+}

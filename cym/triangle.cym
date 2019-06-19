@@ -1,0 +1,83 @@
+% A equilateral triangle of fibers
+% F. Nedelec, 11 Juillet 2015
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.2
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 2.5
+}
+
+set fiber filament
+{
+    rigidity = 30
+    segmentation = 0.25
+    confine = inside, 600
+    display = ( line=7, 4; )
+}
+
+set hand motor
+{
+    binding = 10, 0.05
+    unbinding = 0.2, 3
+    
+    activity = move
+    unloaded_speed = 1
+    stall_force = 5
+    hold_growing_end = 1
+
+    display = ( size=10; )
+}
+
+set couple complex
+{
+    hand1 = motor
+    hand2 = motor
+    stiffness = 100
+    diffusion = 10
+}
+
+new filament
+{
+    position = 0 -0.5 0
+    orientation = 1 0 0, degree 0
+    length = 3
+}
+
+new filament
+{
+    position = 0 -0.5 0
+    orientation = 1 0 0, degree -120
+    length = 3
+}
+
+new filament
+{
+    position =  0 -0.5 0
+    orientation = 1 0 0, degree 120
+    length = 3
+}
+
+new 1000 complex
+
+% give some time to allow for binding
+run 1000 system
+{
+    solve = 0
+}
+
+run system
+{
+    nb_frames  = 100
+    nb_steps   = 4000
+}
+

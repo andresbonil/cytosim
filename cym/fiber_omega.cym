@@ -1,0 +1,97 @@
+% A Fiber loop sticking to an elastic rod
+% F. Nedelec, Heidelberg Aug 7 2014
+
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.1
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 3
+}
+
+set fiber microtubule
+{
+    steric = 1, 0.1
+    rigidity = 20
+    segmentation = 0.1
+    confine = inside, 1000
+    display = ( line=9, 2; color=blue; )
+}
+
+set fiber filament
+{
+    steric = 1, 0.05, 0.1
+    rigidity = 100
+    segmentation = 0.1
+    confine = inside, 1000
+    display = ( line=9, 2;color=blue; )
+}
+
+new 1 microtubule
+{
+    length = 10
+    position = 0 1 0
+    orientation = horizontal
+}
+
+set hand holder
+{
+    binding = 10, 0.05
+    unbinding = 0, inf
+ 
+    display = { width=3; size=5; color=green }
+}
+
+set couple link
+{
+    hand1 = holder
+    hand2 = holder
+    stiffness = 1
+}
+
+new link
+{
+    attach1 = fiber1, 0.25, minus_end
+    attach2 = fiber1, 0, plus_end
+}
+
+run 10 system
+change link { stiffness = 10 }
+run 10 system
+change link { stiffness = 100 }
+run 10 system
+change link { stiffness = 1000 }
+
+new link
+{
+    attach1 = fiber1, 0, minus_end
+    attach2 = fiber1, 0.25, plus_end
+}
+
+run 10 system
+
+change link { stiffness = 10000 }
+change system { steric = 1, 10, 100; }
+run 10 system
+
+
+new 1 filament
+{
+    length = 6
+    position = 0 -0.5 0
+    orientation = horizontal
+}
+
+run 5000 system
+{
+    nb_frames = 10
+}

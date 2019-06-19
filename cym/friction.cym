@@ -1,0 +1,88 @@
+% A set of molecules induce friction from binding/unbinding kinetics
+% A Single is used to generate a pulling force on a filament
+% The filament is held by binders with binding/unbinding dynamics.
+%
+% Question: Predict the sliding velocity
+% F. Nedelec, 24 Mar 2016
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.01
+    display = ( style=2; point_size=8; line_width=8; window_size=1024,128; )
+}
+
+set space cell
+{
+    shape = capsule
+}
+
+new cell
+{
+    length = 22
+    radius = 1
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 0.5
+    display = ( line_width=1; minus_end=12, 1 )
+}
+
+set hand holder 
+{
+    binding = 10, 0.01
+    unbinding = 0, inf
+    display = ( width=9; size=12; color=0x0000FF99 )
+}
+
+set single puller 
+{
+    hand = holder
+    activity = fixed
+    stiffness = 1
+}
+
+set hand binder 
+{
+    binding = 1, 0.01
+    unbinding = 1, inf
+    display = (size=9; color=green )
+}
+
+set single anchor 
+{
+    hand = binder
+    activity = fixed
+    stiffness = 10
+}
+
+new microtubule
+{
+    position = ( -6 0 0 )
+    orientation = ( -1 0 0 )
+    length = 10
+}
+
+new 100 anchor
+{
+    distribute = -11 0 0, +9 0 0
+}
+
+run 1000 system
+{
+    solve = 0
+}
+
+new puller
+{
+    attach = fiber1, 0
+    position = 11 0 0
+}
+
+run 100000 system
+{
+    nb_frames = 100
+}
+

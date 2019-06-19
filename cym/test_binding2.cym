@@ -1,0 +1,82 @@
+% A visual test for the binding of Hands
+% F. Nedelec, January 27th 2017
+
+set simul system
+{
+    time_step = 0.01
+}
+
+set system display
+{
+    point_size = 2
+    link_size = 0
+    report = single
+    style = 2
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 15
+}
+
+set fiber microtubule
+{
+    segmentation = 1
+    rigidity     = 1
+    display = ( line=0.5; )
+}
+
+new microtubule
+{
+    position = 0 0 0
+    orientation = 0 1 0
+    length = 20
+}
+
+new microtubule
+{
+    position = 0 0 0
+    orientation = 1 0 0
+    length = 20
+}
+
+set hand plus_binder
+{
+    bind_only_end = plus_end, 5
+    binding_rate  = 1
+    binding_range = 5
+    unbinding     = 0, inf
+    display = { color=blue; width=0 }
+}
+
+set hand minus_binder
+{
+    bind_only_end = minus_end, 5
+    binding_rate  = 1
+    binding_range = 5
+    unbinding     = 0, inf
+    display = { color=orange; width=0 }
+}
+
+set couple complex
+{
+    hand1 = plus_binder
+    hand2 = minus_binder
+    diffusion = 0
+    stiffness = 0
+}
+
+new 25000 complex
+
+
+run system
+{
+    nb_steps = 1000
+    nb_frames = 10
+    solve = 0
+}

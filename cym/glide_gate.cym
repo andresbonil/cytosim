@@ -1,0 +1,110 @@
+% F. Nedelec, July 2011
+% in the plane, above Mountains Stanovoi
+
+set space cell
+{
+    shape = rectangle
+}
+
+new cell
+{
+    length = 40, 20, 2
+}
+
+set simul system
+{
+    viscosity = 0.01
+    time_step = 0.0025
+    display = (
+        style = 2;
+        delay = 10;
+        point_size = 10
+    )
+    precondition = 0
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.25
+    display = ( line_width = 10; plus_end=24, 2; )
+}
+
+set hand kinesin
+{
+    binding = 10, 0.025
+    unbinding = 0.3, 3
+    stall_force = 6
+    
+    activity = move
+    unloaded_speed = 1
+    display = ( color = 0xE69F00FF; size = 5; ) 
+}
+
+set single graftedK
+{
+    hand = kinesin
+    stiffness = 200
+    activity = fixed
+}
+
+set hand slider
+{
+    binding = 10, 0.01
+    unbinding = 0.1, 10
+    activity = slide
+    mobility = 1
+    stiffness = 50
+    display = ( width=3; size=6; color=blue )
+}
+
+set single graftedS
+{
+    hand = slider
+    activity = fixed
+    stiffness = 100
+}
+
+set couple complex
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    diffusion = 20
+    stiffness = 200
+}
+
+new 500 complex
+
+new 1 microtubule
+{
+    length = 10
+    position = -8 7.4 0
+    orientation = -1 0 0
+}
+
+new 1 microtubule
+{
+    length = 10
+    position = -20 -7.4 0
+    orientation = -1 0 0
+}
+
+% --------------
+
+new 100 graftedK ( line 14 at -13.9 7.43 ) 
+new 100 graftedK ( arc 10 0.785 turn degree  68 at -2   6.5 ) 
+new 20 graftedS ( line 10 turn 1 -1 at 6 0 ) 
+new 100 graftedK ( arc 10 0.785 turn degree -112 at 14.4 -7 ) 
+
+new 100 graftedK ( line 14 at -13.9 -7.43 ) 
+new 100 graftedK ( arc 10 0.785 turn degree -68 at -2 -6.5 ) 
+new 20 graftedS ( line 10 turn 1  1 at 6 0 ) 
+new 100 graftedK ( arc 10 0.785 turn degree  112 at 14.4 7 ) 
+
+run system
+{
+    nb_frames = 400
+    nb_steps = 50000
+}
+
+

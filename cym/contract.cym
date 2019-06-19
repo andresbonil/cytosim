@@ -1,0 +1,84 @@
+% A contractile network
+% Dec 2015
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.2
+}
+
+set system { display = ( style=2; point_size=5; zoom = 2; ) }
+
+change system
+{
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 7
+}
+
+set fiber filament
+{
+    rigidity = 0.5
+    segmentation = 0.25
+    display = ( line=0.5, 1; color=gray; )
+}
+
+set hand motor
+{
+    binding = 10, 0.02
+    unbinding = 0.1, inf
+
+    activity = move
+    unloaded_speed = -0.2
+    stall_force = 6
+    display = ( line=0.5, 1; color=green; )
+}
+
+set couple complex
+{
+    hand1 = motor
+    hand2 = motor
+    stiffness = 250
+    diffusion = 10
+    fast_diffusion = 1
+}
+
+set hand binder
+{
+    binding = 10, 0.02
+    unbinding = 0.2, inf
+    display = ( line=0.5, 1; color=blue; )
+}
+
+set couple crosslinker
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 250
+    diffusion = 10
+    fast_diffusion = 1
+}
+
+new 250 filament
+{
+    length = 5
+}
+
+new 2000 crosslinker
+new 1000 complex
+
+run system
+{   
+    nb_frames = 50
+    nb_steps = 100000
+}
+
+

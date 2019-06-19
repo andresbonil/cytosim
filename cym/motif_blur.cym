@@ -1,0 +1,100 @@
+% Francois Nedelec, 2011-12-13
+
+
+set simul system
+{
+    time_step = 0.01
+}
+
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 8
+}
+
+set fiber filament
+{
+    segmentation = 0.5
+    rigidity = 20
+    confine = inside, 100
+}
+
+new 10 filament
+{
+    length = 10
+}
+
+set hand kinesin
+{
+    binding_rate = 10
+    binding_range = 0.01
+    unbinding_rate = 0.5
+    unbinding_force = 2
+    
+    activity = move
+    unloaded_speed = 0.8
+    stall_force = 6
+
+    display = { color=0x0000FFFF }
+}
+
+set single gKinesin
+{
+    hand = kinesin
+    stiffness = 100
+    activity = fixed
+}
+    
+
+set hand dynein
+{
+    binding_rate = 10
+    binding_range = 0.01
+    unbinding_rate = 0.5
+    unbinding_force = 2
+    
+    activity = move
+    unloaded_speed = -0.8
+    stall_force = 6
+
+    display = { color=0xFFFFFFFF }
+}
+
+
+set single gDynein
+{
+    hand = dynein
+    stiffness = 100
+    activity = fixed
+}
+
+
+% female motif
+new 1200  gKinesin ( circle 3 at -3 2 blur 0.18 )
+new  200  gKinesin ( rectangle 0 2 0 at -3 -3.0 blur 0.18 )
+new  200  gKinesin ( rectangle 2 0 0 at -3 -2.9 blur 0.18 )
+
+
+% male motif
+new 1200  gDynein ( circle 3 at +3 -2 blur 0.18 )
+new  200  gDynein ( rectangle 1.5 at 4.5 0 align 1 1.5 at 3 -2 blur 0.18 )
+
+new  200  gDynein ( rectangle 1.0 at -1.0 0 align 1 +1 at 6 0 align 1 1.5 at 3 -2 blur 0.18 )
+new  200  gDynein ( rectangle 1.0 at -1.0 0 align 1 -1 at 6 0 align 1 1.5 at 3 -2 blur 0.18 )
+
+% cortical pool
+new 1000  gKinesin ( surface 0.1 blur 0.18 )
+new 500   gDynein  ( surface 0.1 )
+
+
+run system
+{
+    nb_steps = 5000
+    nb_frames = 50
+}
+

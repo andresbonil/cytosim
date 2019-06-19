@@ -1,0 +1,189 @@
+% Anaphase S.pombe spindle
+% Jonathan Ward, 2012, 
+% Expanded and adapted for PI - Francois Nedelec, 01.2015
+
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+    steric = 1, 200
+    steric_max_range = 0.75
+    display = ( style=3; window_size=1024, 256; point_value=0.010; zoom=2; )
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( visible=0; )
+}
+
+new cell
+{
+    length = 15
+    radius = 1.62
+}
+
+set space squeeze
+{
+    shape = capsule
+    display = ( color=0xFF000055; visible=1; )
+}
+
+new squeeze
+{
+	length = 2
+	radius = 0.1
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 10, squeeze
+    
+    steric = 1, 0.03
+
+    activity = classic
+    catastrophe_rate         = 0      % static during equilibration
+    catastrophe_rate_stalled = 1.0
+    growing_force            = 1.67   % characteristic force
+    growing_speed            = 0      % static during equilibration
+
+    total_polymer = 180   % total available=180; critical concentration ?
+    min_length  = 0.01
+
+    display = ( line_width=2.5; plus_end=5, 2; )
+}
+
+set solid core
+{
+    confine = inside, 10, cell
+    display = ( style=2; visible=1; )
+}
+
+set aster mtoc
+{
+    stiffness = 1000, 1000
+}
+
+new mtoc
+{
+    solid = core
+    point1 = center, 1.0
+    radius = 0.06, 0.04
+    type = disc
+    seed_diameter = 0.025
+    fibers = 6, microtubule, ( plus_end=grow; length=3.0; )
+    position = -2.0 0 0
+    orientation = 1 0 0
+}
+
+new mtoc
+{
+    solid = core
+    point1 = center, 1.0
+    radius = 0.06, 0.04
+    type = disc
+    fibers = 6, microtubule, ( plus_end=grow; length=3.0; )
+    seed_diameter = 0.025
+    position = 2.0 0 0
+    orientation = -1 0 0 
+}
+
+set hand ase1_clasp
+{
+    binding = 100, 0.055
+    unbinding = 1, 6
+    activity = rescue
+    rescue_prob = 0.05
+    display = ( size=3; color=purple; )
+}
+
+set couple ase1_clasp_couple
+{
+    activity = slide
+    length = 0.05
+    hand1 = ase1_clasp
+    hand2 = ase1_clasp
+    diffusion = 10
+    specificity = antiparallel
+    stiffness = 500
+}
+
+set hand klp9
+{
+    binding = 10, 0.055
+    unbinding = 0.5, 6
+    stall_force = 5
+    unloaded_speed  = 0.008       % spindle elongates ~ 1 um / minute
+    activity = move
+    display = ( size=3; color=green; )
+}
+
+set couple klp9_couple
+{
+    activity = bridge
+    length = 0.05
+    hand1 = klp9
+    hand2 = klp9
+    diffusion = 10
+    specificity = antiparallel
+    stiffness = 1000
+}
+
+
+% -----------------------------------
+% gradually build a metaphase overlap
+% -----------------------------------
+
+% total 1800 ase1 dimers per cell
+
+new 50 ase1_clasp_couple
+run 1000 system
+
+new 100 ase1_clasp_couple
+run 1000 system
+
+new 100 ase1_clasp_couple
+run 1000 system
+
+new 250 ase1_clasp_couple
+run 1000 system
+
+new 500 ase1_clasp_couple
+run 1000 system
+
+new 800 ase1_clasp_couple
+run 1000 system
+
+% --------------------------------------
+% metaphase is completed, start anaphase
+% --------------------------------------
+
+delete space squeeze
+
+change ase1_clasp
+{
+    unbinding_rate = 0.01;   % reduce turnover of ase1
+}
+
+change microtubule
+{
+    confine = off
+    growing_speed            =  0.03    % growth speed ~ 1.7um / minute
+    shrinking_speed          = -0.08    % shrinkage ~ 4um / minute
+    catastrophe_rate         =  0.04    % lifetime ~ 25s
+    catastrophe_rate_stalled =  1.0
+}
+
+% total 1300 klp9 dimers per cell
+new 1000 klp9_couple
+
+
+run 100000 system
+{
+    nb_frames = 100
+}
+
+

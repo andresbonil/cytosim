@@ -1,0 +1,86 @@
+% A confined aster
+% F. Nedelec, April 2010 - Sep 2017
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.01
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 100
+    
+    activity = classic
+    growing_speed    = 0.5
+    growing_force    = 1.67
+    shrinking_speed  = -0.85
+    catastrophe_rate = 0.1, 0.5
+    rescue_rate      = 0
+    min_length       = 0.5
+    persistent       = 0
+ 
+    display = ( line_width = 4; )
+}
+
+set solid core
+{
+    display = ( style = 3 )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+    nucleate = 1, microtubule, ( plus_end=grow; length=1; )
+}
+
+new centrosome
+{
+    solid = core
+    radius = 0.25
+    point1 = center, 0.25
+    fibers = 32, microtubule, ( plus_end=grow; length = 1; )
+    position = 4 0
+}
+
+set hand dynein
+{
+    binding_rate = 5
+    binding_range = 0.02
+    unbinding_rate = 0.5
+    unbinding_force = 2
+    
+    activity = move
+    unloaded_speed = -1
+    stall_force = 5
+    display = ( color = light_blue; size=7;  )
+}
+
+set single grafted
+{
+    hand = dynein
+    stiffness = 100
+    activity = fixed
+}
+
+new 0 grafted
+{
+    position = inside
+}
+
+run 100000 system
+{
+    nb_frames = 100
+}

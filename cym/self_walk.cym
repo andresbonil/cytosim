@@ -1,0 +1,71 @@
+% Bivalent motor oligomers organize filaments into radial arrays
+% The oldest simulation done before Cytosim was called Cytosim
+%
+% Self organization of Microtubules of Motors
+% Nedelec et al. Nature, 1998
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.1
+    precondition = 0
+    display = ( style=2; delay=4; label="Nedelec et al. 1998 -" )
+}
+
+set space cell
+{
+    shape = circle
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.5
+    confine = inside, 100
+    lattice = 1, 0.008
+    display = ( width = 0.5; )
+}
+
+set hand kinesin
+{
+    binding_rate = 9
+    binding_range = 0.02
+    unbinding_rate = 0.25
+    unbinding_force = 3
+    
+    activity = walk
+    step_size = 0.008
+    unloaded_speed = 0.8
+    stall_force = 5
+
+    bind_also_end = 1
+    hold_growing_end = 0.95
+
+    display = ( color=green; size=7; width=7; )
+}
+
+set couple complex
+{
+    hand1 = kinesin
+    hand2 = kinesin
+    stiffness = 200
+    diffusion = 10
+}
+
+new cell
+{
+    radius = 10
+}
+
+new 64 microtubule
+{
+    length = 8
+}
+
+new 2500 complex
+
+run 10000 system
+{
+    nb_frames = 50
+}
+

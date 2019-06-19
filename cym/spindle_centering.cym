@@ -1,0 +1,94 @@
+% A model of spindle positionning inside a volume
+% Microtubules grow inside the volume, and shrink if they are outside
+% in this way their length is always maximal within the volume
+% In addition, microtubule-mediated length-dependent forces pulls on the spindle poles
+%
+% Reference:
+% Experimental and theoretical study of mitotic spindle orientation.
+% Thery et al. 447(7143):493-6 Nature 2007
+%
+% Cytosim implementation by F. Nedelec, 01.04.2016
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.1
+}
+
+set space cell
+{
+    shape = ellipse
+    display = ( color=blue; )
+}
+
+new cell
+{
+    length = 30, 20, 20
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 1
+
+% add a 'pulling' length-dependent force:
+    colinear_force = 0.1
+
+    activity       = grow
+    growing_speed  = 0.2
+    min_length     = 0.1
+    max_length     = 12
+
+% make filaments shrink if they are outside the Space:
+    shrink_outside = 1
+    
+    display = ( line=5,2; tension=5 )
+}
+
+set solid core
+{
+    display = ( style=2; coloring=1; size=12; )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+}
+
+set fake spindle
+{
+    stiffness = 1000
+}
+
+new centrosome
+{
+    solid = core
+    radius = 1
+    point1 = center, 1
+    fibers = 31, microtubule, ( plus_end=grow; length=1.5; )
+    position = -4 0 0
+}
+
+new centrosome
+{
+    solid = core
+    radius = 1
+    point1 = center, 1
+    fibers = 31, microtubule, ( plus_end=grow; length=1.5; )
+    position = 4 0 0
+}
+
+new spindle
+{
+    aster1 = aster1
+    aster2 = aster2
+    radius = 0.1
+    placement = off
+}
+
+run 100000 system
+{
+    nb_frames = 100
+}
+
