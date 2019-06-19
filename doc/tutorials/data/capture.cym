@@ -1,0 +1,161 @@
+% Chromosome capture in the starfish oocyte
+% Maria Burdyniuk and Francois Nedelec, September 2015
+% With force and length-dependent catastophe rate, 27.11.2015
+% Added radially convergent flow pattern, 29.9.2016
+% modified on the 2018.02.09, cleanup on 13.08.2018
+% Scenario = 3
+
+set simul system
+{
+    steric               = 0, 500;
+    time_step            = 0.05;                  % a large time step is Okay for this project
+    viscosity            = 0.1;
+    display              = ( style=1; );
+}
+
+set space cell
+{
+    shape                = sphere;
+}
+
+set hand glue
+{
+    activity             = move;
+    binding_range        = 0.25;                  %
+    binding_rate         = 0;                     % no binding yet!
+    hold_shrinking_end   = 1;                     % yes
+    unloaded_speed       = -0.33;                 % dynein - calculated from the experimental data
+    stall_force          = 1;
+    unbinding            = 0, inf;                % never unbind!
+    display              = ( color=green; size=9; );
+}
+
+set single kinetochore
+{
+    hand                 = glue;
+    stiffness            = 100;
+}
+
+set solid chromosome
+{
+    confine              = inside, 100;
+    flow_center          = 0 33 0;                % MASHA adds force with center (0,40,0) - to the cortex
+    flow_time            = 750, 900;              % All chromosomes converge at time 1000, but flow stops at 500sec
+    steric               = 1;
+    display              = ( color=0xFFFFFF44; style=7; );
+}
+
+set fiber microtubule
+{
+    activity             = classic;
+    catastrophe_length   = 37;                    % MASHA Make the catastrophe length-dependent, 18 - average MTs length
+    catastrophe_outside  = 1;
+    catastrophe_rate     = 0.15;
+    confine              = inside, 100;
+    delete_stub          = 0;
+    growing_force        = 1.67;
+    growing_speed        = 0.5;
+    min_length           = 0.25;
+    rebirth_rate         = 1;
+    rescue_rate          = 0;
+    rigidity             = 22;
+    segmentation         = 3;
+    shrinking_speed      = -1;
+}
+
+set hand nucleator
+{
+    activity             = nucleate;
+    nucleate             = 1, microtubule, ( length=3; );
+    unbinding            = 0, 3;
+    display              = ( color=green; size=5; );
+}
+
+set single complex
+{
+    activity             = fixed;
+    hand                 = nucleator;
+    stiffness            = 1000;
+}
+
+new cell
+{
+    radius = 35;
+}
+
+new 22 chromosome
+{
+    point0               = center, 0.8;
+    point1               = +0.8 0 0, 0, kinetochore;
+    point2               = -0.8 0 0, 0, kinetochore;
+    position             = sphere 35;             % all over the nucleus
+}
+
+new 500 complex
+{
+    position             = sphere 2 at 4 32 0;
+}
+
+new 500 complex
+{
+    position             = sphere 2 at -4 32 0;
+}
+
+run system
+{
+    nb_frames            = 120;                   % sampling every 10 sec = 100 frames
+    nb_steps             = 4800;                  % until 4 min
+}
+
+%%%%%%%%%%%%%%%%%%%% STAGE 1
+
+change glue
+{
+    binding_rate         = 0.1;                   % increase binding
+}
+
+run system
+{
+    nb_frames            = 30;                    % sampling every 10 sec = 100 frames
+    nb_steps             = 1200;                  % until 5  min
+}
+
+%%%%%%%%%%%%%%%%%%%% STAGE 2
+
+change glue
+{
+    binding_rate         = 0.3;                   % increase binding
+}
+
+run system
+{
+    nb_frames            = 30;                    % sampling every 10 sec = 100 frames
+    nb_steps             = 1200;                  % until 6 min
+}
+
+%%%%%%%%%%%%%%%%%%%% STAGE 3
+
+change glue
+{
+    binding_rate         = 0.7;                   % increase binding
+}
+
+run system
+{
+    nb_frames            = 30;                    % sampling every 10 sec = 100 frames
+    nb_steps             = 1200;                  % until 7 min
+}
+
+%%%%%%%%%%%%%%%%%%%% STAGE 4
+
+change glue
+{
+    binding_rate         = 1;                     % increase binding
+}
+
+run system
+{
+    nb_frames            = 240;                   % sampling every 10 sec = 100 frames
+    nb_steps             = 9600;                  % until 24 min
+}
+
