@@ -70,7 +70,6 @@ def process(path, dirs, files):
     os.chdir(cdir)
 
 
-
 def process_dir(path):
     """call process() with appropriate arguments"""
     files = os.listdir(path)
@@ -78,7 +77,6 @@ def process_dir(path):
         if os.path.isdir(f):
             files.remove(f)
     process(path, os.path.basename(path), files)
-
 
 
 def archive(path):
@@ -128,12 +126,10 @@ def main(args):
 #------------------------------------------------------------------------
 
 
-
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1].endswith("help"):
         print(__doc__)
     else:
         main(sys.argv[1:])
-
 
 

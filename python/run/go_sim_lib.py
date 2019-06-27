@@ -102,7 +102,6 @@ def move_directory(path, park, name):
     return dst
 
 
-
 def copy_config(conf, repeat):
     """
         make 'repeat' copies of the config files.
@@ -180,7 +179,7 @@ def info_end(filename, val):
         f.write("stop      %s\n" % time.asctime())
 
 
-def run(exe, conf, name, args=['-']):
+def run(exe, conf, name, args=[]):
     """
     Run one simulation in a new sub directory and wait for completion.
     The config file 'conf' is copied to the subdirectory.
@@ -205,7 +204,7 @@ def run(exe, conf, name, args=['-']):
     return (val, wdir)
 
 
-def start(exe, conf, name, args=['-']):
+def start(exe, conf, name, args=[]):
     """
     Start simulation in a new sub directory, and return immediately.
     The config file `conf` is copied to the sub-directory.

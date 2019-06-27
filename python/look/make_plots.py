@@ -114,7 +114,6 @@ def parse(dirpath):
             plt.close()
 
 
-
 #------------------------------------------------------------------------
 
 def main(args):
@@ -140,9 +139,7 @@ def main(args):
                 out.write("Error: %s\n" % repr(e));
             os.chdir(cdir)
 
-
-
-
+#------------------------------------------------------------------------
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1].endswith("help"):

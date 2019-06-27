@@ -1,0 +1,128 @@
+% Self-organization of filaments driven by bivalent motors
+% FJN for Festival of plants, 14.05.2019
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.5
+    precondition = 0
+    binding_grid_step = 0.25
+    display = ( style=2; delay=2; period=2; zoom=0.98; label="Cytoskeleton" )
+}
+
+set space cell
+{
+    shape = polygon
+    display = ( color=dark_gray; width=4; )
+}
+
+set fiber filament
+{
+    rigidity = 10
+    segmentation = 0.25
+    confine = inside, 100
+    lattice = 1, 0.010
+
+    activity      = grow
+    growing_speed = 0.5
+    max_length    = 15
+    total_polymer = 5000
+
+    display = ( plus_end=10; minus_end=8; color=dark_gray; width=2; )
+}
+
+set hand nucleator
+{
+    unbinding = 0, 3
+    activity = nucleate
+    nucleate = 1.0, filament, ( length=0.1; plus_end=grow; )
+    display = { size=7; color=gray; }
+}
+
+set single protein
+{
+    hand = nucleator
+    diffusion = 0.1
+    stiffness = 100
+}
+
+set hand motor
+{
+    binding = 9, 0.02
+    unbinding = 0.2, 3
+    
+    activity = walk
+    step_size = 0.010
+
+    unloaded_speed = 1.0
+    stall_force = 5
+
+    bind_also_end = 0
+    hold_growing_end = 0.98
+
+    display = ( color=green, 0x00EE0044; size=7; width=4; )
+}
+
+set couple bimotor
+{
+    hand1 = motor
+    hand2 = motor
+    stiffness = 100
+    diffusion = 1
+    length = 0.1
+}
+
+set hand dynein
+{
+    binding = 9, 0.02
+    unbinding = 0.25, 3
+
+    activity = walk
+    step_size = 0.010
+    unloaded_speed = -1.0
+    stall_force = 3
+
+    bind_also_end = 1
+    hold_growing_end = 0.98
+
+    display = ( color=blue, 0x0000AA77; size=7; width=4; )
+}
+
+set couple bidynein
+{
+    hand1 = dynein
+    hand2 = dynein
+    stiffness = 100
+    diffusion = 1
+    length = 0.1
+}
+
+set hand binder
+{
+    binding = 21, 0.012
+    unbinding = 0.5, 3
+
+    display = ( color=blue, 0x0000FF77; size=7; width=5; )
+}
+
+set couple bibinder
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 100
+    diffusion = 1
+}
+
+new cell
+{
+    points=10 -5.7, 10 5.7, -10 5.7, -10 -5.7;
+}
+
+new 4 filament { length=24; position=rectangle 2 4; orientation=1 -0.1 0; }
+new 4 filament { length=24; position=rectangle 2 4; orientation=1 0.1 0; }
+new 1000 bimotor
+
+run 10000000 system
+{
+    nb_frames = 0
+}

@@ -18,7 +18,6 @@ exe = "diff"
 diff="diff --side-by-side -W200 -p --suppress-common-lines"
 
 
-
 def spacer(info):
     """print a line of width size, with 'info' in the middle"""
     import os
@@ -26,7 +25,6 @@ def spacer(info):
     sys.stdout.write(chr(27)+"[36;2m"); sys.stdout.flush()
     print(info.center(int(cols), '-'))
     sys.stdout.write(chr(27)+"[0m"); sys.stdout.flush()
-
 
 
 def compareFiles(fileL, fileR):
@@ -113,6 +111,5 @@ if __name__ == "__main__":
         print(__doc__)
     else:
         main(sys.argv[1:])
-
 
 

@@ -1,0 +1,124 @@
+% Self-organization of filaments driven by bivalent motors
+% FJN for Festival of plants, 14.05.2019
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.2
+    precondition = 0
+    binding_grid_step = 0.25
+    display = ( style=2; delay=4; period=2; zoom=0.6; label="Cytoskeleton" )
+}
+
+set space cell
+{
+    shape = polygon
+    display = ( color=gray; width=4; )
+}
+
+set fiber filament
+{
+    rigidity = 10
+    segmentation = 0.5
+    confine = inside, 100
+
+    activity      = classic
+    growing_speed = 0.5
+    shrinking_speed = -2.0
+    catastrophe_rate = 0.05
+    max_length    = 10
+    total_polymer = 5000
+
+    display = ( color=dark_gray; width=1; )
+}
+
+set hand nucleator
+{
+    unbinding = 0, 3
+    activity = nucleate
+    nucleate = 1.0, filament, ( length=0.1; plus_end=grow; )
+    display = { size=7; color=gray; }
+}
+
+set single protein
+{
+    hand = nucleator
+    diffusion = 0.1
+    stiffness = 100
+}
+
+set hand motor
+{
+    binding = 9, 0.01
+    unbinding = 0.25, 3
+    
+    activity = move
+    unloaded_speed = 1.0
+    stall_force = 5
+
+    bind_also_end = 0
+    hold_growing_end = 0.98
+
+    display = ( color=green, 0x00EE0044; size=7; width=5; )
+}
+
+set couple bimotor
+{
+    hand1 = motor
+    hand2 = motor
+    stiffness = 100
+    diffusion = 10
+}
+
+set hand dynein
+{
+    binding = 9, 0.01
+    unbinding = 0.25, 3
+
+    activity = move
+    unloaded_speed = -1.0
+    stall_force = 3
+
+    bind_also_end = 1
+    hold_growing_end = 0.98
+
+    display = ( color=blue, 0x0000AA77; size=7; width=5; )
+}
+
+set couple bidynein
+{
+    hand1 = dynein
+    hand2 = dynein
+    stiffness = 100
+    diffusion = 10
+}
+
+set hand binder
+{
+    binding = 21, 0.012
+    unbinding = 0.5, 3
+
+    display = ( color=blue, 0x0000FF77; size=7; width=5; )
+}
+
+set couple bibinder
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 100
+    diffusion = 1
+}
+
+new cell
+{
+    order = 8
+    radius = 11
+}
+
+new 64 protein
+new 2000 bimotor
+
+run 10000000 system
+{
+    nb_frames = 0
+}

@@ -12,14 +12,14 @@ Synopsis:
 
 Syntax:
 
-    go_sim.py [executable] [repeat] [script.py] [park=directory] config_file [config_file]
+    go_sim.py [executable] [repeat] [script=PYTHON] [park=directory] config_file [config_file]
     
     Bracketted arguments are optional.
     If working_directory is not specified, the current directory is used.
     [repeat] is an integer specifying the number of run for each config file.
     Completed simulations will be store in the 'park' directory if specified.
     
-    script.py if specified should provide a function parse(input)
+    If a python script is specified, it should provide a function parse(input)
        You may use: preconfig.py
     
     Any number of config file can be provided (at least one).
@@ -79,7 +79,6 @@ def executable(arg):
     return os.path.isfile(arg) and os.access(arg, os.X_OK)
 
 
-
 def run(conf, name):
     """
         run executable 'exe' with config 'conf' in a directory of name 'name'
@@ -101,7 +100,6 @@ def run(conf, name):
             out.write("            ---> parked in %s\n" % res)
         except Exception as e:
             err.write("go_sim.py cannot move directory: %s\n" % repr(e))
-
 
 
 def run_queue(queue):
@@ -166,8 +164,8 @@ def main(args):
             njobs = int(arg[6:])
         elif arg.startswith('jobs='):
             njobs = int(arg[5:])
-        elif os.path.isfile(arg) and arg.endswith('.py'):
-            preconf = arg
+        elif arg.startswith('script='):
+            preconf = arg[7:]
         elif executable(arg):
             exe = os.path.abspath(arg)
         elif os.path.isfile(arg):

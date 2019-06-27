@@ -1,0 +1,132 @@
+% Two asters and Chromatin. 
+% Gaelle Letort 2016
+% FJN, adapted for 3D on 10.3.2017
+
+
+set simul system
+{
+    dim = 3
+    time_step = 0.01       % Nedelec 2007 
+    kT = 0.0042            % 25 C
+    viscosity = 1          % viscosity inside embryo 
+    steric = 0             % no interaction (faster)
+    display = { line_width=3; couple_select=0; single_select=3; point_size=5; back_color=darker_gray;}
+}
+
+
+set space cell
+{
+    shape = sphere
+    display = { color=blue, black; back_color=black; visible=2; }
+}
+
+set space plate
+{
+    shape = ellipse
+    display = { color=0xFFFFFF22; visible=0; }
+}
+
+new cell
+{
+    radius = 5;
+}
+new plate
+{
+    length = 1, 5, 5
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% MTs
+
+set fiber filament
+{
+    confine = inside, 100, cell
+    %confine2 = outside, 100, plate
+
+    rigidity = 25                    % Lp~5200µm, Gittes 1993
+    segmentation = 1.0
+    activity = classic
+    growing_force = 1.67             % Dogterom 1997 
+    delete_stub = 0
+    rebirth_rate = inf
+    min_length = 0.005
+
+    growing_speed = 0.4              % Sera moins en pratique car force opposee
+    catastrophe_rate = 0.3, 0.3      % meme valeur pour MT stall ou free 
+    shrinking_speed = -0.65           
+    rescue_rate = 0.5                   
+
+    total_polymer = inf              % illimite
+    display = { color=white; line=1; }
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Define chromosomes
+
+set hand map
+{
+    binding = 20, 0.05        % binding rapide
+    unbinding_rate = 0
+    activity = track
+    track_end = plus_end      % reste proche de la plus_end du microtubule
+    bind_only_end = plus_end, 0.1  % bind seulement pres de la plus_end du MT, a une distance max de 0.2
+    %bind_only_free_end = 1    % bind seulement s'il n'y a pas deja une autre Hand sur le MT
+}
+
+set single grafted
+{
+    hand = map
+    stiffness = 300
+    activity = fixed
+}
+
+new 3333 grafted
+{
+    position = ellipse_surface 0.5 2.5 2.5
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Simu
+
+set solid core
+{
+    viscosity = 200       % controlle la mobilite des poles
+    display = { color=0x00880044; }
+}
+
+set aster centrosome
+{
+    stiffness = 500, 500   % ancrage des MTs sur les poles (position, rotation)
+}
+
+
+new centrosome
+{
+    solid = core
+    %aster_angle = 0.6      % definit l'angle du pole, 30°, moy of measure
+    position = 2 0
+    orientation = -1 0 0
+    radius = 0.5, 0.1
+    fibers = 400, filament, ( plus_end=grow; length=0.5, 0.1; )
+}
+
+new centrosome
+{
+    solid = core
+    %aster_angle = 0.6      % definit l'angle du pole, 30°, moy of measure
+    position = -2 0
+    orientation = 1 0 0
+    radius = 0.5, 0.1
+    fibers = 400, filament, ( plus_end=grow; length=0.5, 0.1; )
+}
+
+
+run system
+{
+    nb_steps = 10000
+    nb_frames = 100
+}
+

@@ -1,0 +1,81 @@
+% Contraction of a network of flexible filaments
+% FJN for Nuit Blanche, 6.10.2018
+
+set simul system
+{
+    dim = 2
+    time_step = 0.005
+    viscosity = 0.5
+    precondition = 1
+    display = ( style=2; delay=20; period=2; zoom=0.95; )
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( color=dark_gray; width=10; )
+}
+
+set fiber filament
+{
+    rigidity = 0.1
+    segmentation = 0.128
+    display = ( width = 1.0; color=gray; )
+}
+
+set hand motor
+{
+    binding = 5, 0.025
+    unbinding = 0.1, 4
+    
+    activity = move
+    unloaded_speed = 0.4
+    stall_force = 5
+
+    display = ( color=green; size=7; width=7; )
+}
+
+set couple complex
+{
+    hand1 = motor
+    hand2 = motor
+    stiffness = 400
+    diffusion = 10
+}
+
+set hand binder
+{
+    binding = 4, 0.025
+    unbinding = 0.2, 6
+    display = ( color=blue; size=7; width=7; )
+}
+
+set couple crosslinker
+{
+    hand1 = binder
+    hand2 = binder
+    stiffness = 400
+    diffusion = 10
+}
+
+new cell
+{
+    length = 9
+    radius = 2.5
+}
+
+new 128 filament
+{
+    length = 3.2
+}
+
+new 2500 complex
+new 3000 crosslinker
+
+run 10000 system
+{
+    nb_frames = 50
+    %event = 100, ( delete 1 filament; new filament { length = 3.6; } )
+}
+
+

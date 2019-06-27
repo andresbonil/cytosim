@@ -1,0 +1,141 @@
+% Nuclear dynamics in multinucleated hypha of Ashbya gossypii
+% R. Gibeaux, A. Politi, F. Nedelec: 06/2012--02/2015
+
+% Viscosity 900 times water, from Tolic-Norrelykke et al. 2004.
+% Speed of flow 0.15 -- 1.28 um/min from Table 1 Lang et al. 2010 MBoC, 21, 18-28
+% Speed of flow in mutant ~ 0.75 um/min from Grava and Philippsen 2010 MBoC 21, 3680-3692; Grava et al. 2011 EC, 10, 7, 902-915.
+% The flow (specified in um/s) should be slightly higher to compensate for brownian.
+
+set simul system
+{  
+    dim = 3
+    time_step = 0.05
+    viscosity = 0.9    
+    steric = 1, 100
+    flow = 0.009 0 0
+}
+
+set system display
+{
+    window_size = 1024, 200;
+    tile        = 3, 1;
+    point_value = 0.01;
+    style       = 3;
+    back_color  = dark_gray;
+    multisample = 3;
+}
+
+set space cell
+{
+    shape = cylinderP
+    display = ( color=0x00000033, black; visible=3;)
+}
+
+new cell
+{
+    length = 15
+    radius = 1.5
+}
+
+% Values for MT dynamics in Ashbya gossypii from Grava and Philippsen MBoC 2010 21, 3680-3692
+% Assumption that catastrophe rate = growing speed / average MT length
+% MT length obtained from raw data of Grava and Philippsen MBoC 2010 21, 3680-3692
+% Fit on trucated exponential distribution, Fraile and Garcia-Ortega JoAM 2005 44, 1620-25
+% Only MT between 1 to 20 um considered for fit as high number of very short MT observed by ET in Gibeaux et al. JCS 2012
+
+set fiber filament
+{ 
+    steric = 1, 0.025
+    confine = inside, 100
+    rigidity = 20
+    segmentation = 0.5
+    activity = classic
+    growing_speed = 0.108, 0
+    shrinking_speed = -0.272
+    catastrophe_rate = 0.023
+    growing_force = 1.7
+    display = ( plus_end=8,2; color=white; line=2.5; )
+}
+
+set hand dynein
+{
+    binding_rate = 5
+    binding_range = 0.075
+    unbinding_rate = 0.64 % 0.64 in King and Schroer, NCB 2000, 2
+    unbinding_force = 7
+    activity = motor
+    unloaded_speed = -0.025 % Gennerich et al. Cell 2007, 131, 952-965 = 0.05 um/s
+    bind_also_end = 1
+    stall_force = 7 % Shingyoji et al. Nature 1998, 393 = 6 pN ; Gennerich et al. Cell 2007, 131, 952-965 = 7 pN
+    display = ( color=white, gray; size=8; back_color=black )
+}
+
+set single anchored_dynein
+{
+    hand = dynein
+    stiffness = 500
+    activity = fixed
+}
+
+set sphere envelope
+{
+    confine = all_inside, 100
+    point_mobility = 0.1
+    steric = 1
+    display = ( color=0x3300CCAA; style=3; )
+}
+
+set hand nucleator
+{
+    binding = 0, 0.05
+    unbinding = 0, inf
+    activity = nucleate
+    nucleate = 1, filament, ( length=0.5; plus_end=grow; )
+    display = ( size=15; color=orange; )
+}
+
+set single handle
+{
+    hand = nucleator
+    stiffness = 500
+}
+
+set bead mito
+{
+    confine = all_inside, 100
+    steric = 1 
+    display = ( color=0xFF993333; style=1; )
+}
+
+set bead vacuole
+{
+    confine = all_inside, 100
+    steric = 1
+    display = ( color=0x3399FF33; style=1; )
+}
+
+% Spacing between nuclei of 3-6 um, Fig1. Lang et al. MBoC 2010, 21, 753-766
+% First point is center with nucleus radius, second point is reference
+
+new 5 envelope
+{
+    radius = 0.7
+    point1 = surface, 3 handle
+}
+
+new 200 anchored_dynein ( surface )
+
+% Gibeaux et al. 2013: around 8.8% of the full volume
+new 550 mito { radius = 0.2 }
+
+% Gibeaux et al. 2013: around 2.5% of the full volume
+new 50 vacuole { radius = 0.3 }
+
+run 6000 system
+run 6000 system
+
+run system
+{
+    nb_steps = 36000
+    nb_frames = 100
+}

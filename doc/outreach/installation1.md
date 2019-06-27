@@ -29,7 +29,6 @@ The installation did not use sound.
 - `config1.cym`: Self-organization of microtubules driven by bivalent motors
 - `config2.cym`: A beating flagella
 - `config3.cym`: contraction of a network of flexible filaments
-- `config4.cym`: a fast-running 3D simulation of ring formation in Platelet
 
 The names of the objects in the 5 scenario were uniformized, such that the command can be the same. This means for instance that the motor is always defined as `motor`, and the couple is called `complex`, etc.
 Except for the last model, they were all 2D simulations and used the same executable.
@@ -67,14 +66,6 @@ For the 2D executable:
 	#define DIM 2
 	#define FIBER_HAS_LATTICE 0
 	#define ADD_PROJECTION_DIFF 1
-
-For the 3D Platelet simulation:
-
-	#define DIM 3
-	#define FIBER_HAS_LATTICE -1
-	#define NEW_AGING_LATTICE 1
-	#define NEW_VARIABLE_SPEED 1
-	#define ADD_PROJECTION_DIFF 0
 
 (search the project's code to find these lines)
 

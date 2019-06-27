@@ -92,7 +92,6 @@ def writeImageLinks(paths):
         out.write('\n')
 
 
-
 def writeMovieLinks(paths):
     global out
     for path in sorted(paths):
@@ -213,7 +212,6 @@ def main(args):
     if out != sys.stdout:
         out.close()
         print("generated '%s' with %i entries" % (output, indx-1))
-
 
 
 #------------------------------------------------------------------------

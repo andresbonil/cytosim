@@ -200,7 +200,6 @@ def makeMovieMPEG(output):
     return output
 
 
-
 def makeMovieMOV(output):
     """
         create movie.mov from PNG files in the current directory
@@ -219,7 +218,6 @@ def makeMovieMOV(output):
             raise IOError("modmovie failed with value %i\n" % val)
         return output
     return ''
-
 
 
 def makeMovieQT(output):
@@ -249,7 +247,6 @@ def makeMovieQT(output):
     os.remove(mov)
     err.write(prefix+"created movie with datarate = %s\n" % quality)
     return output
-
 
 
 def makeMovie(dirpath):

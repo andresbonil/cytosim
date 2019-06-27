@@ -162,7 +162,6 @@ def main(args):
         process_dir(path)
 
 
-
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1].endswith("help"):
         print(__doc__)

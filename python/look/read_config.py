@@ -199,7 +199,6 @@ def valid_token_char(c):
     return c.isalnum() or c == '_' or c == '.'
 
 
-
 def get_token(fid):
     """
     Extract the next token from the file
@@ -338,7 +337,6 @@ def read_list(fid):
     return dic
 
 
-
 def parse_config(fid):
     """
     return the list resulting from parsing the specified file
@@ -393,7 +391,6 @@ def parse_config(fid):
             cur = []
             lev = 0
     return pile
-
 
 
 def parse(arg):

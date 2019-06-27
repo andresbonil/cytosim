@@ -1,0 +1,79 @@
+% motors moving on one filament
+% FJN 8.05.2019
+
+set simul system
+{
+    time_step = 0.005
+    viscosity = 0.02
+    display = ( point_size=12; zoom = 0.8; )
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+set fiber filament
+{
+    rigidity = 20
+    segmentation = 0.25
+    confine = inside, 100
+    display = ( line_width=2; plus_end=14, 2; )
+}
+
+new filament
+{
+    length = 9
+    position = ( 0 0 0 )
+}
+
+set hand motor
+{
+    binding = 10, 0.05
+    unbinding = 0.2, 3
+    
+    activity = move
+    unloaded_speed = 1
+    stall_force = 5
+    display = ( size=12; color=green )
+}
+
+
+set hand dynein
+{
+    binding = 10, 0.05
+    unbinding = 0.2, 3
+     
+    activity = move
+    unloaded_speed = -1
+    stall_force = 5
+    display = ( size=12; color=red )
+}
+
+
+set single mobile
+{
+    hand = motor
+    diffusion = 0.1
+}
+
+set single motile
+{
+    hand = dynein
+    diffusion = 0.1
+}
+
+new 100 mobile
+new 100 motile
+
+run system
+{
+    nb_steps = 40000
+    nb_frames = 50
+}
+

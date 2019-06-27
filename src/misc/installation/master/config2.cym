@@ -1,0 +1,65 @@
+% Self-organization of filaments driven by bivalent motors
+% FJN for Nuit Blanche, 6.10.2018
+
+set simul system
+{
+    dim = 2
+    time_step = 0.01
+    viscosity = 0.1
+    display = ( style=2; delay=20; period=4; zoom=0.6; label="Self organization -" )
+}
+
+set space cell
+{
+    shape = circle
+}
+
+set fiber filament
+{
+    rigidity = 10
+    segmentation = 0.5
+    confine = inside, 100
+    display = ( color=blue; width = 1; )
+}
+
+set hand motor
+{
+    binding= 2, 0.02
+    unbinding = 0.25, 3
+    
+    activity = move
+    unloaded_speed = 0.8
+    stall_force = 5
+
+    bind_also_end = 1
+    hold_growing_end = 1
+
+    display = ( color=green, dark_green; size=7; width=7; )
+}
+
+set couple complex
+{
+    hand1 = motor
+    hand2 = motor
+    stiffness = 100
+    diffusion = 10
+}
+
+new cell
+{
+    radius = 14
+}
+
+new 256 filament
+{
+    length = 8
+}
+
+new 4096 complex
+
+run 100000 system
+{
+    nb_frames = 50
+}
+
+
