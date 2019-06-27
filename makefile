@@ -120,7 +120,7 @@ doc:
 
 tar:
 	COPYFILE_DISABLE=1 tar cf cytosim.tar --exclude "*.o" --exclude "*~" --exclude xcuserdata \
-	--exclude doxygen src makefile makefile.inc cym python bash doc cytosim.xcodeproj
+	--exclude doxygen src makefile makefile.inc cym python doc cytosim.xcodeproj
 
 
 tarzip: tar
@@ -130,7 +130,7 @@ tarzip: tar
 
 tarsrc:
 	COPYFILE_DISABLE=1 tar cf cytosim_src.tar --exclude "*.o" --exclude ".*" \
-	--exclude ".svn" --exclude "*~" src makefile makefile.inc cym python bash
+	--exclude ".svn" --exclude "*~" src makefile makefile.inc cym python
 
 pack: sterile tarsrc
 
