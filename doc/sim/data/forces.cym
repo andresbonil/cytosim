@@ -1,0 +1,70 @@
+% Script to measure the distribution of forces in a link
+% FJN, Cambridge 28.06.2019
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.01
+    precondition = 0
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 1.0
+    confine = inside, 100
+}
+
+set hand binder
+{
+    binding = 10, 0.05
+    unbinding = 0, inf
+}
+
+new microtubule
+{
+    length = 4
+    position = 0 0 0
+    orientation = 1 0 0
+}
+
+% with an extension of 1um and a stiffness of 10, the tension is ~10 pN
+set single link
+{
+    hand = binder
+    activity = fixed
+    stiffness = 100
+}
+
+new cell
+{
+    radius = 3
+}
+
+new link
+{
+    position = -2 0 0
+    attach = fiber, 0, minus_end
+}
+
+new link
+{
+    position = +2 0 0
+    attach = fiber, 0, plus_end
+}
+
+repeat 10000
+{
+	run 1000 system
+	{
+	    nb_frames = 0
+	}
+
+	% report forces in the `link`:
+	report single:force forces.txt { verbose=0; }
+}
