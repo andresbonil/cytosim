@@ -4,7 +4,7 @@
 OBJ_SPACE=space.o space_prop.o space_square.o space_sphere.o space_disc.o\
           space_dice.o space_torus.o space_polygon.o space_polygonZ.o \
           space_ellipse.o space_cylinder.o space_ring.o space_cylinderZ.o space_capsule.o \
-          space_strip.o space_periodic.o space_banana.o space_cylinderP.o space_force.o\
+          space_strip.o space_periodic.o space_banana.o space_cylinderP.o\
 
 OBJ_SPACED1=$(OBJ_SPACE:.o=D1.o)
 OBJ_SPACED2=$(OBJ_SPACE:.o=D2.o)

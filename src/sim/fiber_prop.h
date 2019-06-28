@@ -20,7 +20,7 @@ class Space;
 #define OLD_SQUEEZE_FORCE       0
 #define NEW_COLINEAR_FORCE      0
 #define NEW_FIBER_CHEW          0
-#define NEW_FIBER_LOOP          0
+#define NEW_FIBER_LOOP          1
 
 /// Property for a Fiber
 /**

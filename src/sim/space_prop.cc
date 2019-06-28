@@ -8,7 +8,6 @@
 #include "sim.h"
 
 #include "space.h"
-#include "space_force.h"
 #include "space_square.h"
 #include "space_sphere.h"
 #include "space_polygon.h"

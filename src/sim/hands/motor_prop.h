@@ -5,9 +5,6 @@
 
 #include "hand_prop.h"
 
-/// enable movement-dependent detachment of motors
-#define NEW_UNBINDING_DENSITY 0
-
 /// Additional Property for Motor
 /**
  @ingroup Properties
@@ -54,31 +51,6 @@ public:
      */
     bool    limit_speed;
     
-#if NEW_UNBINDING_DENSITY
-    /// movement-induced probability of detaching
-    /**
-     This is a positive number specifying the probability of detaching
-     per unit-length of movement.
-     
-     With this parameter set, the unbinding rate of a moving motor will depend
-     on the motion of this motor, as:
-
-         unbinding_rate * exp( force / unbinding_force ) + unbinding_density * speed
-
-     This way a motor moving without load has a rate:
-
-         unbinding_rate + unbinding_density * unloaded_speed
-     
-     In contrast, a motor which has reached the end of a filament will have only
-     the first term (assuming that it does not detach immediately):
-     
-     Hence the unbinding rate at the end can be set lower than for a moving motor.
-     This also affects motors which are stalled by force, since as they do not move,
-     detachment is set by the first term.
-     */
-    real    unbinding_density;
-#endif
-
     /// @}
     
 private:

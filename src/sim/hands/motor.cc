@@ -38,12 +38,6 @@ void Motor::stepUnloaded()
         }
         a = fbFiber->abscissaP();
     }
-    
-#if NEW_UNBINDING_DENSITY
-    // detachment is also induced by displacement:
-    assert_true( nextDetach >= 0 );
-    nextDetach -= prop->unbinding_density * fabs(a-fbAbs);
-#endif
 
     if ( !testDetachment() )
         moveTo(a);
@@ -88,12 +82,6 @@ void Motor::stepLoaded(Vector const& force, real force_norm)
         }
         a = fbFiber->abscissaP();
     }
-
-#if NEW_UNBINDING_DENSITY
-    // detachment is also induced by displacement:
-    assert_true( nextDetach >= 0 );
-    nextDetach -= prop->unbinding_density * fabs(a-fbAbs);
-#endif
     
     if ( testKramersDetachment(force_norm) )
         return;
