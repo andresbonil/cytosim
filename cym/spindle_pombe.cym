@@ -32,8 +32,8 @@ set space squeeze
 
 new squeeze
 {
-	length = 2
-	radius = 0.1
+    length = 2
+    radius = 0.1
 }
 
 set fiber microtubule

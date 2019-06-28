@@ -23,7 +23,7 @@ new cell
 
 set fiber microtubule
 {
-	loop = 1
+    loop = 1
     rigidity = 10
     segmentation = 0.016
     confine = inside, 0
@@ -33,12 +33,12 @@ set fiber microtubule
 
 set fiber actin
 {
-	loop = 1
-	rigidity = 0.05
-	segmentation = 0.011
-	confine = inside, 0
-	steric = 1, 0.010
-	display = ( style=actin; color=orange; )
+    loop = 1
+    rigidity = 0.05
+    segmentation = 0.011
+    confine = inside, 0
+    steric = 1, 0.010
+    display = ( style=actin; color=orange; )
 }
 
 set hand binder

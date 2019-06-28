@@ -9,7 +9,7 @@ set simul system
         style = 2;
         delay = 10;
         point_size = 8;
-	    )
+        )
     precondition = 0
 }
 
@@ -38,7 +38,7 @@ set hand fast
     display = (
         color = 0xE69F00FF;
         size = 5;
-	    )
+        )
 }
 
 set hand slow
@@ -54,7 +54,7 @@ set hand slow
     display = (
         color = 0x0072B2FF;
         size = 5;
-	    )
+        )
 }
 
 set single graftedF

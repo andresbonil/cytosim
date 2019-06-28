@@ -68,7 +68,7 @@ set solid minifilament
 
 new cell
 {
-	length = 2, 2, 0.2;
+    length = 2, 2, 0.2;
 }
 
 new 1000 filament

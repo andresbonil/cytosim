@@ -8,7 +8,7 @@ set space cell
 
 new cell
 {
-	length = 80, 45;
+    length = 80, 45;
 }
 
 set simul system
