@@ -8,21 +8,21 @@ Let's consider a Hookean link with stiffness `stiff`, that is stretched over a d
  
 The force in the link is
  
-		force = stiff * delta
+	force = stiff * delta
  
 and the associated energy is 
  
-		1/2 stiff * delta ^ 2
+	1/2 stiff * delta ^ 2
 	 
 [Equipartition theorem](https://en.wikipedia.org/wiki/Equipartition_theorem) states that the energy associated with each degree of freedom is `1/2 kT`.
  
 Thus we can derive:
 
-		variance(delta) = kT / stiff
+	variance(delta) = kT / stiff
 		
 Hence
  
-		variance(force) = kT * stiff
+	variance(force) = kT * stiff
 		 
 # Values
 
@@ -49,6 +49,6 @@ Or
 
 Histogram of the forces extracted using `report single:force forces.txt`:
 
-![Distribution of Forces](forces.png)
+![Distribution of Forces](data/forces.png)
 
 
