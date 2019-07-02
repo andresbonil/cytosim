@@ -374,7 +374,7 @@ void FiberSet::allIntersections0(Array<FiberSite>& res1, Array<FiberSite>& res2,
 void FiberSet::allIntersections(Array<FiberSite>& res1, Array<FiberSite>& res2,
                                 const real max_distance) const
 {
-#if ( 1 )
+#if ( 0 )
     allIntersections0(res1, res2, max_distance);
     std::clog << "FiberSet::allIntersections0() found " << res1.size() << " intersections \n";
     //for ( unsigned i = 0; i < res1.size(); ++i )
@@ -425,7 +425,7 @@ void FiberSet::allIntersections(Array<FiberSite>& res1, Array<FiberSite>& res2,
             //std::clog << '\n';
         }
     }
-#if ( 1 )
+#if ( 0 )
     std::clog << "FiberSet::allIntersections()  found " << res1.size() << " intersections \n";
     //for ( unsigned i = 0; i < res1.size(); ++i )
     //    std::clog << res1[i] << " " << res2[i] << "\n";

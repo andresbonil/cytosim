@@ -33,7 +33,7 @@ Sphere::Sphere(SphereProp const* p)
  This will create the center point
  */
 Sphere::Sphere(SphereProp const* p, real rad)
-: spRadius(rad), spDrag(0), spDragRot(0), prop(p)
+: spRadius(rad), spDrag(0), spDragRot(0), sRad(nullptr), prop(p)
 {
     if ( !prop )
         throw InvalidParameter("Sphere:prop should be specified");
@@ -59,7 +59,7 @@ Sphere::Sphere(SphereProp const* p, real rad)
 
 
 Sphere::Sphere(const Sphere & o)
-: Mecable(o)
+: Mecable(o), sRad(nullptr)
 {
     prop     = o.prop;
     spRadius = o.spRadius;
