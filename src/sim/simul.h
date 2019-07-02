@@ -35,7 +35,7 @@ const char TRAJECTORY[] = "objects.cmo";
 /// Simulator class containing all Objects
 class Simul
 {
-private:
+public:
     
     /// Meca used to set and integrate the equations of motion of Mecables
     mutable Meca    sMeca;
@@ -48,6 +48,8 @@ private:
     
     /// grid used for steric interaction between Fiber/Solid/Bead/Sphere
     mutable PointGrid pointGrid;
+
+private:
     
     /// signals that engine is ready to perform a step
     bool            sReady;
@@ -282,7 +284,11 @@ public:
 
     //-------------------------------------------------------------------------------
     
-    class InputLock;
+    /// current file format
+    const static int currentFormatID = 51;
+    
+    /// class for reading trajectory file
+    class     InputLock;
     
     /// load the properties contained in the standard output property file
     void      loadProperties();

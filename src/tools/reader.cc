@@ -19,7 +19,7 @@
 
 void help(std::ostream& os)
 {
-    os << "Cytosim trajectory file reader\n";
+    printf("Cytosim-reader %iD, file version %i\n", DIM, Simul::currentFormatID);
     os << "\n";
     os << "Syntax:  reader [OPTIONS] INPUT_FILE_NAME output=FILE_NAME\n";
     os << "\n";

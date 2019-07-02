@@ -184,14 +184,14 @@ real FiberSegment::projectPointF(const real w[], real& dis) const
  If the segments are parallel, the mid-point of the overlapping section is returned.
  */
 
-int FiberSegment::shortestDistance(FiberSegment const& that, real& abs1, real& abs2, real& dis) const
+int FiberSegment::shortestDistance(FiberSegment const& seg, real& abs1, real& abs2, real& dis) const
 {
     Vector d1  = diff();
-    Vector d2  = that.diff();
-    Vector d12 = that.pos1() - pos1();
+    Vector d2  = seg.diff();
+    Vector d12 = seg.pos1() - pos1();
     
     real len1 = len();
-    real len2 = that.len();
+    real len2 = seg.len();
     
     if ( modulo )
         modulo->fold(d12);
@@ -262,7 +262,8 @@ int FiberSegment::shortestDistance(FiberSegment const& that, real& abs1, real& a
 void FiberSegment::print(std::ostream& os) const
 {
     if ( fiber() )
-        os << "(" << fiber()->reference() << " seg " << point() << ":" << point()+1 << ")";
+        //os << "(" << fiber()->reference() << " seg " << point() << ":" << point()+1 << ")";
+        os << "(f" << fiber()->identity() << " " << point() << ":" << point()+1 << ")";
     else
         os << "(null)";
 }

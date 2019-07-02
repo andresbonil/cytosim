@@ -488,8 +488,8 @@ void Display3::drawFiberLattice(Fiber const& fib, FiberLattice const& lat, real 
     const real uni = lat.unit();
     const real rad = width * sFactor;
     
-    auto inf = lat.index_sup(fib.abscissaM());
-    auto sup = lat.index(fib.abscissaP());
+    auto inf = lat.indexM();
+    auto sup = lat.indexP();
 
     real lenM = uni * inf - fib.abscissaM();
     real lenP = fib.abscissaP() - uni * sup;

@@ -162,7 +162,7 @@ void paintCellPeriodic(const int x_inf, const int x_sup, const int y, const int 
 paintGrid(first_fiber, last_fiber) links all segments found in 'fiber' and its
  descendant, in the point-list GP that match distance(GP, segment) < H.
  
- 'H' is calculated such that tryToAttach() finds any segment closer than 'gridRange':
+ 'H' is calculated such that tryToAttach() finds any segment closer than 'grid:range':
  
  To determine H, we start from a relation on the sides of a triangle:
  (A) distance( GP, segment ) < distance( GP, X ) + distance( X, segment )
@@ -172,12 +172,12 @@ paintGrid(first_fiber, last_fiber) links all segments found in 'fiber' and its
  (B) distance( GP, X ) < 0.5 * fGrid.diagonalLength()
  
  Thus to find all rods for which:
- (B) distance( X, segment ) < gridRange
+ (B) distance( X, segment ) < grid::range
  we simply use:
  
-     H = gridRange + 0.5 * fGrid.diagonalLength();
+     H = grid::range + 0.5 * fGrid.diagonalLength();
  
- Note: H is calculated by paintGrid() and gridRange by setFiberGrid().
+ Note: H is calculated by paintGrid() and grid::range by setFiberGrid().
  
  Linking all segments is done in an inverse way:
  for each segment, we cover all points of the grid inside a volume obtained
@@ -185,15 +185,15 @@ paintGrid(first_fiber, last_fiber) links all segments found in 'fiber' and its
  calls the function paint() above.
  */
 
-void FiberGrid::paintGrid(const Fiber * first, const Fiber * last)
+void FiberGrid::paintGrid(const Fiber * first, const Fiber * last, real range)
 {
     assert_true(hasGrid());
-    assert_true(gridRange >= 0);
+    assert_true(range >= 0);
     
     fGrid.clear();
     const Vector offset(fGrid.inf());
     const Vector deltas(fGrid.delta());
-    const real width = gridRange + 0.5 * fGrid.diagonalLength();
+    const real width = range + 0.5 * fGrid.diagonalLength();
     
     //define the painting function used:
     void (*paint)(int, int, int, int, void*) = modulo ? paintCellPeriodic : paintCell;
@@ -296,35 +296,24 @@ void FiberGrid::tryToAttach(Vector const& place, Hand& ha) const
 /**
  This function is limited to the range given in paintGrid();
  */
-FiberGrid::SegmentList FiberGrid::nearbySegments(Vector const& place, const real D, Fiber * exclude) const
+FiberGrid::SegmentList FiberGrid::nearbySegments(Vector const& place, const real DD, Fiber * exclude) const
 {
-    if ( gridRange < 0 )
-        throw InvalidParameter("the Grid was not initialized");
-    if ( gridRange < D )
-    {
-        printf("gridRange = %.4f < range = %.4f\n", gridRange, D);
-        throw InvalidParameter("the Grid maximum distance was exceeded");
-    }
-    
     SegmentList res;
     
     //get the grid node list index closest to the position in space:
     const auto indx = fGrid.index(place, 0.5);
     
     //get the list of rods associated with this cell:
-    SegmentList & segments = fGrid.icell(indx);
-    
-    const real DD = D*D;
-    for ( FiberSegment const& seg : segments )
+    for ( FiberSegment const& seg : fGrid.icell(indx) )
     {
-        if ( seg.fiber() == exclude )
-            continue;
-        
-        real dis = INFINITY;
-        seg.projectPoint(place, dis);
-        
-        if ( dis < DD )
-            res.push_back(seg);
+        if ( seg.fiber() != exclude )
+        {
+            real dis = INFINITY;
+            seg.projectPoint(place, dis);
+            
+            if ( dis < DD )
+                res.push_back(seg);
+        }
     }
     
     return res;
@@ -336,13 +325,11 @@ FiberSegment FiberGrid::closestSegment(Vector const& place) const
     //get the cell index from the position in space:
     const auto indx = fGrid.index(place, 0.5);
     
-    //get the list of rods associated with this cell:
-    SegmentList & segments =  fGrid.icell(indx);
-    
     FiberSegment res(nullptr, 0);
     real hit = INFINITY;
     
-    for ( FiberSegment const& seg : segments )
+    //get the list of rods associated with this cell:
+    for ( FiberSegment const& seg : fGrid.icell(indx) )
     {
         //we compute the distance from the hand to the candidate rod,
         //and compare it to the best we have so far.

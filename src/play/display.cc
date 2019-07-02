@@ -1023,8 +1023,8 @@ void set_lattice_color(Fiber const& fib, FiberLattice const& lat, real val, real
 void Display::drawFiberLattice1(Fiber const& fib, FiberLattice const& lat, real width) const
 {
     const real uni = lat.unit();
-    const auto inf = lat.index(fib.abscissaM());
-    const auto sup = lat.index(fib.abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     assert_true( inf <= sup );
     
     lineWidth(width);
@@ -1072,8 +1072,8 @@ void Display::drawFiberLattice1(Fiber const& fib, FiberLattice const& lat, real 
 void Display::drawFiberLattice2(Fiber const& fib, FiberLattice const& lat, real width) const
 {
     const real uni = lat.unit();
-    const auto inf = lat.index(fib.abscissaM());
-    const auto sup = lat.index(fib.abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     assert_true( inf <= sup );
     
     lineWidth(width);
@@ -1118,9 +1118,9 @@ void Display::drawFiberLattice2(Fiber const& fib, FiberLattice const& lat, real 
 void Display::drawFiberLatticeEdges(Fiber const& fib, FiberLattice const& lat, real) const
 {
     const real uni = lat.unit();
-    const auto inf = lat.index(fib.abscissaM());
-    const auto sup = lat.index(fib.abscissaP());
-    
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
+
     fib.disp->color.load();
     pointSize(fib.prop->disp->speckle_size);
     glBegin(GL_POINTS);
@@ -1133,13 +1133,13 @@ void Display::drawFiberLatticeEdges(Fiber const& fib, FiberLattice const& lat, r
 void Display::drawFiberLabels(Fiber const& fib, void* font) const
 {
     FiberDisp const*const disp = fib.prop->disp;
+    char str[32];
 
     glPushAttrib(GL_LIGHTING_BIT);
     glDisable(GL_LIGHTING);
-    if ( disp->label_style & 3 )
+    if ( disp->label_style & 1 )
     {
         // draw fiber name and vertex indices
-        char str[32];
         int n = snprintf(str, sizeof(str), " %u ", fib.identity());
         for ( unsigned ii = 0; ii < fib.nbPoints(); ++ii )
         {
@@ -1147,23 +1147,32 @@ void Display::drawFiberLabels(Fiber const& fib, void* font) const
             gle::gleDrawText(fib.posP(ii), str, font);
         }
     }
+    if ( disp->label_style & 2 )
+    {
+        // draw fiber name and abscissa value at vertices
+        int n = snprintf(str, sizeof(str), " %u ", fib.identity());
+        for ( unsigned ii = 0; ii < fib.nbPoints(); ++ii )
+        {
+            snprintf(str+n, sizeof(str)-n, "%.3f", fib.abscissaPoint(ii));
+            gle::gleDrawText(fib.posP(ii), str, font);
+        }
+    }
     if ( disp->label_style & 4 )
     {
         // display integral abscissa along the fiber
-        char tmp[16];
-        snprintf(tmp, sizeof(tmp), "%.2f", fib.abscissaM());
-        gle::gleDrawText(fib.posEndM(), tmp, font);
+        snprintf(str, sizeof(str), "%.3f", fib.abscissaM());
+        gle::gleDrawText(fib.posEndM(), str, font);
         
         int s = (int)ceil(fib.abscissaM());
         int e = (int)floor(fib.abscissaP());
         for ( int a = s; a <= e; ++a )
         {
-            snprintf(tmp, sizeof(tmp), "%i", a);
-            gle::gleDrawText(fib.pos(a), tmp, font);
+            snprintf(str, sizeof(str), "%i", a);
+            gle::gleDrawText(fib.pos(a), str, font);
         }
         
-        snprintf(tmp, sizeof(tmp), "%.2f", fib.abscissaP());
-        gle::gleDrawText(fib.posEndP(), tmp, font);
+        snprintf(str, sizeof(str), "%.3f", fib.abscissaP());
+        gle::gleDrawText(fib.posEndP(), str, font);
     }
     glPopAttrib();
 }

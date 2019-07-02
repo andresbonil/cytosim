@@ -220,7 +220,7 @@ public:
     /// set cell values outside the valid range
     void markEdges(const cell_t val)
     {
-        for ( site_t i = laInf; i < laIndexM; ++i ) laSite[i] = val;
+        for ( site_t i = laInf;   i < laIndexM; ++i ) laSite[i] = val;
         for ( site_t i = laIndexP+1; i < laSup; ++i ) laSite[i] = val;
     }
     
@@ -234,8 +234,11 @@ public:
             markEdges(0);
 #endif
         laIndexM = index(a);
-        laIndexP = index_sup(b) - 1;
+        laIndexP = index(b);
         
+        assert_true(abscissa(laIndexM) <= a && a <= abscissa(laIndexM+1.0));
+        assert_true(abscissa(laIndexP) <= b && b <= abscissa(laIndexP+1.0));
+
         /* allocate with some safety margin */
         allocate(laIndexM, laIndexP+1, 8);
 #if 0
@@ -270,17 +273,17 @@ public:
     /// index of the site after the one containing abscissa `a`
     site_t  index_round(real a) const { return (site_t)round(a/laUnit); }
 
-    /// true if index 'i' is covered by the lattice
+    /// true if index 'i' is covered by the lattice allocated range
     bool    valid(site_t i)     const { return ( laInf <= i  &&  i < laSup ); }
     
-    /// true if index 'i' is not covered by the lattice
+    /// true if index 'i' is not covered by the lattice allocated range
     bool    invalid(site_t i)   const { return ( i < laInf  ||  laSup <= i ); }
     
-    /// true if index 'i' corresponds to a site that is between Minus and Plus ends
-    bool    within(site_t i)    const { return ( laIndexM <= i  &&  i <= laIndexP ); }
+    /// true if index 'i' corresponds to a site that is completely between Minus and Plus ends
+    bool    betweenMP(site_t i) const { return ( laIndexM < i  &&  i < laIndexP ); }
     
-    /// true if index 'i' corresponds to a site that falls completely outside
-    bool    outside(site_t i)   const { return ( i < laIndexM  ||  laIndexP < i ); }
+    /// true if index 'i' corresponds to a site that is partly or entirely outside the range
+    bool    outsideMP(site_t i) const { return ( i <= laIndexM || laIndexP <= i ); }
 
     
     /// the site of index `h` covers the abscissa range `unit * h < s < unit * ( h + 1 )`
@@ -376,18 +379,18 @@ public:
     }
     
     
-    /// sum all sites in [inf, e[; set sites to zero and return total in `res`
+    /// sum all sites that are entirely below the MINUS_END
     template <typename SUM>
-    void collectM(SUM& res, const site_t e)
+    void collectM(SUM& res)
     {
-        collectCells(res, laInf, e);
+        collectCells(res, laInf, laIndexM);
     }
     
-    /// sum all sites in ]s, sup]; set sites to zero and return total in `res`
+    /// sum all sites that are entirely above the PLUS_END
     template <typename SUM>
-    void collectP(SUM& res, const site_t s)
+    void collectP(SUM& res)
     {
-        collectCells(res, s+1, laSup);
+        collectCells(res, laIndexP+1, laSup);
     }
     
     /// sum of values in the entire lattice; set sites to zero

@@ -151,7 +151,7 @@ void FiberSite::read(Inputter& in, Simul& sim)
 #ifdef BACKWARD_COMPATIBILITY
         else if ( tag == 'm' )
         {
-            fbAbs  = in.readFloat();
+            fbAbs = in.readFloat();
         } 
 #endif
         else
@@ -169,12 +169,13 @@ void FiberSite::print(std::ostream& os) const
 {
     if ( fiber() )
     {
+        os << "(f" << fiber()->identity();
 #if FIBER_HAS_LATTICE
         if ( fbLattice )
-            os << "(" << fiber()->reference() << " site " << fbSite << ")";
+            os << " s " << fbSite;
         else
 #endif
-            os << "(" << fiber()->reference() << " abs " << abscissa() << ")";
+            os << " @ " << std::fixed << std::setprecision(3) << abscissa() << ")";
     } else
         os << "(null)";
 }
@@ -190,17 +191,24 @@ std::ostream& operator << (std::ostream& os, FiberSite const& obj)
 #pragma mark -
 
 
-void FiberSite::checkAbscissa() const
+int FiberSite::checkAbscissa() const
 {
     assert_true(fbFiber);
     
     real a = fbFiber->abscissaM() - fbAbs;
     if ( a > 1e-3 )
-        std::cerr << "FiberSite:abscissa < fiber:abscissa(MINUS_END) :  " << a << std::endl;
+    {
+        std::cerr << "FiberSite:abscissa < fiber:abscissa(MINUS_END) : " << a << '\n';
+        return 2;
+    }
     
     real b = fbAbs - fbFiber->abscissaP();
     if ( b > 1e-3 )
-        std::cerr << "FiberSite:abscissa > fiber:abscissa(PLUS_END)  :  " << b << std::endl;
+    {
+        std::cerr << "FiberSite:abscissa > fiber:abscissa(PLUS_END)  : " << b << '\n';
+        return 1;
+    }
+    return 0;
 }
 
 

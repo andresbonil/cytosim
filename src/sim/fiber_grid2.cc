@@ -18,8 +18,7 @@ SegmentVector allSegments;
 
 unsigned FiberGrid::setGrid(Space const*, real)
 {
-    PRINT_ONCE("Cytosim is using a slow method to localize fibers!\n");
-    gridRange = 0;
+    PRINT_ONCE("Cytosim is using a crude method to localize fibers!\n");
     return 0;
 }
 
@@ -78,22 +77,21 @@ void FiberGrid::tryToAttach(Vector const& place, Hand& ha) const
 }
 
 
-FiberGrid::SegmentList FiberGrid::nearbySegments(Vector const& place, const real D, Fiber * exclude) const
+FiberGrid::SegmentList FiberGrid::nearbySegments(Vector const& place, const real DD, Fiber * exclude) const
 {
     SegmentList res;
     
-    const real DD = D * D;
     for ( FiberSegment const& seg : allSegments )
     {
-        if ( seg.fiber() == exclude )
-            continue;
-        
-        real dis = INFINITY;
-        // Compute the distance from the hand to the rod:
-        seg.projectPoint(place, dis);
-        
-        if ( dis < DD )
-            res.push_back(seg);
+        if ( seg.fiber() != exclude )
+        {
+            real dis = INFINITY;
+            // Compute the distance from the hand to the rod:
+            seg.projectPoint(place, dis);
+            
+            if ( dis < DD )
+                res.push_back(seg);
+        }
     }
     
     return res;

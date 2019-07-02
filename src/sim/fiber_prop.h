@@ -288,7 +288,8 @@ public:
 #endif
     
 #if NEW_FIBER_LOOP
-    bool loop;
+    /// if `true`, link MINUS and PLUS ends together to form a loop
+    bool         loop;
 #endif
     /// @}
 

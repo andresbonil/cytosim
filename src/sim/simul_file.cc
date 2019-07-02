@@ -45,7 +45,6 @@
  20: 12/07/2004
  19: introduced different kinds of Single
 */
-const int currentFormatID = 51;
 
 
 //------------------------------------------------------------------------------

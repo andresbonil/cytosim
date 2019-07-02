@@ -478,28 +478,40 @@ void CoupleSet::thaw()
 }
 
 
+void CoupleSet::writeAA(Outputter& out) const
+{
+    out.put_line("\n#section couple AA", out.binary());
+    ObjectSet::write(aaList, out);
+}
+
+void CoupleSet::writeAF(Outputter& out) const
+{
+    out.put_line("\n#section couple AF", out.binary());
+    ObjectSet::write(afList, out);
+}
+
+void CoupleSet::writeFA(Outputter& out) const
+{
+    out.put_line("\n#section couple FA", out.binary());
+    ObjectSet::write(faList, out);
+}
+
+void CoupleSet::writeFF(Outputter& out) const
+{
+    out.put_line("\n#section couple FF", out.binary());
+    ObjectSet::write(ffList, out);
+}
+
 void CoupleSet::write(Outputter& out) const
 {
     if ( sizeAA() > 0 )
-    {
-        out.put_line("\n#section couple AA", out.binary());
-        ObjectSet::write(aaList, out);
-    }
+        writeAA(out);
     if ( sizeAF() > 0 )
-    {
-        out.put_line("\n#section couple AF", out.binary());
-        ObjectSet::write(afList, out);
-    }
+        writeAF(out);
     if ( sizeFA() > 0 )
-    {
-        out.put_line("\n#section couple FA", out.binary());
-        ObjectSet::write(faList, out);
-    }
-    if ( sizeFF() > 0  && ! simul.prop->skip_free_couple )
-    {
-        out.put_line("\n#section couple FF", out.binary());
-        ObjectSet::write(ffList, out);
-    }
+        writeFA(out);
+    if ( sizeFF() > 0 && !simul.prop->skip_free_couple )
+        writeFF(out);
 }
 
 
@@ -1011,6 +1023,7 @@ void CoupleSet::equilibrate(FiberSet const& fibers, PropertyList const& properti
  */
 void CoupleSet::connect(FiberSet const& fibers, PropertyList const& properties)
 {
+    // calculate maximum range of Hands
     real range = 0;
     for ( Property * i : properties.find_all("couple") )
     {
@@ -1022,10 +1035,11 @@ void CoupleSet::connect(FiberSet const& fibers, PropertyList const& properties)
     if ( range <= 0 )
         throw InvalidParameter("cannot connect network!");
     
-    // get all crossings:
+    // get all crosspoints within this range:
     Array<FiberSite> loc1(1024), loc2(1024);
     fibers.allIntersections(loc1, loc2, range);
     const size_t nb_crossings = loc1.size();
+    assert_true(nb_crossings == loc2.size());
     
     //std::clog << nb_crossings << " intersections at range " << range << "\n";
 

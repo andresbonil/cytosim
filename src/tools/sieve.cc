@@ -9,6 +9,8 @@
 
 void help()
 {
+    printf("Cytosim-sieve %iD, file version %i\n", DIM, Simul::currentFormatID);
+    printf("    built on %s\n", __DATE__);
     printf("Synopsis:\n");
     printf("   `sieve` let you to manipulate cytosim trajectory file.\n");
     printf("   It reads a trajectory files, and loads the objects in memory\n");
@@ -28,7 +30,6 @@ void help()
     printf("Example:\n");
     printf("    sieve objects.cmo objects.txt binary=0\n");
     printf("    sieve objects.cmo objects.txt binary=0 skip=couple\n");
-    printf("(DIM = %i)\n", DIM);
 }
 
 

@@ -50,12 +50,6 @@ void Simul::setFiberGrid(Space const* spc) const
     prop->binding_grid_step = step;
     //std::clog << "simul:binding_grid_step = " << prop->binding_grid_step << "\n";
 
-    // set grid range:
-    real range = 0.0;
-    for ( Property * i : properties.find_all("hand") )
-        range = std::max(range, static_cast<HandProp const*>(i)->binding_range);
-    fiberGrid.setRange(range);
-
     // create the grid cells:
     fiberGrid.createCells();
 
@@ -135,8 +129,13 @@ void Simul::step()
     
     //printf("     ::steps    %16llu\n", (__rdtsc()-rdtsc)>>5); rdtsc = __rdtsc();
 
+    // calculate grid range from Hand's binding range:
+    real range = 0.0;
+    for ( Property * i : properties.find_all("hand") )
+        range = std::max(range, static_cast<HandProp const*>(i)->binding_range);
+
     // distribute Fibers over a grid for binding of Hands:
-    fiberGrid.paintGrid(fibers.first(), nullptr);
+    fiberGrid.paintGrid(fibers.first(), nullptr, range);
     
     //printf("     ::paint    %16llu\n", (__rdtsc()-rdtsc)>>5); rdtsc = __rdtsc();
 
@@ -148,7 +147,7 @@ void Simul::step()
     {
         HandProp hp("test_binding");
         hp.binding_rate  = INFINITY;
-        hp.binding_range = RNG.preal() * fiberGrid.range();
+        hp.binding_range = RNG.preal() * range;
         hp.bind_also_end = BOTH_ENDS;
         hp.complete(*this);
         

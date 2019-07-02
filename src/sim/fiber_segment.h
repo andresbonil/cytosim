@@ -100,7 +100,7 @@ public:
     real         projectPointF(const real[], real& dist) const;
 
     /// calculates the closest distance between two segments
-    int          shortestDistance(FiberSegment const& that, real& a, real& b, real& dis) const;
+    int          shortestDistance(FiberSegment const&, real& a, real& b, real& dis) const;
 
     /// Human friendly ouput
     void         print(std::ostream&) const;

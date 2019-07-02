@@ -39,7 +39,7 @@ new 1 microtubule
 {
     length = 10
     position = 0 0 0
-    orientation = vertical
+    orientation = align 1 0 0 
 }
 
 new 1 microtubule
@@ -70,10 +70,17 @@ new link
 }
 
 
-run 20000 system
+run 10000 system
 {
     nb_frames = 10
 }
 
-report fiber:tension * { plane = 1 0 0, 0; }
+% report forces in the `link`:
 report single:force *
+
+% report internal tensions in the fiber accross a virtual plane:
+report fiber:tension * { plane = 1 0 0, 0; }
+
+% report forces in the points
+report fiber:forces *
+

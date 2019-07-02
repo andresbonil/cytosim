@@ -146,7 +146,7 @@ public:
     /// abscissa, counted from the MINUS_END
     real         abscissaFromM() const { return fbAbs - fbFiber->abscissaM(); }
 
-    /// abscissa, counted from the PLUS_END in the reverse direction
+    /// inverted abscissa counted from the PLUS_END, positive if ( abscissa < abscissa(PLUS_END) )
     real         abscissaFromP() const { return fbFiber->abscissaP() - fbAbs; }
 
     /// abscissa, counted from the specified FiberEnd (in reversed direction for the PLUS_END)
@@ -165,7 +165,7 @@ public:
     bool         aboveM()        const { return fbFiber->aboveM(fbAbs); }
     
     /// true if abscissa is within the fiber boundaries
-    bool         betweenMP()     const { return fbFiber->betweenMP(fbAbs); }
+    bool         outsideMP()     const { return fbFiber->outsideMP(fbAbs); }
     
     //--------------------------------------------------------------------------
     
@@ -181,7 +181,7 @@ public:
     //--------------------------------------------------------------------------
     
     /// check that fbAbs is within Fiber::abscissaM() and Fiber::abscissaP()
-    void         checkAbscissa() const;
+    int          checkAbscissa() const;
     
     /// check validity of the interpolation (debuging purposes)
     int          bad() const;

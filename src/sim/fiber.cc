@@ -535,7 +535,7 @@ void Fiber::join(Fiber * fib)
         frLattice.setRange(abscissaM(), abscissaP());
         
         // transfer Lattice values from other fiber
-        frLattice.takeP(fib->frLattice, frLattice.index_sup(fib->abscissaM()));
+        frLattice.takeP(fib->frLattice, frLattice.indexM());
     }
 #endif
 
@@ -1154,12 +1154,12 @@ void Fiber::update()
         {
             real sumM;
             // release Lattice substance located outside the valid abscissa range
-            frLattice.collectM(sumM, frLattice.index_sup(abscissaM()));
+            frLattice.collectM(sumM);
             prop->field_ptr->cell(posEndM()) += sumM;
             //Cytosim::log << " Fiber::MINUS_END releases " << sumM << std::endl;
             
             real sumP;
-            frLattice.collectP(sumP, frLattice.index(abscissaP()));
+            frLattice.collectP(sumP);
             prop->field_ptr->cell(posEndP()) += sumP;
             //Cytosim::log << " Fiber::PLUS_END releases " << sumP << std::endl;
         }
@@ -1175,8 +1175,8 @@ void Fiber::update()
 void Fiber::setLattice(Lattice<real>& lat, real density) const
 {
     const real uni = lat.unit();
-    const auto inf = lat.index(abscissaM());
-    const auto sup = lat.index(abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     assert_true( inf <= sup );
     auto * site = lat.data();
     
@@ -1207,8 +1207,8 @@ Update all Lattice sites according to:
  */
 void Fiber::evolveLattice(Lattice<real>& lat, real cst, real fac) const
 {
-    const auto inf = lat.index(abscissaM());
-    const auto sup = lat.index(abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     auto * site = lat.data();
 
     //std::clog << "evolve " << inf << " " << sup << "\n";
@@ -1258,8 +1258,8 @@ void Fiber::bindLattice(Lattice<real>& lat, Field * fld, real binding_rate) cons
 void Fiber::equilibrateLattice(Lattice<real>& lat, Field * fld, real on, real off) const
 {
     const real uni = lat.unit();
-    const auto inf = lat.index(abscissaM());
-    const auto sup = lat.index(abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     auto * site = lat.data();
 
     if ( inf == sup )
@@ -1301,8 +1301,8 @@ void Fiber::equilibrateLattice(Lattice<real>& lat, Field * fld, real on, real of
 
 void Fiber::fluxLattice(Lattice<real>& lat, Field * fld, real speed) const
 {
-    const auto inf = lat.index(abscissaM());
-    const auto sup = lat.index(abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     auto * site = lat.data();
 
     const real fac = speed * prop->time_step / prop->lattice_unit;
@@ -1341,8 +1341,8 @@ void Fiber::fluxLattice(Lattice<real>& lat, Field * fld, real speed) const
 void Fiber::releaseLattice(Lattice<real>& lat, Field * fld) const
 {
     const real uni = lat.unit();
-    const auto inf = lat.index(abscissaM());
-    const auto sup = lat.index(abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     auto * site = lat.data();
     
     //@todo Handle the terminal site differently since they are truncated
@@ -1357,8 +1357,8 @@ void Fiber::releaseLattice(Lattice<real>& lat, Field * fld) const
 void Fiber::cutFiberLattice(Lattice<real>& lat)
 {
     const real uni = lat.unit();
-    const auto inf = lat.index(abscissaM());
-    const auto sup = lat.index(abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     auto * site = lat.data();
 
     const real fac = 1.0 / prop->time_step;
@@ -1412,17 +1412,15 @@ void Fiber::writeLattice(FiberLattice const& lat, Outputter& out) const
     writeHeader(out, TAG_LATTICE);
     // lat.write(out);
     // only write information corresponding to actual Fiber abscissa range:
-    auto inf = lat.index(abscissaM());
-    auto sup = lat.index(abscissaP()) + 1;
-    lat.write(out, inf, sup);
+    lat.write(out, lat.indexM(), lat.indexP()+1);
 }
 
 
 void Fiber::printLattice(std::ostream& os, FiberLattice const& lat) const
 {
     using std::setw;
-    const auto inf = lat.index(abscissaM());
-    const auto sup = lat.index_sup(abscissaP());
+    const auto inf = lat.indexM();
+    const auto sup = lat.indexP();
     os << "Lattice for " << reference() << ":\n";
     os << "    inf  " << inf << "  " << abscissaM() << "\n";
     os << "    sup  " << sup << "  " << abscissaP() << "\n";
@@ -1435,8 +1433,8 @@ void Fiber::printLattice(std::ostream& os, FiberLattice const& lat) const
 void Fiber::infoLattice(FiberLattice const& lat, unsigned& cnt, real& sm, real& mn, real& mx, bool density) const
 {
     const real scale = ( density ? 1.0/lat.unit() : 1.0 );
-    const auto sup = lat.index(abscissaP());
-    for ( auto i = lat.index(abscissaM()); i <= sup; ++i )
+    const auto sup = lat.indexP();
+    for ( auto i = lat.indexM(); i <= sup; ++i )
     {
         cnt++;
         sm += lat.data(i);

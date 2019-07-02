@@ -130,6 +130,7 @@ void FiberDisp::read(Glossary& glos)
     glos.set(lattice_scale,    "lattice", 1);
     glos.set(lattice_rescale,  "lattice", 2);
 
+    glos.set(label_style,      "label");
     glos.set(label_style,      "labels");
     glos.set(label_style,      "label_style");
     

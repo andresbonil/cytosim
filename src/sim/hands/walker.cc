@@ -53,7 +53,7 @@ void Walker::stepUnloaded()
         
         site_t s = site() + stride;
         
-        if ( outside(s) )
+        if ( outsideMP(s) )
         {
             if ( RNG.test_not(prop->hold_growing_end) )
             {
@@ -96,7 +96,7 @@ void Walker::stepLoaded(Vector const& force, real force_norm)
 
         site_t s = site() + stride;
 
-        if ( outside(s) )
+        if ( outsideMP(s) )
         {
             if ( RNG.test_not(prop->hold_growing_end) )
             {

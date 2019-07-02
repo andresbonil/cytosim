@@ -28,7 +28,7 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
         // index to site containing given abscissa:
         site_t s = lat->index(sit.abscissa());
 
-        if ( lat->outside(s) || unavailable(lat, s) )
+        if ( lat->outsideMP(s) || unavailable(lat, s) )
             return false;
         
         // adjust site:

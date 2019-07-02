@@ -434,6 +434,9 @@ void Parser::parse_new(std::istream& is)
                 }
             }
             
+            if ( opt.has_key("display") )
+                throw InvalidParameter("display parameters should be specified within `set'");
+            
             if ( opt.warnings(std::cerr, ~0) )
                 show_lines(is, spos);
         }

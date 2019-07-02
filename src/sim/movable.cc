@@ -395,8 +395,11 @@ Vector Movable::readPrimitive(std::istream& is, Space const* spc)
 #endif
         if ( tok == "center" || tok == "origin" )
             return Vector(0,0,0);
-            
-        throw InvalidParameter("Unknown position `"+tok+"'");
+        
+        if ( spc )
+            throw InvalidParameter("Unknown position specification `"+tok+"'");
+        else
+            throw InvalidParameter("Unknown position specification `"+tok+"' (with no space defined)");
     }
     
     // expect a vector to be specified:

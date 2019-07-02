@@ -75,6 +75,9 @@ public:
     /// find intersections between fibers in entire network, within given threshold
     void allIntersections(Array<FiberSite>&, Array<FiberSite>&, real max_distance) const;
     
+    /// find intersections between fibers in entire network, within given threshold
+    void allIntersections0(Array<FiberSite>&, Array<FiberSite>&, real max_distance) const;
+
     /// set random sites along the fibers, separated on average by `spread`
     void uniFiberSites(Array<FiberSite>&, real spread) const;
     
@@ -124,9 +127,6 @@ public:
 
     /// calculate center of gravity G, and principal components axes
     static int   infoComponents(ObjectList const&, real& sum, real avg[3], real mom[9], real vec[9]);
-
-    /// Count number of intances where two Fibers come at distance max_distance or less
-    unsigned     countIntersections(real max_distance) const;
 
     /// Count Fibers intersecting the plane defined by <em> n.pos + a = 0 </em>
     void         infoPlane(int& np, int& na, Vector const& n, real a) const;

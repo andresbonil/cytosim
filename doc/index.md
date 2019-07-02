@@ -25,7 +25,7 @@ Cytosim is distributed as source code and [must be compiled](compile/index.md) b
 
 To compile, enter these commands in a terminal window:
 
-	git clone https://github.com/nedelec/cytosim.git
+	git clone https://gitlab.com/f.nedelec/cytosim
 	cd cytosim
 	make
 

@@ -186,9 +186,12 @@ public:
     /// the sum of the distance between vertices (used for debugging)
     real         trueLength()            const { return contourLength(pPos, nPoints); }
     
-    /// true if ( abscissaM() <= a <= abscissaP() )
+    /// true if ( abscissaM() <= a ) AND ( a <= abscissaP() )
     bool         betweenMP(const real a) const { return abscissaM() <= a + REAL_EPSILON && a <= abscissaP() + REAL_EPSILON; }
     
+    /// true if ( a < abscissaM() ) OR ( abscissaP() < a )
+    bool         outsideMP(const real a) const { return a < abscissaM() || abscissaP() < a; }
+
     /// true if abscissa is smaller than abscissa of PLUS_END
     bool         belowP(const real a)    const { return a <= abscissaP(); }
     

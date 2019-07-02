@@ -80,7 +80,7 @@ namespace LinearSolvers
         real * tt = allocator.bind(1);
 
         // Arnoldi matrix
-        V.resize(dim, restart+1);
+        V.resize(dim, restart);
         
         temporary.allocate(restart+1, 3);
         real * sn = temporary.bind(0);
@@ -156,7 +156,8 @@ namespace LinearSolvers
                 
                 // V(i+1) = V(i+1) / H(i+1, i)
                 blas::xscal(dim, 1.0/nn, ww, 1);
-                blas::xcopy(dim, ww, 1, V.column(it+1), 1);
+                if ( it+1 < restart )
+                    blas::xcopy(dim, ww, 1, V.column(it+1), 1);
                 
                 gmres_make_rotation(H, cs, sn, ss, it);
                 
@@ -177,6 +178,7 @@ namespace LinearSolvers
             } while ( it+1 < restart );
             
             //auto rdtsc1 = __rdtsc()-rdtsc; rdtsc = __rdtsc();
+            //printf("GMRES %i iterations of %i\n", it+1, restart);
 
             // solve upper triangular system in place
             for (int j = it; j >= 0; --j)

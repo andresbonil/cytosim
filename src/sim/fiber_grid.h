@@ -68,23 +68,14 @@ public:
     
 private:
     
-    ///the maximum binding distance that can handled by the grid
-    real  gridRange;
-    
-    ///grid for divide-and-conquer strategies:
+    /// grid for divide-and-conquer strategies:
     grid_type fGrid;
     
 public:
     
     /// constructor
-    FiberGrid()  { gridRange = -1; }
-    
-    /// set binding range
-    void         setRange(real s) { gridRange = s; }
-    
-    /// return range
-    real         range() const { return gridRange; }
-    
+    FiberGrid()  { }
+   
     /// number of cells in grid
     index_t      nbCells() const { return fGrid.nbCells(); }
 
@@ -98,15 +89,24 @@ public:
     size_t       hasGrid() const;
     
     /// register the Fiber segments on the grid cells
-    void         paintGrid(const Fiber * first, const Fiber * last);
+    void         paintGrid(const Fiber * first, const Fiber * last, real);
     
     /// given a position, find nearby Fiber segments and test attachement of the provided Hand
     void         tryToAttach(Vector const&, Hand&) const;
     
-    /// return all fiber segments located at a distance D or less from P, except those belonging to `exclude`
-    SegmentList  nearbySegments(Vector const& P, real D, Fiber * exclude = nullptr) const;
+    
+    /// return a list of all fiber segments located at a distance D or less from P, except those belonging to `exclude`
+    SegmentList  nearbySegments(Vector const&, real disSqr, Fiber * exclude = nullptr) const;
 
-    /// Among the segments closer than gridRange, return the closest one
+    SegmentList& segments(Vector const& pos) const
+    {
+        // get the cell index from the position in space:
+        const index_t indx = fGrid.index(pos, 0.5);
+        // get the list of rods associated with this cell:
+        return fGrid.icell(indx);
+    }
+    
+    /// Among the segments closer than grid:range, return the closest one
     FiberSegment closestSegment(Vector const&) const;
     
     ///test the results of tryToAttach(), at a particular position

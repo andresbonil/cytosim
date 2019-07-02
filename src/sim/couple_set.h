@@ -217,7 +217,19 @@ public:
     /// unmark objects after import
     void         thaw();
 
-    /// write
+    /// save free Couples
+    void         writeFF(Outputter& out) const;
+    
+    /// save attached Couples
+    void         writeAF(Outputter& out) const;
+    
+    /// save attached Couples
+    void         writeFA(Outputter& out) const;
+    
+    /// save bridging Couples
+    void         writeAA(Outputter& out) const;
+    
+    /// save Couples
     void         write(Outputter&) const;
     
     /// print a summary of the content (nb of objects, class)
