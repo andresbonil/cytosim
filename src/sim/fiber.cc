@@ -1539,8 +1539,8 @@ void Fiber::setGlue3(Single* glue, Space const* spc)
                     /* we find the abscissa corresponding to the intersection,
                      assuming that the edge is locally straight */
                     FiberSite fs(this, abscissaPoint(i-1+d1/(d2+d1)));
-                    glue->attach(fs);
                     glue->setPosition(fs.pos());
+                    glue->attach(fs);
                     break;
                 }
             }

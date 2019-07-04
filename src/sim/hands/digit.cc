@@ -31,7 +31,7 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
         if ( lat->outsideMP(s) || unavailable(lat, s) )
             return false;
         
-        // adjust site:
+        // adjust to match selected lattice site:
         sit.engageLattice(lat, s, lat->unit() * s + prop->site_shift);
 #endif
         return true;
@@ -40,10 +40,15 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
 }
 
 
-void Digit::attach(FiberSite const& s)
+/**
+ Digit::attachmentAllowed() should have been called before,
+ such that the `sit` already points to a valid lattice site
+ */
+void Digit::attach(FiberSite const& sit)
 {
-    assert_true(s.lattice());
-    Hand::attach(s);
+    assert_true(sit.lattice());
+    Hand::attach(sit);
+    assert_true(fbLattice);
     assert_true(vacant(site()));
     inc();
 }

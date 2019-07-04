@@ -183,7 +183,7 @@ public:
     Vector   dirFiber1()                  const { return cHand1->dirFiber(); }
  
     /// attach Hand1 at the given FiberSite
-    void     attach1(FiberSite const& s)        { cHand1->attach(s); }
+    void     attach1(FiberSite s)               { if ( cHand1->attachmentAllowed(s) ) cHand1->attach(s); }
     
     /// attach Hand1 at the given end
     void     attachEnd1(Fiber* f, FiberEnd end) { cHand1->attachEnd(f, end); }
@@ -212,7 +212,7 @@ public:
     Vector   dirFiber2()                  const { return cHand2->dirFiber(); }
     
     /// attach Hand2 at the given FiberSite
-    void     attach2(FiberSite const& s)        { cHand2->attach(s); }
+    void     attach2(FiberSite s)               { if ( cHand2->attachmentAllowed(s) ) cHand2->attach(s); }
     
     /// attach Hand2 at the given end
     void     attachEnd2(Fiber *f, FiberEnd end) { cHand2->attachEnd(f, end); }
@@ -240,22 +240,22 @@ public:
     Property const* property() const { return prop; }
     
     /// write to file
-    void           write(Outputter&) const;
+    void            write(Outputter&) const;
     
     /// read from file
-    void           read(Inputter&, Simul&, ObjectTag);
+    void            read(Inputter&, Simul&, ObjectTag);
     
     /// return PointDisp of Hand1
-    PointDisp *    disp1() const { return cHand1->prop->disp; }
+    PointDisp const* disp1() const { return cHand1->prop->disp; }
     
     /// return PointDisp of Hand2
-    PointDisp *    disp2() const { return cHand2->prop->disp; }
+    PointDisp const* disp2() const { return cHand2->prop->disp; }
     
     /// return PointDisp of Hand1
-    PointDisp *    disp12() const;
+    PointDisp const* disp12() const;
     
     /// return PointDisp of Hand2
-    PointDisp *    disp21() const;
+    PointDisp const* disp21() const;
 
 };
 
