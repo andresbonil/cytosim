@@ -609,7 +609,7 @@ void Display2::drawSinglesA(const SingleSet & set) const
 /**
 Always display Hand1 of Couple
  */
-void Display2::drawCouplesF1(CoupleSet const& set) const
+void Display2::drawCouplesF(CoupleSet const& set) const
 {
     if ( prop->point_size > 0 )
     {
@@ -637,38 +637,6 @@ void Display2::drawCouplesF1(CoupleSet const& set) const
             if ( !obj->active() && obj->disp1()->perceptible )
                 obj->disp1()->drawI(obj->posFree());
 #endif
-    }
-}
-
-
-/**
- Display either Hand1 or Hand2, exposing both sides with equal chances.
- This gives the impression that Couple flicker randomly between frames,
- as if they were two-sided balls 'rotating' very fast.
- */
-void Display2::drawCouplesF2(CoupleSet const& set) const
-{
-    if ( prop->point_size > 0 )
-    {
-        Couple * nxt;
-        Couple * obj = set.firstFF();
-
-        pointSize(prop->point_size);
-        glBegin(GL_POINTS);
-        if ( set.sizeFF() & 1 )
-        {
-            nxt = obj->next();
-            drawVertex(obj->posFree(), obj->disp12());
-            obj = nxt;
-        }
-        while ( obj )
-        {
-            nxt = obj->next();
-            drawVertex(obj->posFree(), obj->disp21());
-            obj = nxt->next();
-            drawVertex(nxt->posFree(), nxt->disp12());
-        }
-        glEnd();
     }
 }
 

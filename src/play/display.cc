@@ -1552,14 +1552,6 @@ void Display::drawFibers(FiberSet const& set)
 //------------------------------------------------------------------------------
 #pragma mark -
 
-void Display::drawCouplesF(CoupleSet const& set) const
-{
-    if ( prop->couple_flip )
-        drawCouplesF2(set);
-    else
-        drawCouplesF1(set);
-}
-
 
 void Display::drawCouplesB(CoupleSet const& set) const
 {

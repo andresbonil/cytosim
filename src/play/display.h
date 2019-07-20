@@ -284,13 +284,7 @@ public:
     virtual void drawSinglesA(SingleSet const&) const = 0;
 
     /// draw the free Couples, showing Hand1
-    virtual void drawCouplesF1(CoupleSet const&) const = 0;
-    
-    /// draw the free Couples, showing Hand1 or Hand2
-    virtual void drawCouplesF2(CoupleSet const&) const = 0;
-    
-    /// draw the free Couples
-    void drawCouplesF(CoupleSet const&) const;
+    virtual void drawCouplesF(CoupleSet const&) const = 0;
     
     /// draw the attached Couples
     virtual void drawCouplesA(CoupleSet const&) const = 0;

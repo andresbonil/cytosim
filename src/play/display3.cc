@@ -971,36 +971,10 @@ void Display3::drawSinglesA(SingleSet const& set) const
 /**
  Display always Hand1 of Couple
  */
-void Display3::drawCouplesF1(CoupleSet const& set) const
+void Display3::drawCouplesF(CoupleSet const& set) const
 {
     for ( Couple * cx = set.firstFF(); cx ; cx=cx->next() )
         drawHand2(cx->posFree(), cx->disp1());
-}
-
-
-/**
- Display either Hand1 or Hand2, exposing both sides with equal chances.
- This gives the impression that Couple flicker randomly between frames,
- as if they were two-sided balls 'rotating' very fast.
- */
-void Display3::drawCouplesF2(CoupleSet const& set) const
-{
-    Couple * nxt;
-    Couple * obj = set.firstFF();
-    
-    if ( set.sizeFF() & 1 )
-    {
-        nxt = obj->next();
-        drawHand2(obj->posFree(), obj->disp12());
-        obj = nxt;
-    }
-    while ( obj )
-    {
-        nxt = obj->next();
-        drawHand2(obj->posFree(), obj->disp21());
-        obj = nxt->next();
-        drawHand2(nxt->posFree(), nxt->disp12());
-    }
 }
 
 
@@ -1090,17 +1064,6 @@ void Display3::drawCoupleB(Couple const* cx) const
     
     if ( pd1 == pd2 )
     {
-#if ( 0 )
-        // ENDOCYTOSIS 2015
-        if ( cx->fiber1()->disp->color.transparent() )
-        {
-            pd1->color.load_both(cx->fiber1()->disp->color.transparency());
-            glDepthMask(GL_FALSE);
-            gleTube(p1, p2, pd2->width*sFactor, gleHexTube1B);
-            glDepthMask(GL_TRUE);
-            continue;
-        }
-#endif
         if ( pd1->visible )
         {
             pd1->color.load_both();

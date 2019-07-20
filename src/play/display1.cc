@@ -408,7 +408,7 @@ void Display1::drawSinglesA(const SingleSet & set) const
 /**
  Always display Hand1 of the Couple.
  */
-void Display1::drawCouplesF1(CoupleSet const& set) const
+void Display1::drawCouplesF(CoupleSet const& set) const
 {
     for ( Couple * cx = set.firstFF() ; cx ; cx=cx->next() )
     {
@@ -435,41 +435,6 @@ PointDisp const* Couple::disp21() const
         return disp2();
     else
         return disp1();
-}
-
-
-/**
- Display either Hand1 or Hand2, exposing both sides with equal chances.
- This gives the impression that Couple flicker randomly between frames,
- as if they were two-sided balls 'rotating' very fast.
- */
-void Display1::drawCouplesF2(CoupleSet const& set) const
-{
-    Couple * nxt;
-    Couple * obj = set.firstFF();
-    // this loop is unrolled, processing objects 2 by 2:
-    if ( set.sizeFF() & 1 )
-    {
-        nxt = obj->next();
-        if ( obj->active() )
-            obj->disp12()->drawF(obj->posFree());
-        else
-            obj->disp12()->drawI(obj->posFree());
-        obj = nxt;
-    }
-    while ( obj )
-    {
-        nxt = obj->next();
-        if ( obj->active() )
-            obj->disp21()->drawF(obj->posFree());
-        else
-            obj->disp21()->drawI(obj->posFree());
-        obj = nxt->next();
-        if ( nxt->active() )
-            nxt->disp12()->drawF(nxt->posFree());
-        else
-            nxt->disp12()->drawI(nxt->posFree());
-    }
 }
 
 

@@ -56,10 +56,7 @@ public:
     void drawSinglesA(SingleSet const&) const;
 
     /// draw the free Couples
-    void drawCouplesF1(CoupleSet const&) const;
-    
-    /// draw free Couple, randomizing which Hand is drawn
-    void drawCouplesF2(CoupleSet const&) const;
+    void drawCouplesF(CoupleSet const&) const;
     
     /// draw the attached Couples
     void drawCouplesA(CoupleSet const&) const;

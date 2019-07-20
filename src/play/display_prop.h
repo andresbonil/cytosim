@@ -63,9 +63,6 @@ public:
      */
     float          point_value;
     
-    /// if `true`, unattached Couples are display randomly with one or the other Hand (default=false)
-    unsigned       couple_flip;
-    
     /// selection bitfield for Couples
     unsigned       couple_select;
     
