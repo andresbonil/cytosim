@@ -420,24 +420,6 @@ void Display1::drawCouplesF(CoupleSet const& set) const
 }
 
 
-PointDisp const* Couple::disp12() const
-{
-    if ( disp1()->visible )
-        return disp1();
-    else
-        return disp2();
-}
-
-
-PointDisp const* Couple::disp21() const
-{
-    if ( disp2()->visible )
-        return disp2();
-    else
-        return disp1();
-}
-
-
 void Display1::drawCouplesA(CoupleSet const& set) const
 {
     // display bound couples

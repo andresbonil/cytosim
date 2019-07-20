@@ -250,12 +250,6 @@ public:
     
     /// return PointDisp of Hand2
     PointDisp const* disp2() const { return cHand2->prop->disp; }
-    
-    /// return PointDisp of Hand1
-    PointDisp const* disp12() const;
-    
-    /// return PointDisp of Hand2
-    PointDisp const* disp21() const;
 
 };
 
