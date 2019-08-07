@@ -32,12 +32,12 @@ set solid core
 
 set aster centrosome
 {
-    solid = core
     stiffness = 1000, 500
 }
 
 new centrosome
 {
+    solid = core
     radius = 0.5
     point0 = center, 0.5
     fibers = 32, microtubule, ( plus_end=grow; length = [[length]]; )

@@ -139,15 +139,15 @@ and define a solid called `core` and the aster, by adding these paragraphs:
     
     set aster centrosome
     {
-        solid = core
         stiffness = 1000, 500
     }
     
     new centrosome
     {
+        solid = core
         radius = 0.5
         fibers = 25, microtubule, ( plus_end=grow; length = 0.1; )
-   }
+    }
 
 The solid named `core` is used for the construction of the aster, but only graphical properties are defined. For the `aster` object, we defined:
 

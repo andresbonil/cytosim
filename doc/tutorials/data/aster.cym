@@ -40,13 +40,13 @@ set solid core
 
 set aster centrosome
 {
-    solid = core
     stiffness = 1000, 500
     nucleate = 1, microtubule, ( length = 1 )
 }
 
 new centrosome
 {
+    solid = core
     radius = 0.5
     fibers = 32, microtubule, ( length = 1; )
     position = inside
