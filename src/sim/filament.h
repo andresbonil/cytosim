@@ -323,13 +323,10 @@ public:
     void         adjustSegmentation();
     
     /// change all vertices from given array of coordinates
-    void         setPoints(real const*);
-    
-    /// change position
-    void         getPoints(real const* ptr) { setPoints(ptr); }
+    void         getPoints(real const*);
 
     /// restore the distance between successive vertices
-    void         reshape() { setPoints(pPos); }
+    void         reshape() { getPoints(pPos); }
 
     /// invert polarity (swap PLUS end MINUS ends in place)
     virtual void flipPolarity();

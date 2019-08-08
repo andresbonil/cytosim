@@ -567,7 +567,7 @@ void Filament::reshape_global(const unsigned ns, const real* src, real* dst, rea
  Replace coordinates by ones provided in `ptr`
  A reshape operation is done
  */
-void Filament::setPoints(real const* ptr)
+void Filament::getPoints(real const* ptr)
 {
     // use here static memory
     static size_t alc = 0;
@@ -727,7 +727,7 @@ void Filament::cutM(const real delta)
     setNbPoints(np);
     fnAbscissaM += delta;
     setSegmentation(cut);
-    setPoints(tmp);
+    getPoints(tmp);
     free_real(tmp);
     postUpdate();
 }
@@ -838,7 +838,7 @@ void Filament::cutP(const real delta)
     setNbPoints(np);
     setSegmentation(cut);
     fnAbscissaP -= delta;
-    setPoints(tmp);
+    getPoints(tmp);
     free_real(tmp);
     postUpdate();
 }
@@ -926,7 +926,7 @@ void Filament::join(Filament const* fib)
     setNbPoints(ns+1);
     setSegmentation(cut);
     fnAbscissaP = fnAbscissaM + cut * fnCut;
-    setPoints(tmp);
+    getPoints(tmp);
     free_real(tmp);
     postUpdate();
 }
@@ -1182,7 +1182,7 @@ void Filament::resegment(unsigned ns)
     // resize filament:
     setNbPoints(ns+1);
     setSegmentation(cut);
-    setPoints(tmp);
+    getPoints(tmp);
     free_real(tmp);
 }
 

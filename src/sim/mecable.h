@@ -128,10 +128,10 @@ public:
     /// Shift point at index `i` by `x`
     void            movePoint(unsigned i, Vector const& x) { assert_true(i<nPoints); x.add_to(pPos+DIM*i); }
 
-    /// copy current vertex coordinates to `dst[]`
-    void            putPoints(real * dst) const;
+    /// copy current vertex coordinates to given array
+    void            putPoints(real*) const;
     
-    /// replace current coordinates by values from the provided array
+    /// replace current coordinates by values from the given array
     virtual void    getPoints(real const*);
     
     /// Add a point and expand the object, returning the array index that was used

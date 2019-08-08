@@ -221,23 +221,15 @@ void Mecable::rotate(Rotation const& T)
 #pragma mark - Export/Inport
 
 
-void Mecable::putPoints(real * x) const
+void Mecable::putPoints(real * ptr) const
 {
-#if ( DIM == 4 )
-    blas::xcopy(DIM*nPoints, pPos, 1, x, 1);
-#else
-    copy_real(DIM*nPoints, pPos, x);
-#endif
+    copy_real(DIM*nPoints, pPos, ptr);
 }
 
 
 void Mecable::getPoints(const real * ptr)
 {
-#if ( DIM == 4 )
-    blas::xcopy(DIM*nPoints, ptr, 1, pPos, 1);
-#else
     copy_real(DIM*nPoints, ptr, pPos);
-#endif
 }
 
 
