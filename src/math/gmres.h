@@ -134,9 +134,8 @@ namespace LinearSolvers
                 mat.precondition(ww, tt);      // tt = P*ww
                 mat.multiply(tt, ww);          // ww = M*tt = M*P*ww
 #else
-                mat.multiplyP(ww, tt);         // tt = P*M*ww
-                //mat.multiply(ww, tt);        // tt = M*ww
-                //mat.precondition(tt, ww);    // ww = P*tt = P*M*ww
+                mat.multiply(ww, tt);          // tt = M*ww
+                mat.precondition(tt, ww);      // ww = P*tt = P*M*ww
 #endif
                 /*
                  The next loop has a dependency for 'ww', but because the columns

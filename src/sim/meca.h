@@ -318,9 +318,6 @@ public:
     /// apply preconditionner: Y = P*X
     void precondition(const real* X, real* Y) const;
     
-    /// calculate X = P*M*X, using T as temporary vector
-    void multiplyP(real* X, real* T) const;
-    
     //--------------------------- FORCE ELEMENTS -------------------------------
 
     /// Add a constant force on Mecapoint

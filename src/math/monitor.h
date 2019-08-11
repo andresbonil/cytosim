@@ -24,13 +24,13 @@ namespace LinearSolvers
         /// set the maximum number of iterations, and the residual threshold
         Monitor(unsigned i, real r) { reset(); iterMax_ = i; residMax_ = r; }
         
-        /// reset interation count and achieved residual
-        void reset() { flag_ = 0; iter_ = 0; resid_ = INFINITY; iterOld_ = 0; }
+        /// reset state variables (counters, flags and residual)
+        void reset() { flag_ = 0; iter_ = 0; resid_ = INFINITY; iterOld_ = 16; }
         
-        /// increment iteration count
+        /// increment counter
         void operator ++() { ++iter_; }
         
-        /// increment iteration count
+        /// increment counter by `i`
         void operator +=(unsigned i) { iter_ += i; }
        
         /// value of return flag
@@ -40,7 +40,7 @@ namespace LinearSolvers
         void flag(const int f) { flag_ = f; }
 
         /// iteration count
-        unsigned count()  const { return iter_; }
+        unsigned count() const { return iter_; }
         
         /// last achieved residual
         real residual()  const { return resid_; }

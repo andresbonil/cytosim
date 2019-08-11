@@ -410,71 +410,6 @@ void Meca::multiply( const real* X, real* Y ) const
 }
 
 
-/**
- calculate the matrix vector product corresponding to 'mec'
- 
-     X <- PRECOND * [ X + alpha * speed( Y + meca_forces ) ]
- 
- */
-inline void multiply1P(Mecable const* mec, real alpha, real* xxx, real* yyy)
-{
-    const int bks = DIM * mec->nbPoints();
-
-#if ( DIM > 1 )
-    mec->addRigidity(xxx, yyy);
-#endif
-
-#if ADD_PROJECTION_DIFF
-    if ( mec->hasProjectionDiff() )
-        mec->addProjectionDiff(xxx, yyy);
-#endif
-
-    mec->setSpeedsFromForces(yyy, alpha, yyy);
-    
-    // X <- Y + X
-    //blas::xaxpy(bks, 1.0, yyy, 1, xxx, 1);
-    blas::add(bks, yyy, xxx);
-    
-    if ( mec->useBlock() )
-    {
-        int info = 0;
-        lapack::xgetrs('N', bks, 1, mec->block(), bks, mec->pivot(), xxx, bks, &info);
-    }
-}
-
-/**
- This is similar to
- 
-     multiply(X, T);       // T <- M*X
-     precondition(T, X);   // X <- P*T
- 
- if the value of 'T' is not used
- */
-void Meca::multiplyP(real* X, real* T) const
-{
-    // T <- ( mB + mC ) * X
-    calculateForces(X, nullptr, T);
-    
-#if NUM_THREADS > 1
-    #pragma omp parallel num_threads(NUM_THREADS)
-    {
-        Mecable ** mci = objs.begin() + omp_get_thread_num();
-        while ( mci < objs.end() )
-        {
-            const index_t inx = DIM * (*mci)->matIndex();
-            multiply1P(*mci, -time_step, X+inx, T+inx);
-            mci += NUM_THREADS;
-        }
-    }
-#else
-    for ( Mecable * mec : objs )
-    {
-        const index_t inx = DIM * mec->matIndex();
-        multiply1P(mec, -time_step, X+inx, T+inx);
-    }
-#endif
-}
-
 //------------------------------------------------------------------------------
 #pragma mark - Helper functions
 
@@ -1424,17 +1359,19 @@ void Meca::solve(SimulProp const* prop, const int precond)
     //------- call the iterative solver:
 
     if ( precond == 1 )
+    {
         computePreconditionner();
+        LinearSolvers::BCGSP(*this, vRHS, vSOL, monitor, allocator);
+    }
+    else
+        LinearSolvers::BCGS(*this, vRHS, vSOL, monitor, allocator);
 
-    //fprintf(stderr, "Solve precond %i size %6i\n", precond, dimension());
-
-    // GMRES generally performs best:
-    LinearSolvers::GMRES(*this, vRHS, vSOL, 64, monitor, allocator, mH, mV, temporary);
-
-    //std::clog << "Solve size " << dimension() << "  precondition " << precond << "  " << residual << "\n";
-    //fprintf(stderr, "    GMRES     count %4i  residual %10.6f\n", monitor.count(), monitor.residual());
 #if ( 0 )
-    // enable this to compare with another GMRES
+    fprintf(stderr, "System size %6i precondition %i", dimension(), precond);
+    fprintf(stderr, "    Solver count %4i  residual %10.6f\n", monitor.count(), monitor.residual());
+#endif
+#if ( 0 )
+    // enable this to compare with GMRES
     monitor.reset();
     zero_real(dimension(), vSOL);
     LinearSolvers::GMRES(*this, vRHS, vSOL, 32, monitor, allocator, mH, mV, temporary);

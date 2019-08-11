@@ -381,15 +381,24 @@ inline real nrm8(const int N, const real* X, int inc)
 #else
     if ( N == 0 )
         return 0;
-    real min = X[0];
-    real max = X[0];
-    for ( int u = 1; u < N; ++u )
-    {
-        max = std::max(max, X[u*inc]);
-        min = std::min(min, X[u*inc]);
-    }
-    return std::max(max, -min);
+    real u = std::abs(X[0]);
+    for ( int i = 1; i < N; ++i )
+        u = std::max(u, std::abs(X[i*inc]));
+    return u;
 #endif
+}
+
+
+inline real nrm8(const int N, const real* X)
+{
+    if ( N == 0 )
+        return 0;
+    real u = std::abs(X[0]);
+    #pragma ivdep
+    #pragma vector always
+    for ( int i = 1; i < N; ++i )
+        u = std::max(u, std::abs(X[i]));
+    return u;
 }
 
     
@@ -400,15 +409,10 @@ inline real max_diff(const int N, const real* X, const real* Y)
 {
     if ( N == 0 )
         return 0;
-    real x = X[0] - Y[0];
-    real n = X[0] - Y[0];
-    for ( int u = 1; u < N; ++u )
-    {
-        real d = X[u] - Y[u];
-        x = std::max(x, d);
-        n = std::min(n, d);
-    }
-    return std::max(x, -n);
+    real u = std::abs(X[0] - Y[0]);
+    for ( int i = 1; i < N; ++i )
+        u = std::max(u, std::abs(X[i] - Y[i]));
+    return u;
 }
 
 
