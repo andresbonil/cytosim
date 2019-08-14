@@ -1,0 +1,64 @@
+% test stochastic events in config file
+% FJN, Cambridge 14.08.2019
+
+set simul system
+{
+    steric = 1, 200
+    steric_max_range = 0.5
+    
+    time_step = 0.01
+    viscosity = 1
+    precondition = 0
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 5
+}
+
+
+set space core
+{
+    shape = sphere
+}
+
+new core
+{
+    radius = 4
+}
+
+
+set bead ball
+{
+    steric = 1
+    confine = inside, 1000
+    display = ( style=9; coloring=1; )
+}
+
+new 50 ball
+{
+    radius = 0.3
+}
+
+new event
+{
+    rate = 10
+    code = ( new ball { radius=0.3; position=0 0 0; } )
+}
+
+new event
+{
+    rate = 10
+    code = ( delete ball { position=outside, core;} )
+}
+
+run 10000 system
+{
+    nb_frames = 10
+}
+

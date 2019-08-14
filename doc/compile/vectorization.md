@@ -13,7 +13,7 @@ There has been different generations of SIMD, of increased vector size:
 
 Typically, one can expect a 40% speed up of AVX compared to SSE3, and 
 another speedup with the 'Fused Add-multiply' instructions of `FMA`.
-The functions included in `AVX2` proper are not useful.
+The functions included in `AVX2` other than FMA are not used in cytosim.
 To take advantage of this, you need to adjust the `makefile.inc`.
 
 # Compilation

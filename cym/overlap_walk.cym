@@ -1,31 +1,35 @@
 % An antiparallel bundle extending under the action of crosslinking motors
-% Francois Nedelec, 2010-12-10
+% FJN, 10.12.2010, 23.06.2019
 
 set simul system
 {
-    time_step = 0.001
-    viscosity = 1
-    steric = 1, 1000, 100
+    time_step = 0.01
+    viscosity = 10
+    display = (
+        window_size = 1024, 256;
+        style = 3;
+        point_value = 0.010;
+        label = (Vanishing overlap -)
+    )
 }
 
 set space cell 
 {
     shape = rectangle
-    display = ( visible = 0 )
+    display = ( visible=0 )
 }
 
 new cell
 {
-    length = 2, 1, 2
+    length = 2.5, 0.75, 0.75
 }
 
 set fiber microtubule
 {
     rigidity = 20
-    segmentation = 0.5
+    segmentation = 0.25
     lattice = 1, 0.010
-    steric = 1, 0.025, 0.050
-    display = { speckles = 1; point_size = 10; minus_end=4 }
+    display = ( line=2.5; coloring=2; minus_end=6,1 )
 }
 
 set hand kinesin
@@ -33,17 +37,17 @@ set hand kinesin
     binding_rate = 10
     binding_range = 0.06
     unbinding_rate = 0.3
-    unbinding_force = 3
-    
+
     activity = walk
     unloaded_speed = 0
     stall_force = 6
     step_size = 0.010
     use_lattice = 1
-    
-    unbinding_chance = 0
-    hold_growing_end = 1
+
+    unbinding_force = 3
+    hold_growing_end = 0
     hold_shrinking_end = 0
+    display = ( color=blue; width=1; size=2; )
 }
 
 set couple complex
@@ -55,48 +59,31 @@ set couple complex
     length = 0.05
 }
 
-new microtubule
+new 3 microtubule
 {
     length = 1
-    position = 0 -0.025
+    distribute = -0.2 -0.125, -0.2 0.075
     orientation = +1 0
 }
     
-new microtubule
+new 3 microtubule
 {
     length = 1
-    position = 0 +0.025
+    distribute = 0.2 -0.075, 0.2 0.125
     orientation = -1 0
 }
 
-new microtubule
-{
-    length = 1
-    position = 0 +0.075
-    orientation = +1 0
-}
-
-new 100 complex
+new 256 complex
 
 run system 
 {
     nb_steps = 100
-    solve    = 0
+    solve = 0
 }
-
+    
 change kinesin { unloaded_speed = 0.1 }
 
-set system display
+run 2000 system
 {
-    window_size = 1024, 256
-    label = (Sliding bundle (walkers)-)
-    style = 2
-    point_size = 6
-    line_width = 2
-}
-
-run system
-{
-    nb_steps = 5000
     nb_frames = 100
 }

@@ -1,5 +1,7 @@
 # Cytosim's model
 
+These pages contain more detailed information on the way Cytosim solves the models.
+
 ***Unfinished***
 
 Table of Content:

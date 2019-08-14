@@ -1,19 +1,13 @@
 # Physical units in Cytosim
  
- Cytosim is not aware of units, and it is the responsability of the user to provide
- coherent values. The parameters could thus in principle be specified in any system
- of units, but the same system must be used consistently for all values!
- However, for convenience, cytosim provides default values for some parameters,
- and this is done in a particular system of units. Specifically:
+ Cytosim is not aware of units, and it is the responsability of the user to provide coherent values. The parameters could thus in principle be specified in any system of units, but the same system must be used consistently for all values! However, for convenience, cytosim provides default values for some parameters, and this is done in a particular system of units. Specifically:
 
  Parameter   | Default value    |
  ------------|-------------------
  viscosity   | 1      pN.s/um^2
  kT          | 0.0042 pN.um
 
- It is therefore very strongly advised to adhere to this system, and to convert
- all parameter values before using them in cytosim. It is in any case a convenient
- set of units for cytoskeletal work. Cytosim's system of units:
+ It is therefore very strongly advised to adhere to this system, and to convert all parameter values before using them in cytosim. It is in any case a convenient set of units for cytoskeletal work. Cytosim's system of units:
 
  Quantity    | Unit        | Symbol | Value                           |
  ------------|-------------|--------|----------------------------------

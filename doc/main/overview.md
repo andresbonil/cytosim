@@ -15,7 +15,6 @@ Cytosim is a suite of command-line tools with simulation and display capabilitie
     set space cell
     {
         shape = sphere
-        dimensions = 5
     }
 
     set fiber microtubule
@@ -24,9 +23,12 @@ Cytosim is a suite of command-line tools with simulation and display capabilitie
         segmentation = 0.5
         confine = inside, 200, cell
     }
-        
+    
     new cell
-
+    {
+        radius = 5
+    }
+        
     new 5 microtubule
     {
         length = 11

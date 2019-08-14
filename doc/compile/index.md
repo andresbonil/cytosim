@@ -84,7 +84,7 @@ You can then check the resulting executables, that should be located in subdirec
 	bin/sim
 	bin/play live
 
-# Troubleshooting 1
+# Troubleshooting `sim`
 
 Compilation is specified in `makefile` and `makefile.inc`, and these files may need to be adjusted manually.
 Check  `makefile.inc` first and verify the [compile options](options.md).
@@ -119,7 +119,7 @@ To poinpoint the problem, try to build the objects in the order of how many depe
 
 	make sim
 
-# Troubleshooting 2: `play`
+# Troubleshooting `play`
 
 If you are having trouble compiling `play`, check its requirements independently:
 
@@ -135,7 +135,7 @@ If you are having trouble compiling `play`, check its requirements independently
 
 	make test_glut
 
-#### Check for GLAP support:
+#### Check for GLAP (our own extension of GLUT)):
 
 	make test_glap
 

@@ -1,5 +1,5 @@
 % Actin filament coiled around a microtubule
-% FJN, 19.08.2016
+% FJN, 16.08.2016
 
 set simul system
 {

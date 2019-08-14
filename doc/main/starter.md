@@ -1,6 +1,7 @@
 # Getting started with the *Command Line*
 
-This document describes how to use the [Unix Command Line](https://en.wikipedia.org/wiki/Command-line_interface) on a personal computer. Command-line experts can skip this.
+This document describes how to use the [Unix Command Line](https://en.wikipedia.org/wiki/Command-line_interface) on a personal computer. 
+If you are already familiar with the Command-line, you can skip this.
 
 # Open a terminal
 
