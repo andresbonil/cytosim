@@ -8,23 +8,29 @@
 #include "parser.h"
 
 
-void Event::reset(real time)
+void Event::clear()
 {
-    nextEvent = time + RNG.exponential() / rate;
+    activity = "";
+    recurrent = false;
+    rate = 0;
+    nextTime = 0;
 }
 
 
-Event::Event()
-: code(""), recurrent(false), rate(0), nextEvent(0)
+void Event::reset(real time)
 {
+    nextTime = time + RNG.exponential() / rate;
 }
 
 
 Event::Event(real time, Glossary& opt)
 {
-    if (!opt.set(code, "code")) code = "";
-    if (!opt.set(rate, "rate")) rate = 0;
-    if (!opt.set(recurrent, "recurrent")) recurrent = 0;
+    clear();
+    opt.set(activity, "activity") || opt.set(activity, "code");
+    opt.set(rate, "rate");
+    opt.set(recurrent, "recurrent");
+    if ( rate < 0 )
+        throw InvalidParameter("event:rate must be >= 0");
     reset(time);
 }
 
@@ -35,16 +41,15 @@ Event::~Event()
 }
 
 
-/// stochastic firing at specified rate
 void Event::step(Simul& sim)
 {
-    if ( recurrent || sim.time() > nextEvent )
+    if ( recurrent || sim.time() > nextTime )
     {
         sim.relax();
         do {
-            nextEvent += RNG.exponential() / rate;
-            Parser(sim, 1, 1, 1, 1, 1).evaluate(code, ", in event:code");
-        } while ( sim.time() > nextEvent );
+            nextTime += RNG.exponential() / rate;
+            Parser(sim, 1, 1, 1, 1, 1).evaluate(activity, ", in event:code");
+        } while ( sim.time() > nextTime );
         sim.prepare();
     }
 }
