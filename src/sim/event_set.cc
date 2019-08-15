@@ -19,7 +19,7 @@ Property* EventSet::newProperty(const std::string& cat, const std::string& nom, 
 }
 
 
-Object * EventSet::newObjectT(const ObjectTag tag, unsigned num)
+Object * EventSet::newObject(const ObjectTag tag, unsigned num)
 {
     Event * e = nullptr;
     if ( tag == Event::TAG )

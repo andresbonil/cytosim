@@ -29,7 +29,7 @@ public:
     ObjectList  newObjects(const std::string& name, Glossary& opt);
     
     /// create a new object (used for reading trajectory file)
-    Object *    newObjectT(ObjectTag, unsigned);
+    Object *    newObject(ObjectTag, unsigned);
     
     //--------------------------
 

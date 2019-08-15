@@ -74,7 +74,7 @@ void SingleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
 #pragma mark -
 
 
-Object * SingleSet::newObjectT(const ObjectTag tag, unsigned num)
+Object * SingleSet::newObject(const ObjectTag tag, unsigned num)
 {
     if ( tag == Single::TAG )
     {

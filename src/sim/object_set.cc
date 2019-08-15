@@ -527,7 +527,7 @@ Object * ObjectSet::readObject(Inputter& in, const ObjectTag tag, bool fat)
     if ( !w )
     {
         // create new object of required class
-        w = newObjectT(tag, ix);
+        w = newObject(tag, ix);
         if ( !w )
         {
             std::string str = std::to_string(tag);

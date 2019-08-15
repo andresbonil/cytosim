@@ -191,7 +191,7 @@ void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
 //------------------------------------------------------------------------------
 #pragma mark -
 
-Object * CoupleSet::newObjectT(const ObjectTag tag, unsigned num)
+Object * CoupleSet::newObject(const ObjectTag tag, unsigned num)
 {
     if ( tag == Couple::TAG )
     {

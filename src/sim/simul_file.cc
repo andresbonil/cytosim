@@ -578,7 +578,7 @@ int Simul::readObjects(Inputter& in, ObjectSet* subset)
                         int pi = 0;
                         if ( tag!='i'  &&  ( tag!='m' || in.formatID()!=31 ))
                             pi = in.readUInt16();
-                        obj = set->newObjectT(tolower(tag), pi);
+                        obj = set->newObject(tolower(tag), pi);
                         obj->identity(n);
                         obj->read(in, *this, tag);
                         set->add(obj);

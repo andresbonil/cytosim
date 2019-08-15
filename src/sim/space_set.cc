@@ -109,7 +109,7 @@ void SpaceSet::remove(Object * obj)
 
 //------------------------------------------------------------------------------
 
-Object * SpaceSet::newObjectT(const ObjectTag tag, unsigned num)
+Object * SpaceSet::newObject(const ObjectTag tag, unsigned num)
 {
     if ( tag == Space::TAG )
     {
