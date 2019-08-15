@@ -535,7 +535,7 @@ However, cytosim could be modified to change this. One can also print the drag c
 **I understand that it is possible to spontaneously spawn molecules in time, but is it also possible to spontaneously remove molecules from the system, at some fixed rate? And if so, can it be done by specifying also the precise region to remove them from?**
 </summary>
 
-Yes, the function ‘delete’ can be called in a stochastic manner using an ‘event’, and you can specify that the object should be inside or outside a Space. Please, see the example `bead_flux.cym'.
+Yes, the function ‘delete’ can be called in a stochastic manner using an ‘event’, and you can specify that the object should be inside or outside a Space. Please, see the example `fountain.cym'.
 This approach is generic and it should work for most object class in Cytosim
 </details>
 
