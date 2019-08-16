@@ -27,10 +27,10 @@ class Bundle : public Organizer
     
 private:
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void       linkAntiparallel(Meca &, Fiber *, Fiber *) const;
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void       linkParallel(Meca &, Fiber *, Fiber *) const;
     
 public:
@@ -50,7 +50,7 @@ public:
     /// perform one Monte-Carlo step
     void       step();
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void       setInteractions(Meca &) const;
     
     /// return the center of gravity from all MT central ends

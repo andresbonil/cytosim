@@ -811,7 +811,7 @@ public:
     void addRand(real s);
     
     
-    /// a vector orthogonal to *this, with `norm == n, chosen randomly and uniformly
+    /// a vector orthogonal to *this, with `norm == n`, chosen randomly and uniformly
     const Vector3 randOrthoU(real n) const;
     
     /// a vector orthogonal to *this, with `norm <= n`, assuming `norm(*this)==1`

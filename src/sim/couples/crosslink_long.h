@@ -35,7 +35,7 @@ public:
     /// force between hands, essentially: stiffness * ( cHand2->posHand() - cHand1->posHand() )
     Vector  force() const;
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void    setInteractions(Meca &) const;
     
 };

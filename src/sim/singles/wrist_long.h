@@ -40,7 +40,7 @@ public:
     /// force = stiffness * ( posFoot() - posHand() )
     Vector  force() const;
         
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void    setInteractions(Meca &) const;
     
 };

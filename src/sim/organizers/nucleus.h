@@ -38,7 +38,7 @@ public:
     /// monte-carlo simulation step
     void          step();
     
-    ///add interactions for this object to the Meca
+    ///add interactions for this object to a Meca
     void          setInteractions(Meca &) const;
 
     //------------------- querying the nucleus ---------------------------------    

@@ -200,7 +200,7 @@ public:
     /// perform one Monte-Carlo step
     void          step();
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void          setInteractions(Meca &) const;
     
     /// position of first clamp for Fiber n

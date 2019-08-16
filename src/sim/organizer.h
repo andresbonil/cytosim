@@ -90,7 +90,7 @@ public:
     /// monte-carlo simulation step
     virtual void          step() {}
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     virtual void          setInteractions(Meca &) const {}
     
     /// sum the drag coefficient of all objects

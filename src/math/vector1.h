@@ -501,7 +501,7 @@ public:
     void addRand(real s);
     
     
-    /// a vector orthogonal to *this, with `norm == n, chosen randomly and uniformly
+    /// a vector orthogonal to *this, with `norm == n`, chosen randomly and uniformly
     const Vector1 randOrthoU(real n) const;
 
     /// Vector with random independent coordinates in [0,+1]

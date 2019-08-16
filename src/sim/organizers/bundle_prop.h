@@ -5,9 +5,10 @@
 
 #include "real.h"
 #include "property.h"
-#include "filament.h"
+#include "common.h"
 
 class FiberSet;
+
 
 /// Property for Bundle
 /**

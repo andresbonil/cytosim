@@ -5,8 +5,7 @@
 
 #include "real.h"
 #include "property.h"
-#include "filament.h"
-#include "solid_prop.h"
+#include "common.h"
 
 class FiberSet;
 

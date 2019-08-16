@@ -32,7 +32,7 @@ public:
     /// simulation step if doubly attached
     void    stepAA();
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void    setInteractions(Meca &) const;
     
 };

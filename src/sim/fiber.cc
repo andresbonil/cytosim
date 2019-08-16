@@ -177,7 +177,7 @@ real Fiber::projectPoint(Vector const& w, real & dis) const
 void Fiber::flipPolarity()
 {
     // flip all the points:
-    Filament::flipPolarity();
+    Chain::flipPolarity();
     
     /* update abscissa of Hands to keep them in place:
      new_abs - minus = plus - old_abs
@@ -202,7 +202,7 @@ void Fiber::cutM(real len)
 {
     const real abs = abscissaM() + len;
     
-    Filament::cutM(len);
+    Chain::cutM(len);
     
     Hand * ha = handListFront;
     while ( ha )
@@ -223,7 +223,7 @@ void Fiber::cutP(real len)
 {
     const real abs = abscissaP() - len;
     
-    Filament::cutP(len);
+    Chain::cutP(len);
     
     Hand * ha = handListFront;
     while ( ha )
@@ -256,8 +256,8 @@ Fiber* Fiber::severPoint(unsigned int pti)
     Fiber* fib = prop->newFiber();
     assert_true( fib->prop == prop );
     
-    // copy the Filament part of the object:
-    *(static_cast<Filament*>(fib)) = *this;
+    // copy the vertices:
+    *(static_cast<Chain*>(fib)) = *this;
     
     // the signature on both pieces should be conserved:
     fib->signature(signature());
@@ -322,8 +322,8 @@ Fiber* Fiber::severP(real abs)
     Fiber* fib = prop->newFiber();
     assert_true( fib->prop == prop );
 
-    // copy the Filament part of the object:
-    *(static_cast<Filament*>(fib)) = *this;
+    // copy the vertices:
+    *(static_cast<Chain*>(fib)) = *this;
     *(static_cast<Object*>(fib)) = *this;
 
     // the signature on both pieces should be conserved:
@@ -332,7 +332,7 @@ Fiber* Fiber::severP(real abs)
 
     assert_small(fib->abscissaM() - abscissaM());
     // remove MINUS_END portion on new piece
-    fib->Filament::cutM(abs);
+    fib->Chain::cutM(abs);
 
 #if FIBER_HAS_LATTICE < 0
     if ( frLattice.ready() )
@@ -349,7 +349,7 @@ Fiber* Fiber::severP(real abs)
     assert_small(fib->abscissaM()-abs-abscissaM());
     
     // remove PLUS_END portion on self
-    Filament::cutP(length()-abs);
+    Chain::cutP(length()-abs);
     
     assert_small(fib->abscissaM()-abscissaP());
 
@@ -522,7 +522,7 @@ void Fiber::join(Fiber * fib)
     real shift = abscissaP() - fib->abscissaM();
 
     // join backbones
-    Filament::join(fib);
+    Chain::join(fib);
     
     //transfer dynamic state of PLUS_END:
     setDynamicStateP(fib->dynamicStateP());
@@ -1616,7 +1616,7 @@ void Fiber::setGlue(Single*& glue, const FiberEnd end, Space const* space)
 
 void Fiber::write(Outputter& out) const
 {
-    Filament::write(out);
+    Chain::write(out);
 
 #if FIBER_HAS_LATTICE
     if ( frLattice.ready() )
@@ -1653,7 +1653,7 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     
     if ( tag == TAG )
     {
-        Filament::read(in, sim, tag);
+        Chain::read(in, sim, tag);
         
 #ifdef BACKWARD_COMPATIBILITY
         if ( in.formatID() > 47 && in.formatID() < 50 ) // 4.7.2018 added birthTime
@@ -1701,7 +1701,7 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     }
     else if ( tag == 'm' )
     {
-        Filament::read(in, sim, tag);
+        Chain::read(in, sim, tag);
         update();
     }
 #endif

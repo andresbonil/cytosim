@@ -29,7 +29,7 @@ OBJ_COUPLES := couple.o couple_prop.o couple_set.o couple_long.o\
                shackle.o shackle_long.o shackle_prop.o\
                fork.o fork_prop.o
          
-OBJ_FIBERS := filament.o fiber.o mecafil.o fiber_prop.o fiber_set.o\
+OBJ_FIBERS := chain.o fiber.o mecafil.o fiber_prop.o fiber_set.o\
               fiber_segment.o fiber_site.o lattice.o\
               dynamic_fiber.o dynamic_fiber_prop.o\
               classic_fiber.o classic_fiber_prop.o\

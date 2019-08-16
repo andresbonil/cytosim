@@ -84,6 +84,13 @@ inline vec2 unpackhi2(vec2 a, vec2 b)        { return _mm_unpackhi_pd(a,b); }
 #define blendv2(a,b,c)    _mm_blendv_pd(a,b,c)
 #define cmp2(a,b,c)       _mm_cmp_pd(a,b,c)
 
+/// returns absolute values
+inline vec2 abs2(vec2 v)
+{
+    static const vec2 msk = _mm_set1_pd(0x7FFFFFFFFFFFFFFFUL);
+    return _mm_and_pd(msk, v);
+}
+
 /// returns the sum of the elements, broadcasted
 inline vec2 esum(vec2 v)
 {
@@ -239,6 +246,13 @@ inline vec4 cat4(vec2 h, vec4 l) { return _mm256_insertf128_pd(l, h, 1); }
 #define blendv4(a,b,mask)   _mm256_blendv_pd(a,b,mask)
 #define cmp4(a,b,c)         _mm256_cmp_pd(a,b,c)
 
+
+/// returns absolute values
+inline vec4 abs4(vec4 v)
+{
+    static const vec4 msk = _mm256_set1_pd(0x7FFFFFFFFFFFFFFFUL);
+    return _mm256_and_pd(msk, v);
+}
 
 /// returns the sum of the elements, broadcasted
 inline vec4 esum(vec4 v)

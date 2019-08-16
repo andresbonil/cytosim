@@ -47,7 +47,7 @@ public:
     /// perform one Monte-Carlo step
     void       step();
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void       setInteractions(Meca &) const;
     
     /// return pointer to central Solid

@@ -225,10 +225,10 @@ public:
     
     /// save attached Couples
     void         writeFA(Outputter& out) const;
-    
+
     /// save bridging Couples
     void         writeAA(Outputter& out) const;
-    
+
     /// save Couples
     void         write(Outputter&) const;
     

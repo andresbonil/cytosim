@@ -2,14 +2,14 @@
 #ifndef MECAFIL_H
 #define MECAFIL_H
 
-#include "filament.h"
+#include "chain.h"
 #include "fiber_prop.h"  // needed for NEW_FIBER_LOOP
 
 class Matrix;
 
-/// incompressible Filament with bending elasticity
+/// incompressible Chain with bending elasticity
 /**
- Implements the methods of a Mecable for the Filament:
+ Implements the methods of a Mecable for the Chain:
  
  -# setSpeedsFromForces() includes longitudinal incompressibility,
  which means keeping successive points equidistants:
@@ -18,7 +18,7 @@ class Matrix;
  -# addRigidity() implements bending elasticity.
  .
 */
-class Mecafil : public Filament
+class Mecafil : public Chain
 {
 private:
     

@@ -201,7 +201,7 @@ void gle_color::HSV2RGB(const GLfloat h, const GLfloat s, const GLfloat v, GLflo
         return;
     }
     GLfloat hc = h/60;               // sector 0 to 5
-    i = (int)floor( hc );
+    i = (int)floor(hc);
     f = hc - i;                      // factorial part of h
     p = v * ( 1 - s );
     q = v * ( 1 - s * f );

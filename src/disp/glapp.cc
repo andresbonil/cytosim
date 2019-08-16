@@ -636,7 +636,7 @@ void glApp::processSpecialKey(int key, int, int)
     else
     {
         // Translate view
-        if ( glutGetModifiers() & GLUT_ACTIVE_CTRL || userMode == MOUSE_TRANSLATEZ )
+        if ( (glutGetModifiers() & GLUT_ACTIVE_CTRL) ^ (userMode == MOUSE_TRANSLATEZ) )
             dxy.set(dxy.XX, 0, dxy.YY);
         rot.rotateVector(vec, dxy);
         //std::clog << "vec " << dxy << " >>> " << vec << "\n";

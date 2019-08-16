@@ -71,7 +71,7 @@ public:
     /// Monte-Carlo step for a bound Single
     void    stepA();
 
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void    setInteractions(Meca &) const;
 
     //--------------------------------------------------------------------------

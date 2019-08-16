@@ -244,7 +244,7 @@ Vector Space::bounce(Vector pos) const
             return p;
     } while ( ++cnt < 8 );
     
-    static unsigned msg = 0;
+    static size_t msg = 0;
     if ( ++msg < 16 )
         std::cerr << "Warning: "+prop->name()+":bounce failed?\n";
     

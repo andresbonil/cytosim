@@ -12,7 +12,7 @@
  History of changes in file format:
 
  51: 03/03/2019 Storing number of Aster links
- 50: 19/12/2018 Fiber's birth time moved to Filament
+ 50: 19/12/2018 Fiber's birth time moved to Filament (now Chain)
  49: 12/12/2018 FiberSite writes the Lattice index but not the abscissa
  49: 22/11/2018 reference do not include mark, which is writen in object header
  48: 04/07/2018 Fiber stores its birth time

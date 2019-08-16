@@ -19,7 +19,7 @@ class Glossary;
  
  \par Number of points:
  
- The best number of points to describe a Filament is automatically calculated:
+ The best number of points to describe a Chain is automatically calculated:
  It is the integer `number_of_points` that minimizes:
  
     fabs( length() / number_of_points - FiberProp::segmentation )
@@ -27,9 +27,9 @@ class Glossary;
  where segmentation is a parameter of the fiber class.
  All the segments in a fiber all have the same length
 
-    Filament::segmentation() = length() / ( number_of_points - 1 )
+    Chain::segmentation() = length() / ( number_of_points - 1 )
 
- Note that Filament::segmentation() is not always equal to FiberProp::segmentation.
+ Note that Chain::segmentation() is not always equal to FiberProp::segmentation.
  If the fibers have various length, their segmentation() will be different,
  even though they all share the same value of FiberProp::segmentation.
 
@@ -39,16 +39,16 @@ class Glossary;
  
  Successive vertices are kept at a constant distance via constrained dynamics:
 
-    norm( posP(N+1)-posP(N) ) == Filament::segmentation()
+    norm( posP(N+1)-posP(N) ) == Chain::segmentation()
  
  \par Origin:
  
- An abscissa is a curvilinear distance taken along the Fiber,
- and the Filament provides an origin to make this independent of the vertices. 
- Thus even if the fiber lengthen from its ends, a position described by an abscissa will
- stay associated with the same local lattice site.
+ An abscissa is a curvilinear distance taken along the backbone, but using an
+ origin makes this independent of the vertices. Thus even if the fiber lengthen
+ from its ends, a position described by an abscissa will remain associated with
+ the same local lattice site.
  
- Functions are provided in Filament to convert abscissa measured from different references,
+ Functions are provided to convert abscissa measured from different references,
  and to obtain positions of the fiber for a given abcissa.
 
  \par Derived classes:
@@ -57,7 +57,7 @@ class Glossary;
  and all Hand objects are built from this class.
  The class Fiber keeps track of the FiberSite that are attached to itself.
 */
-class Filament : public Mecable
+class Chain : public Mecable
 {
     /// the ideal number of points for ratio = length / segmentation
     static unsigned bestNumberOfPoints(real ratio);
@@ -114,10 +114,10 @@ protected:
 public:
     
     /// Constructor
-    Filament();
+    Chain();
     
     /// Destructor
-    ~Filament() {}
+    ~Chain() {}
 
     //---------------------
 
@@ -357,7 +357,7 @@ public:
     //--------------------- Growing/Shrinking
     
     /// merge two fibers by attaching `fib` at the PLUS_END of `this`
-    void         join(Filament const* fib);
+    void         join(Chain const* fib);
 
     /// increase/decrease length of Fiber by `delta`, at the MINUS_END
     void         growM(real delta);

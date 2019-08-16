@@ -31,7 +31,7 @@ public:
     /// simulation step for a free Couple: diffusion
     virtual void  stepFF(FiberGrid const&);
     
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void          setInteractions(Meca &) const;
 
 };

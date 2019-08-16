@@ -180,7 +180,7 @@ namespace sMath
         y[1] = ss * b - scale;
         y[2] = ss * z[1];
     }
-        
+    
     /// square of a number
     template <typename T> 
     inline T square(const T& a)

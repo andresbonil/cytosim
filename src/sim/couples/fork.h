@@ -33,7 +33,7 @@ public:
     /// destructor
     virtual ~Fork();
 
-    /// add interactions to the Meca
+    /// add interactions to a Meca
     void    setInteractions(Meca &) const;
 
 };
