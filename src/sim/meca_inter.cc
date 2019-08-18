@@ -3077,7 +3077,7 @@ void Meca::addPointClamp(Mecapoint const& pta,
     if ( modulo )
         modulo->fold(pos, pta.pos());
 
-    pos.add_to(weight, vBAS+inx);
+    pos.add_to(weight, vBAS+DIM*inx);
 }
 
 
