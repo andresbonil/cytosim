@@ -17,14 +17,20 @@ class Matrix11
 {
 public:
 
-    real val;
-   
+    real val_;
+    
     Matrix11() {}
     
-    /// construct Matrix from coordinate
-    Matrix11(real a)
+    /// construct Matrix with value `v`
+    Matrix11(real v)
     {
-        val = a;
+        val_ = v;
+    }
+
+    /// construct Matrix with `d` on the diagonal and other values equal to `a`
+    Matrix11(real, real d)
+    {
+        val_ = d;
     }
 
     ~Matrix11() {}
@@ -38,13 +44,13 @@ public:
     /// set all elements to zero
     void reset()
     {
-        val = 0.;
+        val_ = 0.;
     }
     
     /// true if element is different from 'zero'
     bool operator != (real zero) const
     {
-        return ( val != zero );
+        return ( val_ != zero );
     }
 
     /// copy values from lower triangle to upper triangle
@@ -52,40 +58,44 @@ public:
     {
     }
 
+    /// direct access to 'unique' scalar
+    real& value()            { return val_; }
+    real  value() const      { return val_; }
+    
     /// conversion to array of 'real'
-    real* data()             { return &val; }
-    real* addr(int i, int j) { return &val; }
+    real* data()             { return &val_; }
+    real* addr(int i, int j) { return &val_; }
 
     /// access functions to element by index
-    real& operator[](int i)       { return val; }
-    real  operator[](int i) const { return val; }
+    real& operator[](int i)       { return val_; }
+    real  operator[](int i) const { return val_; }
     
     /// access functions to element by line and column indices
-    real& operator()(int i, int j)       { return val; }
-    real  operator()(int i, int j) const { return val; }
+    real& operator()(int i, int j)       { return val_; }
+    real  operator()(int i, int j) const { return val_; }
     
     /// extract column vector at given index
     Vector1 column(const unsigned) const
     {
-        return Vector1(val);
+        return Vector1(val_);
     }
     
     /// extract line vector at given index
     Vector1 line(const unsigned) const
     {
-        return Vector1(val);
+        return Vector1(val_);
     }
 
     /// extract diagonal
     Vector1 diagonal() const
     {
-        return Vector1(val);
+        return Vector1(val_);
     }
 
     /// human-friendly output
     void print(FILE * f) const
     {
-        fprintf(f, "[ %9.3f ]\n", val);
+        fprintf(f, "[ %9.3f ]\n", val_);
     }
     
     /// conversion to string
@@ -93,7 +103,7 @@ public:
     {
         std::ostringstream os("[ ");
         os.precision(p);
-        os << std::setw(w) << std::fixed << val << " ]";
+        os << std::setw(w) << std::fixed << val_ << " ]";
         return os.str();
     }
 
@@ -106,37 +116,37 @@ public:
     /// scale all elements
     void scale(const real alpha)
     {
-        val *= alpha;
+        val_ *= alpha;
     }
     
     /// scaled matrix
     const Matrix11 operator *(const real alpha) const
     {
-        return Matrix11(val * alpha);
+        return Matrix11( val_ * alpha );
     }
 
     /// return sum of two matrices
     const Matrix11 operator +(Matrix11 const& M) const
     {
-        return Matrix11( val + M.val );
+        return Matrix11( val_ + M.val_ );
     }
 
     /// return difference of two matrices
     const Matrix11 operator -(Matrix11 const& M) const
     {
-        return Matrix11( val - M.val );
+        return Matrix11( val_ - M.val_ );
     }
 
     /// subtract given matrix
     void operator +=(Matrix11 const& M)
     {
-        val += M.val;
+        val_ += M.val_;
     }
 
     /// add given matrix
     void operator -=(Matrix11 const& M)
     {
-        val -= M.val;
+        val_ -= M.val_;
     }
     
     /// transpose matrix in place
@@ -147,25 +157,25 @@ public:
     /// return transposed matrix
     Matrix11 transposed() const
     {
-        return Matrix11(val);
+        return Matrix11(val_);
     }
     
     /// maximum of all component's absolute values
     real norm() const
     {
-        return fabs(val);
+        return fabs(val_);
     }
 
     /// multiplication by a vector: this * V
     const Vector1 vecmul(Vector1 const& V) const
     {
-        return Vector1(val * V.XX);
+        return Vector1(val_ * V.XX);
     }
     
     /// multiplication by a vector: this * V
     const Vector1 vecmul(real const* ptr) const
     {
-        return Vector1(val * ptr[0]);
+        return Vector1(val_ * ptr[0]);
     }
 
     /// matrix-vector multiplication
@@ -177,13 +187,13 @@ public:
     /// multiplication by a vector: transpose(M) * V
     const Vector1 trans_vecmul(real const* V) const
     {
-        return Vector1(val * V[0]);
+        return Vector1(val_ * V[0]);
     }
 
     /// multiplication by another matrix: @returns this * B
     const Matrix11 mul(Matrix11 const& B) const
     {
-        return Matrix11(val * B.val);
+        return Matrix11(val_ * B.val_);
     }
     
     /// matrix-matrix multiplication
@@ -195,62 +205,62 @@ public:
     /// multiplication by another matrix: @returns transpose(this) * B
     const Matrix11 trans_mul(Matrix11 const& B) const
     {
-        return Matrix11(val * B.val);
+        return Matrix11(val_ * B.val_);
     }
 
     /// add full matrix: this <- this + M
     void add_full(Matrix11 const& M)
     {
-        val += M.val;
+        val_ += M.val_;
     }
     
     /// add full matrix: this <- this + alpha * M
     void add_full(const real alpha, Matrix11 const& M)
     {
-        val += alpha * M.val;
+        val_ += alpha * M.val_;
     }
     
     /// add lower triangle of matrix including diagonal: this <- this + M
     void add_half(Matrix11 const& M)
     {
-        val += M.val;
+        val_ += M.val_;
     }
     
     /// add lower triangle of matrix including diagonal: this <- this + alpha * M
     void add_half(const real alpha, Matrix11 const& M)
     {
-        val += alpha * M.val;
+        val_ += alpha * M.val_;
     }
     
     /// subtract lower triangle of matrix including diagonal: this <- this - M
-    void sub_diag(Matrix11 const& M)
+    void sub_half(Matrix11 const& M)
     {
-        val -= M.val;
+        val_ -= M.val_;
     }
 
     
     /// add all elements of block 'S' to array 'M'
     void addto(real * M, unsigned ldd) const
     {
-        M[0] += val;
+        M[0] += val_;
     }
     
     /// add lower elements of this block to upper triangle of 'M'
     void addto_upper(real * M, unsigned ldd) const
     {
-        M[0] += val;
+        M[0] += val_;
     }
     
     /// add lower elements of this block to both upper and lower triangles of 'M'
     void addto_symm(real * M, unsigned ldd) const
     {
-        M[0] += val;
+        M[0] += val_;
     }
     
     /// add all elements of this block to 'M', with transposition
     void addto_trans(real * M, unsigned ldd) const
     {
-        M[0] += val;
+        M[0] += val_;
     }
     
     /// return `a * Identity`
@@ -319,7 +329,7 @@ public:
 /// output operator to std::ostream
 inline std::ostream& operator << (std::ostream& os, Matrix11 const& M)
 {
-    os << "[ " << M.val << " ]";
+    os << "[ " << M.value() << " ]";
     return os;
 }
 

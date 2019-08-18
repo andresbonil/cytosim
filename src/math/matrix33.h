@@ -60,11 +60,19 @@ public:
         clear_extra();
     }
 
-    /// construct Matrix with all values equal to `a`
-    Matrix33(real a)
+    /// construct Matrix with `d` on the diagonal and other values equal to `a`
+    Matrix33(real z, real d)
     {
-        for ( int u = 0; u < BLD*3; ++u )
-            val[u] = a;
+        val[0] = d;
+        val[1] = z;
+        val[2] = z;
+        val[0+BLD] = z;
+        val[1+BLD] = d;
+        val[2+BLD] = z;
+        val[0+BLD*2] = z;
+        val[1+BLD*2] = z;
+        val[2+BLD*2] = d;
+
         clear_extra();
     }
 
@@ -585,6 +593,33 @@ public:
 #endif
     }
 
+    /// subtract transposed matrix: this <- this - transposed(M)
+    void sub_trans(Matrix33 const& M)
+    {
+        real const* src = M.val;
+        for ( int x = 0; x < 3; ++x )
+        for ( int y = 0; y < 3; ++y )
+            val[y+BLD*x] -= src[x+BLD*y];
+    }
+    
+    /// add transposed matrix: this <- this + alpha * transposed(M)
+    void add_trans(Matrix33 const& M)
+    {
+        real const* src = M.val;
+        for ( int x = 0; x < 3; ++x )
+        for ( int y = 0; y < 3; ++y )
+            val[y+BLD*x] += src[x+BLD*y];
+    }
+    
+    /// add transposed matrix: this <- this + alpha * transposed(M)
+    void add_trans(const real alpha, Matrix33 const& M)
+    {
+        real const* src = M.val;
+        for ( int x = 0; x < 3; ++x )
+            for ( int y = 0; y < 3; ++y )
+                val[y+BLD*x] += alpha * src[x+BLD*y];
+    }
+
     /// add lower triangle of matrix including diagonal: this <- this + M
     void add_half(Matrix33 const& M)
     {
@@ -624,7 +659,7 @@ public:
     }
     
     /// subtract lower triangle of matrix including diagonal: this <- this - M
-    void sub_diag(Matrix33 const& M)
+    void sub_half(Matrix33 const& M)
     {
         real const* src = M.val;
 #if MATRIX33_USES_AVX  && ( BLD == 4 )
@@ -832,8 +867,11 @@ public:
     }
 
     /// rotation around `axis` (of norm 1) with angle set by cosinus and sinus values
+    /** The values of 'c' and 's' can be scaled to obtain a matrix where the
+     rotation components is also scaling. Vectors along the axis remain unchanged */
     static Matrix33 rotationAroundAxis(const Vector3& axis, const real c, const real s)
     {
+        // this is using Rodrigues's formula
         // attention: this only works if norm(axis)==1
         const real  X = axis.XX  ,  Y = axis.YY  ,  Z = axis.ZZ;
         const real dX = X - c * X, dY = Y - c * Y, dZ = Z - c * Z;

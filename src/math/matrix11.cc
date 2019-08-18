@@ -5,7 +5,7 @@
 
 real Matrix11::rotationAngle() const
 {
-    if ( val > 0 )
+    if ( val_ > 0 )
         return 0;
     else
         return M_PI;

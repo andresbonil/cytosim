@@ -109,7 +109,7 @@ namespace LinearSolvers
 #else
             mat.multiply(sol, tt);                  // tt = M*x
             blas::xaxpy(dim, -1.0, rhs, 1, tt, 1);  // tt = tt - rhs = M*x - rhs
-            // we get here the absolute residual:
+            // we get here the true residual:
             resid = blas::nrm2(dim, tt);
             // check for convergence:
             if ( monitor.finished(resid) )
@@ -124,8 +124,7 @@ namespace LinearSolvers
 
             ss[0] = beta;
             int it = -1;
-            //fprintf(stderr, "   %4i residual %10.6f\n", monitor.count(), resid);
-            //auto rdtsc = __rdtsc();
+            //fprintf(stderr, "GMRES   %4i residual %10.6f\n", monitor.count(), resid);
 
             do {
                 ++it;
@@ -176,9 +175,6 @@ namespace LinearSolvers
                 
             } while ( it+1 < restart );
             
-            //auto rdtsc1 = __rdtsc()-rdtsc; rdtsc = __rdtsc();
-            //printf("GMRES %i iterations of %i\n", it+1, restart);
-
             // solve upper triangular system in place
             for (int j = it; j >= 0; --j)
             {
@@ -188,8 +184,6 @@ namespace LinearSolvers
                 //for (int k = 0; k < j; ++k)
                 //    ss[k] -= H(k,j) * ss[j];
             }
-            
-            //auto rdtsc2 = __rdtsc()-rdtsc; rdtsc = __rdtsc();
 
             // update the solution `sol`: can be parallelized
             for (int j = 0; j <= it; ++j)
@@ -199,7 +193,6 @@ namespace LinearSolvers
                 //for (int k = 0; k < dim; ++k)
                 //    sol[k] += V(k,j) * ss[j];
             }
-            //printf("    GMRES %12llu %12llu %12llu\n", rdtsc1>>5, rdtsc2>>5, (__rdtsc()-rdtsc)>>5);
         }
 #if RIGHTSIDED_PRECONDITIONNER
         // we have calculated the solution to M*P*sol = rhs, and we need P*sol:
@@ -216,7 +209,7 @@ namespace LinearSolvers
 #if ( 0 )
         fprintf(stderr, "GMRES count %4i residual %10.6f\n", monitor.count(), resid);
 #endif
-        allocator.release();
+        //allocator.release();
     }
 }
 

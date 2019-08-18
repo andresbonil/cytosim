@@ -748,7 +748,7 @@ void Solid::reshape()
     
     Vector avg = Mecable::position();
     
-    Matrix33 S = { 0 };
+    Matrix33 S(0, 0);
     for ( unsigned i = 0; i < nPoints; ++i )
         S.addOuterProduct(soShape+DIM*i, pPos+DIM*i);
     

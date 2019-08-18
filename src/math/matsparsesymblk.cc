@@ -211,9 +211,9 @@ real& MatrixSparseSymmetricBlock::operator()(index_t ii, index_t jj)
 {
 #if ( BLOCK_SIZE == 1 )
     if ( ii > jj )
-        return column_[jj].block(ii, jj).val;
+        return column_[jj].block(ii, jj).value();
     else
-        return column_[ii].block(jj, ii).val;
+        return column_[ii].block(jj, ii).value();
 #else
     index_t i = ii % BLOCK_SIZE;
     index_t j = jj % BLOCK_SIZE;
@@ -231,9 +231,9 @@ real* MatrixSparseSymmetricBlock::addr(index_t ii, index_t jj) const
 {
 #if ( BLOCK_SIZE == 1 )
     if ( ii >= jj )
-        return &column_[jj].block(ii, jj).val;
+        return &column_[jj].block(ii, jj).value();
     else
-        return &column_[ii].block(jj, ii).val;
+        return &column_[ii].block(jj, ii).value();
 #else
     index_t i = ii % BLOCK_SIZE;
     index_t j = jj % BLOCK_SIZE;
@@ -587,13 +587,13 @@ void MatrixSparseSymmetricBlock::Column::vecMulAdd1D(const real* X, real* Y, ind
 #if ( BLOCK_SIZE == 1 )
     assert_true( size_ > 0 );
     const real X0 = X[jj];
-    real D = blk_[0].val;
+    real D = blk_[0].value();
     real Y0 = Y[jj] + D * X0;
     assert_true(inx_[0]==jj);
     for ( index_t n = 1; n < size_; ++n )
     {
         const index_t ii = inx_[n];
-        const real M = blk_[n].val;
+        const real M = blk_[n].value();
         Y[ii] += M * X0;
         Y0 += M * X[ii];
     }

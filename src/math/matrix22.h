@@ -65,11 +65,13 @@ public:
         val[3] = d;
     }
 
-    /// construct Matrix with all values equal to `a`
-    Matrix22(real a)
+    /// construct Matrix with `d` on the diagonal and other values equal to `a`
+    Matrix22(real z, real d)
     {
-        for ( int u = 0; u < 4; ++u )
-            val[u] = a;
+        val[0] = d;
+        val[1] = z;
+        val[2] = z;
+        val[3] = d;
     }
 
     /// constructor from array
@@ -547,8 +549,26 @@ public:
 #endif
     }
 
+    /// subtract transposed matrix: this <- this - transposed(M)
+    void sub_trans(Matrix22 const& M)
+    {
+        val[0] -= M.val[0];
+        val[1] -= M.val[2];
+        val[2] -= M.val[1];
+        val[3] -= M.val[3];
+    }
+
     /// add transposed matrix: this <- this + alpha * transposed(M)
-    void trans_add(const real alpha, Matrix22 const& M)
+    void add_trans(Matrix22 const& M)
+    {
+        val[0] += M.val[0];
+        val[1] += M.val[2];
+        val[2] += M.val[1];
+        val[3] += M.val[3];
+    }
+
+    /// add transposed matrix: this <- this + alpha * transposed(M)
+    void add_trans(const real alpha, Matrix22 const& M)
     {
         val[0] += alpha * M.val[0];
         val[1] += alpha * M.val[2];
@@ -587,7 +607,7 @@ public:
     }
     
     /// subtract lower triangle of matrix including diagonal: this <- this - M
-    void sub_diag(Matrix22 const& M)
+    void sub_half(Matrix22 const& M)
     {
 #if MATRIX22_USES_AVX
         mat = sub4(mat, M.mat);

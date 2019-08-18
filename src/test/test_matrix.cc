@@ -330,7 +330,7 @@ void fillMatrixBlock(MatrixSparseSymmetricBlock& mat, const int fill, int inx[],
     {
         int ii = inx[n] - inx[n] % SquareBlock::dimension();
         int jj = iny[n] - iny[n] % SquareBlock::dimension();
-        mat.diag_block(ii).sub_diag(S);
+        mat.diag_block(ii).sub_half(S);
         mat.diag_block(jj).add_half(S);
         mat.block(ii, jj).add_full(U);
     }

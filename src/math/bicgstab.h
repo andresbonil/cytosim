@@ -78,7 +78,6 @@ namespace LinearSolvers
         start:
             
             mat.multiply(p, v);                     // v = A * p;
-            ++monitor;
             alpha = rho / blas::dot(dim, r0, v);
 
             blas::xaxpy(dim, -alpha, v, 1, r, 1);  // r = r - alpha * v;
@@ -88,7 +87,7 @@ namespace LinearSolvers
             //    break;
             
             mat.multiply(r, t);                     // t = A * r;
-            ++monitor;
+            monitor+=2;
 
             double tdt = blas::dot(dim, t, t);
             
@@ -187,11 +186,11 @@ namespace LinearSolvers
             
             mat.precondition(p, phat);                // phat = PC * p;
             mat.multiply(phat, v);                    // v = M * PC * p;
-            ++monitor;
 
             delta = blas::dot(dim, r0, v);
             if ( delta == 0.0 )
             {
+                ++monitor;
                 monitor.finish(4, dim, r);
                 break;
             }
@@ -202,7 +201,7 @@ namespace LinearSolvers
 
             mat.precondition(r, shat);                // shat = PC * r
             mat.multiply(shat, t);                    // t = M * PC * r
-            ++monitor;
+            monitor+=2;
 
             double tdt = blas::dot(dim, t, t);
             
@@ -276,7 +275,6 @@ namespace LinearSolvers
             
             // AMp = A*Mp
             mat.multiply(Mp, AMp);
-            ++monitor;
 
             // alpha = (r_j, r_star) / (A*M*p, r_star)
             double alpha = r_rstar_old / blas::dot(dim, rstar, AMp);
@@ -289,6 +287,7 @@ namespace LinearSolvers
             {
                 // x += alpha*M*p_j
                 blas::xaxpy(dim, alpha, Mp, 1, sol, 1);
+                ++monitor;
                 break;
             }
             
@@ -297,7 +296,7 @@ namespace LinearSolvers
             
             // AMs = A*Ms
             mat.multiply(Ms, AMs);
-            ++monitor;
+            monitor+=2;
 
             // omega = (AMs, s) / (AMs, AMs)
             double omega = blas::dot(dim, AMs, s) / blas::dot(dim, AMs, AMs);

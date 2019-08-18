@@ -46,7 +46,7 @@ bool LinearSolvers::Monitor::finished(const unsigned size, const real * x)
     
     if ( resid != resid )
     {
-        fprintf(stderr, "Solver diverged at step %3u (residual is not-a-number)\n", iter_);
+        fprintf(stderr, "Solver diverged at step %3u (residual is not a number)\n", iter_);
         return true;
     }
     

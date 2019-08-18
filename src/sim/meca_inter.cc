@@ -1151,7 +1151,7 @@ void Meca::interLink4(const Interpolation & pti,
 void Meca::add_block(index_t i, index_t j, MatrixBlock const& T)
 {
 #if ( DIM == 1 )
-    mC(i,j) += T.val;
+    mC(i,j) += T.value();
 #else
     if ( i == j )
     {
@@ -1171,7 +1171,7 @@ void Meca::add_block(index_t i, index_t j, MatrixBlock const& T)
 void Meca::add_block(index_t i, index_t j, real alpha, MatrixBlock const& T)
 {
 #if ( DIM == 1 )
-    mC(i,j) += alpha * T.val;
+    mC(i,j) += alpha * T.value();
 #else
     if ( i == j )
     {
@@ -1191,7 +1191,7 @@ void Meca::add_block(index_t i, index_t j, real alpha, MatrixBlock const& T)
 void Meca::sub_block(index_t i, index_t j, MatrixBlock const& T)
 {
 #if ( DIM == 1 )
-    mC(i,j) -= T.val;
+    mC(i,j) -= T.value();
 #else
     if ( i == j )
     {
@@ -1267,8 +1267,8 @@ void Meca::interLongLink(const Mecapoint & pta,
         T = MatrixBlock::offsetOuterProduct(weight-wla, axi, wla);
     
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ia).sub_diag(T);
-    mC.diag_block(ib).sub_diag(T);
+    mC.diag_block(ia).sub_half(T);
+    mC.diag_block(ib).sub_half(T);
     mC.block(ia, ib).add_full(T);
 #else
     sub_block(ia, ia, T);
@@ -3181,7 +3181,7 @@ void Meca::addSphereClamp(Vector const& pos,
     }
     
 #if USE_MATRIX_BLOCK
-    mC.diag_block(inx).sub_diag(T);
+    mC.diag_block(inx).sub_half(T);
 #else
     sub_block(inx, inx, T);
 #endif
