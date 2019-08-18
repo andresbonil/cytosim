@@ -96,13 +96,13 @@ void ShackleLong::setInteractions(Meca & meca) const
 #if ( DIM == 2 )
     
     mArm = calcArm(pt1, pt2.pos(), prop->length);
-    meca.interSideSlidingLink2D(pt1, pt2, mArm, prop->stiffness);
+    meca.addSideSlidingLink2D(pt1, pt2, mArm, prop->stiffness);
     
 #elif ( DIM >= 3 )
     
     //@todo: update to interSideSlidingLink3D() 
     mArm = calcArm(pt1, pt2.pos(), prop->length);
-    meca.interSideSlidingLinkS(pt1, pt2, mArm, prop->length, prop->stiffness);
+    meca.addSideSlidingLinkS(pt1, pt2, mArm, prop->length, prop->stiffness);
     
 #endif
 }

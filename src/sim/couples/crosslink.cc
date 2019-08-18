@@ -52,6 +52,6 @@ void Crosslink::setInteractions(Meca & meca) const
 {
     assert_true( attached1() && attached2() );
     
-    meca.interLink(cHand1->interpolation(), cHand2->interpolation(), prop->stiffness);
+    meca.addLink(cHand1->interpolation(), cHand2->interpolation(), prop->stiffness);
 }
 

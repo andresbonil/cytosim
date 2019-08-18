@@ -108,16 +108,16 @@ void Interpolation4::interLink(Meca & meca, Interpolation const& arg, const real
         case 0:
             break;
         case 1:
-            meca.interLink1(arg, off, stiffness);
+            meca.addLink1(arg, off, stiffness);
             break;
         case 2:
-            meca.interLink2(arg, pts, coef_, stiffness);
+            meca.addLink2(arg, pts, coef_, stiffness);
             break;
         case 3:
-            meca.interLink3(arg, pts, coef_, stiffness);
+            meca.addLink3(arg, pts, coef_, stiffness);
             break;
         case 4:
-            meca.interLink4(arg, pts, coef_, stiffness);
+            meca.addLink4(arg, pts, coef_, stiffness);
         break;
     }
 }
@@ -133,16 +133,16 @@ void Interpolation4::interLink(Meca & meca, Mecapoint const& arg, const real sti
         case 0:
             break;
         case 1:
-            meca.interLink(arg, Mecapoint(mec_, ref_), stiffness);
+            meca.addLink(arg, Mecapoint(mec_, ref_), stiffness);
             break;
         case 2:
-            meca.interLink2(arg, pts, coef_, stiffness);
+            meca.addLink2(arg, pts, coef_, stiffness);
             break;
         case 3:
-            meca.interLink3(arg, pts, coef_, stiffness);
+            meca.addLink3(arg, pts, coef_, stiffness);
             break;
         case 4:
-            meca.interLink4(arg, pts, coef_, stiffness);
+            meca.addLink4(arg, pts, coef_, stiffness);
         break;
     }
 }

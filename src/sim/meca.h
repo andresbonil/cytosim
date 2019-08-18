@@ -339,7 +339,7 @@ public:
     void addTorque(Interpolation const&, Interpolation const&, real cosinus, real sinus, real weight);
     
     /// this only works in 2D
-    void interTorquePoliti(Interpolation const&, Interpolation const&, real cosinus, real sinus, real weight);
+    void addTorquePoliti(Interpolation const&, Interpolation const&, real cosinus, real sinus, real weight);
 
     /// Force of stiffness `weight` from fixed position `g`
     void addPointClamp(Mecapoint const&, Vector, real weight);
@@ -387,118 +387,118 @@ public:
     //------------ ZERO-RESTING LENGTH ELEMENTS LINKING POINTS -----------------
     
     /// linear force of stiffness `weight` between two vertices
-    void interLink(Mecapoint const&, Mecapoint const&, real weight);
+    void addLink(Mecapoint const&, Mecapoint const&, real weight);
     
     /// linear force of stiffness `weight` (use the other one)
-    void interLink(Interpolation const&, Mecapoint const&, real weight);
+    void addLink(Interpolation const&, Mecapoint const&, real weight);
     
     /// linear force of stiffness `weight` between a vertex and a interpolated point
-    void interLink(Mecapoint const&, Interpolation const&, real weight);
+    void addLink(Mecapoint const&, Interpolation const&, real weight);
     
     /// linear force of stiffness `weight` between two interpolated points
-    void interLink(Interpolation const&, Interpolation const&, real weight);
+    void addLink(Interpolation const&, Interpolation const&, real weight);
     
     
     /// linear force of stiffness `weight` between vertex and interpolated point
-    void interLink2(Mecapoint const&, const unsigned[], const real[], real weight);
+    void addLink2(Mecapoint const&, const unsigned[], const real[], real weight);
     
     /// linear force of stiffness `weight` between vertex and interpolated point
-    void interLink3(Mecapoint const&, const unsigned[], const real[], real weight);
+    void addLink3(Mecapoint const&, const unsigned[], const real[], real weight);
 
     /// linear force of stiffness `weight` between vertex and interpolated point
-    void interLink4(Mecapoint const&, const unsigned[], const real[], real weight);
+    void addLink4(Mecapoint const&, const unsigned[], const real[], real weight);
     
     
     /// linear force of stiffness `weight` between Interpolation and vertex
-    void interLink1(Interpolation const&, index_t, real weight);
+    void addLink1(Interpolation const&, index_t, real weight);
 
     /// linear force of stiffness `weight` between Interpolation and interpolated point
-    void interLink2(Interpolation const&, const index_t[], const real[], real weight);
+    void addLink2(Interpolation const&, const index_t[], const real[], real weight);
     
     /// linear force of stiffness `weight` between Interpolation and interpolated point
-    void interLink3(Interpolation const&, const index_t[], const real[], real weight);
+    void addLink3(Interpolation const&, const index_t[], const real[], real weight);
 
     /// linear force of stiffness `weight` between Interpolation and interpolated point
-    void interLink4(Interpolation const&, const index_t[], const real[], real weight);
+    void addLink4(Interpolation const&, const index_t[], const real[], real weight);
 
     //----------------------- ELEMENTS LINKING POINTS --------------------------
 
     /// Force of stiffness `weight` and resting length `len`
-    void interLongLink(Mecapoint const&, Mecapoint const&, real len, real weight);
+    void addLongLink(Mecapoint const&, Mecapoint const&, real len, real weight);
     
     /// Force of stiffness `weight` and resting length `len`
-    void interLongLink(Mecapoint const&, Interpolation const&, real len, real weight);
+    void addLongLink(Mecapoint const&, Interpolation const&, real len, real weight);
     
     /// Force of stiffness `weight` and resting length `len`
-    void interLongLink(Interpolation const&, Interpolation const&, real len, real weight);
+    void addLongLink(Interpolation const&, Interpolation const&, real len, real weight);
 
 #if ( DIM == 2 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment
-    void interSideLink2D(Interpolation const&, Mecapoint const&, real arm, real weight);
+    void addSideLink2D(Interpolation const&, Mecapoint const&, real arm, real weight);
 #elif ( DIM >= 3 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment
-    void interSideLink3D(Interpolation const&, Mecapoint const&, Vector const& arm, real weight);
+    void addSideLink3D(Interpolation const&, Mecapoint const&, Vector const& arm, real weight);
     
     /// Force of stiffness `weight`, at distance `arm` on the side of segment supporting the first argument
-    void interSideLinkS(Interpolation const&, Mecapoint const&, Vector const& arm, real len, real weight);
+    void addSideLinkS(Interpolation const&, Mecapoint const&, Vector const& arm, real len, real weight);
 #endif
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment
-    void interSideLink(Interpolation const&, Mecapoint const&, real arm, real weight);
+    void addSideLink(Interpolation const&, Mecapoint const&, real arm, real weight);
 
     
 #if ( DIM == 2 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment
-    void interSideLink2D(Interpolation const&, Interpolation const&, real arm, real weight);
+    void addSideLink2D(Interpolation const&, Interpolation const&, real arm, real weight);
 #elif ( DIM >= 3 )
     /// Force of stiffness `weight`, at distance `arm` on the side of segment supporting first argument
-    void interSideLinkS(Interpolation const&, Interpolation const&, Vector const& arm, real len, real weight);
+    void addSideLinkS(Interpolation const&, Interpolation const&, Vector const& arm, real len, real weight);
 #endif
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment
-    void interSideLink(Interpolation const&, Interpolation const&, real arm, real weight);
+    void addSideLink(Interpolation const&, Interpolation const&, real arm, real weight);
 
 #if ( DIM == 2 )
     /// Force of stiffness `weight` and resting length `arm`, on the sides of both fibers
-    void interSideSideLink2D(Interpolation const&, Interpolation const&, real arm, real weight, real side1, real side2);
+    void addSideSideLink2D(Interpolation const&, Interpolation const&, real arm, real weight, real side1, real side2);
 #endif
     /// Force of stiffness `weight` and resting length `arm`, on the sides of both fibers
-    void interSideSideLink(Interpolation const&, Interpolation const&, real arm, real weight);
+    void addSideSideLink(Interpolation const&, Interpolation const&, real arm, real weight);
 
     /// Force of stiffness `weight` and perpendicular to first segment
-    void interSlidingLink(Interpolation const&, Mecapoint const&, real weight);
+    void addSlidingLink(Interpolation const&, Mecapoint const&, real weight);
     
     /// Force of stiffness `weight` and perpendicular to first segment
-    void interSlidingLink(Interpolation const&, Interpolation const&, real weight);
+    void addSlidingLink(Interpolation const&, Interpolation const&, real weight);
 
     
 #if ( DIM == 2 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLink2D(Interpolation const&, Mecapoint const&, real arm, real weight);
+    void addSideSlidingLink2D(Interpolation const&, Mecapoint const&, real arm, real weight);
 
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLinkS(Interpolation const&, Mecapoint const&, real arm, real weight);
+    void addSideSlidingLinkS(Interpolation const&, Mecapoint const&, real arm, real weight);
 #elif ( DIM >= 3 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLinkS(Interpolation const&, Mecapoint const&, Vector const& arm, real len, real weight);
+    void addSideSlidingLinkS(Interpolation const&, Mecapoint const&, Vector const& arm, real len, real weight);
 #endif
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLink(Interpolation const&, Mecapoint const&, real arm, real weight);
+    void addSideSlidingLink(Interpolation const&, Mecapoint const&, real arm, real weight);
     
     
 #if ( DIM == 2 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLink2D(Interpolation const&, Interpolation const&, real arm, real weight);
+    void addSideSlidingLink2D(Interpolation const&, Interpolation const&, real arm, real weight);
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLinkS(Interpolation const&, Interpolation const&, real arm, real weight);
+    void addSideSlidingLinkS(Interpolation const&, Interpolation const&, real arm, real weight);
 #elif ( DIM >= 3 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLinkS(Interpolation const&, Interpolation const&, Vector const& arm, real len, real weight);
+    void addSideSlidingLinkS(Interpolation const&, Interpolation const&, Vector const& arm, real len, real weight);
 #endif
     
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment and perpendicular to this segment
-    void interSideSlidingLink(Interpolation const&, Interpolation const&, real len, real weight);
+    void addSideSlidingLink(Interpolation const&, Interpolation const&, real len, real weight);
     
     /// Create a 3-way link with given weights on each branch
-    void interTriLink(Interpolation const& pt1, real w1, Interpolation const& pt2, real w2, Interpolation const& pt3, real w3);
+    void addTriLink(Interpolation const& pt1, real w1, Interpolation const& pt2, real w2, Interpolation const& pt3, real w3);
     
     
     /// Allocate the memory necessary to solve(). This must be called after the last add()

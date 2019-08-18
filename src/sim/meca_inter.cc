@@ -288,7 +288,7 @@ void Meca::addTorque(const Interpolation & pta,
     // this is meaningless but makes compilation possible
     Vector rot(0.0);
     
-    throw InvalidParameter("Meca::interTorque is meaningless in 1D");
+    throw InvalidParameter("Meca::addTorque is meaningless in 1D");
 
 #endif
 
@@ -341,10 +341,10 @@ void Meca::addTorque(const Interpolation & pta,
  
  Antonio Politi, 2013
  */
-void Meca::interTorquePoliti(const Interpolation & pt1,
-                             const Interpolation & pt2,
-                             const real cosinus, const real sinus,
-                             const real weight)
+void Meca::addTorquePoliti(const Interpolation & pt1,
+                           const Interpolation & pt2,
+                           const real cosinus, const real sinus,
+                           const real weight)
 {
     assert_true( weight >= 0 );
     if ( pt1.overlapping(pt2) )
@@ -456,7 +456,7 @@ void Meca::interTorquePoliti(const Interpolation & pt1,
      force_A = weight * ( B - A )
      force_B = weight * ( A - B )
  
- In practice, Meca::interLink() will update the matrix mB,
+ In practice, Meca::addLink() will update the matrix mB,
  adding `weight` at the indices corresponding to `A` and `B`.
  
  Note: with modulo, the position of the fibers may be shifted in space,
@@ -468,7 +468,7 @@ void Meca::interTorquePoliti(const Interpolation & pt1,
  Here 'offset' is a multiple of the space periodicity, corresponding to B-A:
  offset = modulo->offset( A - B )
 
- In practice, Meca::interLink() will update the vector vBAS[]:
+ In practice, Meca::addLink() will update the vector vBAS[]:
  
      vBAS[A] += weight * offset;
      vBAS[B] -= weight * offset;
@@ -477,9 +477,9 @@ void Meca::interTorquePoliti(const Interpolation & pt1,
  simply by multiplying the matrix block by 'offset'.
  */
 
-void Meca::interLink(const Mecapoint & pta,
-                     const Mecapoint & ptb, 
-                     const real weight)
+void Meca::addLink(const Mecapoint & pta,
+                   const Mecapoint & ptb,
+                   const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -533,9 +533,9 @@ void Meca::interLink(const Mecapoint & pta,
  
  */
 
-void Meca::interLink(const Interpolation & pti,
-                     const Mecapoint & pte,
-                     const real weight)
+void Meca::addLink(const Interpolation & pti,
+                   const Mecapoint & pte,
+                   const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -593,9 +593,9 @@ void Meca::interLink(const Interpolation & pti,
 
  */
 
-void Meca::interLink(const Mecapoint & pte,
-                     const Interpolation & pti,
-                     const real weight)
+void Meca::addLink(const Mecapoint & pte,
+                   const Interpolation & pti,
+                   const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -655,9 +655,9 @@ void Meca::interLink(const Mecapoint & pte,
 
  */
 
-void Meca::interLink(const Interpolation & pta,
-                     const Interpolation & ptb,
-                     const real weight)
+void Meca::addLink(const Interpolation & pta,
+                   const Interpolation & ptb,
+                   const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -730,9 +730,9 @@ void Meca::interLink(const Interpolation & pta,
  Point B in the vertex of a Mecable, at index 'pts'.
  Diagonal and lower elements of mB are set.
  */
-void Meca::interLink1(const Interpolation & pti,
-                      const index_t pts,
-                      const real weight)
+void Meca::addLink1(const Interpolation & pti,
+                    const index_t pts,
+                    const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -782,9 +782,9 @@ void Meca::interLink1(const Interpolation & pti,
  using the coefficients given in `coef[]`.
  Diagonal and lower elements of mB are set.
  */
-void Meca::interLink2(const Mecapoint & pte,
-                      const index_t pts[2], const real coef[2],
-                      const real weight)
+void Meca::addLink2(const Mecapoint & pte,
+                    const index_t pts[2], const real coef[2],
+                    const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -835,9 +835,9 @@ void Meca::interLink2(const Mecapoint & pte,
  using the coefficients given in `coef[]`.
  Diagonal and lower elements of mB are set.
  */
-void Meca::interLink2(const Interpolation & pti,
-                      const index_t pts[2], const real coef[2],
-                      const real weight)
+void Meca::addLink2(const Interpolation & pti,
+                    const index_t pts[2], const real coef[2],
+                    const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -893,9 +893,9 @@ void Meca::interLink2(const Interpolation & pti,
  using the coefficients given in `coef[]`.
  Diagonal and lower elements of mB are set.
  */
-void Meca::interLink3(const Mecapoint & pte,
-                      const index_t pts[3], const real coef[3],
-                      const real weight)
+void Meca::addLink3(const Mecapoint & pte,
+                    const index_t pts[3], const real coef[3],
+                    const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -951,9 +951,9 @@ void Meca::interLink3(const Mecapoint & pte,
  using the coefficients given in `coef[]`.
  Diagonal and lower elements of mB are set.
 */
-void Meca::interLink3(const Interpolation & pti,
-                      const index_t pts[3], const real coef[3],
-                      const real weight)
+void Meca::addLink3(const Interpolation & pti,
+                    const index_t pts[3], const real coef[3],
+                    const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -1016,9 +1016,9 @@ void Meca::interLink3(const Interpolation & pti,
  using the coefficients given in `coef[]`.
  Diagonal and lower elements of mB are set.
  */
-void Meca::interLink4(const Mecapoint & pte,
-                      const index_t pts[4], const real coef[4],
-                      const real weight)
+void Meca::addLink4(const Mecapoint & pte,
+                    const index_t pts[4], const real coef[4],
+                    const real weight)
 {
     assert_true( weight >= 0 );
 
@@ -1082,9 +1082,9 @@ void Meca::interLink4(const Mecapoint & pte,
  using the coefficients given in `coef[]`.
  Diagonal and lower elements of mB are set.
 */
-void Meca::interLink4(const Interpolation & pti, 
-                      const index_t pts[4], const real coef[4],
-                      const real weight)
+void Meca::addLink4(const Interpolation & pti,
+                    const index_t pts[4], const real coef[4],
+                    const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -1217,10 +1217,10 @@ void Meca::sub_block(index_t i, index_t j, MatrixBlock const& T)
  
  */
 
-void Meca::interLongLink(const Mecapoint & pta, 
-                         const Mecapoint & ptb,
-                         const real len, 
-                         const real weight)
+void Meca::addLongLink(const Mecapoint & pta,
+                       const Mecapoint & ptb,
+                       const real len,
+                       const real weight)
 {
     assert_true( weight >= 0 );
     assert_true( len >= 0 );
@@ -1297,9 +1297,9 @@ void Meca::interLongLink(const Mecapoint & pta,
  
  */
 
-void Meca::interLongLink(const Mecapoint & pte,
-                         const Interpolation & pti,
-                         const real len, const real weight )
+void Meca::addLongLink(const Mecapoint & pte,
+                       const Interpolation & pti,
+                       const real len, const real weight )
 {
     assert_true( weight >= 0 );
     assert_true( len >= 0 );
@@ -1393,10 +1393,10 @@ void Meca::interLongLink(const Mecapoint & pte,
 
  */
 
-void Meca::interLongLink(const Interpolation & pta, 
-                         const Interpolation & ptb, 
-                         const real len,
-                         const real weight )
+void Meca::addLongLink(const Interpolation & pta,
+                       const Interpolation & ptb,
+                       const real len,
+                       const real weight )
 {
     assert_true( weight >= 0 );
     assert_true( len >= 0 );
@@ -1513,10 +1513,10 @@ void Meca::interLongLink(const Interpolation & pta,
 
 #if ( DIM == 2 )
 
-void Meca::interSideLink2D(const Interpolation & pta, 
-                           const Mecapoint & ptb, 
-                           const real arm,
-                           const real weight)
+void Meca::addSideLink2D(const Interpolation & pta,
+                         const Mecapoint & ptb,
+                         const real arm,
+                         const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -1608,10 +1608,10 @@ void Meca::interSideLink2D(const Interpolation & pta,
  
  @todo interSideLink3D should use block operations
  */
-void Meca::interSideLink3D(const Interpolation & pta, 
-                           const Mecapoint & ptb, 
-                           Vector const& arm,
-                           const real weight)
+void Meca::addSideLink3D(const Interpolation & pta,
+                         const Mecapoint & ptb,
+                         Vector const& arm,
+                         const real weight)
 {
     assert_true( weight >= 0 );
 
@@ -1718,11 +1718,11 @@ void Meca::interSideLink3D(const Interpolation & pta,
  
  */
 
-void Meca::interSideLinkS(const Interpolation & pta,
-                          const Mecapoint & ptb,
-                          Vector const& arm,
-                          const real len,
-                          const real weight)
+void Meca::addSideLinkS(const Interpolation & pta,
+                        const Mecapoint & ptb,
+                        Vector const& arm,
+                        const real len,
+                        const real weight)
 {
     assert_true( weight >= 0 );
     assert_true( len > REAL_EPSILON );
@@ -1802,25 +1802,25 @@ Vector calculateArm(Vector off, Vector const& diff, real len)
 }
 
 
-void Meca::interSideLink(const Interpolation & pta, 
+void Meca::addSideLink(const Interpolation & pta,
                          const Mecapoint & ptb, 
                          const real len,
                          const real weight )
 {
 #if ( DIM == 1 )
     
-    throw Exception("Meca::interSideLink is meaningless in 1D");
+    throw Exception("Meca::addSideLink is meaningless in 1D");
     
 #elif ( DIM == 2 )
     
     real arm = len * RNG.sign_exc(cross(pta.diff(), ptb.pos()-pta.pos()));
-    interSideLink2D(pta, ptb, arm, weight);
+    addSideLink2D(pta, ptb, arm, weight);
 
 #else
     
     // set 'arm' perpendicular to direction of the Fiber associated with `pta`:
     Vector arm = calculateArm(ptb.pos()-pta.pos(), pta.diff(), len);
-    interSideLinkS(pta, ptb, arm, len, weight);
+    addSideLinkS(pta, ptb, arm, len, weight);
     
 #endif
 }
@@ -1830,10 +1830,10 @@ void Meca::interSideLink(const Interpolation & pta,
 
 #if ( DIM == 2 )
 
-void Meca::interSideLink2D(const Interpolation & pta, 
-                           const Interpolation & ptb, 
-                           const real arm,
-                           const real weight)
+void Meca::addSideLink2D(const Interpolation & pta,
+                         const Interpolation & ptb,
+                         const real arm,
+                         const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -1934,11 +1934,11 @@ void Meca::interSideLink2D(const Interpolation & pta,
 
 #elif ( DIM >= 3 )
 
-void Meca::interSideLinkS(const Interpolation & pta, 
-                          const Interpolation & ptb,
-                          Vector const& arm,
-                          const real len,
-                          const real weight)
+void Meca::addSideLinkS(const Interpolation & pta,
+                        const Interpolation & ptb,
+                        Vector const& arm,
+                        const real len,
+                        const real weight)
 {
     assert_true( weight >= 0 );
     assert_true( len > REAL_EPSILON );
@@ -2028,25 +2028,25 @@ void Meca::interSideLinkS(const Interpolation & pta,
  
  */
 
-void Meca::interSideLink(const Interpolation & pta, 
-                         const Interpolation & ptb, 
-                         const real len,
-                         const real weight)
+void Meca::addSideLink(const Interpolation & pta,
+                       const Interpolation & ptb,
+                       const real len,
+                       const real weight)
 {
 #if ( DIM == 1 )
     
-    throw Exception("Meca::interSideLink is meaningless in 1D");
+    throw Exception("Meca::addSideLink is meaningless in 1D");
 
 #elif ( DIM == 2 )
     
     real arm = len * RNG.sign_exc( cross(pta.diff(), ptb.pos()-pta.pos()) );
-    interSideLink2D(pta, ptb, arm, weight);
+    addSideLink2D(pta, ptb, arm, weight);
     
 #else
 
     // set 'arm' perpendicular to direction of the Fiber associated with `pta`:
     Vector arm = calculateArm(ptb.pos()-pta.pos(), pta.diff(), len);
-    interSideLinkS(pta, ptb, arm, len, weight);
+    addSideLinkS(pta, ptb, arm, len, weight);
     
 #endif
 }
@@ -2059,11 +2059,11 @@ void Meca::interSideLink(const Interpolation & pta,
 #if ( DIM == 2 )
 
 /*
-void Meca::interSideSideLink2D(const Interpolation & pta,
-                               const Interpolation & ptb,
-                               const real len,
-                               const real weight,
-                               real side1, real side2 )
+void Meca::addSideSideLink2D(const Interpolation & pta,
+                             const Interpolation & ptb,
+                             const real len,
+                             const real weight,
+                             real side1, real side2 )
 {
     assert_true( weight >= 0 );
  
@@ -2141,11 +2141,11 @@ void Meca::interSideSideLink2D(const Interpolation & pta,
 }
 */
 
-void Meca::interSideSideLink2D(const Interpolation & pta,
-                               const Interpolation & ptb, 
-                               const real len,
-                               const real weight,
-                               real side1, real side2 )
+void Meca::addSideSideLink2D(const Interpolation & pta,
+                             const Interpolation & ptb,
+                             const real len,
+                             const real weight,
+                             real side1, real side2 )
 {
     assert_true( weight >= 0 );
     assert_true( len >= 0 );
@@ -2245,25 +2245,25 @@ void Meca::interSideSideLink2D(const Interpolation & pta,
  
  */
 
-void Meca::interSideSideLink(const Interpolation & pta,
-                             const Interpolation & ptb,
-                             const real len,
-                             const real weight )
+void Meca::addSideSideLink(const Interpolation & pta,
+                           const Interpolation & ptb,
+                           const real len,
+                           const real weight )
 {
 #if ( DIM == 1 )
     
-    throw Exception("Meca::interSideSideLink meaningless in 1D");
+    throw Exception("Meca::addSideSideLink meaningless in 1D");
     
 #elif ( DIM == 2 )
     
     Vector dir = ptb.pos() - pta.pos();
     real side1 = RNG.sign_exc( cross(pta.diff(), dir) );
     real side2 = RNG.sign_exc( cross(dir, ptb.diff()) );
-    interSideSideLink2D(pta, ptb, len, weight, side1, side2);
+    addSideSideLink2D(pta, ptb, len, weight, side1, side2);
     
 #else
     
-    throw Exception("Meca::interSideSideLink was not implemented in 3D");
+    throw Exception("Meca::addSideSideLink was not implemented in 3D");
     
 #endif
 }
@@ -2284,9 +2284,9 @@ void Meca::interSideSideLink(const Interpolation & pta,
  
  */
 
-void Meca::interSlidingLink(const Interpolation & pta,
-                            const Mecapoint & ptb,
-                            const real weight)
+void Meca::addSlidingLink(const Interpolation & pta,
+                          const Mecapoint & ptb,
+                          const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -2364,9 +2364,9 @@ Link `pta` (A) and `ptb` (B),
  
  */
 
-void Meca::interSlidingLink(const Interpolation & pta,
-                            const Interpolation & ptb, 
-                            const real weight)
+void Meca::addSlidingLink(const Interpolation & pta,
+                          const Interpolation & ptb,
+                          const real weight)
 {
     assert_true( weight >= 0 );
  
@@ -2437,10 +2437,10 @@ void Meca::interSlidingLink(const Interpolation & pta,
 
 #if ( DIM == 2 )
 
-void Meca::interSideSlidingLink2D(const Interpolation & pta,
-                                  const Mecapoint & pte, 
-                                  const real arm,
-                                  const real weight)
+void Meca::addSideSlidingLink2D(const Interpolation & pta,
+                                const Mecapoint & pte,
+                                const real arm,
+                                const real weight)
 {
     assert_true( weight >= 0 );
 
@@ -2558,10 +2558,10 @@ void Meca::interSideSlidingLink2D(const Interpolation & pta,
 /**
  Alternative 2D method in which we add an offset to vBAS
  */
-void Meca::interSideSlidingLinkS(const Interpolation & pta,
-                                 const Mecapoint & pte,
-                                 const real arm,
-                                 const real weight)
+void Meca::addSideSlidingLinkS(const Interpolation & pta,
+                               const Mecapoint & pte,
+                               const real arm,
+                               const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -2627,11 +2627,11 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
  Vector 'arm' must be parallel to the link and orthogonal to 'pta'
  */
 
-void Meca::interSideSlidingLinkS(const Interpolation & pta,
-                                 const Mecapoint & pte,
-                                 Vector const& arm,
-                                 const real len,
-                                 const real weight)
+void Meca::addSideSlidingLinkS(const Interpolation & pta,
+                               const Mecapoint & pte,
+                               Vector const& arm,
+                               const real len,
+                               const real weight)
 {    
     assert_true( weight >= 0 );
     assert_true( len > REAL_EPSILON );
@@ -2728,14 +2728,14 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
      force_B = weight * ( 1 - T T' ) ( B - S )
 
  */
-void Meca::interSideSlidingLink(const Interpolation & pta, 
-                                const Mecapoint & ptb, 
-                                const real len,
-                                const real weight)
+void Meca::addSideSlidingLink(const Interpolation & pta,
+                              const Mecapoint & ptb,
+                              const real len,
+                              const real weight)
 {
 #if ( DIM == 1 )
     
-    throw Exception("Meca::interSideLink is meaningless in 1D");
+    throw Exception("Meca::addSideLink is meaningless in 1D");
     
 #elif ( DIM == 2 )
     
@@ -2743,13 +2743,13 @@ void Meca::interSideSlidingLink(const Interpolation & pta,
     if ( modulo )
         modulo->fold(as);
     real arm  = len * RNG.sign_exc( cross(pta.diff(), as) );
-    interSideSlidingLink2D(pta, ptb, arm, weight);
+    addSideSlidingLink2D(pta, ptb, arm, weight);
     
 #else
     
     // set 'arm' perpendicular to direction of the Fiber associated with `pta`:
     Vector arm = calculateArm(ptb.pos()-pta.pos(), pta.diff(), len);
-    interSideSlidingLinkS(pta, ptb, arm, len, weight);
+    addSideSlidingLinkS(pta, ptb, arm, len, weight);
     
 #endif
 }
@@ -2761,7 +2761,7 @@ void Meca::interSideSlidingLink(const Interpolation & pta,
 
 // @todo interSideSlidingLink2D should use block operations
 
-void Meca::interSideSlidingLink2D(const Interpolation & pta,
+void Meca::addSideSlidingLink2D(const Interpolation & pta,
                                   const Interpolation & ptb, 
                                   const real arm,
                                   const real weight)
@@ -2827,10 +2827,10 @@ void Meca::interSideSlidingLink2D(const Interpolation & pta,
 /**
  Alternative 2D method in which we add an offset to vBAS
  */
-void Meca::interSideSlidingLinkS(const Interpolation & pta,
-                                 const Interpolation & ptb,
-                                 const real arm,
-                                 const real weight)
+void Meca::addSideSlidingLinkS(const Interpolation & pta,
+                               const Interpolation & ptb,
+                               const real arm,
+                               const real weight)
 {
     assert_true( weight >= 0 );
     
@@ -2915,11 +2915,11 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
     /**
      Vector 'arm' must be parallel to the link and orthogonal to 'pta'
      */
-void Meca::interSideSlidingLinkS(const Interpolation & pta,
-                                 const Interpolation & ptb, 
-                                 Vector const& arm,
-                                 const real len,
-                                 const real weight)
+void Meca::addSideSlidingLinkS(const Interpolation & pta,
+                               const Interpolation & ptb,
+                               Vector const& arm,
+                               const real len,
+                               const real weight)
 {
     assert_true( weight >= 0 );
     assert_true( len > REAL_EPSILON );
@@ -3029,25 +3029,25 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
  
  */
 
-void Meca::interSideSlidingLink(const Interpolation & pta, 
-                                const Interpolation & ptb, 
-                                const real len,
-                                const real weight)
+void Meca::addSideSlidingLink(const Interpolation & pta,
+                              const Interpolation & ptb,
+                              const real len,
+                              const real weight)
 {
 #if ( DIM == 1 )
     
-    throw Exception("Meca::interSideSlidingLink is meaningless in 1D");
+    throw Exception("Meca::addSideSlidingLink is meaningless in 1D");
     
 #elif ( DIM == 2 )
     
     real arm = len * RNG.sign_exc( cross(pta.diff(), ptb.pos()-pta.pos()) );
-    interSideSlidingLink2D(pta, ptb, arm, weight);
+    addSideSlidingLink2D(pta, ptb, arm, weight);
     
 #else
     
     // set 'arm' perpendicular to direction of the Fiber associated with `pta`:
     Vector arm = calculateArm(ptb.pos()-pta.pos(), pta.diff(), len);
-    interSideSlidingLinkS(pta, ptb, arm, len, weight);
+    addSideSlidingLinkS(pta, ptb, arm, len, weight);
     
 #endif
 }
@@ -3739,14 +3739,14 @@ and for the first point:
 
     f1 = ( w1 / sum ) * [ w2 * ( pt2 - pt1 ) + w3 * ( pt3 - pt1 ) ]
 */
-void  Meca::interTriLink(Interpolation const& pt1, const real w1,
-                         Interpolation const& pt2, const real w2,
-                         Interpolation const& pt3, const real w3)
+void  Meca::addTriLink(Interpolation const& pt1, const real w1,
+                       Interpolation const& pt2, const real w2,
+                       Interpolation const& pt3, const real w3)
 {
     const real sum = w1 + w2 + w3;
     assert_true( sum > REAL_EPSILON );
-    interLink(pt1, pt2, w1*w2/sum);
-    interLink(pt1, pt3, w1*w3/sum);
-    interLink(pt2, pt3, w2*w3/sum);
+    addLink(pt1, pt2, w1*w2/sum);
+    addLink(pt1, pt3, w1*w3/sum);
+    addLink(pt2, pt3, w2*w3/sum);
 }
 

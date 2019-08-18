@@ -113,17 +113,17 @@ void CrosslinkLong::setInteractions(Meca & meca) const
 #if ( DIM == 2 )
     
     mArm = calcArm(pt1, pt2.pos(), prop->length);
-    meca.interSideLink2D(pt1, pt2, mArm, prop->stiffness);
+    meca.addSideLink2D(pt1, pt2, mArm, prop->stiffness);
     
 #elif ( DIM >= 3 )
 
     mArm = calcArm(pt1, pt2.pos(), prop->length);
-    meca.interSideLinkS(pt1, pt2, mArm, prop->length, prop->stiffness);
+    meca.addSideLinkS(pt1, pt2, mArm, prop->length, prop->stiffness);
     //@todo CrosslinkLong:setInteractions() use interSideLink3D()
     
 #endif
     
-    //meca.interSideSideLink( cHand1->interpolation(), cHand2->interpolation(), prop->length, prop->stiffness );
+    //meca.addSideSideLink( cHand1->interpolation(), cHand2->interpolation(), prop->length, prop->stiffness );
 }
 
 

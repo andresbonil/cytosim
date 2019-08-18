@@ -38,11 +38,11 @@ void Aster::step()
 }
 
 #if   ( DIM == 1 )
-#    define INTERLINK interLink2
+#    define ADDLINK addLink2
 #elif ( DIM == 2 )
-#    define INTERLINK interLink3
+#    define ADDLINK addLink3
 #else
-#    define INTERLINK interLink4
+#    define ADDLINK addLink4
 #endif
 
 /*
@@ -81,25 +81,25 @@ void Aster::setInteractions(Meca & meca) const
 #ifdef BACKWARD_COMPATIBILITY
             if ( link.alt > 0 )
             {
-                meca.interLink(Mecapoint(sol, link.ref), fib->exactEnd(prop->focus), prop->stiffness[0]);
+                meca.addLink(Mecapoint(sol, link.ref), fib->exactEnd(prop->focus), prop->stiffness[0]);
                 if ( fib->length() > link.len )
                 {
-                    meca.interLink(Mecapoint(sol, link.alt), fib->interpolate(link.len, prop->focus), prop->stiffness[1]);
+                    meca.addLink(Mecapoint(sol, link.alt), fib->interpolate(link.len, prop->focus), prop->stiffness[1]);
                 }
                 else
                 {
                     FiberEnd tip = ( prop->focus == PLUS_END ? MINUS_END : PLUS_END );
                     // link the opposite end to an interpolation of the two solid-points:
                     real c = fib->length() / link.len;
-                    meca.interLink(fib->exactEnd(tip), Interpolation(sol, link.ref, link.alt, c), prop->stiffness[1]);
+                    meca.addLink(fib->exactEnd(tip), Interpolation(sol, link.ref, link.alt, c), prop->stiffness[1]);
                 }
                 continue;
             }
 #endif
             if ( link.ord == 1 )
-                meca.interLink(fib->exactEnd(prop->focus), Mecapoint(sol, link.ref), prop->stiffness[0]);
+                meca.addLink(fib->exactEnd(prop->focus), Mecapoint(sol, link.ref), prop->stiffness[0]);
             else
-                meca.INTERLINK(fib->exactEnd(prop->focus), pts, link.coef1, prop->stiffness[0]);
+                meca.ADDLINK(fib->exactEnd(prop->focus), pts, link.coef1, prop->stiffness[0]);
             
             
             // make second type of link:
@@ -108,9 +108,9 @@ void Aster::setInteractions(Meca & meca) const
             if ( fib->length() >= len )
             {
                 if ( len > 0 )
-                    meca.INTERLINK(fib->interpolate(len, prop->focus), pts, link.coef2, prop->stiffness[1]);
+                    meca.ADDLINK(fib->interpolate(len, prop->focus), pts, link.coef2, prop->stiffness[1]);
                 else
-                    meca.INTERLINK(fib->exactEnd(prop->focus), pts, link.coef2, prop->stiffness[1]);
+                    meca.ADDLINK(fib->exactEnd(prop->focus), pts, link.coef2, prop->stiffness[1]);
             }
             else
             {
@@ -121,7 +121,7 @@ void Aster::setInteractions(Meca & meca) const
                 real coef[4];
                 for ( int d = 0; d < 4; ++d )
                     coef[d] = u * link.coef1[d] + c * link.coef2[d];
-                meca.INTERLINK(fib->exactEnd(end), pts, coef, prop->stiffness[1]);
+                meca.ADDLINK(fib->exactEnd(end), pts, coef, prop->stiffness[1]);
             }
         }
     }

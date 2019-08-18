@@ -94,12 +94,12 @@ void WristLong::setInteractions(Meca & meca) const
 #if ( DIM == 2 )
     
     mArm = calcArm(pt, posFoot(), prop->length);
-    meca.interSideLink2D(pt, anchor.point(), mArm, prop->stiffness);
+    meca.addSideLink2D(pt, anchor.point(), mArm, prop->stiffness);
     
 #elif ( DIM >= 3 )
     
     mArm = calcArm(pt, posFoot(), prop->length);
-    meca.interSideLinkS(pt, anchor.point(), mArm, prop->length, prop->stiffness);
+    meca.addSideLinkS(pt, anchor.point(), mArm, prop->length, prop->stiffness);
     //@todo WristLong:setInteractions() use interSideLink3D()
     
 #endif
@@ -119,7 +119,7 @@ void WristLong::setInteractions(Meca & meca) const
 {
     Interpolation const& pt = sHand->interpolation();
     mArm = ( sBase.pos() - sHand->pos() ).normalized(prop->length);
-    meca.interLongLink(pt, sBase, prop->length, prop->stiffness);
+    meca.addLongLink(pt, sBase, prop->length, prop->stiffness);
 }
 
 #endif

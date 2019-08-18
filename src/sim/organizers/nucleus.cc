@@ -30,7 +30,7 @@ void Nucleus::setInteractions(Meca & meca) const
         {
             const Fiber * fib = fiber(ix);
             if ( fib )
-                meca.interLink(Mecapoint(sph, ix+Sphere::nbRefPts),
+                meca.addLink(Mecapoint(sph, ix+Sphere::nbRefPts),
                                fib->exactEnd(MINUS_END),
                                prop->stiffness );
         }
