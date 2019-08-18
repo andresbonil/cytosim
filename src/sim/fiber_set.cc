@@ -319,8 +319,8 @@ void FiberSet::foldPosition(Modulo const* s) const
  Calculate intersection between all fibers,
  and report the corresponding abscissa in arrays 'res1' and 'res2'.
  */
-void FiberSet::allIntersections0(Array<FiberSite>& res1, Array<FiberSite>& res2,
-                                 const real max_distance) const
+void FiberSet::allIntersections(Array<FiberSite>& res1, Array<FiberSite>& res2,
+                                const real max_distance) const
 {
     const real sup = max_distance * max_distance;
     res1.clear();
@@ -364,72 +364,6 @@ void FiberSet::allIntersections0(Array<FiberSite>& res1, Array<FiberSite>& res2,
             }
         }
     }
-}
-
-
-/**
- Calculate intersection between all fibers,
- and report the corresponding abscissa in arrays 'res1' and 'res2'.
- */
-void FiberSet::allIntersections(Array<FiberSite>& res1, Array<FiberSite>& res2,
-                                const real max_distance) const
-{
-#if ( 0 )
-    allIntersections0(res1, res2, max_distance);
-    std::clog << "FiberSet::allIntersections0() found " << res1.size() << " intersections \n";
-    //for ( unsigned i = 0; i < res1.size(); ++i )
-    //    std::clog << res1[i] << " " << res2[i] << "\n";
-#endif
-    
-    // find largest fiber:segmentation
-    real len = 0;
-    for ( Fiber * fib = first(); fib; fib = fib->next() )
-        len = std::max(len, fib->segmentation());
-    
-    const real DD = square(max_distance);
-    const real sup = square(len) + DD;
-    res1.clear();
-    res2.clear();
-    
-    FiberGrid & grid = simul.fiberGrid;
-    // distribute segments
-    grid.paintGrid(first(), nullptr, sqrt(sup));
-    
-    FiberGrid::SegmentList list;
-    for ( Fiber * fib = first(); fib; fib = fib->next() )
-    {
-        //std::clog << fib->reference() << ":\n";
-        for ( unsigned s = 0; s < fib->nbSegments(); ++s )
-        {
-            FiberSegment seg(fib, s);
-            list = grid.segments(seg.center());
-            //std::clog << seg << ":";
-            for ( FiberSegment const& can : list )
-            {
-                Fiber * bif = const_cast<Fiber*>(can.fiber());
-                if ( fib < bif )
-                {
-                    //std::clog << "   " << can;
-                    real abs1, abs2, dis;
-                    if ( seg.shortestDistance(can, abs1, abs2, dis) )
-                    {
-                        //std::clog << " " << dis;
-                        if ( dis < DD )
-                        {
-                            res1.push_back(FiberSite(fib, abs1+fib->abscissaPoint(s)));
-                            res2.push_back(FiberSite(bif, abs2+bif->abscissaPoint(can.point())));
-                        }
-                    }
-                }
-            }
-            //std::clog << '\n';
-        }
-    }
-#if ( 0 )
-    std::clog << "FiberSet::allIntersections()  found " << res1.size() << " intersections \n";
-    //for ( unsigned i = 0; i < res1.size(); ++i )
-    //    std::clog << res1[i] << " " << res2[i] << "\n";
-#endif
 }
 
 

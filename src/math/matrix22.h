@@ -557,7 +557,7 @@ public:
     }
 
     /// add lower triangle of matrix including diagonal: this <- this + M
-   void add_diag(Matrix22 const& M)
+   void add_half(Matrix22 const& M)
     {
 #if MATRIX22_USES_AVX
         mat = add4(mat, M.mat);
@@ -572,7 +572,7 @@ public:
     }
     
     /// add lower triangle of matrix including diagonal: this <- this + alpha * M
-   void add_diag(const real alpha, Matrix22 const& M)
+   void add_half(const real alpha, Matrix22 const& M)
     {
 #if MATRIX22_USES_AVX
         mat = fmadd4(set4(alpha), M.mat, mat);

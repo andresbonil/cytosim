@@ -74,9 +74,6 @@ public:
     
     /// find intersections between fibers in entire network, within given threshold
     void allIntersections(Array<FiberSite>&, Array<FiberSite>&, real max_distance) const;
-    
-    /// find intersections between fibers in entire network, within given threshold
-    void allIntersections0(Array<FiberSite>&, Array<FiberSite>&, real max_distance) const;
 
     /// set random sites along the fibers, separated on average by `spread`
     void uniFiberSites(Array<FiberSite>&, real spread) const;

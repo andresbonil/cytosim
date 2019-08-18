@@ -1355,12 +1355,12 @@ void Meca::interLongLink(const Mecapoint & pte,
     
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -1454,16 +1454,16 @@ void Meca::interLongLink(const Interpolation & pta,
     
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
     mC.block(ii3, ii0).add_full(W(3,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
     mC.block(ii3, ii1).add_full(W(3,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
     mC.block(ii3, ii2).add_full(W(3,2), T);
-    mC.diag_block(ii3).add_diag(W(3,3), T);
+    mC.diag_block(ii3).add_half(W(3,3), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -1758,12 +1758,12 @@ void Meca::interSideLinkS(const Interpolation & pta,
 
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -1976,16 +1976,16 @@ void Meca::interSideLinkS(const Interpolation & pta,
  
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
     mC.block(ii3, ii0).add_full(W(3,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
     mC.block(ii3, ii1).add_full(W(3,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
     mC.block(ii3, ii2).add_full(W(3,2), T);
-    mC.diag_block(ii3).add_diag(W(3,3), T);
+    mC.diag_block(ii3).add_half(W(3,3), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -2096,10 +2096,10 @@ void Meca::interSideSideLink2D(const Interpolation & pta,
     Matrix22 Cw(ww2, -ew2,  ew2, ww2);
     Matrix22 Dw(ww3,  ew2, -ew2, ww3);
     
-    mC.diag_block(ii0).add_diag(A.trans_mul(Aw));
-    mC.diag_block(ii1).add_diag(B.trans_mul(Bw));
-    mC.diag_block(ii2).add_diag(C.trans_mul(Cw));
-    mC.diag_block(ii3).add_diag(D.trans_mul(Dw));
+    mC.diag_block(ii0).add_half(A.trans_mul(Aw));
+    mC.diag_block(ii1).add_half(B.trans_mul(Bw));
+    mC.diag_block(ii2).add_half(C.trans_mul(Cw));
+    mC.diag_block(ii3).add_half(D.trans_mul(Dw));
  
     mC.block(ii1, ii0).add_full(B.trans_mul(Aw));
     mC.block(ii3, ii2).add_full(D.trans_mul(Cw));
@@ -2318,9 +2318,9 @@ void Meca::interSlidingLink(const Interpolation & pta,
 
 #if USE_MATRIX_BLOCK
     
-    mC.diag_block(ii0).add_diag(AA, T);
-    mC.diag_block(ii1).add_diag(BB, T);
-    mC.diag_block(ii2).add_diag(T);
+    mC.diag_block(ii0).add_half(AA, T);
+    mC.diag_block(ii1).add_half(BB, T);
+    mC.diag_block(ii2).add_half(T);
 
     mC.block(ii0, ii1).add_full(AB, T);
     mC.block(ii0, ii2).add_full(-A, T);
@@ -2395,16 +2395,16 @@ void Meca::interSlidingLink(const Interpolation & pta,
     Matrix44 W = Matrix44::outerProduct(cc);
     
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
     mC.block(ii3, ii0).add_full(W(3,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
     mC.block(ii3, ii1).add_full(W(3,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
     mC.block(ii3, ii2).add_full(W(3,2), T);
-    mC.diag_block(ii3).add_diag(W(3,3), T);
+    mC.diag_block(ii3).add_half(W(3,3), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -2481,24 +2481,24 @@ void Meca::interSideSlidingLink2D(const Interpolation & pta,
     {
         const Matrix22 PA = P.mul(A);
         const Matrix22 PB = P.mul(B);
-        mC.diag_block(ii0).add_diag(A.trans_mul(PA));
+        mC.diag_block(ii0).add_half(A.trans_mul(PA));
         mC.block(ii1, ii0).add_full(B.trans_mul(PA));
         mC.block(ii2, ii0).add_full(PA);
-        mC.diag_block(ii1).add_diag(B.trans_mul(PB));
+        mC.diag_block(ii1).add_half(B.trans_mul(PB));
         mC.block(ii2, ii1).add_full(PB);
-        mC.diag_block(ii2).add_diag(P);
+        mC.diag_block(ii2).add_half(P);
     }
     else
     {
         // in this case, swap indices to address lower triangle
         const Matrix22 AtP = A.trans_mul(P);
         const Matrix22 BtP = B.trans_mul(P);
-        mC.diag_block(ii2).add_diag(P);
+        mC.diag_block(ii2).add_half(P);
         mC.block(ii0, ii2).add_full(AtP);
         mC.block(ii1, ii2).add_full(BtP);
-        mC.diag_block(ii0).add_diag(AtP.mul(A));
+        mC.diag_block(ii0).add_half(AtP.mul(A));
         mC.block(ii1, ii0).add_full(BtP.mul(A));
-        mC.diag_block(ii1).add_diag(BtP.mul(B));
+        mC.diag_block(ii1).add_half(BtP.mul(B));
     }
     
     if ( modulo )
@@ -2593,12 +2593,12 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
 
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -2675,12 +2675,12 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
 
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -2864,16 +2864,16 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
     
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
     mC.block(ii3, ii0).add_full(W(3,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
     mC.block(ii3, ii1).add_full(W(3,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
     mC.block(ii3, ii2).add_full(W(3,2), T);
-    mC.diag_block(ii3).add_diag(W(3,3), T);
+    mC.diag_block(ii3).add_half(W(3,3), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -2965,16 +2965,16 @@ void Meca::interSideSlidingLinkS(const Interpolation & pta,
 
     // fill the matrix mC
 #if USE_MATRIX_BLOCK
-    mC.diag_block(ii0).add_diag(W(0,0), T);
+    mC.diag_block(ii0).add_half(W(0,0), T);
     mC.block(ii1, ii0).add_full(W(1,0), T);
     mC.block(ii2, ii0).add_full(W(2,0), T);
     mC.block(ii3, ii0).add_full(W(3,0), T);
-    mC.diag_block(ii1).add_diag(W(1,1), T);
+    mC.diag_block(ii1).add_half(W(1,1), T);
     mC.block(ii2, ii1).add_full(W(2,1), T);
     mC.block(ii3, ii1).add_full(W(3,1), T);
-    mC.diag_block(ii2).add_diag(W(2,2), T);
+    mC.diag_block(ii2).add_half(W(2,2), T);
     mC.block(ii3, ii2).add_full(W(3,2), T);
-    mC.diag_block(ii3).add_diag(W(3,3), T);
+    mC.diag_block(ii3).add_half(W(3,3), T);
 #else
     add_block(ii0, ii0, W(0,0), T);
     add_block(ii1, ii0, W(1,0), T);
@@ -3562,7 +3562,7 @@ void Meca::addLineClamp(const Mecapoint & pta,
     MatrixBlock T = MatrixBlock::offsetOuterProduct(-weight, dir, weight);
 
 #if USE_MATRIX_BLOCK
-    mC.diag_block(inx).add_diag(T);
+    mC.diag_block(inx).add_half(T);
 #else
     add_block(inx, inx, T);
 #endif
@@ -3603,8 +3603,8 @@ void Meca::addLineClamp(const Interpolation & pta,
 
 #if USE_MATRIX_BLOCK
 
-    mC.diag_block(ii0).add_diag(A*A, T);
-    mC.diag_block(ii1).add_diag(B*B, T);
+    mC.diag_block(ii0).add_half(A*A, T);
+    mC.diag_block(ii1).add_half(B*B, T);
     mC.block(ii0, ii1).add_full(A*B, T);
     
 #else
@@ -3651,7 +3651,7 @@ void Meca::addPlaneClamp(const Mecapoint & pta,
 #else
     MatrixBlock T = MatrixBlock::outerProduct(dir, -weight);
 # if USE_MATRIX_BLOCK
-    mC.diag_block(inx).add_diag(T);
+    mC.diag_block(inx).add_half(T);
 # else
     add_block(inx, inx, T);
 # endif
@@ -3694,8 +3694,8 @@ void Meca::addPlaneClamp(const Interpolation & pta,
     
 #if USE_MATRIX_BLOCK
     
-    mC.diag_block(ii0).add_diag(A*A, T);
-    mC.diag_block(ii1).add_diag(B*B, T);
+    mC.diag_block(ii0).add_half(A*A, T);
+    mC.diag_block(ii1).add_half(B*B, T);
     mC.block(ii0, ii1).add_full(A*B, T);
     
 #else

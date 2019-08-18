@@ -402,7 +402,7 @@ public:
     }
 
     /// add lower triangle of matrix including diagonal: this <- this + M
-    void add_diag(Matrix44 const& M)
+    void add_half(Matrix44 const& M)
     {
         real const* src = M.val;
 #if ( 1 )
@@ -416,7 +416,7 @@ public:
     }
     
     /// add lower triangle of matrix including diagonal: this <- this + alpha * M
-    void add_diag(const real alpha, Matrix44 const& M)
+    void add_half(const real alpha, Matrix44 const& M)
     {
         real const* src = M.val;
 #if ( 1 )

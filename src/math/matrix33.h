@@ -586,7 +586,7 @@ public:
     }
 
     /// add lower triangle of matrix including diagonal: this <- this + M
-    void add_diag(Matrix33 const& M)
+    void add_half(Matrix33 const& M)
     {
         real const* src = M.val;
 #if MATRIX33_USES_AVX  && ( BLD == 4 )
@@ -604,7 +604,7 @@ public:
     }
     
     /// add lower triangle of matrix including diagonal: this <- this + alpha * M
-    void add_diag(const real alpha, Matrix33 const& M)
+    void add_half(const real alpha, Matrix33 const& M)
     {
         real const* src = M.val;
         //std::clog << "matrix alignment " << ((uintptr_t)src & 63) << "\n";
