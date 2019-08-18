@@ -47,14 +47,14 @@ set fiber filament
 new 4 filament
 {
     length = 8
-    distribute = 0 0.66 0, 0 -0.66 0
+    range = 0 0.66 0, 0 -0.66 0
     orientation = -1 0 0
 }
 
 new 3 filament
 {
     length = 8
-    distribute = 0 -0.44 0, 0 0.44 0
+    range = 0 -0.44 0, 0 0.44 0
     orientation = 1 0 0
 }
 

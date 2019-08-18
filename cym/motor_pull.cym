@@ -68,7 +68,7 @@ new microtubule
 
 new 32 grafted
 {
-    distribute = -2 0 0, 2.5 0 0
+    range = -2 0 0, 2.5 0 0
 }
 
 run 50 system

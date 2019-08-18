@@ -402,12 +402,14 @@ void Parser::parse_new(std::istream& is)
 
             // distribute objects regularly between two points:
             if ( opt.has_key("distribute") )
+                throw InvalidParameter("please use `range' instead of 'distribute'");
+            if ( opt.has_key("range") )
             {
                 Vector A, B;
-                if ( !opt.set(A, "distribute") || !opt.set(B, "distribute", 1) )
-                    throw InvalidParameter("two vectors need to be defined by `distribute'");
+                if ( !opt.set(A, "range") || !opt.set(B, "range", 1) )
+                    throw InvalidParameter("two vectors need to be defined by `range'");
                 if ( opt.has_key("position") )
-                    throw InvalidParameter("cannot specify `position' if `distribute' is defined");
+                    throw InvalidParameter("cannot specify `position' if `range' is defined");
                 Vector dAB = ( B - A ) / ( ( cnt > 1 ) ? cnt - 1 : 2 );
                 for ( unsigned n = 0; n < cnt; ++n )
                 {

@@ -59,14 +59,14 @@ set couple complex
 new 11 microtubule
 {
     length = 5
-    distribute = 0 -0.50, 0 0.45
+    range = 0 -0.50, 0 0.45
     orientation = +1 0
 }
     
 new 11 microtubule
 {
     length = 5
-    distribute = 0 -0.45, 0 0.50
+    range = 0 -0.45, 0 0.50
     orientation = -1 0
 }
     
