@@ -1,7 +1,7 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
-#ifndef FILAMENT_H
-#define FILAMENT_H
+#ifndef CHAIN_H
+#define CHAIN_H
 
 #include "sim.h"
 #include "vector.h"
