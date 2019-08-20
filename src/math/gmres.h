@@ -23,40 +23,40 @@
 namespace LinearSolvers
 {
 
-    void gmres_rotate(real& dx, real& dy, real cs, real sn)
+    inline void gmres_rotate(real& dx, real& dy, real C, real S)
     {
-        real tmp = cs * dx + sn * dy;
-        dy = -sn * dx + cs * dy;
+        real tmp = C * dx + S * dy;
+        dy = -S * dx + C * dy;
         dx = tmp;
     }
     
-    void gmres_make_rotation(real dx, real dy, real& cs, real& sn)
+    inline void gmres_make_rotation(real dx, real dy, real& C, real& S)
     {
         if ( dy == 0.0 )
         {
-            cs = 1.0;
-            sn = 0.0;
+            C = 1.0;
+            S = 0.0;
         }
         else if ( fabs(dy) > fabs(dx) )
         {
             real t = dx / dy;
-            sn = 1.0 / sqrt(1.0 + t*t);
-            cs = t * sn;
+            S = 1.0 / sqrt(1.0 + t*t);
+            C = t * S;
         } else
         {
             real t = dy / dx;
-            cs = 1.0 / sqrt(1.0 + t*t);
-            sn = t * cs;
+            C = 1.0 / sqrt(1.0 + t*t);
+            S = t * C;
         }
     }
     
-    void gmres_make_rotation(Matrix& H, real cs[], real sn[], real ss[], int i)
+    inline void gmres_make_rotation(Matrix& H, real C[], real S[], real ss[], int i)
     {
         for ( int k = 0; k < i; ++k )
-            gmres_rotate(H(k,i), H(k+1,i), cs[k], sn[k]);
-        gmres_make_rotation(H(i,i), H(i+1,i), cs[i], sn[i]);
-        gmres_rotate(H(i,i), H(i+1,i), cs[i], sn[i]);
-        gmres_rotate(ss[i], ss[i+1], cs[i], sn[i]);
+            gmres_rotate(H(k,i), H(k+1,i), C[k], S[k]);
+        gmres_make_rotation(H(i,i), H(i+1,i), C[i], S[i]);
+        gmres_rotate(H(i,i), H(i+1,i), C[i], S[i]);
+        gmres_rotate(ss[i], ss[i+1], C[i], S[i]);
     }
 
 

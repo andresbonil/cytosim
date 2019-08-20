@@ -56,7 +56,7 @@ namespace LinearSolvers
                 /* The residual vector became nearly orthogonal to the
                  arbitrarily chosen direction r0, and we restart with a new r0 */
                 blas::xcopy(dim, rhs, 1, r, 1);         // r = rhs
-                mat.multiply(sol, r0);                   // r0 = A*x
+                mat.multiply(sol, r0);                  // r0 = A*x
                 blas::xaxpy(dim, -1.0, r0, 1, r, 1);    // r = rhs - A * x
                 blas::xcopy(dim, r, 1, r0, 1);          // r0 = r
                 rho = blas::dot(dim, r0, r0);
@@ -80,8 +80,8 @@ namespace LinearSolvers
             mat.multiply(p, v);                     // v = A * p;
             alpha = rho / blas::dot(dim, r0, v);
 
-            blas::xaxpy(dim, -alpha, v, 1, r, 1);  // r = r - alpha * v;
-            blas::xaxpy(dim,  alpha, p, 1, sol, 1);// x = x + alpha * p;
+            blas::xaxpy(dim, -alpha, v, 1, r, 1);   // r = r - alpha * v;
+            blas::xaxpy(dim,  alpha, p, 1, sol, 1); // x = x + alpha * p;
             
             //if ( monitor.finished(dim, r) )
             //    break;

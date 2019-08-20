@@ -585,9 +585,9 @@ public:
         for ( int u = 0; u < 4; ++u )
             val[u] += M.val[u];
 #else
-        for ( int x = 0; x < 2; ++x )
-        for ( int y = x; y < 2; ++y )
-            val[y+2*x] += M.val[y+2*x];
+        val[0] += M.val[0];
+        val[1] += M.val[1];
+        val[3] += M.val[3];
 #endif
     }
     
@@ -600,9 +600,9 @@ public:
         for ( int u = 0; u < 4; ++u )
             val[u] += alpha * M.val[u];
 #else
-        for ( int x = 0; x < 2; ++x )
-        for ( int y = x; y < 2; ++y )
-            val[y+2*x] += alpha * M.val[y+2*x];
+        val[0] += alpha * M.val[0];
+        val[1] += alpha * M.val[1];
+        val[3] += alpha * M.val[3];
 #endif
     }
     
@@ -615,9 +615,9 @@ public:
         for ( int u = 0; u < 4; ++u )
             val[u] -= M.val[u];
 #else
-        for ( int x = 0; x < 2; ++x )
-        for ( int y = x; y < 2; ++y )
-            val[y+2*x] -= M.val[y+2*x];
+        val[0] -= M.val[0];
+        val[1] -= M.val[1];
+        val[3] -= M.val[3];
 #endif
     }
 

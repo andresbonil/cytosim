@@ -8,24 +8,35 @@
 
 namespace LinearSolvers
 {
-    /// defines the functions that defines the linear transformation
+    /// interface for a linear system
     class LinearOperator
     {
     public:
         /// size of the matrix M
-        virtual unsigned dimension() const = 0;
+        virtual int dimension() const = 0;
         
-        /// apply operator to a vector ( Y <- M * X )
+        /// multiply a vector ( Y <- M * X )
         virtual void multiply(const real* X, real* Y) const = 0;
         
-        /// apply transposed operator to vector ( Y <- transpose(M) * X )
-        virtual void trans_multiply(const real* X, real* Y) const {}
+        /// transposed multiply a vector ( Y <- transpose(M) * X )
+        virtual void trans_multiply(const real* X, real* Y) const
+        {
+            // not necessary for some solvers
+        }
         
         /// apply preconditionning ( Y <- P * X )
         virtual void precondition(const real* X, real* Y) const
         {
             copy_real(dimension(), X, Y);
         }
+        
+        /// multiply vector and apply preconditionner ( Y <- P * M * X )
+        virtual void multiplyP(real* X, real* Y) const
+        {
+            multiply(X, Y);       // Y <- M*X
+            precondition(Y, X);   // X <- P*Y
+        }
+
     };
 }
 
