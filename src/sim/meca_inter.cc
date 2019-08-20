@@ -1754,7 +1754,7 @@ void Meca::addSideLinkS(const Interpolation & pta,
     
     arm.add_to(ww[0], vBAS+ii0);
     arm.add_to(ww[1], vBAS+ii1);
-    arm.add_to(ww[0], vBAS+ii2);
+    arm.add_to(ww[2], vBAS+ii2);
 
     // fill the matrix mC
 #if USE_MATRIX_BLOCK

@@ -48,7 +48,6 @@ void Digit::attach(FiberSite const& sit)
 {
     assert_true(sit.lattice());
     Hand::attach(sit);
-    assert_true(fbLattice);
     assert_true(vacant(site()));
     inc();
 }
