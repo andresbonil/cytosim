@@ -671,7 +671,7 @@ void Chain::growM(const real delta)
     }
     
     fnAbscissaM -= delta;
-    setSegmentation(fnCut + delta/nbSegments());
+    setSegmentation(std::max(fnCut+delta/nbSegments(), REAL_EPSILON));
     postUpdate();
 }
 
@@ -783,7 +783,7 @@ void Chain::growP(const real delta)
             movePoint(p, ( a * p ) * diffPoints(p-1));
     }
     
-    setSegmentation(fnCut + delta/nbSegments());
+    setSegmentation(std::max(fnCut+delta/nbSegments(), REAL_EPSILON));
     fnAbscissaP += delta;
     postUpdate();
 }

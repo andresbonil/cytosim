@@ -711,10 +711,12 @@ void Display::drawMisc(Simul const& sim)
 void Display::drawFiberMinusEnd(Fiber const& fib, int style, real size) const
 {
     real width = size * sFactor;
-    if ( style  &&  width > 0 )
+    if ( width > 0 )
     {
         switch(style)
         {
+            default:
+                break;
             case 1:
                 gle::gleObject(fib.posEndM(), width, gle::gleSphere2B);
                 break;
@@ -750,10 +752,12 @@ void Display::drawFiberMinusEnd(Fiber const& fib, int style, real size) const
 void Display::drawFiberPlusEnd(Fiber const& fib, int style, real size) const
 {
     real width = size * sFactor;
-    if ( style  &&  width > 0 )
+    if ( width > 0 )
     {
         switch(style)
         {
+            default:
+                break;
             case 1:
                 gle::gleObject(fib.posEndP(), width, gle::gleSphere2B);
                 break;
@@ -1509,16 +1513,16 @@ void Display::drawFiber(Fiber const& fib)
         
         if ( disp->end_style[1] )
         {
-            //fib.disp->end_color[1].load_load();
-            fib.disp->color.load_load();
+            fib.disp->end_color[1].load_load();
+            //fib.disp->color.load_load();
             disp->back_color.load_back();
             drawFiberMinusEnd(fib, disp->end_style[1], disp->end_size[1]);
         }
         
         if ( disp->end_style[0] )
         {
-            //fib.disp->end_color[0].load_load();
-            fib.disp->color.load_load();
+            fib.disp->end_color[0].load_load();
+            //fib.disp->color.load_load();
             disp->back_color.load_back();
             drawFiberPlusEnd(fib, disp->end_style[0], disp->end_size[0]);
         }

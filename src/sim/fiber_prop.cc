@@ -239,14 +239,14 @@ void FiberProp::clear()
     rigidity            = -1;
     segmentation        = 1;
     length              = 1;
-    min_length          = 0;
+    min_length          = 0.010;      // suitable for actin/microtubules
     max_length          = INFINITY;
     total_polymer       = INFINITY;
     persistent          = false;
 
     viscosity           = -1;
     hydrodynamic_radius[0] = 0.0125;  // radius of a Microtubule
-    hydrodynamic_radius[1] = 10;
+    hydrodynamic_radius[1] = 5;
     surface_effect      = false;
     cylinder_height     = 0;
     
