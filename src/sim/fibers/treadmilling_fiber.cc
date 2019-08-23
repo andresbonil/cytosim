@@ -132,15 +132,15 @@ void TreadmillingFiber::step()
     }
     else if ( len + inc < prop->max_length )
     {
-        growM(mGrowthM);
-        growP(mGrowthP);
+        if ( mGrowthM ) growM(mGrowthM);
+        if ( mGrowthP ) growP(mGrowthP);
     }
     else if ( len < prop->max_length )
     {
         // the remaining possible growth is distributed to the two ends:
         inc = ( prop->max_length - len ) / inc;
-        growM(inc*mGrowthM);
-        growP(inc*mGrowthP);
+        if ( mGrowthM ) growM(inc*mGrowthM);
+        if ( mGrowthP ) growP(inc*mGrowthP);
     }
 
     Fiber::step();
