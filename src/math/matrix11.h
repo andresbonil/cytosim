@@ -237,7 +237,18 @@ public:
     {
         val_ -= M.val_;
     }
-
+    
+    /// add alpha to diagonal
+    void add_diag(real alpha)
+    {
+        val_ += alpha;
+    }
+    
+    /// add -alpha to diagonal
+    void sub_diag(real alpha)
+    {
+        val_ -= alpha;
+    }
     
     /// add all elements of block 'S' to array 'M'
     void addto(real * M, unsigned ldd) const

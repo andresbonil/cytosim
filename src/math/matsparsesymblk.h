@@ -46,6 +46,7 @@ class Element;
  Each element is a full square block of size DIM x DIM.
  
  Elements are stored in random order in the column.
+ The lower triangle of the matrix is stored.
  
  F. Nedelec, 17--27 March 2017, revised entirely June 2018
  */
@@ -167,24 +168,21 @@ public:
     /// allocate the matrix to hold ( sz * sz )
     void allocate(size_t alc);
     
-    /// returns element at (ii, jj)
+    /// returns element stored at line ii and column jj, if ( ii > jj )
     SquareBlock& block(const index_t ii, const index_t jj)
     {
         assert_true( ii < size_ );
         assert_true( jj < size_ );
         assert_true( ii % BLOCK_SIZE == 0 );
         assert_true( jj % BLOCK_SIZE == 0 );
-        // switch to address lower triangle of matrix
 #if ( 1 )
-        // branchless code:
+        // safe swap, with branchless code:
         index_t i = std::max(ii, jj);
         index_t j = std::min(ii, jj);
         return column_[j].block(i, j);
 #else
-        if ( ii >= jj )
-            return column_[jj].block(ii, jj);
-        else
-            return column_[ii].block(jj, ii);
+        assert_true( ii > jj );
+        return column_[jj].block(ii, jj);
 #endif
     }
     

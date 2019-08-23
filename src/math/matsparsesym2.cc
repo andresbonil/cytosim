@@ -144,16 +144,16 @@ void MatrixSparseSymmetric2::allocateColumn(const index_t jj, size_t alc)
 /**
  This allocate to be able to hold the matrix element if necessary
 */
-real& MatrixSparseSymmetric2::operator()(index_t ii, index_t jj)
+real& MatrixSparseSymmetric2::operator()(index_t i, index_t j)
 {
-    assert_true( ii < size_ );
-    assert_true( jj < size_ );
-    //fprintf(stderr, "MSS( %6i %6i )\n", ii, jj);
+    assert_true( i < size_ );
+    assert_true( j < size_ );
+    //fprintf(stderr, "MSS( %6i %6i )\n", i, j);
     
     // swap to get ii > jj (address lower triangle)
-    if ( ii < jj )
-        std::swap(ii, jj);
-    
+    index_t ii = std::max(i, j);
+    index_t jj = std::min(i, j);
+
     Element * col = col_[jj];
     
     if ( col_size_[jj] > 0 )
@@ -205,12 +205,12 @@ real& MatrixSparseSymmetric2::operator()(index_t ii, index_t jj)
 }
 
 
-real* MatrixSparseSymmetric2::addr(index_t ii, index_t jj) const
+real* MatrixSparseSymmetric2::addr(index_t i, index_t j) const
 {
-    // swap to get ii <= jj (address lower triangle)
-    if ( ii < jj )
-        std::swap(ii, jj);
-    
+    // swap to get ii > jj (address lower triangle)
+    index_t ii = std::max(i, j);
+    index_t jj = std::min(i, j);
+
     for ( unsigned kk = 0; kk < col_size_[jj]; ++kk )
         if ( col_[jj][kk].inx == ii )
             return &( col_[jj][kk].val );

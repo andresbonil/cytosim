@@ -592,7 +592,7 @@ public:
     }
     
     /// add lower triangle of matrix including diagonal: this <- this + alpha * M
-   void add_half(const real alpha, Matrix22 const& M)
+    void add_half(const real alpha, Matrix22 const& M)
     {
 #if MATRIX22_USES_AVX
         mat = fmadd4(set4(alpha), M.mat, mat);
@@ -619,6 +619,20 @@ public:
         val[1] -= M.val[1];
         val[3] -= M.val[3];
 #endif
+    }
+    
+    /// add alpha to diagonal
+    void add_diag(real alpha)
+    {
+        val[0] += alpha;
+        val[3] += alpha;
+    }
+    
+    /// add -alpha to diagonal
+    void sub_diag(real alpha)
+    {
+        val[0] -= alpha;
+        val[3] -= alpha;
     }
 
     
@@ -750,14 +764,14 @@ public:
 };
 
 
-/// output operator to std::ostream
+/// output matrix lines to std::ostream
 inline std::ostream& operator << (std::ostream& os, Matrix22 const& M)
 {
     std::streamsize w = os.width();
     os << std::setw(2) << "[ ";
     os << std::setw(w) << M[0] << " ";
-    os << std::setw(w) << M[1] << " | ";
-    os << std::setw(w) << M[2] << " ";
+    os << std::setw(w) << M[2] << " ; ";
+    os << std::setw(w) << M[1] << " ";
     os << std::setw(w) << M[3] << " ]";
     return os;
 }
