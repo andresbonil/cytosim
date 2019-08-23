@@ -70,6 +70,9 @@ inline vec2 hadd2(vec2 a, vec2 b)            { return _mm_hadd_pd(a,b); }
 inline vec2 sqrt2(vec2 a)                    { return _mm_sqrt_pd(a); }
 inline vec2 max2(vec2 a, vec2 b)             { return _mm_max_pd(a,b); }
 inline vec2 min2(vec2 a, vec2 b)             { return _mm_min_pd(a,b); }
+inline vec2 and2(vec2 a, vec2 b)             { return _mm_and_pd(a,b); }
+inline vec2 andnot2(vec2 a, vec2 b)          { return _mm_andnot_pd(a,b); }
+inline vec2 abs2(vec2 a)                     { return _mm_andnot_pd(_mm_set1_pd(-0.0), a); }
 
 inline vec2 setr2(double a, double b)        { return _mm_setr_pd(a,b); }
 inline vec2 set2(double a, double b)         { return _mm_set_pd(a, b); }
@@ -83,13 +86,6 @@ inline vec2 unpackhi2(vec2 a, vec2 b)        { return _mm_unpackhi_pd(a,b); }
 #define blend2(a,b,c)     _mm_blend_pd(a,b,c)
 #define blendv2(a,b,c)    _mm_blendv_pd(a,b,c)
 #define cmp2(a,b,c)       _mm_cmp_pd(a,b,c)
-
-/// returns absolute values
-inline vec2 abs2(vec2 v)
-{
-    static const vec2 msk = _mm_set1_pd(0x7FFFFFFFFFFFFFFFUL);
-    return _mm_and_pd(msk, v);
-}
 
 /// returns the sum of the elements, broadcasted
 inline vec2 esum(vec2 v)
@@ -203,9 +199,7 @@ inline vec4 duphi4(vec4 a)               { return _mm256_permute_pd(a,15); }
 
 /// load one value into 4 positions
 inline vec4 broadcast1(double const* a)  { return _mm256_broadcast_sd(a); }
-
 inline vec4 broadcast2(double const* a)  { return _mm256_broadcast_pd((__m128d const*)a); }
-#define insertf128(a,b,c)   _mm256_insertf128_pd(a,b,c)
 
 inline vec2 getlo(vec4 a)                { return _mm256_castpd256_pd128(a); }
 inline vec2 gethi(vec4 a)                { return _mm256_extractf128_pd(a,1); }
@@ -221,6 +215,9 @@ inline vec4 hadd4(vec4 a, vec4 b)        { return _mm256_hadd_pd(a,b); }
 inline vec4 sqrt4(vec4 a)                { return _mm256_sqrt_pd(a); }
 inline vec4 max4(vec4 a, vec4 b)         { return _mm256_max_pd(a,b); }
 inline vec4 min4(vec4 a, vec4 b)         { return _mm256_min_pd(a,b); }
+inline vec4 and4(vec4 a, vec4 b)         { return _mm256_and_pd(a,b); }
+inline vec4 andnot4(vec4 a, vec4 b)      { return _mm256_andnot_pd(a,b); }
+inline vec4 abs4(vec4 a)                 { return _mm256_andnot_pd(_mm256_set1_pd(-0.0), a); }
 
 inline vec4 unpacklo4(vec4 a, vec4 b)    { return _mm256_unpacklo_pd(a,b); }
 inline vec4 unpackhi4(vec4 a, vec4 b)    { return _mm256_unpackhi_pd(a,b); }
@@ -230,14 +227,7 @@ inline vec4 unpackhi4(vec4 a, vec4 b)    { return _mm256_unpackhi_pd(a,b); }
  inline void store22(double* a, double* b, vec4 c) { return _mm256_storeu2_m128d(a,b,c); }
  */
 
-/// concatenate two vec2 into a vec4
-inline vec4 cat4(vec2 h, vec2 l) { return _mm256_insertf128_pd(_mm256_castpd128_pd256(l), h, 1); }
-inline vec4 cat4(vec2 h, vec4 l) { return _mm256_insertf128_pd(l, h, 1); }
-
-//inline vec4 cat4(vec2 h, vec2 l) { return _mm256_set_m128d(h, l); }
-//#define cat4(h, l)           _mm256_set_m128d(h, l)
-
-
+#define insertf128(a,b,c)   _mm256_insertf128_pd(a,b,c)
 #define permute4(a,b)       _mm256_permute_pd(a,b)
 #define permute2(a,b)       _mm_permute_pd(a,b)       // same as shuffle2(a,a,b)
 #define permute2f128(a,b,c) _mm256_permute2f128_pd(a,b,c)
@@ -247,12 +237,13 @@ inline vec4 cat4(vec2 h, vec4 l) { return _mm256_insertf128_pd(l, h, 1); }
 #define cmp4(a,b,c)         _mm256_cmp_pd(a,b,c)
 
 
-/// returns absolute values
-inline vec4 abs4(vec4 v)
-{
-    static const vec4 msk = _mm256_set1_pd(0x7FFFFFFFFFFFFFFFUL);
-    return _mm256_and_pd(msk, v);
-}
+/// concatenate two vec2 into a vec4
+inline vec4 cat4(vec2 h, vec2 l) { return _mm256_insertf128_pd(_mm256_castpd128_pd256(l), h, 1); }
+inline vec4 cat4(vec2 h, vec4 l) { return _mm256_insertf128_pd(l, h, 1); }
+
+//inline vec4 cat4(vec2 h, vec2 l) { return _mm256_set_m128d(h, l); }
+//#define cat4(h, l)           _mm256_set_m128d(h, l)
+
 
 /// returns the sum of the elements, broadcasted
 inline vec4 esum(vec4 v)
