@@ -32,7 +32,7 @@ namespace LinearSolvers
         Monitor(unsigned i, real r) { reset(); cntMax_ = i; resMax_ = r; }
         
         /// reset state variables (counters, flags and residual)
-        void reset() { flag_ = 0; cnt_ = 0; res_ = INFINITY; cntOld_ = 16; }
+        void reset() { flag_ = 0; cnt_ = 0; res_ = INFINITY; cntOld_ = 32; }
         
         /// increment counter
         void operator ++() { ++cnt_; }
@@ -79,7 +79,7 @@ namespace LinearSolvers
             real res = blas::nrm2(size, x);
 #endif
 #if ( 1 )
-            if ( cnt_ > cntOld_+63 )
+            if ( cnt_ > cntOld_+128 )
             {
                 if ( res > 2*res_ )
                 {
