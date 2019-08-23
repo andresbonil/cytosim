@@ -104,6 +104,12 @@ public:
 
     /// Human friendly ouput
     void         print(std::ostream&) const;
+
+    /// true if segments are adjacent on the same fiber
+    friend bool  adjacent(FiberSegment const& a, FiberSegment const& b)
+    {
+        return ( a.fib_==b.fib_  &&  a.pti_ < 2 + b.pti_  &&  b.pti_ < 2 + a.pti_ );
+    }
 };
 
 /// print for debug purpose

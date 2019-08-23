@@ -458,7 +458,8 @@ void PointGrid::setInteractions(Meca& meca, PointGridParam const& pam,
     for ( FatSegment* ii = fll.begin(); ii < fll.end(); ++ii )
     {
         for ( FatSegment* jj = ii+1; jj < fll.end(); ++jj )
-            checkLL(meca, pam, *ii, *jj);
+            if ( !adjacent(ii->seg, jj->seg) )
+                checkLL(meca, pam, *ii, *jj);
     }
 }
 
@@ -489,7 +490,8 @@ void PointGrid::setInteractions(Meca& meca, PointGridParam const& pam,
             checkPL(meca, pam, *jj, *ii);
         
         for ( FatSegment* kk = fll2.begin(); kk < fll2.end(); ++kk )
-            checkLL(meca, pam, *ii, *kk);
+            if ( !adjacent(ii->seg, jj->seg) )
+                checkLL(meca, pam, *ii, *kk);
     }
 }
 
