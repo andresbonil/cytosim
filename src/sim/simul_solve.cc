@@ -400,9 +400,15 @@ void Simul::dump() const
 //                              SOLVE-X 1D
 //==============================================================================
 
+#include "meca1d.h"
 
 void Simul::solveX()
 {
+    if ( !pMeca1D )
+        pMeca1D = new Meca1D();
+    
+    Meca1D & sMeca1D = *pMeca1D;
+
     //-----initialize-----
     
     sMeca1D.clear();

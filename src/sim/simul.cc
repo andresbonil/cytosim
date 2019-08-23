@@ -67,6 +67,7 @@ Simul::Simul()
 fibers(*this), spheres(*this), beads(*this), solids(*this),
 singles(*this), couples(*this), organizers(*this), events(*this)
 {
+    pMeca1D       = nullptr;
     sReady        = false;
     precondCPU[0] = 0;
     precondCPU[1] = 0;
@@ -82,6 +83,8 @@ Simul::~Simul()
 {
     erase();
     
+    if ( pMeca1D )
+        delete(pMeca1D);
     if ( prop )
         delete(prop);
 }

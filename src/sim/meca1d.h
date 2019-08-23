@@ -6,6 +6,8 @@
 #include "array.h"
 #include "mecable.h"
 #include "matsparsesym1.h"
+#include "monitor.h"
+#include "allocator.h"
 #include "bicgstab.h"
 
 
@@ -35,7 +37,7 @@ public:
     real * vRHS;                 ///< right-hand side term of the equation
 
     /// matrix containing the elasticity coefficients
-    MatrixSparseSymmetric1   mB;
+    MatrixSparseSymmetric1   mA;
     
     /// working memory allocator
     LinearSolvers::Allocator allocator;
@@ -99,8 +101,8 @@ public:
             vRHS = new_real(allocated_);
         }
         
-        mB.resize(dim);
-        mB.reset();
+        mA.resize(dim);
+        mA.reset();
 
         zero_real(dim, vBAS);
         zero_real(dim, vRHS);
@@ -120,16 +122,16 @@ public:
     /// add a clamp between point at index 'ii' to position 'dx'
     void addClamp(index_t ii, real w, real dx)
     {
-        mB(ii, ii) -= w;
+        mA(ii, ii) -= w;
         vBAS[ii]   += w * dx;
     }
     
     /// add a link between points 'ii' and 'jj' with a position shift 'dx'
     void addLink(index_t ii, index_t jj, real w, real dx)
     {
-        mB(ii, ii) -= w;
-        mB(ii, jj) += w;
-        mB(jj, jj) -= w;
+        mA(ii, ii) -= w;
+        mA(ii, jj) += w;
+        mA(jj, jj) -= w;
         vBAS[ii] += w * dx;
         vBAS[jj] -= w * dx;
     }
@@ -152,23 +154,23 @@ public:
     /**
      Given that the force can be expressed as:
      
-         F(POS) = mB * ( POS + vBAS )
+         F(POS) = mA * ( POS + vBAS )
      
-     Where mB is a matrix and vBAS is a vector.
+     Where mA is a matrix and vBAS is a vector.
      This solves the discretized equation:
 
-         ( newPOS - oldPOS ) / time_step = MOB * mB * ( newPOS + vBAS ) + Noise
+         ( newPOS - oldPOS ) / time_step = MOB * mA * ( newPOS + vBAS ) + Noise
   
      where MOB is a diagonal matrix of mobility coefficients (ie just a vector).
      Importantly, we used 'newPOS' on the right hand side, for implicit integration!
      We define
      
          vMOB = time_step * MOB
-         vRHS = time_step * MOB * mB * ( oldPOS + vBAS ) + time_step * Noise
+         vRHS = time_step * MOB * mA * ( oldPOS + vBAS ) + time_step * Noise
      
      leading to:
      
-         ( I - vMOB * mB ) ( newPOS - oldPOS ) = vRHS
+         ( I - vMOB * mA ) ( newPOS - oldPOS ) = vRHS
      
      We solve the linear system to determine:
      
@@ -178,7 +180,7 @@ public:
     void solve(real precision)
     {
         ready_ = false;
-        mB.prepareForMultiply(1);
+        mA.prepareForMultiply(1);
         LinearSolvers::Monitor monitor(dimension(), precision);
         LinearSolvers::BCGS(*this, vRHS, vSOL, monitor, allocator);
         ready_ = monitor.converged();
@@ -203,13 +205,13 @@ public:
     /// Implements the LinearOperator
     unsigned dimension() const { return objs.size(); }
     
-    /// Implements the LinearOperator:  Y <- X - vMOB * mB * X
+    /// Implements the LinearOperator:  Y <- X - vMOB * mA * X
     void multiply(const real * X, real * Y) const
     {
         assert_true( X != Y  &&  X != vBAS  &&  Y != vBAS );
         
         zero_real(objs.size(), vBAS);
-        mB.vecMulAdd(X, vBAS);
+        mA.vecMulAdd(X, vBAS);
         
         for( size_t ii = 0; ii < objs.size(); ++ii )
             Y[ii] = X[ii] - vMOB[ii] * vBAS[ii];

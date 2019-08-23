@@ -24,8 +24,8 @@
 #include "field_values.h"
 #include "field.h"
 #include "meca.h"
-#include "meca1d.h"
 
+class Meca1D;
 class SimulProp;
 
 /// default name for output trajectory file
@@ -40,14 +40,14 @@ public:
     /// Meca used to set and integrate the equations of motion of Mecables
     mutable Meca    sMeca;
     
-    /// Meca used to solve the system with option 'solve=horizontal'
-    mutable Meca1D  sMeca1D;
-    
     /// grid used for attachment of Hand to Fiber
     mutable FiberGrid fiberGrid;
     
     /// grid used for steric interaction between Fiber/Solid/Bead/Sphere
     mutable PointGrid pointGrid;
+    
+    /// Meca used to solve the system with option 'solve=horizontal'
+    Meca1D *        pMeca1D;
 
 private:
     
