@@ -350,12 +350,6 @@ public:
     /// Force of stiffness `weight` and sphere of radius `rad` and center `cen`
     void addSphereClamp(Vector const& pos, Mecapoint const&, Vector const& cen, real rad, real weight);
     
-    /// Force of stiffness `weight` and sphere of radius `rad` and center `cen`
-    void addSphereClamp(Mecapoint const&, Vector const& cen, real rad, real weight);
-    
-    /// Force of stiffness `weight` and sphere of radius `rad` and center `cen`
-    void addSphereClamp(Interpolation const&, Vector const& cen, real rad, real weight);
-    
     /// Force of stiffness `weight` with cylinder of axis Z and radius `len`
     void addCylinderClampZ(Mecapoint const&, real len, real weight);
     

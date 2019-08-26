@@ -3191,26 +3191,6 @@ void Meca::addSphereClamp(Vector const& pos,
 }
 
 
-void Meca::addSphereClamp(Mecapoint const& pte,
-                          Vector const& center,
-                          real rad,
-                          const real weight)
-{
-    addSphereClamp(pte.pos(), pte, center, rad, weight);
-}
-
-
-void Meca::addSphereClamp(Interpolation const& pti,
-                          Vector const& center,
-                          real rad,
-                          const real weight)
-{
-    // interpolate on the two flanking vertices using coefficients:
-    addSphereClamp(pti.pos(), pti.exact1(), center, rad, weight*pti.coef2());
-    addSphereClamp(pti.pos(), pti.exact2(), center, rad, weight*pti.coef1());
-}
-
-
 /**
  Link `pte` (P) to a cylinder of axis X and radius `rad`
  The force is affine with non-zero resting length:
