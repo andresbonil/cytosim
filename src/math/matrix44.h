@@ -151,7 +151,22 @@ public:
         for ( int u = 0; u < 16; ++u )
             val[u] *= alpha;
     }
-
+    
+    /// scale matrix
+    void operator *=(const real alpha)
+    {
+        scale(alpha);
+    }
+    
+    /// return opposite matrix (i.e. -M)
+    const Matrix44 operator -() const
+    {
+        Matrix44 M;
+        for ( int u = 0; u < 16; ++u )
+            M.val[u] = -val[u];
+        return M;
+    }
+    
     /// returns alpha * M
     const Matrix44 operator *(const real alpha) const
     {
@@ -219,9 +234,24 @@ public:
     Matrix44 transposed() const
     {
         Matrix44 res;
+#if MATRIX44_USES_AVX
+        vec4 v0 = load4(val);
+        vec4 v1 = load4(val+4);
+        vec4 v2 = load4(val+8);
+        vec4 v3 = load4(val+12);
+        vec4 t0 = unpacklo4(v0, v1);
+        vec4 t1 = unpackhi4(v0, v1);
+        vec4 t2 = unpacklo4(v2, v3);
+        vec4 t3 = unpackhi4(v2, v3);
+        store4(res.val   , permute2f128(t0, t2, 0x20));
+        store4(res.val+4 , permute2f128(t1, t3, 0x20));
+        store4(res.val+8 , permute2f128(t0, t2, 0x31));
+        store4(res.val+12, permute2f128(t1, t3, 0x31));
+#else
         for ( int x = 0; x < 4; ++x )
         for ( int y = 0; y < 4; ++y )
             res.val[y+4*x] = val[x+4*y];
+#endif
         return res;
     }
     
@@ -443,6 +473,24 @@ public:
 #endif
     }
     
+    /// add alpha to diagonal
+    void add_diag(real alpha)
+    {
+        val[0x0] += alpha;
+        val[0x5] += alpha;
+        val[0xA] += alpha;
+        val[0xF] += alpha;
+    }
+    
+    /// add -alpha to diagonal
+    void sub_diag(real alpha)
+    {
+        val[0x0] -= alpha;
+        val[0x5] -= alpha;
+        val[0xA] -= alpha;
+        val[0xF] -= alpha;
+    }
+
     /// subtract lower triangle of matrix including diagonal: this <- this - M
     void sub_half(Matrix44 const& M)
     {
@@ -502,17 +550,11 @@ public:
     {
         return Matrix44(a, 0, 0, 0, 0, b, 0, 0, 0, 0, c, 0, 0, 0, 0, d);
     }
-
-    /// return `a * Identity`
-    static Matrix44 diagonal(real a)
-    {
-        return Matrix44(a, 0, 0, 0, 0, a, 0, 0, 0, 0, a, 0, 0, 0, 0, a);
-    }
     
     /// identity matrix
     static Matrix44 identity()
     {
-        return diagonal(1);
+        return Matrix44(0, 1);
     }
 
     /// construct Matrix from coordinates (column-major)
@@ -609,20 +651,22 @@ public:
 };
 
 
-/// output operator to std::ostream
+/// output matrix lines to std::ostream
 inline std::ostream& operator << (std::ostream& os, Matrix44 const& M)
 {
     std::streamsize w = os.width();
-    os << std::setw(2) << "[ ";
-    for ( int x = 0; x < 4; ++x )
+    os.width(1);
+    os << "[";
+    for ( int i = 0; i < 4; ++i )
     {
-        for ( int y = 0; y < 4; ++y )
-            os << std::setw(w) << std::fixed << M(y,x) << " ";
-        if ( x < 3 )
-            os << "| ";
+        for ( int j = 0; j < 4; ++j )
+            os << " " << std::fixed << std::setw(w) << M(i,j);
+        if ( i < 2 )
+            os << ";";
         else
-            os << "]";
+            os << " ]";
     }
+    os.width(w);
     return os;
 }
 

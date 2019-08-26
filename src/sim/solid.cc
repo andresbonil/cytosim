@@ -127,7 +127,7 @@ void Solid::reset()
     soShapeSize = 0;
     soDrag      = 0;
 #if ( DIM > 2 )
-    soMomentum = Matrix33::diagonal(1.0);
+    soMomentum = Matrix33(0,1);
 #endif
     soReshapeTimer = RNG.pint(7);
 }
@@ -1077,7 +1077,7 @@ void Solid::makeProjection()
     soCenter = cen / sum;
     if ( cnt == 1 )
     {
-        soMomentum = Matrix33::diagonal(1.0/soDragRot);
+        soMomentum = Matrix33(0,1.0/soDragRot);
         return;
     }
     

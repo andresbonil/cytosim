@@ -207,36 +207,37 @@ real& MatrixSparseSymmetric1::diagonal(index_t ix)
 /**
  This allocate to be able to hold the matrix element if necessary
 */
-real& MatrixSparseSymmetric1::operator()(index_t ii, index_t jj)
+real& MatrixSparseSymmetric1::operator()(index_t i, index_t j)
 {
-    assert_true( ii < size_ );
-    assert_true( jj < size_ );
-    //fprintf(stderr, "MSS1( %6i %6i )\n", ii, jj);
+    assert_true( i < size_ );
+    assert_true( j < size_ );
+    //fprintf(stderr, "MSS1( %6i %6i )\n", i, j);
     
     Element * col;
-
-    // swap to get ii > jj (address lower triangle)
-    if ( ii < jj )
-        std::swap(ii, jj);
-    else if ( ii == jj )
+    
+    if ( i == j )
     {
         // return diagonal element
-        if ( col_size_[jj] <= 0 )
+        if ( col_size_[j] <= 0 )
         {
-            allocateColumn(jj, 1);
-            col = column_[jj];
+            allocateColumn(j, 1);
+            col = column_[j];
             // put diagonal term always first:
-            col->reset(jj);
-            col_size_[jj] = 1;
+            col->reset(j);
+            col_size_[j] = 1;
         }
         else
         {
-            col = column_[jj];
-            assert_true( col->inx == jj );
+            col = column_[j];
+            assert_true( col->inx == j );
         }
         return col->val;
     }
  
+    // swap to get ii > jj (address lower triangle)
+    index_t ii = std::max(i, j);
+    index_t jj = std::min(i, j);
+
     //check if the column is empty:
     if ( col_size_[jj] < 2 )
     {
@@ -292,12 +293,12 @@ real& MatrixSparseSymmetric1::operator()(index_t ii, index_t jj)
 }
 
 
-real* MatrixSparseSymmetric1::addr(index_t ii, index_t jj) const
+real* MatrixSparseSymmetric1::addr(index_t i, index_t j) const
 {
     // swap to get ii <= jj (address lower triangle)
-    if ( ii < jj )
-        std::swap(ii, jj);
-    
+    index_t ii = std::max(i, j);
+    index_t jj = std::min(i, j);
+
     for ( unsigned kk = 0; kk < col_size_[jj]; ++kk )
         if ( column_[jj][kk].inx == ii )
             return &( column_[jj][kk].val );

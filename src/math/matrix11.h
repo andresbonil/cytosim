@@ -119,6 +119,18 @@ public:
         val_ *= alpha;
     }
     
+    /// scale matrix
+    void operator *=(const real alpha)
+    {
+        scale(alpha);
+    }
+    
+    /// return opposite matrix (i.e. -M)
+    const Matrix11 operator -() const
+    {
+        return Matrix11(-val_);
+    }
+    
     /// scaled matrix
     const Matrix11 operator *(const real alpha) const
     {
@@ -283,7 +295,7 @@ public:
     /// identity matrix
     static Matrix11 identity()
     {
-        return diagonal(1);
+        return Matrix11(1);
     }
 
     /// set a symmetric matrix: [ dir (x) transpose(dir) ]

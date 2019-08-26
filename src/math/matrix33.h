@@ -202,6 +202,21 @@ public:
             val[u] *= alpha;
     }
 
+    /// scale matrix
+    void operator *=(const real alpha)
+    {
+        scale(alpha);
+    }
+    
+    /// return opposite matrix (i.e. -M)
+    const Matrix33 operator -() const
+    {
+        Matrix33 M;
+        for ( int u = 0; u < BLD*3; ++u )
+            M.val[u] = -val[u];
+        return M;
+    }
+    
     /// scaled matrix
     const Matrix33 operator *(const real alpha) const
     {
@@ -758,17 +773,11 @@ public:
     {
         return Matrix33(a, 0, 0, 0, b, 0, 0, 0, c);
     }
-
-    /// return `a * Identity`
-    static Matrix33 diagonal(real a)
-    {
-        return Matrix33(a, 0, 0, 0, a, 0, 0, 0, a);
-    }
     
     /// identity matrix
     static Matrix33 identity()
     {
-        return diagonal(1);
+        return Matrix33(0, 1);
     }
 
     /// return a symmetric matrix: [ dir (x) transpose(dir) ]
@@ -897,8 +906,12 @@ public:
      rotation components is also scaling. Vectors along the axis remain unchanged */
     static Matrix33 rotationAroundAxis(const Vector3& axis, const real c, const real s)
     {
-        // this is using Rodrigues's formula
-        // attention: this only works if norm(axis)==1
+        /*
+         This is using Rodrigues's formula:
+             I + sinus * K + ( 1 - cosinus ) * K^2
+             K = -1 (x) axis
+        Attention: this is correct only if norm(axis)==1
+         */
         const real  X = axis.XX  ,  Y = axis.YY  ,  Z = axis.ZZ;
         const real dX = X - c * X, dY = Y - c * Y, dZ = Z - c * Z;
         const real sX = s * X    , sY = s * Y    , sZ = s * Z;
@@ -961,19 +974,18 @@ public:
 inline std::ostream& operator << (std::ostream& os, Matrix33 const& M)
 {
     std::streamsize w = os.width();
-    os << std::setw(2) << "[ ";
+    os.width(1);
+    os << "[";
     for ( int i = 0; i < 3; ++i )
     {
         for ( int j = 0; j < 3; ++j )
-        {
-            os.width(w);
-            os << std::fixed << M(i,j) << " ";
-        }
+            os << " " << std::fixed << std::setw(w) << M(i,j);
         if ( i < 2 )
-            os << "; ";
+            os << ";";
         else
-            os << "]";
+            os << " ]";
     }
+    os.width(w);
     return os;
 }
 

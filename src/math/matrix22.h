@@ -199,6 +199,21 @@ public:
 #endif
     }
     
+    /// scale matrix
+    void operator *=(const real alpha)
+    {
+        scale(alpha);
+    }
+    
+    /// return opposite matrix (i.e. -M)
+    const Matrix22 operator -() const
+    {
+        Matrix22 M;
+        for ( int u = 0; u < 4; ++u )
+            M.val[u] = -val[u];
+        return M;
+    }
+
     /// scaled matrix
     const Matrix22 operator *(const real alpha) const
     {
@@ -680,16 +695,10 @@ public:
         return Matrix22(a, 0, 0, b);
     }
 
-    /// return `a * Identity`
-    static Matrix22 diagonal(real a)
-    {
-        return Matrix22(a, 0, 0, a);
-    }
-    
     /// identity matrix
     static Matrix22 identity()
     {
-        return diagonal(1);
+        return Matrix22(0, 1);
     }
 
 
@@ -770,7 +779,7 @@ inline std::ostream& operator << (std::ostream& os, Matrix22 const& M)
     std::streamsize w = os.width();
     os << std::setw(2) << "[ ";
     os << std::setw(w) << M[0] << " ";
-    os << std::setw(w) << M[2] << " ; ";
+    os << std::setw(w) << M[2] << "; ";
     os << std::setw(w) << M[1] << " ";
     os << std::setw(w) << M[3] << " ]";
     return os;
