@@ -92,6 +92,12 @@ public:
         return Vector1(val_);
     }
 
+    /// sum of diagonal terms
+    real trace() const
+    {
+        return val_;
+    }
+
     /// human-friendly output
     void print(FILE * f) const
     {

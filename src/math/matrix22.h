@@ -163,6 +163,12 @@ public:
         return Vector2(val[0], val[3]);
     }
 
+    /// sum of diagonal terms
+    real trace() const
+    {
+        return ( val[0] + val[3] );
+    }
+
     /// human-friendly ouput
     void print(FILE * f) const
     {

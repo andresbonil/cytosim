@@ -131,6 +131,12 @@ public:
     {
         return Vector3(val[0], val[BLD+1], val[BLD*2+2]);
     }
+    
+    /// sum of diagonal terms
+    real trace() const
+    {
+        return ( val[0] + val[BLD+1] + val[BLD*2+2] );
+    }
 
     /// set matrix by giving its lines
     void setLines(Vector3 const& A, Vector3 const& B, Vector3 const& C)

@@ -135,6 +135,12 @@ public:
     {
         return Vector4(val[0], val[5], val[10], val[15]);
     }
+    
+    /// sum of diagonal terms
+    real trace() const
+    {
+        return ( val[0x0] + val[0x5] + val[0xA] + val[0xF] );
+    }
 
     /// output in human-friendly format
     void print(FILE * f) const
