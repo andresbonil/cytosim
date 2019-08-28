@@ -28,10 +28,16 @@ inline void print(vec2 v, vec2 w, char const* s)
     printf("vec2 %s ( %5.2f %5.2f )( %5.2f %5.2f )\n", s, v[1], v[0], w[1], w[0]);
 }
 
+/*
 inline void print(__m128i v, char const* s)
 {
-    printf("veci %s ( %8lli %8lli %8lli %8lli )\n", s, v[3], v[2], v[1], v[0]);
+    int a = _mm_extract_epi32(v, 0);
+    int b = _mm_extract_epi32(v, 1);
+    int c = _mm_extract_epi32(v, 2);
+    int d = _mm_extract_epi32(v, 3);
+    printf("veci %s ( %8i %8i %8i %8i )\n", s, d, c, b, a);
 }
+*/
 
 inline vec2 load1(double const* a)           { return _mm_load_sd(a); }
 #if CHECK_VECTOR_ALIGNMENT
