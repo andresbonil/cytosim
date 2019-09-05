@@ -262,7 +262,7 @@ void Player::displayCytosim()
             mDisplay->display(simul);
 
 #if DRAW_MECA_LINKS
-        if ( DP.meca_links )
+        if ( DP.draw_links )
         {
             glPushAttrib(GL_LIGHTING_BIT);
             glDisable(GL_LIGHTING);
@@ -297,8 +297,7 @@ void Player::readDisplayString(View& view, std::string const& str)
     }
     catch( Exception & e )
     {
-        std::cerr << "Error: " << e.what();
-        std::cerr << " while reading simul:display\n";
+        std::cerr << "Error while reading simul:display: " << e.what();
     }
 }
 

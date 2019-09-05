@@ -902,14 +902,14 @@ void processKey(unsigned char key)
         case '6':
             if ( altKeyDown )
             {
-                DP.meca_links = !DP.meca_links;
-                flashText("meca_links = %i", DP.meca_links);
+                DP.draw_links = !DP.draw_links;
+                flashText("draw_links = %i", DP.draw_links);
             }
             else
                 changeSingleSelect();
             break;
             
-        case '&':
+        case '&': case '^':
             shufflePointDispVisible(player.allSpaceDisp());
             break;
 

@@ -70,7 +70,7 @@ public:
     unsigned       single_select;
     
     /// flag to display Meca's links
-    bool           meca_links;
+    bool           draw_links;
 
     /// @}
 

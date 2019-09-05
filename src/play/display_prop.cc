@@ -9,7 +9,7 @@ void DisplayProp::clear()
     style          = 2;
     tile           = 0;
     fold           = 1;
-    meca_links     = false;
+    draw_links     = false;
 
     couple_select  = 7;
     single_select  = 3;
@@ -34,7 +34,7 @@ void DisplayProp::read(Glossary& glos)
     glos.set(tile,          "tiled");
     glos.set(fold,          "tiled", 1);
 //#endif
-    glos.set(meca_links,    "meca_links");
+    glos.set(draw_links,    "draw_links");
 
     glos.set(couple_select, "couple_select");
     glos.set(single_select, "single_select");
@@ -54,7 +54,7 @@ void DisplayProp::write_values(std::ostream& os) const
 {
     write_value(os, "style",         style);
     write_value(os, "tile",          tile, fold);
-    write_value(os, "meca_links",    meca_links);
+    write_value(os, "draw_links",    draw_links);
     write_value(os, "couple_select", couple_select);
     write_value(os, "single_select", single_select);
     write_value(os, "point_value",   point_value);
