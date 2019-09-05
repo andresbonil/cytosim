@@ -115,6 +115,9 @@ public:
     /// multiplication of a vector: Y = Y + M * X with dim(X) = dim(M)
     void vecMulAdd(const real* X, real* Y) const;
     
+    /// multiplication of a vector: Y <- Y + M * X with dim(X) = dim(M)
+    void vecMulAdd_ALT(const real* X, real* Y)  const { vecMulAdd(X, Y); }
+
     /// 2D isotropic multiplication of a vector: Y = Y + M * X with dim(X) = 2 * dim(M)
     void vecMulAddIso2D(const real* X, real* Y) const;
     

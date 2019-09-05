@@ -215,10 +215,10 @@ public:
     void vecMulAdd(const real* X, real* Y) const { vecMulAdd(X, Y, 0, size_); }
 
     /// multiplication of a vector: Y <- Y + M * X with dim(X) = dim(Y) = dim(M)
-    void vecMulAdd_SIMD(const real* X, real* Y) const;
+    void vecMulAdd_TIME(const real* X, real* Y) const;
 
     /// multiplication of a vector: Y <- Y + M * X with dim(X) = dim(Y) = dim(M)
-    void vecMulAdd_SCAL(const real* X, real* Y) const;
+    void vecMulAdd_ALT(const real* X, real* Y) const;
 
     /// 2D isotropic multiplication (not implemented)
     void vecMulAddIso2D(const real* X, real* Y) const {};

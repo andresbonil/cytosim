@@ -1172,7 +1172,7 @@ void MatrixSparseSymmetricBlock::vecMulAdd(const real* X, real* Y, index_t start
 
 
 // multiplication of a vector: Y = Y + M * X
-void MatrixSparseSymmetricBlock::vecMulAdd_SCAL(const real* X, real* Y) const
+void MatrixSparseSymmetricBlock::vecMulAdd_ALT(const real* X, real* Y) const
 {
     for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
     {
@@ -1192,7 +1192,7 @@ void MatrixSparseSymmetricBlock::vecMulAdd_SCAL(const real* X, real* Y) const
 #define TIME_PRINTOUT 0
 
 // multiplication of a vector: Y = Y + M * X
-void MatrixSparseSymmetricBlock::vecMulAdd_SIMD(const real* X, real* Y) const
+void MatrixSparseSymmetricBlock::vecMulAdd_TIME(const real* X, real* Y) const
 {
 #if TIME_PRINTOUT
     unsigned long cnt = 0, col = 0;
