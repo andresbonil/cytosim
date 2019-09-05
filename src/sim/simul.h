@@ -169,6 +169,9 @@ public:
     /// this is called after a sequence of `step()` have been done
     void            relax();
     
+    /// this is called after a sequence of `step()` have been done
+    void            unrelax() { sReady = true; }
+
     /// true if engine is ready to go (between `prepare()` and `relax()`)
     bool            ready() const { return sReady; }
 

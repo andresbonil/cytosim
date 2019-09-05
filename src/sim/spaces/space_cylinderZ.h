@@ -7,7 +7,7 @@
 ///a cylinder of axis Z
 /**
  Space `cylinderZ` is radial symmetric along the Z axis.
- The crosssection in the XY plane is a disc.
+ The cross section in the XY plane is a disc.
 
  Parameters:
      - radius = radius of cylinder

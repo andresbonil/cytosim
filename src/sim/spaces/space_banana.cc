@@ -23,7 +23,7 @@ void SpaceBanana::resize(Glossary& opt)
     
     if ( opt.set(wid, "radius") )
         wid *= 2;
-    else opt.set(wid, "width");
+    else opt.set(wid, "diameter");
     opt.set(rad, "curvature");
     opt.set(len, "length");
 

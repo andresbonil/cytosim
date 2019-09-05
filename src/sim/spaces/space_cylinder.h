@@ -7,7 +7,7 @@
 ///a cylinder of axis X
 /**
  Space `cylinder` is radial symmetric along the X-axis.
- The crosssection in the YZ plane is a disc.
+ The cross section in the YZ plane is a disc.
  It is terminated by flat discs at `X = +/- length/2`.
  For spherical caps, see `capsule`.
  

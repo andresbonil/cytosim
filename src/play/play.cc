@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
         else if ( has_setup )
             std::cerr << " warning: could not read `" << setup << "'\n";
         
-        // read settings from 'config.cym', but do not overwrite the command-line options:
+        // read settings from the setup file, but do not overwrite the command-line options:
         arg.read(simul.prop->display, 1);
         simul.prop->display_fresh = false;
         

@@ -42,7 +42,7 @@ Interface::Interface(Simul& s)
  */
 Property* Interface::execute_set(std::string const& cat, std::string const& name, Glossary& def)
 {
-    VLOG("-SET " << cat << " `" << name << "'\n");
+    VLOG("+SET " << cat << " `" << name << "'\n");
     
     /* mostly for historical reason, we do not allow for name that are class name,
     but this should also limit confusions in the config file */
@@ -89,15 +89,24 @@ void Interface::execute_change(Property * pp, Glossary& def)
 
 
 // in this form, 'name' designates the property name
-Property * Interface::execute_change(std::string const& name, Glossary& def)
+Property * Interface::execute_change(std::string const& name, Glossary& def, bool strict)
 {
     Property * pp = simul.findProperty(name);
     
     if ( pp )
+    {
+        VLOG("-CHANGE " << pp->category() << " `" << name << "'\n");
         execute_change(pp, def);
+    }
     else
-        throw InvalidSyntax("unknown property `"+name+"'");
-    
+    {
+        if ( strict )
+            throw InvalidSyntax("unknown property `"+name+"'");
+        else
+        {
+            VLOG("unknown change |" << name << "|\n");
+        }
+    }
     return pp;
 }
 
@@ -106,11 +115,11 @@ void Interface::execute_change_all(std::string const& cat, Glossary& def)
 {
     PropertyList plist = simul.findAllProperties(cat);
     
-    if ( plist.size() == 0 )
-        throw InvalidSyntax("could not find any property of class `"+cat+"'");
-    
     for ( Property * i : plist )
+    {
+        VLOG("+CHANGE " << i->category() << " `" << i->name() << "'\n");
         execute_change(i, def);
+    }
 }
 
 
@@ -136,7 +145,8 @@ void warn_trail(std::istream& is, std::string const& msg)
 {
     std::string str;
     std::getline(is, str);
-    std::cerr << "Warning: ignored trailing `" << str << "' in: " << msg << "\n";
+    std::cerr << "Error: unexpected tokens `" << str;
+    throw InvalidSyntax("syntax error `"+msg+"'");
 }
 
 /**
@@ -384,7 +394,7 @@ ObjectList Interface::execute_new(std::string const& name, Glossary& opt)
     
     //hold();
 
-    VLOG("-NEW `" << name << "' made " << res.size() << " objects\n");
+    VLOG("+NEW `" << name << "' made " << res.size() << " objects\n");
     
     return res;
 }
@@ -809,16 +819,18 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
                 reportCPUtime(frame, simul.time());
                 if ( has_code )
                     evaluate(code, ", in run:write:code");
+                simul.unrelax();
             }
             if ( sss >= nb_steps )
                 break;
             check = (int)( ++frame * delta );
         }
 
+        hold();
+        //fprintf(stderr, "> step %6i\n", sss);
         simul.step();
         (simul.*solveFunc)();
         
-        hold();
         ++sss;
     }
 #ifdef BACKWARD_COMPATIBILITY
@@ -841,9 +853,10 @@ void Interface::execute_run(unsigned nb_steps)
     
     for ( unsigned sss = 0; sss < nb_steps; ++sss )
     {
+        hold();
+        //fprintf(stderr, "> step %6i\n", sss);
         simul.step();
         simul.solve();
-        hold();
     }
     
     simul.relax();

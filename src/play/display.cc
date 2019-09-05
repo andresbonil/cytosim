@@ -174,11 +174,7 @@ void Display::prepareFiberDisp(FiberProp * p, PropertyList& alldisp, gle_color c
     // parse user-provided values:
     if ( p->display_fresh )
     {
-        try {
-            disp->read_string(p->display);
-        } catch(Exception & e) {
-            std::clog << "fiber:display: " << e.what() << std::endl;
-        }
+        disp->read_string(p->display, p->name()+":display");
         p->display_fresh = false;
     }
     
@@ -344,13 +340,8 @@ void Display::preparePointDisp(T * p, PropertyList& alldisp, gle_color col)
     // parse display string once:
     if ( p->display_fresh )
     {
+        disp->read_string(p->display, p->name()+":display");
         p->display_fresh = false;
-        //std::clog << "reading display=(" << p->display << ") for " << p->name() << "\n";
-        try {
-            disp->read_string(p->display);
-        } catch(Exception & e) {
-            std::cerr << "Error while reading " << disp->category() << ": " << e.what() << std::endl;
-        }
     }
     
     disp->prepare(uFactor, sFactor, prop->style==1);

@@ -12,7 +12,7 @@
  
  Parameters:
      - `length` = the overall length
-     - `width` = the diameter of the torus in its crosssections
+     - `width` = the diameter of the torus in its cross sections
      - `curvature` = the main radius of the torus centerline
      .
  

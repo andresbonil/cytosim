@@ -41,7 +41,7 @@ private:
 public:
     
     /// set the permission of the parser
-    Parser(Simul& s, bool allow_set, bool allow_change, bool allow_new, bool allow_run, bool allow_write);
+    Parser(Simul& s, bool can_set, bool can_change, bool can_new, bool can_run, bool can_write);
     
     //-------------------------------------------------------------------------------
     

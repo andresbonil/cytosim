@@ -17,7 +17,7 @@ void SpaceSphere::resize(Glossary& opt)
 {
     real rad = radius_;
     
-    if ( opt.set(rad, "length") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
     

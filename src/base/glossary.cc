@@ -453,7 +453,7 @@ void Glossary::read_entry(std::istream& is, int no_overwrite)
     try
     {
         if ( read_key(pair, is) )
-            throw InvalidParameter("unexpected syntax");
+            throw InvalidParameter("syntax error");
         
         while ( read_value(pair, is) );
         

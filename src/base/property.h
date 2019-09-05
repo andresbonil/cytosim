@@ -103,8 +103,8 @@ public:
     /// set from a Glossary
     virtual void read(Glossary&) = 0;
 
-    /// set from a string
-    void         read_string(std::string&);
+    /// set from a `str` and indicate `msg` in errors/warnings
+    void         read_string(std::string const& str, std::string const& msg);
 
     /// read a file specified by name
     void         read_file(const char filename[]);

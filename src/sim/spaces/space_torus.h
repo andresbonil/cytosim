@@ -11,7 +11,7 @@
  
  Parameters:
      - `radius` = the main radius of the torus centerline
-     - `width`  = the diameter of the torus in its crosssections.
+     - `width`  = the diameter of the torus in its cross sections.
      .
 
  @ingroup SpaceGroup

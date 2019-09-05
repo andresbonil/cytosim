@@ -56,7 +56,7 @@ public:
     void       execute_change(Property*, Glossary&);
 
     /// change values in Property called `name` as specified in Glossary
-    Property*  execute_change(std::string const& name, Glossary&);
+    Property*  execute_change(std::string const& name, Glossary&, bool strict=true);
     
     /// change values of all Property of category `cat`
     void       execute_change_all(std::string const& cat, Glossary&);

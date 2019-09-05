@@ -1161,18 +1161,14 @@ void Parser::evaluate(std::istream& is)
             Tokenizer::get_block(is, '{');
         else if ( tok == "for" )
             parse_for(is);
-#if ( 0 )
         else if ( tok == "restart" )
         {
-            static int cnt = 32;
-            if ( do_run && --cnt > 0 )
-            {
-                simul.erase();
-                is.clear();
-                is.seekg(0);
-            }
+            // use with caution!
+            // this will rewind the config file and drive an infinite loop
+            simul.erase();
+            is.clear();
+            is.seekg(0);
         }
-#endif
         else if ( tok == "end" )
             return;//parse_end(is);
         else if ( tok == ";" )

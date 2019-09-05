@@ -22,7 +22,7 @@ void SpaceCylinderZ::resize(Glossary& opt)
 {
     real rad = radius_, top = top_, bot = bot_;
 
-    if ( opt.set(rad, "width") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
     opt.set(bot, "bottom");

@@ -25,13 +25,19 @@ Property::~Property()
 /**
  parse string `str` to set values of the property.
 */
-void Property::read_string(std::string& str)
+void Property::read_string(std::string const& str, std::string const& msg)
 {
     if ( str.size() > 0 )
     {
-        //std::clog << " Property::read_string(" << str << ") for " << name() << "\n";
-        Glossary glos(str);
-        read(glos);
+        //std::clog << "reading " << msg << "=(" << str << ")\n";
+        try {
+            Glossary glos(str);
+            read(glos);
+            if ( glos.warnings(std::cerr) )
+                std::clog << "while reading " << msg << "\n";
+        } catch(Exception & e) {
+            std::clog << msg << ": " << e.what() << std::endl;
+        }
     }
 }
 

@@ -42,11 +42,11 @@ void SpaceEllipse::resize(Glossary& opt)
     for ( int d = 0; d < DIM; ++d )
     {
         real len = length_[d];
-        if ( opt.set(len, "length", d) )
+        if ( opt.set(len, "diameter", d) || opt.set(len, "length", d) )
             len *= 0.5;
         else opt.set(len, "radius", d);
         if ( len < REAL_EPSILON )
-            throw InvalidParameter("ellipse:length[] must be > 0");
+            throw InvalidParameter("ellipse:radius[] must be > 0");
         length_[d] = len;
     }
     update();
