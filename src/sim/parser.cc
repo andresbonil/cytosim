@@ -410,10 +410,18 @@ void Parser::parse_new(std::istream& is)
                     throw InvalidParameter("two vectors need to be defined by `range'");
                 if ( opt.has_key("position") )
                     throw InvalidParameter("cannot specify `position' if `range' is defined");
-                Vector dAB = ( B - A ) / ( ( cnt > 1 ) ? cnt - 1 : 2 );
-                for ( unsigned n = 0; n < cnt; ++n )
+                if ( cnt > 1 )
                 {
-                    opt.define("position", 0, A + n * dAB);
+                    Vector dAB = ( B - A ) / real(cnt-1);
+                    for ( unsigned n = 0; n < cnt; ++n )
+                    {
+                        opt.define("position", 0, A + n * dAB);
+                        execute_new(name, opt);
+                    }
+                }
+                else
+                {
+                    opt.define("position", 0, 0.5*(A+B));
                     execute_new(name, opt);
                 }
             }
