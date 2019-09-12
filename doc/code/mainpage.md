@@ -24,6 +24,7 @@
  Andre-Claude Clapson    2011-2013\n
  Serge Dmitrieff         2013-\n
  Julio Belmonte          2014-\n
+ Manuel Lera-Ramirez     2017-\n
 
  @par Contact:
  Email: feedback@cytosim.org\n

@@ -84,6 +84,23 @@ You can then check the resulting executables, that should be located in subdirec
 	bin/sim
 	bin/play live
 
+# Optimizations
+
+To speed up the calculation, follow these steps:
+
+On line 10 or so of  `makefile.inc`, set `MODE` to `F`:
+
+	MODE := F
+
+Turn off assertions by defining `NDEBUG` in `src/base/assert.h`:
+
+	#define NDEBUG
+
+Recompile Cytosim entirely:
+
+	make clean
+	make
+
 # Troubleshooting `sim`
 
 Compilation is specified in `makefile` and `makefile.inc`, and these files may need to be adjusted manually.

@@ -4,12 +4,13 @@ A simulation of the cytoskeleton was started in 1995 at Princeton and pursued at
 
 ## History
 
-- 1995 First version
-- 1996 Filament bending elasticity
+- 1995 Project initiated
+- 1996 Implemented filament bending elasticity
 - 1999 Project named `Cytosim`
-- 2001 Implicit integration scheme
-- 2012 Scripting language
-- 2018-2019 version 4
+- 2001 Complete rewrite using implicit integration scheme
+- 2012 Complete rewrite with scripting language
+- 2017 Major revision using matric block operations
+- 2019 Introduced markdown documentation, version 4
   
 
 ## Contributors
@@ -25,6 +26,7 @@ A simulation of the cytoskeleton was started in 1995 at Princeton and pursued at
 - Andre-Claude Clapson    2011-2013  
 - Serge Dmitrieff         2013-  
 - Julio Belmonte          2014-  
+- Manuel Lera-Ramirez     2017-
 
 ### Contact:
  

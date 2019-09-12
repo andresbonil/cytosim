@@ -2,31 +2,25 @@
 
 <details>
 <summary>
-**Can I buy cytosim?**
+**Can I buy Cytosim?**
 </summary>
-Cytosim is a free software!
+Cytosim is a free software and also an Open Source project [hosted on GitLab](https://gitlab.com/f.nedelec/cytosim).
 </details>
 
-<details>
-<summary>
-**Can I access the source code of cytosim?**
-</summary>
-Yes, Cytosim is an Open Source project [hosted on GitHub](https://github.com/nedelec/cytosim).
-</details>
-
-<details>
-<summary>
-**Can I install Cytosim on Windows?**
-</summary>
-
-Compiling "natively" on windows would require dealing with `/` becoming `\` and different end-of-lines, and other annoying issues. You can however run Cytosim on your Windows computer, within [Cygwin](https://cygwin.com) which is a Unix emulator for Windows. We provide [instructions to compile on Cygwin](compile/cygwin.md).
-</details>
 
 <details>
 <summary>
 **According to what I have read, the documentation seems really helpfull. Are you interested in feedback?**
 </summary>
-Yes, of course, we want all the feedback you can give. Please send it to `feedbackATcytosimDOTorg`.
+Yes, of course, your feedback is essential to improve Cytosim. Please send it to `feedbackATcytosimDOTorg`.
+</details>
+
+
+<details>
+<summary>
+**Can I install Cytosim on Windows?**
+</summary>
+Compiling "natively" on windows would require dealing with `/` becoming `\` and different end-of-lines, and other annoying issues. You can however run Cytosim on your Windows computer, within [Cygwin](https://cygwin.com) which is a Unix emulator for Windows. We provide [instructions to compile on Cygwin](compile/cygwin.md).
 </details>
 
 
@@ -941,6 +935,8 @@ You can find a precompiled BLAS/LAPACK distributions for Linux. Ask you system a
 </details>
 
 
+# Performance #################################################
+
 <details>
 <summary>
 **Is there any way to improve calculation speed?**
@@ -964,6 +960,48 @@ This is doable, but it may not give you any benefit:
 If you use 4 threads, Cytosim will run between 2x and 3x faster, at best.
 So if you have many simulations to run, which happens often for example if you want to vary parameters, you will make a better use of your resources by running 4 mono-threaded simulations in parallel, than by running 3 multi-threaded simulations sequentially. In the same time, you will get 4 jobs completed in the former case, versus 3 in the later one.
 If you need to run many conditions, you can trivially parallelize the task, and in that case, it offers you the best performance.
+</details>
+
+
+<details>
+<summary>
+**I've noticed that only one core is used by sim... so I'm wondering if there is any fix for this.**
+</summary>
+Cytosim can be linked with a multithreaded version of BLAS/LAPACK, but in my experience, this will not increase performance much. For a good use of multiple cores, the calculation needs to be parallelized at a higher level, changing the C++ code. I this direction, we obtained [~3x gain using 4 cores, for some problems](compile/multithreading.md).
+In principle, this can be scaled to a higher number of cores, but I do not have any machine to do the development. Nearly always, I run sequential simulations, using single-core, in parallel on the machine, and this anyway is a better use of the hardware, than multithreaded code, which has overheads. I hope this helps!
+</details>
+
+
+<details>
+<summary>
+**The 2D model was running in 2 minutes on Steve's gaming PC but the 3D model is taking 2 hrs. Why?**
+</summary>
+</summary>
+First, you need to compare the 2D and 3D versions on the exact same machine.
+In my experience, a 3D model may need 2–3x CPU of a SIMILAR 2D model.
+This is generally true because you have 3/2 x more degrees of freedom and more complex calculations, but only if there is the same number of objects in both.
+
+However, porting a model to 3D often involves boosting the number of objects, and that can slow things down dramatically.
+In your case, do you have more filaments in 3D than in 2D?
+</details>
+
+
+<details>
+<summary>
+**Do you know if there is a way to allocate more CPU to Cytosm?**
+</summary>
+</summary>
+Multithreading is not a solution, if you need to run multiple simulations (many more than the number of cores). That is because most likely you can use all your CPU cores by running multiple simulations in parallel. So while multithreading can make a single program finish earlier, it will overall increase the computation time needed to complete all the simulations.
+</details>
+
+
+<details>
+<summary>
+**Do you know of coding tricks for making 3D simulations run faster?**
+</summary>
+</summary>
+You can investigate why it is slow by profiling the program. On Mac OSX, use Xcode's performance tools. On Linux if you compiled with gcc, check this:
+https://www.thegeekstuff.com/2012/08/gprof-tutorial/
 </details>
 
 
@@ -1065,11 +1103,11 @@ There is a parameter `solve` in `run simul`. If you set it to zero, objects are 
 It should however be possible to modify cytosim to do have some object mobile while others are not.
 There is a function that calculates the speed, as a function of the force:
 
-	virtual void Mecable::setSpeedsFromForces(const real* X, real S, real* Y)
+	virtual void Mecable::projectForces(const real* X, real* Y)
 
 To make the corresponding object immobile, set `Y` to zero like this:
 	
-	void setSpeedsFromForces(const real*, real, real* Y) const
+	void projectForces(const real*, real* Y) const
 	{
 	   for(int i=0; i < DIM*nbPoints(); ++i)
 	   		Y[i] = 0;
@@ -1155,7 +1193,7 @@ The axial stiffness is `infinite` in cytosim, and that kind of built-in. It woul
 It depends on your levelin programming, but you could start for example by 
 
 - Math concepts: Vector3, Solver, Random, Polygon, Quaternion, Rasterizer
-- Simulation objects: Movable, Space, Mecable, Mecafil, Hand, Single
+- Simulation objects: Movable, Space, Mecable, Chain, Mecafil, Fiber, Hand, Single
 
 To do this, I recommend printing the .h and .cc files on paper (yes, paper), and to read the code from top to bottom, in a quiet time and away from your computer. This will allow you to examine the structure of the code in detail. 
 
@@ -1248,13 +1286,42 @@ You simply need to add a test in there for the length. The quick and dirty way i
 </details>
 
 
+<details>
+<summary>
+**Adding fluid: I’ve been told that this is an extremely difficult task and should not be attempted unless one is absolutely sure of its necessity?**
+</summary>
+I tend to agree with this. You could add hydrodynamic interactions using Oseen's tensors, and that would involve adding another matrix into the master equation. That is very serious work and will require a good knowledge of the topic, and of the inner working of Cytosim. Ultimately, performance will be significantly reduced (because everything interacts with everything else), such that you may be limited to small systems, or be obliged to spend effort on the parallelization/hardware side. I would be happy if someone did this, but it is a major endeavor!
+</details>
+
+
+<details>
+<summary>
+**Local conversion of Single motors to linked motor Couples**
+</summary>
+**I would like the ability to define a region (say a rectangle centered on the cell) such that any two single motors that moved into this region has some probability of following a dimer, given they are within close proximity of one another?**
+
+That is doable in a few weeks. You could start with a naive method to detect which objects are within this rectangle, delete pairs of ’Single’ and create a corresponding number of ‘Couple’ with appropriate positions and properties to compensate for the ones that have been deleted. For you first attempt, do not worry about performance, and just implement a exhaustive scan: 
+
+	( for all A ) x ( for all B ) : if ( A close to B )  …
+
+However, before you do this, I would still advise to think hard wether you really need this in your model. There maybe a simpler solution!
+</details>
+
+
 # More questions? #########################################
 
 <details>
 <summary>
-**You have an important question that is not answered here?**
+**You have a question that is not answered here?**
 </summary>
 Please write to feedbackATcytosimDOTorg
+</details>
+
+
+<details>
+<summary>
+** ?**
+</summary>
 </details>
 
 
