@@ -851,6 +851,21 @@ void Display::drawFiberLines(Fiber const& fib) const
 }
 
 
+void Display::drawFiberLinesT(Fiber const& fib, unsigned i) const
+{
+    FiberDisp const*const disp = fib.prop->disp;
+    
+    fib.disp->color.load_load();
+    // display plain lines:
+    lineWidth(disp->line_width);
+    
+    glBegin(GL_LINES);
+    gle::gleVertex(fib.posP(i));
+    gle::gleVertex(fib.posP(i+1));
+    glEnd();
+}
+
+
 void Display::drawFiberLinesM(Fiber const& fib, real len, real width) const
 {
     if ( len > 0 )
@@ -1648,11 +1663,9 @@ void Display::zObject::draw(Display * disp) const
     Mecable const * mec = point_.mecable();
     switch( mec->tag() )
     {
-        case Fiber::TAG: {
-            //\todo we should depth-sort segments of the fibers independently
-            Fiber const* fib = static_cast<const Fiber*>(mec);
-            disp->drawFiberLines(*fib);
-        } break;
+        case Fiber::TAG:
+            disp->drawFiberLinesT(*static_cast<const Fiber*>(mec), point_.point());
+            break;
             
         case Solid::TAG:
             disp->drawSolidT(*static_cast<const Solid*>(mec), point_.point());

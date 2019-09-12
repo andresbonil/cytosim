@@ -63,6 +63,9 @@ public:
     
     /// draw Fiber linear features
     void drawFiberLines(Fiber const&) const;
+    
+    /// draw one segment of a Fiber
+    void drawFiberLinesT(Fiber const&, unsigned) const;
 
     /// draw Fiber linear features over length `len` near the MINUS_END
     void drawFiberLinesM(Fiber const&, real len, real width) const;

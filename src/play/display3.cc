@@ -392,6 +392,45 @@ void Display3::drawFiberLines(Fiber const& fib) const
 }
 
 
+// this is for display with transparency:
+void Display3::drawFiberLinesT(Fiber const& fib, unsigned i) const
+{
+    FiberDisp const*const disp = fib.prop->disp;
+    const real rad = disp->line_width * sFactor;
+    
+    fib.disp->color.load_both();
+    
+    Vector A = fib.posP(i);
+    Vector B = fib.posP(i+1);
+    
+    if ( i == 0 )
+    {
+        drawCap(fib.prop->disp->line_caps, A, normalize(A-B), rad);
+        setClipPlane(GL_CLIP_PLANE5, normalize(B-A), A);
+    }
+    else
+    {
+        setClipPlane(GL_CLIP_PLANE5, normalize(B-fib.posP(i-1)), A);
+    }
+    
+    if ( i == fib.lastSegment() )
+    {
+        drawCap(fib.prop->disp->line_caps, B, normalize(B-A), rad);
+        setClipPlane(GL_CLIP_PLANE4, normalize(A-B), B);
+    }
+    else
+    {
+        setClipPlane(GL_CLIP_PLANE4, normalize(A-fib.posP(i+2)), B);
+    }
+    
+    glEnable(GL_CLIP_PLANE5);
+    glEnable(GL_CLIP_PLANE4);
+    gleTube(A, B, rad, gleLongTube2B);
+    glDisable(GL_CLIP_PLANE4);
+    glDisable(GL_CLIP_PLANE5);
+}
+
+
 void Display3::drawFiberLinesM(Fiber const& fib, real len, real width) const
 {
     if ( len > 0 )

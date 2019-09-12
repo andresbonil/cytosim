@@ -195,6 +195,9 @@ public:
     /// draw Fiber linear features
     virtual void drawFiberLines(Fiber const&) const;
     
+    /// draw one segment of a Fiber (used to display transparent fibers)
+    virtual void drawFiberLinesT(Fiber const&, unsigned) const;
+
     /// draw Fiber linear features over length `len` near the MINUS_END
     virtual void drawFiberLinesM(Fiber const&, real len, real width) const;
     
