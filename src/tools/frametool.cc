@@ -399,7 +399,7 @@ int main(int argc, char* argv[])
                 pid = strtoul(cmd+4, nullptr, 10);
                 if ( errno )
                 {
-                    fprintf(stderr, "unexpected syntax");
+                    fprintf(stderr, "syntax error");
                     return EXIT_FAILURE;
                 }
             }
