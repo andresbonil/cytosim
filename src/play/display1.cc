@@ -300,7 +300,7 @@ void Display1::drawSphereT(Sphere const& obj)
 //------------------------------------------------------------------------------
 void Display1::drawOrganizer(Organizer const& obj) const
 {
-    const PointDisp * disp = obj.disp();
+    PointDisp const* disp = obj.disp();
     
     if ( !disp )
         return;

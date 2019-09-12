@@ -40,7 +40,7 @@ void Display::setPixelFactors(GLfloat ps, GLfloat u)
      the 0.5 below comes from the fact that glPointSize uses diameter
      while most gle::primitives use radius as arguments
      */
-    sFactor   = u * 0.5f * pixelSize;
+    sFactor = 0.5f * u * ps;
 }
 
 
@@ -85,7 +85,7 @@ void Display::display(Simul const& sim)
 
 #if ( DIM >= 3 )
     
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glEnable(GL_LIGHTING);
     glDepthMask(GL_FALSE);
     
@@ -432,8 +432,10 @@ void Display::bodyColor(PointDisp const* disp, unsigned s) const
 {
     if ( disp->coloring )
     {
-        gle::bright_color(s).load_both();
-        gle::bright_color(s).load();
+        gle_color col = gle::bright_color(s);
+        col.load();
+        col.load_front();
+        col.darken(0.5).load_back();
     }
     else
     {
@@ -455,6 +457,7 @@ void Display::bodyColor2(PointDisp const* disp, unsigned s) const
 }
 
 /**
+ This is used for transparent objects.
  if `coloring` is enabled, this loads the N-th bright color,
  with an alpha value matched to the one of the object's display color.
  */
@@ -463,20 +466,13 @@ void Display::bodyColorT(PointDisp const* disp, unsigned s) const
     if ( disp->coloring )
     {
         gle_color col = gle::bright_color(s).match_a(disp->color);
-        col.load_load();
-        col.load_back();
+        col.load();
+        col.load_both();
     }
     else
     {
-        disp->color2.load();
-        //disp->color.load_emission();
-        if ( disp->color.transparent() )
-            disp->color.load_both();
-        else
-        {
-            disp->color.load_front();
-            disp->color2.load_back();
-        }
+        disp->color.load();
+        disp->color.load_both();
     }
 }
 
@@ -492,19 +488,21 @@ void Display::drawSpace(Space const* obj, bool opaque)
 {
     const PointDisp * disp = obj->prop->disp;
     
-    lineWidth(disp->width);
-
     glEnable(GL_CULL_FACE);
-    if ( disp->visible & 1 && disp->color.opaque() == opaque )
-    {
-        glCullFace(GL_BACK);
-        disp->color.load_front();
-        obj->draw();
-    }
+    // draw back side
     if ( disp->visible & 2 && disp->color2.opaque() == opaque )
     {
+        lineWidth(disp->width);
         glCullFace(GL_FRONT);
         disp->color2.load_back();
+        obj->draw();
+    }
+    // draw front side
+    if ( disp->visible & 1 && disp->color.opaque() == opaque )
+    {
+        lineWidth(disp->width);
+        glCullFace(GL_BACK);
+        disp->color.load_front();
         obj->draw();
     }
 }
@@ -771,6 +769,7 @@ void Display::drawFiberPlusEnd(Fiber const& fib, int style, real size) const
     }
 }
 
+
 void Display::drawFiberLines(Fiber const& fib) const
 {
     FiberDisp const*const disp = fib.prop->disp;
@@ -778,7 +777,6 @@ void Display::drawFiberLines(Fiber const& fib) const
 
     if ( disp->line_style == 1 )
     {
-        fib.disp->color.load();
         // display plain lines:
         lineWidth(disp->line_width);
 #if ( DIM > 1 ) && REAL_IS_DOUBLE
@@ -795,6 +793,7 @@ void Display::drawFiberLines(Fiber const& fib) const
     }
     else if ( disp->line_style == 2 )
     {
+        gle_color col = fib.disp->color;
         // display segments with color indicating internal tension
         lineWidth(disp->line_width);
         glBegin(GL_LINES);
@@ -804,13 +803,13 @@ void Display::drawFiberLines(Fiber const& fib) const
             real x = fib.tension(ii) / disp->tension_scale;
 #if ( 1 )
             // adjust transparency, to make tense fibers more visible:
-            if ( x > 0 )  // invert color for extension
-                fib.disp->color.inverted().load(x);
-            else          // compression
-                fib.disp->color.load(-x);
+            if ( x <= 0 )
+                col.load(-x);           // compression
+            else
+                col.inverted().load(x); // invert color for extension
 #else
             // use rainbow coloring, where Lagrange multipliers are negative under compression
-            gle_color::jet_color(1-x, fib.disp->color.a()).load();
+            gle_color::jet_color(1-x, alpha).load();
 #endif
             gle::gleVertex(fib.posP(ii));
             gle::gleVertex(fib.posP(ii+1));
@@ -1225,7 +1224,7 @@ void Display::drawFilament(Fiber const& fib,
     // axial translation between two sucessive monomers:
     const real dab = 0.004;
     // enlarge radius of monomers to make them overlap
-    const real rad = 0.6 * dab;
+    const real rad = 0.65 * dab;
     
     real ab = 0;
     
@@ -1370,6 +1369,7 @@ void Display::drawMicrotubule(Fiber const& fib,
 {
     // precalculated 3-start helical trajectory, for 13 monomers:
     //real dx[] = {0,0.000923,0.001846,0.002769,0.003692,0.004615,0.005538,0.006461,0.007384,0.008308,0.009231,0.010154,0.011077};
+    // some protofilaments are shifted by 8 nm backward:
     real dx[] = {0,0.000923,0.001846,0.002769,0.003692,0.004615,0.005538,0.006461,0.007384,0.000308,0.001231,0.002154,0.003077};
     real dy[] = {0.8855,0.5681,0.1205,-0.3546,-0.7485,-0.9709,-0.9709,-0.7485,-0.3546,0.1205,0.5681,0.8855,1.0000};
     real dz[] = {-0.4647,-0.8230,-0.9927,-0.9350,-0.6631,-0.2393,0.2393,0.6631,0.9350,0.9927,0.8230,0.4647,0};
@@ -1444,30 +1444,47 @@ void Display::drawFiber(Fiber const& fib)
 #if ( DIM == 3 )
     if ( fib.disp->color.transparent() )
     {
-        zObjects.push_back(zObject(&fib, fib.nbPoints()/2));
+        for ( unsigned i = 0; i < fib.lastPoint(); ++i )
+        zObjects.push_back(zObject(&fib, i));
     }
     else
 #endif
     {
+        int line_style = disp->line_style;
 #if FIBER_HAS_LATTICE
-        if ( disp->lattice_style && fib.lattice().ready() )
+        FiberLattice const& lat = fib.lattice();
+        if ( lat.ready() )
         {
-            FiberLattice const& lat = fib.lattice();
-
-            if ( disp->lattice_style == 1 )
-                drawFiberLattice1(fib, lat, disp->line_width);
-            else if ( disp->lattice_style == 2 )
-                drawFiberLattice2(fib, lat, disp->line_width);
-            if ( disp->lattice_style == 3 )
-                drawFiberLatticeEdges(fib, lat, disp->line_width);
+            // if the Lattice is displayed, do not draw backbone:
+            switch ( disp->lattice_style )
+            {
+                case 1:
+                    drawFiberLattice1(fib, lat, disp->line_width);
+                    line_style = 0;
+                    break;
+                case 2:
+                    drawFiberLattice2(fib, lat, disp->line_width);
+                    line_style = 0;
+                    break;
+                case 3:
+                    drawFiberLatticeEdges(fib, lat, disp->line_width);
+                    line_style = 0;
+                    break;
+            }
         }
-        else
 #endif
-        if ( disp->line_style )
+        if ( line_style )
         {
             gle_color col1 = fib.disp->color;
             gle_color col2 = fib.disp->color.darken(0.625);
             gle_color colE = fib.disp->end_color[0];
+            
+            // adjust colors for front and back surfaces:
+            col1.load_load();
+            if ( fib.prop->disp->coloring )
+                col1.load_back();
+            else
+                fib.prop->disp->back_color.load_back();
             
             if ( disp->line_style != 1 || disp->style == 0 )
                 drawFiberLines(fib);
