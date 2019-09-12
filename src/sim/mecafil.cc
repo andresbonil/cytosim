@@ -6,9 +6,7 @@
 #include "clapack.h"
 #include "matrix.h"
 #include "random.h"
-#include "fiber_prop.h" // needed for NEW_FIBER_LOOP
 //#include "vecprint.h"
-
 
 //------------------------------------------------------------------------------
 Mecafil::Mecafil()
@@ -26,14 +24,11 @@ Mecafil::Mecafil()
 Mecafil::~Mecafil()
 {
     destroyProjection();
-    if ( rfDiff )
-    {
-        free_real(rfDiff);
-        rfDiff = nullptr;
-        rfLag  = nullptr;
-        rfLLG  = nullptr;
-        rfVTP  = nullptr;
-    }
+    free_real(rfDiff);
+    rfDiff = nullptr;
+    rfLag  = nullptr;
+    rfLLG  = nullptr;
+    rfVTP  = nullptr;
 }
 
 
@@ -64,8 +59,7 @@ size_t Mecafil::allocateMecable(const size_t nbp)
         allocateProjection(ms);
         
         // allocate memory:
-        if ( rfDiff )
-            free_real(rfDiff);
+        free_real(rfDiff);
         
         rfDiff = new_real(ms*(2*DIM+1));
         rfLag  = rfDiff + ms*DIM;
@@ -75,6 +69,12 @@ size_t Mecafil::allocateMecable(const size_t nbp)
         zero_real(ms, rfLag);
     }
     return ms;
+}
+
+void Mecafil::release()
+{
+    free_real(rfDiff);
+    rfDiff = nullptr;
 }
 
 
@@ -138,13 +138,13 @@ void Mecafil::makeProjection()    {}  //DIM == 1
 void Mecafil::destroyProjection() {}  //DIM == 1
 void Mecafil::allocateProjection(size_t) {}  //DIM == 1
 
-void Mecafil::setSpeedsFromForces(const real* X, real alpha, real* Y) const
+void Mecafil::projectForces(const real* X, real* Y) const
 {
     real sum = X[0];
     for ( unsigned int ii = 1; ii < nPoints; ++ii )
         sum += X[ii];
     
-    sum = alpha * sum / ( rfDragPoint * nPoints );
+    sum = sum / nPoints;
     for ( unsigned int ii = 0; ii < nPoints; ++ii )
         Y[ii] = sum;
 }
@@ -166,16 +166,16 @@ void Mecafil::addProjectionDiff(const real*, real*) const {} //DIM == 1
  The array `mat` must be square of dimension `dim * this->nPoints`
  Only terms above the diagonal and corresponding to the first subspace are set
  */
-void add_rigidity_upper(int cnt, real * mat, int ldd, const real R1)
+void add_rigidity_upper(unsigned cnt, real* mat, unsigned ldd, const real R1)
 {
     const real R2 = R1 * 2;
     const real R4 = R1 * 4;
     const real R5 = R1 * 5;
     const real R6 = R1 * 6;
-    
-    constexpr int D = DIM, T = DIM*2, V = DIM*3;
-    const int e = DIM * ( cnt - 2 );
-    const int f = DIM * ( cnt - 1 );
+
+    constexpr unsigned D = DIM, T = DIM*2, V = DIM*3;
+    const unsigned e = DIM * ( cnt - 2 );
+    const unsigned f = DIM * ( cnt - 1 );
     
     mat[0      ] -= R1;
     mat[  ldd*D] += R2;
@@ -186,17 +186,17 @@ void add_rigidity_upper(int cnt, real * mat, int ldd, const real R1)
     
     if ( 3 < cnt )
     {
-        mat[D+ldd*T] += R4;
         mat[D+ldd*D] -= R5;
-        mat[e+ldd*e] -= R5;
+        mat[D+ldd*T] += R4;
         mat[D+ldd*V] -= R1;
+        mat[e+ldd*e] -= R5;
     }
     else
     {
         mat[D+ldd*D] -= R4;
     }
     
-    for ( int n = T; n < e; n += D )
+    for ( unsigned n = T; n < e; n += D )
     {
         mat[n+ldd* n   ] -= R6;
         mat[n+ldd*(n+D)] += R4;
@@ -204,12 +204,20 @@ void add_rigidity_upper(int cnt, real * mat, int ldd, const real R1)
     }
 }
 
+
 void Mecafil::addRigidityUpper(real * mat, unsigned ldd) const
 {
     if ( nPoints > 2 )
+    {
         add_rigidity_upper(nPoints, mat, ldd, rfRigidity);
+#if ( 0 )
+        int N = DIM*nPoints;
+        MatrixSymmetric m(N);
+        add_rigidity_upper(nPoints, m.data(), ldd, 1.0);
+        VecPrint::print(std::clog, N, N, m.data(), N, 0);
+#endif
+    }
 }
-
 
 //------------------------------------------------------------------------------
 
@@ -229,7 +237,7 @@ void add_rigidity0(const unsigned nbt, const real* X, const real rigid, real* Y)
 }
 
 /*
-This is an optimized implementation
+ This is an optimized implementation
  */
 void add_rigidityF(const unsigned nbt, const real* X, const real R1, real* Y)
 {
@@ -256,9 +264,9 @@ void add_rigidityF(const unsigned nbt, const real* X, const real R1, real* Y)
     }
 }
 
-
 /**
  Add rigidity terms between three points {A, B, C}
+ Done with Serge DMITRIEFF, 2015
  */
 void add_rigidity(unsigned A, unsigned B, unsigned C, const real* X, const real R1, real* Y)
 {
@@ -274,7 +282,7 @@ void add_rigidity(unsigned A, unsigned B, unsigned C, const real* X, const real 
 //------------------------------------------------------------------------------
 
 /**
- calculate the second-differential of points,
+ calculates the second-derivative of point's coordinates,
  scale by the rigidity term, and add to vector Y
 */
 void Mecafil::addRigidity(const real* X, real* Y) const

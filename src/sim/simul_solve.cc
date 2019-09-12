@@ -362,12 +362,6 @@ void Simul::solve_auto()
 }
 
 
-void Simul::apply() const
-{
-    sMeca.apply();
-}
-
-
 void Simul::computeForces() const
 {
     // we could use here an accessory Meca mec;

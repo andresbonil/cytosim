@@ -7,11 +7,11 @@
 
 class Matrix;
 
-/// incompressible Chain with bending elasticity
+/// incompressible Filament with bending elasticity
 /**
  Implements the methods of a Mecable for the Chain:
  
- -# setSpeedsFromForces() includes longitudinal incompressibility,
+ -# projectForces() includes longitudinal incompressibility,
  which means keeping successive points equidistants:
  norm( point(p+1) - point(p) ) = segmentation()
  
@@ -28,8 +28,11 @@ private:
     /// stored normalized differences of successive vertices (array of size DIM*nbSegments)
     real   *    rfDiff;
     
-    /// memory allocated to hold nbPoints() values (used as temporary variables)
-    real   *    rfLLG, * rfVTP;
+    /// work array allocated to hold DIM*nbPoints() coordinates
+    real   *    rfLLG;
+    
+    /// work array allocated to hold DIM*nbPoints() coordinates
+    real   *    rfVTP;
     
     /// J*J', a nbSegments^2 matrix. We store the diagonal and one off-diagonal
     real   *    mtJJt, * mtJJtU;
@@ -90,7 +93,7 @@ public:
     /// compute Lagrange multiplier corresponding to the longitudinal tensions in the segments
     void        computeTensions(const real* force);
     
-    /// save Lagrange multipliers computed in setSpeedsFromForces()
+    /// copy Lagrange multipliers computed in projectForces()
     void        storeTensions(const real* force);
 
     /// longitudinal force along segment `p`
@@ -109,7 +112,7 @@ public:
     
     /// drag coefficient of one point
     real        leftoverDrag() const { return rfDragPoint; }
-
+    
     //--------------------- Projection  / Dynamics
     
     /// prepare for projection
@@ -128,7 +131,7 @@ public:
     real        addBrownianForces(real const* rnd, real alpha, real* rhs) const;
     
     /// calculate the speeds from the forces, including projection
-    void        setSpeedsFromForces(const real* X, real alpha, real* Y) const;
+    void        projectForces(const real* X, real* Y) const;
     
     /// print projection matrix
     void        printProjection(std::ostream&) const;
@@ -140,9 +143,6 @@ public:
     
     /// add rigidity terms to upper side of matrix
     void        addRigidityUpper(real*, unsigned) const;
-    
-    /// add rigidity terms on three specified points
-    void        addRigidity(const real* X, real* Y, unsigned, unsigned, unsigned) const;
 
 };
 

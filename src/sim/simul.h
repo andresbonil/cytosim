@@ -188,10 +188,7 @@ public:
     /// like 'solve' but automatically select the fastest preconditionning method
     void            solve_auto();
 
-    /// replace coordinates of Mecables by the ones calculated in solve()
-    void            apply() const;
-
-    /// perform nothing
+    /// do nothing
     void            solve_not() {};
     
     /// calculate the motion of objects, but only in the X-direction

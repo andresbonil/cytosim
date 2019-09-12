@@ -310,14 +310,6 @@ public:
      This version is used to calculate the Matrix * Vector in Meca.
      */
     virtual void    addRigidity(const real* X, real* Y) const {}
-    
-    /// Add rigidity matrix elements (which should be symmetric) to provided matrix
-    /**
-       The function should add terms to the upper part of matrix `mat`, at indices starting from `offset`.
-     It should fill at maximum the upper part of the diagonal block corresponding to indices [offset, offset+dim*nbPoints()].
-     It should be consistent with addRigidity(), adding exactly the same terms.
-     */
-    virtual void    addRigidityMatrix(MatrixSparseSymmetric1&, int inx, int dim) const {}
 
     /// Fill upper diagonal of `mat` with matrix elements
     /**
