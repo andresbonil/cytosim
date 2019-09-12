@@ -610,7 +610,7 @@ void MatrixSparseSymmetric2::vecMulAddIso2D(const real* X, real* Y) const
         real X1 = X[Djj+1];
         real Y0 = Y[Djj  ] + sa_[jj] * X0;
         real Y1 = Y[Djj+1] + sa_[jj] * X1;
-        const index_t stop = ija_[jj+1];
+        const index_t end = ija_[jj+1];
         for ( index_t kk = ija_[jj]; kk < end; ++kk )
         {
             index_t Dii = 2 * ija_[kk];
