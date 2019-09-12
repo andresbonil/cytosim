@@ -36,7 +36,7 @@ int nbpts  = 1024;
 int scan   = 100;
 
 // INFLATION of the rectangle containing point to be projected
-const real INFLATION = 2;
+const real INFLATION = 1;
 
 // regular or random distribution of the test-points
 bool regular_distribution = false;
@@ -207,7 +207,7 @@ void setGeometry()
 
 void checkVolume()
 {
-    unsigned long cnt = 1<<20;
+    unsigned long cnt = 1<<22;
     real e1 = spc->estimateVolume(cnt);
     real e2 = spc->estimateVolume(cnt);
     

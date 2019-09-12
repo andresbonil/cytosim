@@ -12,7 +12,7 @@
 real maxDeviationFromRotation(Matrix33 const& mat)
 {
     Matrix33 mm = mat.transposed() * mat - Matrix33::identity();
-    return mm.norm();
+    return mm.norm_inf();
 }
 
 
@@ -38,7 +38,7 @@ void testRotation(Vector3 vec, real angle)
     
     Matrix33 rot = Matrix33::rotationAroundAxis(vec, cos(angle), sin(angle));
     
-    printf("  error = %e  ", ( rot - mat ).norm());
+    printf("  error = %e  ", ( rot - mat ).norm_inf());
     printf("  angles  %+6.2f %+6.2f %+6.2f\n", angle, a, mat.rotationAngle());
     
     if ( 0 )

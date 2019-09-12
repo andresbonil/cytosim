@@ -153,7 +153,8 @@ void compare(unsigned size,  MATRIXA & mat1, MATRIXB& mat2, unsigned fill)
     free_real(tmp2);
 }
 
-void fillMatrix3D(MatrixSparseSymmetricBlock& mat, const int i, const int j)
+#if ( DIM == 3 )
+void fillMatrix(MatrixSparseSymmetricBlock& mat, const int i, const int j)
 {
     Matrix33 M(alpha, -beta, beta, -beta, alpha, -beta, beta, -beta, alpha);
     
@@ -167,61 +168,56 @@ void fillMatrix3D(MatrixSparseSymmetricBlock& mat, const int i, const int j)
 }
 
 
-template <typename MATRIX>
-void fillMatrix3D(MATRIX& mat, const int i, const int j)
+void fillMatrix(MatrixSparseBlock& mat, const int i, const int j)
 {
+    Matrix34 M(alpha, -beta, beta, -beta, alpha, -beta, beta, -beta, alpha);
+    
+    mat.diag_block(i).add_half(M);
+    mat.diag_block(j).add_half(M);
+    
+    if ( i > j )
+        mat.block(i,j).add_full(M);
+    else
+        mat.block(j,i).add_full(M.transposed());
+}
+#endif
+
+
+template <typename MATRIX>
+void fillMatrix(MATRIX& mat, const int i, const int j)
+{
+#if ( DIM == 3 )
     Matrix33 M(alpha, -beta, beta, -beta, alpha, -beta, beta, -beta, alpha);
-    for ( int x = 0; x < 3; ++x )
-    for ( int y = x; y < 3; ++y )
+#elif ( DIM == 2 )
+    Matrix22 M(alpha, -beta, beta, alpha);
+#else
+    Matrix11 M(alpha);
+#endif
+    
+    for ( int x = 0; x < DIM; ++x )
+    for ( int y = x; y < DIM; ++y )
         mat(i+y, i+x) += M(y,x);
     
     if ( i > j )
     {
-        for ( int x = 0; x < 3; ++x )
-        for ( int y = 0; y < 3; ++y )
+        for ( int x = 0; x < DIM; ++x )
+        for ( int y = 0; y < DIM; ++y )
             mat(i+y, j+x) += M(y,x);
     }
     else
     {
-        for ( int x = 0; x < 3; ++x )
-        for ( int y = 0; y < 3; ++y )
+        for ( int x = 0; x < DIM; ++x )
+        for ( int y = 0; y < DIM; ++y )
             mat(j+y, i+x) += M(x,y);
     }
     
-    for ( int x = 0; x < 3; ++x )
-    for ( int y = x; y < 3; ++y )
+    for ( int x = 0; x < DIM; ++x )
+    for ( int y = x; y < DIM; ++y )
         mat(j+y, j+x) += M(y,x);
 }
 
 template <typename MATRIX>
-void fillMatrix2D(MATRIX& mat, const int i, const int j)
-{
-    mat(i  , i  ) += alpha;
-    mat(i+1, i  ) -= beta;
-    mat(i+1, i+1) += alpha;
-    
-    if ( i > j )
-    {
-        mat(i  , j  ) -= beta;
-        mat(i+1, j  ) -= beta;
-        mat(i  , j+1) -= beta;
-        mat(i+1, j+1) -= beta;
-    }
-    else
-    {
-        mat(j  , i  ) -= beta;
-        mat(j+1, i  ) -= beta;
-        mat(j  , i+1) -= beta;
-        mat(j+1, i+1) -= beta;
-    }
-    
-    mat(j  , j  ) += alpha;
-    mat(j+1, j  ) -= beta;
-    mat(j+1, j+1) += alpha;
-}
-
-template <typename MATRIX>
-void fillMatrix1D(MATRIX& mat, const int i, const int j)
+void fillMatrixIso(MATRIX& mat, const int i, const int j)
 {
     mat(i, i) += alpha;
     if ( i > j )
@@ -244,15 +240,7 @@ void testMatrix(MATRIX & mat,
     {
         mat.reset();
         for ( int n=0; n<fill; ++n )
-        {
-#if ( DIM == 3 )
-            fillMatrix3D(mat, iny[n], inx[n]);
-#elif ( DIM == 2 )
-            fillMatrix2D(mat, iny[n], inx[n]);
-#else
-            fillMatrix1D(mat, iny[n], inx[n]);
-#endif
-        }
+            fillMatrix(mat, iny[n], inx[n]);
     }
     double ts = toc();
     mat.prepareForMultiply(1);
@@ -298,7 +286,7 @@ void testMatrixIso(MATRIX & mat,
     {
         mat.reset();
         for ( int n=0; n<fill; ++n )
-            fillMatrix1D(mat, inx[n], iny[n]);
+            fillMatrixIso(mat, inx[n], iny[n]);
     }
     double t2 = toc();
     
@@ -321,7 +309,7 @@ void testMatrixIso(MATRIX & mat,
 
 void testMatrices(const int size, const int fill)
 {
-    printf("------- size %i  filled %.1f %% :", size, fill*100.0/size/size);
+    printf("------%iD size %i  filled %.1f %% :", DIM, size, fill*100.0/size/size);
     MatrixSparseSymmetric  mat0;
     MatrixSparseSymmetric1 mat1;
     MatrixSparseSymmetric2 mat2;
@@ -468,16 +456,11 @@ int main( int argc, char* argv[] )
         // small tests to check correctness:
         MatrixSparseSymmetric1 mat1;
         MatrixSparseSymmetricB mat3;
-        MatrixSparseSymmetricBlock mat4;
         
         compare(4*3, mat1, mat3, 1<<4);
         compare(4*7, mat1, mat3, 1<<5);
         compare(4*11, mat1, mat3, 1<<6);
         compare(4*33, mat1, mat3, 1<<16);
-        compare(4*3, mat1, mat4, 1<<16);
-        compare(4*7, mat1, mat4, 1<<16);
-        compare(4*11, mat1, mat4, 1<<16);
-        compare(4*33, mat1, mat4, 1<<16);
     }
     if ( 0 )
     {
@@ -489,6 +472,7 @@ int main( int argc, char* argv[] )
     }
     if ( 0 )
     {
+        printf("\ntest_matrix BLOCK_SIZE %i (%s)", DIM, SquareBlock::what().c_str());
         size_t siz = DIM;
         for ( int i = 0; i < 14; ++i )
         {
@@ -520,10 +504,12 @@ int main( int argc, char* argv[] )
     if ( 1 )
     {
         //testMatrices(DIM*17, 23);
-        testMatrices(DIM*91, 1<<12);
+        //testMatrices(DIM*91, 1<<12);
         testMatrices(DIM*197, 1<<14);
-        testMatrices(DIM*437, 1<<17);
-        testMatrices(DIM*713, 1<<18);
+        testMatrices(DIM*437, 1<<16);
+        testMatrices(DIM*713, 1<<16);
+        testMatrices(DIM*1359, 1<<18);
+        testMatrices(DIM*2100, 1<<16);
     }
     if ( 0 )
     {
