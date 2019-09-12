@@ -569,17 +569,9 @@ void Chain::reshape_global(const unsigned ns, const real* src, real* dst, real c
  */
 void Chain::getPoints(real const* ptr)
 {
-    // use here static memory
-    static size_t alc = 0;
-    static real* mem = nullptr;
-    
-    if ( alc < allocated() )
-    {
-        alc = allocated();
-        free_real(mem);
-        mem = new_real(alc*9);
-    }
-    
+    // allocate memory
+    real* mem = new_real(9*allocated());
+
 #if ( DIM > 1 )
     if ( nPoints == 2 )
         reshape_two(ptr, pPos, fnCut);
@@ -589,6 +581,8 @@ void Chain::getPoints(real const* ptr)
         reshape_global(nbSegments(), ptr, pPos, fnCut);
         //std::cerr << "A crude method was used to reshape " << reference() << '\n';
     }
+
+    free_real(mem);
 }
 
 

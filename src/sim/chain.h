@@ -118,6 +118,12 @@ public:
     
     /// Destructor
     ~Chain() {}
+    
+    /// Number of segments = nbPoints() - 1
+    unsigned     nbSegments()  const { return nPoints - 1; }
+    
+    /// Index of the last segment = nbPoints() - 2
+    unsigned     lastSegment() const { return nPoints - 2; }
 
     //---------------------
 

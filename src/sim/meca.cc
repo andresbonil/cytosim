@@ -159,11 +159,11 @@ unsigned Meca::largestMecable() const
 // shortcut
 
 #if ( DIM == 1 )
-#   define VECMULADDISO  vecMulAdd
+#   define VECMULADDISO vecMulAdd
 #elif ( DIM == 2 )
-#   define VECMULADDISO  vecMulAddIso2D
+#   define VECMULADDISO vecMulAddIso2D
 #elif ( DIM == 3 )
-#   define VECMULADDISO  vecMulAddIso3D
+#   define VECMULADDISO vecMulAddIso3D
 #endif
 
 
@@ -363,18 +363,10 @@ inline void multiply1(Mecable const* mec, real alpha, const real* xxx, real* yyy
         mec->addProjectionDiff(xxx, yyy);
 #endif
 
-    mec->setSpeedsFromForces(yyy, alpha, yyy);
-    
-    /*
-     Bypass the Projection (NEVER ENABLE THIS!):
-     real alpha = mec->nbPoints() * time_step / mec->dragCoefficient();
-     blas::xaxpy(bs, -alpha, tmp, 1, yyy, 1);
-     PRINT_ONCE("CRAZY: Projection is bypassed!!!");
-     */
+    mec->projectForces(yyy, yyy);
 
-    // Y <- Y + X
-    //blas::xaxpy(DIM * mec->nbPoints(), 1.0, xxx, 1, yyy, 1);
-    blas::add(DIM*mec->nbPoints(), xxx, yyy);
+    // Y <- X + alpha * Y
+    blas::xpay(DIM*mec->nbPoints(), xxx, alpha/mec->leftoverDrag(), yyy);
 }
 
 
@@ -408,7 +400,6 @@ void Meca::multiply( const real* X, real* Y ) const
     }
 #endif
 }
-
 
 //------------------------------------------------------------------------------
 #pragma mark - Helper functions
@@ -455,9 +446,9 @@ void duplicate_matrix(unsigned siz, real const* src, real * dst)
     
 #if ( 0 )
     std::clog << "\nOriginal:\n";
-    VecPrint::print(std::clog, siz, siz, src);
+    VecPrint::print(std::clog, siz, siz, src, siz);
     std::clog << "Duplicated:\n";
-    VecPrint::print(std::clog, ddd, ddd, dst);
+    VecPrint::print(std::clog, ddd, ddd, dst, ddd);
 #endif
 }
 
@@ -512,7 +503,7 @@ void truncate_matrix(unsigned siz, real* mat, unsigned diag)
 {
 #if ( 0 )
     std::clog << "\nOriginal:\n";
-    VecPrint::print(std::clog, siz, siz, mat);
+    VecPrint::print(std::clog, siz, siz, mat, siz);
 #endif
     
     for ( unsigned ii = 0; ii < siz; ++ii )
@@ -527,7 +518,7 @@ void truncate_matrix(unsigned siz, real* mat, unsigned diag)
     
 #if ( 0 )
     std::clog << "Truncated:\n";
-    VecPrint::print(std::clog, siz, siz, mat);
+    VecPrint::print(std::clog, siz, siz, mat, siz);
 #endif
 }
 
@@ -740,13 +731,14 @@ real largest_eigenvalue(int siz, real const* mat, real const* tam, real alpha, r
 
 
 /**
- Return the total diagonal block corresponding to an Object, which is:
+ Get the total diagonal block corresponding to an Object, which is:
  
      I - time_step * P ( mB + mC + P' )
  
+ The result is constructed by using functions from mB and mC
  This block is square but not symmetric!
  */
-void Meca::extractBlock(real* res, const Mecable * mec) const
+void Meca::getBlock(real* res, const Mecable * mec) const
 {
     const unsigned ps = mec->nbPoints();
     const unsigned bs = DIM * ps;
@@ -757,7 +749,7 @@ void Meca::extractBlock(real* res, const Mecable * mec) const
     // set the Rigidity terms:
     mec->addRigidityUpper(res, bs);
     //std::clog<<"Rigidity block " << mec->reference() << "\n";
-    //VecPrint::print(std::clog, bs, bs, tmp, bs);
+    //VecPrint::print(std::clog, bs, bs, res, bs, 0);
 #endif
     
     mB.addTriangularBlock(res, bs, mec->matIndex(), ps, DIM);
@@ -791,26 +783,31 @@ void Meca::extractBlock(real* res, const Mecable * mec) const
     
     //compute the projection, by applying it to each column vector:
     /*
-     This could be vectorized by having setSpeedsFromForces()
+     This could be vectorized by having projectForces()
      accept multiple vectors as arguments, using SIMD instructions
      */
-    for ( unsigned ii = 0; ii < bs; ++ii )
-        mec->setSpeedsFromForces(res+bs*ii, -time_step, res+bs*ii);
+    for ( unsigned i = 0; i < bs; ++i )
+        mec->projectForces(res+bs*i, res+bs*i);
     
+    // scale
+    real beta = -time_step / mec->leftoverDrag();
+    //blas::xscal(bs*bs, beta, res, 1);
+    for ( unsigned n = 0; n < bs*bs; ++n )
+        res[n] = beta * res[n];
     // add Identity matrix:
-    for ( unsigned ii = 0; ii < bs; ++ii )
-        res[bs*ii+ii] += 1.0;
+    for ( unsigned i = 0; i < bs; ++i )
+        res[i+bs*i] += 1.0;
 }
 
 
 /**
- This version builds the diagonal block directly from Meca:multiply().
- This is a very slow method that calls 'multiply()' n-times, where
- 'n' is the size of the block. It does not use any of the Meca vectors.
+ This version builds the diagonal block indirectly using Meca:multiply().
+ This is a slow method that calls 'multiply()' n-times, where
+ 'n' is the size of the block.
  
- It should be used for validation only.
+ This should be used for validation only.
 */
-void Meca::extractBlockSlow(real* res, const Mecable* mec) const
+void Meca::extractBlock(real* res, const Mecable* mec) const
 {
     const unsigned dim = dimension();
     const unsigned bks = DIM * mec->nbPoints();
@@ -838,26 +835,26 @@ void Meca::extractBlockSlow(real* res, const Mecable* mec) const
 
 
 // DEBUG: compare `blk` with block extracted using extractBlockSlow()
-void Meca::compareBlocks(const Mecable * mec, const real* blk)
+void Meca::verifyBlock(const Mecable * mec, const real* blk)
 {
     const unsigned bs = DIM * mec->nbPoints();
     real * wrk = new_real(bs*bs);
     
-    extractBlockSlow(wrk, mec);
+    extractBlock(wrk, mec);
     
     blas::xaxpy(bs*bs, -1.0, blk, 1, wrk, 1);
     real err = blas::nrm2(bs*bs, wrk);
  
-    std::clog << "compareBlocks ";
+    std::clog << "verifyBlock ";
     std::clog << std::setw(10) << mec->reference() << " " << std::setw(6) << bs;
     std::clog << "  | B - K | = " << std::setprecision(3) << err << std::endl;
     
-    if ( err > 100 * REAL_EPSILON )
+    if ( err > bs * bs * REAL_EPSILON )
     {
         VecPrint::sparse(std::clog, bs, bs, wrk, bs, 3, (real)0.1);
         
         int s = std::min(16U, bs);
-        extractBlockSlow(wrk, mec);
+        extractBlock(wrk, mec);
         std::clog << " blockS\n";
         VecPrint::print(std::clog, s, s, wrk, bs, 3);
         
@@ -873,7 +870,7 @@ void Meca::compareBlocks(const Mecable * mec, const real* blk)
  Multiply here `blk` with the dynamic block extracted by extractBlockSlow()
  and check that we recover the identity matrix
  */
-void Meca::testBlock(const Mecable * mec, const real* blk)
+void Meca::checkBlock(const Mecable * mec, const real* blk)
 {
     const unsigned bs = DIM * mec->nbPoints();
     
@@ -890,7 +887,7 @@ void Meca::testBlock(const Mecable * mec, const real* blk)
     real * tmp = new_real(bs*bs);
     real * vec = new_real(bs);
     
-    extractBlockSlow(wrk, mec);
+    extractBlock(wrk, mec);
    
     int info = 0;
     blas::xcopy(bs*bs, wrk, 1, tmp, 1);
@@ -945,9 +942,9 @@ void Meca::computePreconditionner(Mecable* mec)
     real* blk = mec->block();
  
     // extract diagonal matrix block corresponding to this Mecable:
-    extractBlock(blk, mec);
+    getBlock(blk, mec);
 
-    //compareBlocks(mec, blk);
+    //verifyBlock(mec, blk);
 
     // calculate LU factorization:
     int info = 0;
@@ -992,9 +989,7 @@ void Meca::computePreconditionner()
 
 
 void Meca::precondition(const real* X, real* Y) const
-{
-    assert_true( X != Y );
-    
+{    
 #if NUM_THREADS > 1
     #pragma omp parallel num_threads(NUM_THREADS)
     {
@@ -1166,13 +1161,16 @@ This preforms:
 
  'rhs' and 'fff' are output. Input 'rnd' is a set of independent random numbers
 */
-real browian1(Mecable* mec, real const* rnd, real alpha, real* fff, real time_step, real* rhs)
+real brownian1(Mecable* mec, real const* rnd, real alpha, real* fff, real beta, real* rhs)
 {
     real n = mec->addBrownianForces(rnd, alpha, fff);
     
     // Calculate the right-hand-side of the system in vRHS:
-    mec->setSpeedsFromForces(fff, time_step, rhs);
+    mec->projectForces(fff, rhs);
     
+    // rhs <- beta * rhs, resulting in time_step * P * vFOR:
+    blas::xscal(DIM*mec->nbPoints(), beta/mec->leftoverDrag(), rhs, 1);
+
     /*
      In this case, `fff` contains the true force in each vertex of the system
      and the Lagrange multipliers will represent the tension in the filaments
@@ -1260,7 +1258,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
     /*
      Add Brownian contributions and calculate Minimum value of it
       vFOR <- vFOR + Noise
-      vRHS <- time_step * P * vFOR:
+      vRHS <- P * vFOR:
      */
 #if NUM_THREADS > 1
     #pragma omp parallel num_threads(NUM_THREADS)
@@ -1270,7 +1268,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
         while ( mci < objs.end() )
         {
             const index_t inx = DIM * (*mci)->matIndex();
-            real n = browian1(*mci, vRND+inx, prop->kT/time_step, vFOR+inx, time_step, vRHS+inx);
+            real n = brownian1(*mci, vRND+inx, prop->kT/time_step, vFOR+inx, time_step, vRHS+inx);
             local_res = std::min(local_res, n);
             mci += NUM_THREADS;
         }
@@ -1282,11 +1280,11 @@ void Meca::solve(SimulProp const* prop, const int precond)
     for ( Mecable * mec : objs )
     {
         const index_t inx = DIM * mec->matIndex();
-        real n = browian1(mec, vRND+inx, prop->kT/time_step, vFOR+inx, time_step, vRHS+inx);
+        real n = brownian1(mec, vRND+inx, prop->kT/time_step, vFOR+inx, time_step, vRHS+inx);
         noiseLevel = std::min(noiseLevel, n);
     }
 #endif
-    
+
     if ( noiseLevel > 0 )
         noiseLevel *= time_step;
     else
@@ -1346,7 +1344,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
     // NOTE: the tolerance to solve the system should be such that the solution
     // found does not depend on the initial guess.
     
-    real residual = noiseLevel * prop->tolerance;
+    real abstol = noiseLevel * prop->tolerance;
 
     /*
      With exact arithmetic, biConjugate Gradient should converge at most
@@ -1354,7 +1352,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
      each iteration involving 2 matrix-vector multiplications.
      We set here the max limit to the number of matrix-vector multiplication:
      */
-    LinearSolvers::Monitor monitor(2*dimension(), residual);
+    LinearSolvers::Monitor monitor(2*dimension(), abstol);
 
     //------- call the iterative solver:
 
@@ -1371,11 +1369,14 @@ void Meca::solve(SimulProp const* prop, const int precond)
     fprintf(stderr, "    Solver count %4i  residual %10.6f\n", monitor.count(), monitor.residual());
 #endif
 #if ( 0 )
-    // enable this to compare with GMRES
-    monitor.reset();
-    zero_real(dimension(), vSOL);
-    LinearSolvers::GMRES(*this, vRHS, vSOL, 32, monitor, allocator, mH, mV, temporary);
-    fprintf(stderr, "    GMRES-32  count %4i  residual %10.6f\n", monitor.count(), monitor.residual());
+    // enable this to compare with GMRES using different restart parameters
+    for ( int RS : {8, 16, 32} )
+    {
+        monitor.reset();
+        zero_real(dimension(), vSOL);
+        LinearSolvers::GMRES(*this, vRHS, vSOL, RS, monitor, allocator, mH, mV, temporary);
+        fprintf(stderr, "    GMRES-%i  count %4i  residual %10.6f\n", RS, monitor.count(), monitor.residual());
+    }
 #endif
 #if ( 0 )
     // enable this to compare BCGS and GMRES
@@ -1392,7 +1393,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
     monitor.reset();
     zero_real(dimension(), vSOL);
     LinearSolvers::bicgstab(*this, vRHS, vSOL, monitor, allocator);
-    fprintf(stderr, "    bcgs  count %4i residual %10.6f\n", monitor.count(), monitor.residual());
+    fprintf(stderr, "    bcgs      count %4i  residual %10.6f\n", monitor.count(), monitor.residual());
 #endif
     
     //------- in case the solver did not converge, we try other methods:
@@ -1468,8 +1469,8 @@ void Meca::solve(SimulProp const* prop, const int precond)
 #endif
     
     //add the solution of the system (=dPTS) to the points coordinates
-    //blas::xaxpy(dimension(), 1.0, vSOL, 1, vPTS, 1);
     blas::add(dimension(), vSOL, vPTS);
+    
     /*
      Re-calculate forces with the new coordinates, excluding bending elasticity
      and Brownian terms on the vertices.
@@ -1483,18 +1484,17 @@ void Meca::solve(SimulProp const* prop, const int precond)
     if ( prop->verbose )
     {
         std::stringstream oss;
-        oss << "Meca " << DIM << "x" << nbPts;
-        oss << " block " << largestMecable();
+        oss << "Meca " << DIM << "*" << nbPts;
+        oss << " brick " << largestMecable();
         oss << " " << mB.what();
         if ( useMatrixC ) oss << " " << mC.what();
         oss << " precond " << precond;
         oss << " count " << monitor.count();
         //oss << " flag " << monitor.flag();
         oss << " residual " << monitor.residual() << "\n";
+        Cytosim::out << oss.str();
         if ( prop->verbose > 1 )
             std::clog << oss.str();
-        else
-            Cytosim::out << oss.str();
     }
 }
 
@@ -1536,8 +1536,37 @@ void Meca::apply()
 //------------------------------------------------------------------------------
 #pragma mark - Debug/Output Functions
 
+
 /**
- Extract the full matrix associated with matVect, in `mat` of size `sz`.
+ Count number of non-zero entries in the entire system
+ */
+size_t Meca::nbNonZeros(real threshold) const
+{
+    const size_t dim = dimension();
+    real * src = new_real(dim);
+    real * dst = new_real(dim);
+    
+    zero_real(dim, src);
+    
+    size_t cnt = 0;
+    for ( index_t j = 0; j < dim; ++j )
+    {
+        src[j] = 1.0;
+        multiply(src, dst);
+        for ( index_t i = 0; i < dim; ++i )
+            cnt += ( std::abs(dst[i]) > threshold );
+        src[j] = 0.0;
+    }
+    
+    free_real(dst);
+    free_real(src);
+    return cnt;
+}
+
+/**
+ Extract the full matrix associated with matVect, in `mat[]`
+ The matrix should be preallocated of size `dim`, which should be equal
+ to the system's dimension().
  */
 void Meca::getSystem(index_t dim, real * mat) const
 {
@@ -1550,16 +1579,65 @@ void Meca::getSystem(index_t dim, real * mat) const
     zero_real(dim, src);
     zero_real(dim, res);
     
-    for ( index_t ii = 0; ii < dim; ++ii )
+    for ( index_t j = 0; j < dim; ++j )
     {
-        src[ii] = 1.0;
+        src[j] = 1.0;
         multiply(src, res);
-        blas::xcopy(dim, res, 1, mat+ii*dim, 1);
-        src[ii] = 0.0;
+        blas::xcopy(dim, res, 1, mat+j*dim, 1);
+        src[j] = 0.0;
     }
     
     free_real(res);
     free_real(src);
+}
+
+
+/**
+ Save a sparse matrix in Matrix Market format
+ https://math.nist.gov/MatrixMarket/formats.html
+ This is a Sparse text format
+ */
+void Meca::saveSystem(FILE * file, real threshold) const
+{
+    fprintf(file, "%%%%MatrixMarket matrix coordinate real general\n");
+    fprintf(file, "%% This is a matrix produced by Cytosim\n");
+    fprintf(file, "%% author: FJ Nedelec\n");
+    fprintf(file, "%% kind: biological cell simulation (cytoskeleton)\n");
+
+    const size_t dim = dimension();
+    real * src = new_real(dim);
+    real * dst = new_real(dim);
+    zero_real(dim, src);
+    
+    const size_t cnt = nbNonZeros(threshold);
+    fprintf(file, "%lu %lu %lu\n", dim, dim, cnt);
+    
+    for ( index_t j = 0; j < dim; ++j )
+    {
+        src[j] = 1.0;
+        multiply(src, dst);
+        for ( index_t i = 0; i < dim; ++i )
+            if ( std::abs(dst[i]) > threshold )
+                fprintf(file, "%u %u %f\n", i, j, dst[i]);
+        src[j] = 0.0;
+    }
+    
+    free_real(dst);
+    free_real(src);
+}
+
+
+void Meca::saveRHS(FILE * file) const
+{
+    fprintf(file, "%% This is a vector produced by Cytosim\n");
+    fprintf(file, "%% author: FJ Nedelec\n");
+    fprintf(file, "%% kind: biological cell simulation (cytoskeleton)\n");
+    
+    const size_t dim = dimension();
+    fprintf(file, "%lu\n", dim);
+    
+    for ( index_t i = 0; i < dim; ++i )
+        fprintf(file, "%f\n", vRHS[i]);
 }
 
 
@@ -1611,9 +1689,11 @@ void Meca::dumpElasticity(FILE * file) const
 #if ADD_PROJECTION_DIFF
         for ( Mecable const* mec : objs )
         {
-            const index_t inx = DIM * mec->matIndex();
             if ( mec->hasProjectionDiff() )
+            {
+                const index_t inx = DIM * mec->matIndex();
                 mec->addProjectionDiff(src+inx, res+inx);
+            }
         }
 #endif
         
@@ -1637,21 +1717,21 @@ void Meca::dumpMobility(FILE * file) const
     
     zero_real(dim, src);
     
-    for ( index_t ii = 0; ii < dim; ++ii )
+    for ( index_t i = 0; i < dim; ++i )
     {
-        src[ii] = 1.0;
-        
-        zero_real(dim, res);
+        src[i] = 1.0;
+        zero_real(dim, res); // this should not be necessary
         
         for ( Mecable const* mec : objs )
         {
             const index_t inx = DIM * mec->matIndex();
             // this includes the mobility, but not the time_step:
-            mec->setSpeedsFromForces(src+inx, 1.0, res+inx);
+            mec->projectForces(src+inx, res+inx);
+            blas::xscal(DIM*mec->nbPoints(), mec->leftoverDrag(), res+inx, 1);
         }
-        
+        // write column to file directly:
         fwrite(res, sizeof(real), dim, file);
-        src[ii] = 0.0;
+        src[i] = 0.0;
     }
     
     free_real(res);
@@ -1661,6 +1741,7 @@ void Meca::dumpMobility(FILE * file) const
 
 /**
  Save matrix associated with the preconditionner, in binary format
+ This relies on `Meca::precondition()`, which may apply a dummy preconditionner
  */
 void Meca::dumpPreconditionner(FILE * file) const
 {
@@ -1721,7 +1802,7 @@ void Meca::dumpDrag(FILE * file) const
 /**
  This dump the total matrix and some vectors in binary files.
  
- This matlab code should read the output:
+ This MATLAB code should read the output:
  
      ord = load('ord.txt');
      time_step = load('stp.txt');
@@ -1750,7 +1831,7 @@ void Meca::dumpDrag(FILE * file) const
 void Meca::dump() const
 {
     FILE * f = fopen("ord.txt", "w");
-    fprintf(f, "%u\n", dimension());
+    fprintf(f, "%lu\n", dimension());
     fclose(f);
     
     f = fopen("stp.txt", "w");
@@ -1792,5 +1873,64 @@ void Meca::dump() const
     f = fopen("con.bin", "wb");
     dumpPreconditionner(f);
     fclose(f);
+}
+
+
+/**
+ output of matrices in a text-based sparse format
+ */
+void Meca::dumpSparse()
+{
+#if !RIGIDITY_IN_MATRIX
+    std::clog << "incorrect dump since RIGIDITY_IN_MATRIX is not defined\n";
+#endif
+    std::clog << "dumping matrices in binary format\n";
+    
+    unsigned ms = 0;
+    for ( Mecable const* mec : objs )
+    {
+        if ( ms < mec->nbPoints() )
+            ms = mec->nbPoints();
+    }
+    
+    FILE * f = fopen("d_drg.bin", "wb");
+    dumpDrag(f);
+    fclose(f);
+    
+    f = fopen("d_obj.bin", "wb");
+    dumpObjectID(f);
+    fclose(f);
+    
+    std::ofstream os("d_sol.txt");
+    VecPrint::dump(os, dimension(), vPTS);
+    os.close();
+    
+    os.open("d_rhs.txt");
+    VecPrint::dump(os, dimension(), vRHS);
+    os.close();
+    
+    os.open("d_matB.txt");
+    mB.printSparse(os);
+    os.close();
+    
+    os.open("d_matC.txt");
+    mC.printSparse(os);
+    os.close();
+    
+    real * tmp1 = new_real(DIM*ms);
+    real * tmp2 = new_real(DIM*ms*DIM*ms);
+    
+    os.open("diagonal.txt");
+    
+    for ( Mecable * mec : objs )
+    {
+        unsigned int bs = DIM * mec->nbPoints();
+        extractBlock(tmp2, mec);
+        VecPrint::sparse_off(os, bs, bs, tmp2, bs, DIM*mec->matIndex());
+    }
+    os.close();
+    
+    free_real(tmp1);
+    free_real(tmp2);
 }
 

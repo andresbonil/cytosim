@@ -235,11 +235,8 @@ public:
 #endif
         laIndexM = index(a);
         laIndexP = index(b);
-        
-        assert_true(abscissa(laIndexM) <= a && a <= abscissa(laIndexM+1.0));
-        assert_true(abscissa(laIndexP) <= b && b <= abscissa(laIndexP+1.0));
 
-        /* allocate with some safety margin */
+        /* allocate with a safety margin of 8 cells */
         allocate(laIndexM, laIndexP+1, 8);
 #if 0
         if ( !std::is_same<real, cell_t>::value )

@@ -114,7 +114,7 @@ public:
 
     /// total translation drag-coefficient (force = drag * speed)
     real        dragCoefficient() const;
-    
+
     /// prepare for Meca
     void        prepareMecable();
 
@@ -122,7 +122,7 @@ public:
     void        makeProjection();
     
     /// calculates the speed of points in Y, for the forces given in X
-    void        setSpeedsFromForces(const real* X, real, real* Y) const;
+    void        projectForces(const real* X, real* Y) const;
     
     /// add contribution of Brownian forces
     real        addBrownianForces(real const* rnd, real sc, real* rhs) const;

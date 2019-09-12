@@ -98,11 +98,10 @@ void Parser::parse_set(std::istream& is)
         blok = Tokenizer::get_block(is, '{');
         
         if ( blok.empty() )
-            throw InvalidSyntax("unexpected syntax");
+            throw InvalidSyntax("syntax error");
 
         if ( do_set )
         {
-            VLOG("+DEF |" << cat << "|" << name << "|\n");
             opt.read(blok);
             pp = execute_set(cat, name, opt);
             
@@ -130,7 +129,6 @@ void Parser::parse_set(std::istream& is)
         else if ( do_change )
         {
             opt.read(blok);
-            VLOG(" SET |" << name << "|\n");
             execute_change(name, opt);
         }
     }
@@ -165,7 +163,7 @@ void Parser::parse_set(std::istream& is)
         blok = Tokenizer::get_block(is, '{');
         
         if ( blok.empty() )
-            throw InvalidSyntax("unexpected syntax");
+            throw InvalidSyntax("syntax error");
         
         if ( do_change )
         {
@@ -174,18 +172,12 @@ void Parser::parse_set(std::istream& is)
             else
                 opt.define(para, blok);
 
-            VLOG(" SET |" << name << "|\n");
             execute_change(name, opt);
         }
         else if ( para == "display" )
         {
             opt.define(para, blok);
-            pp = simul.findProperty(name);
-            if ( ! opt.empty() && pp )
-            {
-                VLOG("-SET |" << pp->category() << "|" << name << "|" << para << "|\n");
-                pp->read(opt);
-            }
+            execute_change(name, opt, false);
         }
     }
 
@@ -282,29 +274,31 @@ void Parser::parse_change(std::istream& is)
     std::string blok = Tokenizer::get_block(is, '{');
     
     if ( blok.empty() )
-        throw InvalidSyntax("unexpected syntax");
+        throw InvalidSyntax("syntax error");
     
+    Glossary opt;
     if ( do_change )
     {
-        Glossary opt;
-        
         if ( para.empty() )
             opt.read(blok);
         else
             opt.define(para, blok);
         
         if ( change_all )
-        {
-            VLOG("+CHG |" << name << "|" << para << "|\n");
             execute_change_all(name, opt);
-        }
         else
-        {
-            VLOG("-CHG |" << name << "|" << para << "|\n");
             execute_change(name, opt);
-        }
+ 
         if ( opt.warnings(std::cerr, ~0) )
             show_lines(is, spos);
+    }
+    else if ( para == "display" )
+    {
+        opt.define("display", blok);
+        if ( change_all )
+            execute_change_all(name, opt);
+        else
+            execute_change(name, opt, false);
     }
 }
 
@@ -381,12 +375,10 @@ void Parser::parse_new(std::istream& is)
     {
         if ( opt.nb_keys() == 0 )
         {
-            VLOG("-NEW |" << name << "|\n");
             execute_new(name, cnt);
         }
         else
         {
-            VLOG("+NEW |" << name << "|\n");
             size_t nb_objects = simul.nbObjects();
             
             // syntax sugar, to specify the position of the Fiber ends
@@ -401,8 +393,6 @@ void Parser::parse_new(std::istream& is)
             }
 
             // distribute objects regularly between two points:
-            if ( opt.has_key("distribute") )
-                throw InvalidParameter("please use `range' instead of 'distribute'");
             if ( opt.has_key("range") )
             {
                 Vector A, B;
@@ -753,7 +743,7 @@ void Parser::parse_read(std::istream& is)
     std::ifstream fis(file.c_str(), std::ifstream::in);
     if ( ! fis.fail() )
     {
-        VLOG("-READ " << file << "\n");
+        VLOG("-EVAL " << file << "\n");
         evaluate(fis, "in `"+file+"'");
     }
     else
@@ -1186,6 +1176,11 @@ void Parser::evaluate(std::istream& is)
             if ( do_write && do_run )
                 simul.dump();
         }
+        else if ( tok == "dump_system" )
+        {
+            if ( do_write && do_run )
+                simul.dump_system();
+        }
         else {
             throw InvalidSyntax("unknown command `"+tok+"'");
         }
@@ -1223,9 +1218,9 @@ int Parser::readConfig(std::string const& file)
     std::ifstream is(file.c_str(), std::ifstream::in);
     if ( is.good() )
     {
-        VLOG("-----------  Cytosim reads " << file);
-        VLOG("  ( set " << do_set << "  change " << do_change << "  new " << do_new);
-        VLOG("  run " << do_run << "  write " << do_write << " )\n");
+        VLOG("-----------  Cytosim reads `" << file << "'");
+        VLOG("  ( set " << do_set << " change " << do_change << " new " << do_new);
+        VLOG(" run " << do_run << " write " << do_write << " )\n");
         
         evaluate(is, "in `"+file+"'");
         return 0;

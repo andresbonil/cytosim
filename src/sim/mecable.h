@@ -98,12 +98,6 @@ public:
     /// Index of the last point = nbPoints() - 1
     unsigned        lastPoint()    const { return nPoints - 1; }
     
-    /// Number of segments = nbPoints() - 1
-    unsigned        nbSegments()   const { return nPoints - 1; }
-    
-    /// Index of the last segment = nbPoints() - 2
-    unsigned        lastSegment()  const { return nPoints - 2; }
-    
     /// size currently allocated
     size_t          allocated()    const { return pAllocated; }
 
@@ -246,7 +240,7 @@ public:
     /**
      This should prepare necessary variables to solve the system:
      - set rigidity coefficients, for addRigidity() to work properly
-     - set drag mobility, for setSpeedsFromForces() to work,
+     - set drag mobility, for projectForces() to work,
      - set matrix/variables necessary for constrained dynamics
      .
      */
@@ -257,7 +251,7 @@ public:
     
     /// The total drag coefficient of the object ( force = drag * speed )
     virtual real    dragCoefficient() const = 0;
-    
+
     /// Add Brownian noise terms to a force vector (alpha = kT / time_step)
     virtual real    addBrownianForces(real const* rnd, real alpha, real* rhs) const { return INFINITY; }
     
@@ -304,7 +298,7 @@ public:
     /// compute Lagrange multiplier corresponding to mechanical constraints
     virtual void    computeTensions(const real* force) {}
     
-    /// save Lagrange multipliers computed in setSpeedsFromForces()
+    /// save Lagrange multipliers computed in projectForces()
     virtual void    storeTensions(const real* force) {}
 
     //--------------------------------------------------------------------------
@@ -316,6 +310,14 @@ public:
      This version is used to calculate the Matrix * Vector in Meca.
      */
     virtual void    addRigidity(const real* X, real* Y) const {}
+    
+    /// Add rigidity matrix elements (which should be symmetric) to provided matrix
+    /**
+       The function should add terms to the upper part of matrix `mat`, at indices starting from `offset`.
+     It should fill at maximum the upper part of the diagonal block corresponding to indices [offset, offset+dim*nbPoints()].
+     It should be consistent with addRigidity(), adding exactly the same terms.
+     */
+    virtual void    addRigidityMatrix(MatrixSparseSymmetric1&, int inx, int dim) const {}
 
     /// Fill upper diagonal of `mat` with matrix elements
     /**
@@ -326,18 +328,25 @@ public:
      */
     virtual void    addRigidityUpper(real * mat, unsigned ldd) const {}
 
-    /// Calculate speeds for given forces
+    /// Calculate speeds for given forces: Y <- forces(X)
     /**
-     The function should perform `Y <- alpha * mobility * X`:
-     - `X` and `Y` are vectors of size `DIM * nPoints`
-     - it is allowed that `X` and `Y` point to the same address
-     - `alpha` is a given scalar, and mobility is known by the object.
-     - if `rhs==true`, the call was made with X containing the true force in the system.
-     .
+     The function calculates the 'legal' forces with constraints applied.
+     It may or may not scale by the object's mobility coefficient, and one may
+     derive the speeds in conjunction with `leftoverDrag()`:
+     
+         speed = leftoverDrag() * projectForces(forces)
+     
+     Note that:
+     - The input `X` and output `Y` must be vectors of size `DIM * nPoints`
+     - `X` and `Y` may point to the same address
+     
      The default implementation ( Y <- 0 ) makes the object immobile
      */
-    virtual void    setSpeedsFromForces(const real* X, real alpha, real* Y) const { zero_real(DIM*nPoints, Y); }
+    virtual void    projectForces(const real* X, real* Y) const { zero_real(DIM*nPoints, Y); }
     
+    /// Return drag coefficient that was not applied by projectForces()
+    virtual real    leftoverDrag() const { return 1.0; }
+
     //--------------------------------------------------------------------------
 
     /// set the terms obtained from the linearization of the Projection operator, from the given forces

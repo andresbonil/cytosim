@@ -147,7 +147,7 @@ ObjectList Sphere::build(Glossary & opt, Simul& sim)
     unsigned inp = 1, inx = 0, nbp = 1;
 
     if ( opt.has_key("point0") )
-        throw InvalidParameter("points start at index 1 (use `point1`, `point2`, etc.)");
+        throw InvalidParameter("point indices start at 1 (use `point1`, `point2`, etc.)");
 
     // interpret each instruction as a command to add points:
     std::string var = "point1";
@@ -510,7 +510,7 @@ void Sphere::reshape()
 
 //this is unsafe, don't use the sphere in 1D!
 void Sphere::makeProjection() { ABORT_NOW("Sphere is not implemented in 1D"); }
-void Sphere::setSpeedsFromForces(const real* X, real, real* Y) const {}
+void Sphere::projectForces(const real* X, real* Y) const {}
 
 #else
 
@@ -534,7 +534,7 @@ void Sphere::makeProjection()
 
 
 // The function should set Y <- sc * mobility * X.
-void Sphere::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Sphere::projectForces(const real* X, real* Y) const
 {
     // total force:
     Vector F(0,0,0);
@@ -566,11 +566,11 @@ void Sphere::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
     Vector cen(pPos);
 
     T -= cross(cen, F);       // reduce the torque to the center of mass
-    T *= alpha/spDragRot;     // multiply by the mobility and maybe time_step
-    F  = F*(alpha/spDrag) + cross(cen, T);
+    T *= 1.0/spDragRot;       // multiply by the mobility
+    F  = F*(1.0/spDrag) + cross(cen, T);
     
     //scale by point mobility:
-    real mob = alpha * prop->point_mobility;
+    real mob = prop->point_mobility;
 
     for ( unsigned p = 0; p < nbRefPts; ++p )
     {

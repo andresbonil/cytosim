@@ -142,7 +142,7 @@ public:
     void        makeProjection();
     
     /// calculate speed of points in Y, for the forces given in X, scaled by sc
-    void        setSpeedsFromForces(const real* X, real, real* Y) const;
+    void        projectForces(const real* X, real* Y) const;
     
     //--------------------------------------------------------------------------
     

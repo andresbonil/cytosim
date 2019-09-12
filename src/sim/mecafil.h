@@ -108,8 +108,8 @@ public:
     real        dragCoefficient() const { return  nPoints * rfDragPoint; }
     
     /// drag coefficient of one point
-    real        dragPoint() const { return rfDragPoint; }
-    
+    real        leftoverDrag() const { return rfDragPoint; }
+
     //--------------------- Projection  / Dynamics
     
     /// prepare for projection

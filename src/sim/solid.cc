@@ -127,7 +127,7 @@ void Solid::reset()
     soShapeSize = 0;
     soDrag      = 0;
 #if ( DIM > 2 )
-    soMomentum = Matrix33(0,1);
+    soMomentum = Matrix33(0, 1);
 #endif
     soReshapeTimer = RNG.pint(7);
 }
@@ -305,8 +305,8 @@ void Solid::release()
 
      new solid NAME
      {
-        attach1 = 1 grafted each
-        attach2 = 10 grafted
+        point1 = center, 1, grafted
+        sphere1 = 1 0 0, 7 grafted
      }
  */
 
@@ -317,7 +317,7 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
     unsigned inp, inx, nbp;
 
     if ( opt.has_key("point0") )
-        throw InvalidParameter("points start at index 1 (use `point1`, `point2`, etc.)");
+        throw InvalidParameter("point indices start at 1 (use `point1`, `point2`, etc.)");
     
     // interpret each instruction as a command to add points:
     inp = 1;
@@ -748,7 +748,7 @@ void Solid::reshape()
     
     Vector avg = Mecable::position();
     
-    Matrix33 S(0, 0);
+    Matrix33 S(0,0);
     for ( unsigned i = 0; i < nPoints; ++i )
         S.addOuterProduct(soShape+DIM*i, pPos+DIM*i);
     
@@ -954,13 +954,13 @@ void Solid::makeProjection()
 {
 }
 
-void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Solid::projectForces(const real* X, real* Y) const
 {
     real T = 0;
     for ( unsigned p = 0; p < nPoints; ++p )
         T += X[p];
     
-    T *= alpha / ( prop->viscosity * soDrag );
+    T *= 1.0 / ( prop->viscosity * soDrag );
     
     for ( unsigned p = 0; p < nPoints; ++p )
         Y[p] = T;
@@ -1006,7 +1006,7 @@ void Solid::makeProjection()
 }
 
 
-void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Solid::projectForces(const real* X, real* Y) const
 {
     Vector T(0.0,0.0);  // Translation
     real R = 0;         // Infinitesimal Rotation (a vector in Z)
@@ -1022,8 +1022,8 @@ void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
         R += pos[0] * xxx[1] - pos[1] * xxx[0];
     }
     
-    const real A = alpha / ( prop->viscosity * soDragRot );
-    const real B = alpha / ( prop->viscosity * soDrag );
+    const real A = 1.0 / ( prop->viscosity * soDragRot );
+    const real B = 1.0 / ( prop->viscosity * soDrag );
 
     R = A * ( R + cross(T,soCenter) );
     T = B * T + cross(soCenter,R);
@@ -1077,7 +1077,7 @@ void Solid::makeProjection()
     soCenter = cen / sum;
     if ( cnt == 1 )
     {
-        soMomentum = Matrix33(0,1.0/soDragRot);
+        soMomentum = Matrix33(0, 1.0/soDragRot);
         return;
     }
     
@@ -1086,7 +1086,7 @@ void Solid::makeProjection()
     const real B = soDrag;
     const real D = soDragRot - soDrag*soCenter.normSqr();
     
-    // finally set the matrix in front of R in setSpeedsFromForces()
+    // finally set the matrix in front of R in projectForces()
     soMomentum(0,0) = D + A * (mYY+mZZ) + B * soCenter.XX * soCenter.XX;
     soMomentum(1,0) =   - A *  mXY      + B * soCenter.XX * soCenter.YY;
     soMomentum(2,0) =   - A *  mXZ      + B * soCenter.XX * soCenter.ZZ;
@@ -1118,7 +1118,7 @@ void Solid::makeProjection()
  This calculates the total force and momentum in the center of mobility,
  scale to get speed, and distribute according to solid motion mechanics.
 */
-void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Solid::projectForces(const real* X, real* Y) const
 {
     Vector T(0,0,0);    //Translation
     Vector R(0,0,0);    //Rotation
@@ -1141,8 +1141,8 @@ void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
     
     Vector V = R + cross(T, soCenter);
     
-    const real A = alpha / ( prop->viscosity );
-    const real B = alpha / ( prop->viscosity * soDrag );
+    const real A = 1.0 / ( prop->viscosity );
+    const real B = 1.0 / ( prop->viscosity * soDrag );
 
     R = A * ( soMomentum * V );
 

@@ -206,6 +206,9 @@ public:
     /// dump matrix and vector from Meca
     void            dump() const;
     
+    /// dump system matrix in sparse text format
+    void            dump_system() const;
+
 private:
     
     /// give an estimate of the cell size of the FiberGrid

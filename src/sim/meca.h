@@ -6,8 +6,8 @@
 #include "dim.h"
 #include "array.h"
 #include "vector.h"
-//#include "matsym.h"
-#include "matsparse.h"
+#include "matrix.h"
+//#include "matsparse.h"
 #include "matsparsesym1.h"
 #include "matsparsesymblk.h"
 #include "allocator.h"
@@ -80,7 +80,7 @@ The equation is formulated using linear-algebra:
  
  Typically, mB and mC will inherit the stiffness coefficients of the interactions, 
  while vBAS will get forces (stiffness * position). They are set by the member functions
- interLink(), interLongLink(), interSideLink(), interSlidingLink(), etc.
+ addLink(), addLongLink(), addSideLink(), addSlidingLink(), etc.
 
  - mR add the bending elasticity for Mecafil, or other internal forces.
    mR is symmetric of size DIM*nbPoints(), diagonal by blocks, each block corresponding to a Fiber.
@@ -89,7 +89,7 @@ The equation is formulated using linear-algebra:
    For Mecafil, this maintains the distance between neighboring points (longitudinal incompressibility). 
    mP is symmetric of size DIM*nbPoints(), diagonal by blocks, each block corresponding to a Fiber.
    mP is not actually calculated as a matrix:
-   its application on each block is done by Mecable::setSpeedsFromForces()
+   its application on each block is done by Mecable::projectForces()
  
  - mdiffP is a term coming from the derivative of the projection P.
    It can provide better numerical stability in some situations where the filament are stretched.
@@ -110,11 +110,8 @@ class Meca
 {
 public:
 
-    /// type of an index into the matrix
-    typedef unsigned index_t;
-
     /// enables graphical display of all interactions
-    bool             drawLinks;
+    bool            drawLinks;
 
 private:
     
@@ -146,9 +143,6 @@ private:
     real*  vMEM;         ///< another temporary array
     
     //--------------------------------------------------------------------------
-    
-    /// true if the matrix mC is non-zero
-    bool   useMatrixC;
 
     /// working memory allocator for BCGS and GMRES used in solve()
     LinearSolvers::Allocator allocator;
@@ -158,6 +152,9 @@ private:
     
     /// Matrices used for GMRES
     LinearSolvers::Matrix mH, mV;
+    
+    /// true if the matrix mC is non-zero
+    bool   useMatrixC;
 
 public:
 
@@ -265,17 +262,17 @@ private:
     /// add forces due to bending elasticity
     void addAllRigidity(const real* X, real* Y) const;
 
-    /// extract the matrix diagonal block corresponding to a Mecable
+    /// compute the matrix diagonal block corresponding to a Mecable
+    void getBlock(real* res, const Mecable*) const;
+    
+    /// DEBUG: extract the matrix diagonal block corresponding to a Mecable using 'multiply()'
     void extractBlock(real* res, const Mecable*) const;
     
-    /// DEBUG: extract the matrix diagonal block corresponding to a Mecable
-    void extractBlockSlow(real* res, const Mecable*) const;
-    
     /// DEBUG: compare `blk` with block extracted using extractBlockSlow()
-    void compareBlocks(const Mecable*, const real*);
+    void verifyBlock(const Mecable*, const real*);
     
     /// DEBUG: test if `blk` is inverse of block extracted using extractBlockSlow()
-    void testBlock(const Mecable*, const real*);
+    void checkBlock(const Mecable*, const real*);
     
     /// compute the preconditionner block corresponding to given Mecable
     void computePreconditionner(Mecable*);
@@ -307,15 +304,15 @@ public:
     bool     empty() const { return nbPts == 0; }
     
     /// number of points in the system
-    index_t nb_points() const { return nbPts; }
+    size_t nb_points() const { return nbPts; }
     
     /// Implementation of LinearOperator::size()
-    index_t dimension() const { return DIM * nbPts; }
+    size_t dimension() const { return DIM * nbPts; }
     
-    /// calculate Y = M*X, where M is the matrix associated with the system
+    /// calculate Y <- M*X, where M is the matrix associated with the system
     void multiply(const real* X, real* Y) const;
 
-    /// apply preconditionner: Y = P*X
+    /// apply preconditionner: Y <- P*X (note that X maybe equal to Y)
     void precondition(const real* X, real* Y) const;
     
     //--------------------------- FORCE ELEMENTS -------------------------------
@@ -508,10 +505,18 @@ public:
     void computeForces();
     
     
-    
-    /// Extract the complete dynamic matrix in a standard array
+    //Count number of non-zero entries in the entire system
+    size_t nbNonZeros(real threshold) const;
+
+    /// Extract the complete dynamic matrix in column-major format in a C-array
     void getSystem(unsigned order, real * matrix) const;
     
+    /// Save complete matrix in Matrix Market format
+    void saveSystem(FILE *, real threshold) const;
+    
+    /// Save right-hand-side vector
+    void saveRHS(FILE *) const;
+
     /// Save complete matrix in binary format
     void dumpSystem(FILE *) const;
     
