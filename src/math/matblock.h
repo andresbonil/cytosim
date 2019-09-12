@@ -117,19 +117,13 @@ public:
     void vecMul( const real* X, real* Y) const;
     
     /// isotropic vector multiplication: Y = Y + M * X, size(X) = size(Y) = 2 * size(M)
-    virtual void vecMulAddIso2D( const real* X, real* Y ) const 
-    {
-        ABORT_NOW("unfinished");
-    }
+    void vecMulAddIso2D( const real* X, real* Y ) const { }
     
     /// isotropic vector multiplication: Y = Y + M * X, size(X) = size(Y) = 3 * size(M)
-    virtual void vecMulAddIso3D( const real* X, real* Y ) const 
-    {
-        ABORT_NOW("unfinished");
-    }
+    void vecMulAddIso3D( const real* X, real* Y ) const { }
     
     /// maximum of the absolute value of all elements
-    real norm() const;
+    real norm_inf() const;
     
     /// printf debug function in sparse mode: i, j : value
     void printSparse(std::ostream&) const;

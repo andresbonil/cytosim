@@ -15,9 +15,17 @@
  */
 class Matrix11
 {
-public:
-
+private:
+    
     real val_;
+    
+    /// access to modifiable element by index
+    real& operator[](int i)       { return val_; }
+    
+    /// access element value by index
+    real  operator[](int i) const { return val_; }
+
+public:
     
     Matrix11() {}
     
@@ -38,9 +46,9 @@ public:
     /// dimensionality
     static int dimension() { return 1; }
     
-    /// leading dimension
-    static int stride() { return 1; }
-
+    /// human-readible identifier
+    static std::string what() { return "1"; }
+    
     /// set all elements to zero
     void reset()
     {
@@ -52,11 +60,12 @@ public:
     {
         return ( val_ != zero );
     }
+    
+    /// conversion to real
+    //operator real() const { return val_; }
 
     /// copy values from lower triangle to upper triangle
-    void copy_lower()
-    {
-    }
+    void copy_lower() { }
 
     /// direct access to 'unique' scalar
     real& value()            { return val_; }
@@ -65,10 +74,6 @@ public:
     /// conversion to array of 'real'
     real* data()             { return &val_; }
     real* addr(int i, int j) { return &val_; }
-
-    /// access functions to element by index
-    real& operator[](int i)       { return val_; }
-    real  operator[](int i) const { return val_; }
     
     /// access functions to element by line and column indices
     real& operator()(int i, int j)       { return val_; }
@@ -103,20 +108,20 @@ public:
     {
         fprintf(f, "[ %9.3f ]\n", val_);
     }
-    
+
     /// conversion to string
     std::string to_string(int w, int p) const
     {
-        std::ostringstream os("[ ");
+        std::ostringstream os;
         os.precision(p);
-        os << std::setw(w) << std::fixed << val_ << " ]";
+        os << "[ " << value() << " ]";
         return os.str();
     }
 
-    /// true is matrix is symmetric
-    bool is_symmetric() const
+    /// always zero
+    real asymmetry() const
     {
-        return true;
+        return 0;
     }
     
     /// scale all elements
@@ -179,7 +184,7 @@ public:
     }
     
     /// maximum of all component's absolute values
-    real norm() const
+    real norm_inf() const
     {
         return fabs(val_);
     }
@@ -355,10 +360,10 @@ public:
 };
 
 
-/// output operator to std::ostream
-inline std::ostream& operator << (std::ostream& os, Matrix11 const& M)
+/// output a Matrix11
+inline std::ostream& operator << (std::ostream& os, Matrix11 const& mat)
 {
-    os << "[ " << M.value() << " ]";
+    os << "[ " << mat.value() << " ]";
     return os;
 }
 

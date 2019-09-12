@@ -61,10 +61,10 @@ private:
 
 #if MATRIX1_USES_COLNEXT
     
-    /// col_next_[ii] is the index of the first non-empty column of index >= ii
-    index_t * col_next_;
+    /// next_[ii] is the index of the first non-empty column of index >= ii
+    index_t * next_;
     
-    /// update col_next_[], a pointer to the next non-empty column
+    /// update next_[], a pointer to the next non-empty column
     void setNextColumn();
 
 #endif
@@ -90,26 +90,26 @@ private:
 
 
     /// One column multiplication of a vector
-    void vecMulAdd(const real* X, real* Y, index_t, real const* dia, index_t start, index_t end) const;
+    void vecMulAdd(const real* X, real* Y, index_t, real const* dia, index_t start, index_t stop) const;
+    
+    /// One column 2D isotropic multiplication of a vector
+    void vecMulAddIso2D(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t stop) const;
+    
+    /// One column 2D isotropic multiplication of a vector
+    void vecMulAddIso2D_SSE(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t stop) const;
+    
+    /// One column 2D isotropic multiplication of a vector
+    void vecMulAddIso2D_SSEU(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t stop) const;
 
-    /// One column 2D isotropic multiplication of a vector
-    void vecMulAddIso2D(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t end) const;
     
     /// One column 2D isotropic multiplication of a vector
-    void vecMulAddIso2D_SSE(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t end) const;
+    void vecMulAddIso2D_AVX(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t stop) const;
     
     /// One column 2D isotropic multiplication of a vector
-    void vecMulAddIso2D_SSEU(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t end) const;
-
-    
-    /// One column 2D isotropic multiplication of a vector
-    void vecMulAddIso2D_AVX(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t end) const;
-    
-    /// One column 2D isotropic multiplication of a vector
-    void vecMulAddIso2D_AVXU(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t end) const;
+    void vecMulAddIso2D_AVXU(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t stop) const;
 
     /// One column 3D isotropic multiplication of a vector
-    void vecMulAddIso3D(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t end) const;
+    void vecMulAddIso3D(const real* X, real* Y, index_t jj, real const* dia, index_t start, index_t stop) const;
 
 public:
     
@@ -169,21 +169,20 @@ public:
     /// multiplication of a vector: Y <- Y + M * X with dim(X) = dim(M)
     void vecMulAdd(const real* X, real* Y)      const { vecMulAdd(X, Y, 0, size_); }
     
-    /// multiplication of a vector: Y <- Y + M * X with dim(X) = dim(M)
-    void vecMulAdd_ALT(const real* X, real* Y)  const { vecMulAdd(X, Y, 0, size_); }
-
     /// 2D isotropic multiplication of a vector: Y <- Y + M * X with dim(X) = 2 * dim(M)
     void vecMulAddIso2D(const real* X, real* Y) const { vecMulAddIso2D(X, Y, 0, size_); }
     
     /// 3D isotropic multiplication of a vector: Y <- Y + M * X with dim(X) = 3 * dim(M)
     void vecMulAddIso3D(const real* X, real* Y) const { vecMulAddIso3D(X, Y, 0, size_); }
 
-    
+    /// multiplication of a vector: Y <- Y + M * X with dim(X) = dim(M)
+    void vecMulAdd_ALT(const real* X, real* Y)  const { vecMulAdd(X, Y, 0, size_); }
+
     /// true if matrix is non-zero
     bool nonZero() const;
     
     /// number of element which are not null
-    size_t nbElements(index_t start, index_t end) const;
+    size_t nbElements(index_t start, index_t stop) const;
     
     /// number of blocks which are not null
     size_t nbElements() const { return nbElements(0, size_); }

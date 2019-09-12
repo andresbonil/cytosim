@@ -13,7 +13,9 @@
 #define CBLAS_H
 
 #include "real.h"
-#include "string.h"
+#include "simd.h"
+#include <cstdio>
+
 
 #ifdef __cplusplus
 namespace blas {
@@ -196,7 +198,7 @@ inline void xscal(int N, real alpha, real*X, int incX)
         FORTRAN(axpby)(&N, &alpha, X, &incX, &beta, Y, &incY);
     }
 #else
-    inline void xaxpby(int N, real alpha, const real*X, int incX, real beta, real*Y, int incY)
+    inline void xaxpby(int N, real alpha, const real* X, int incX, real beta, real* Y, int incY)
     {
         if ( incX == 1  &&  incY == 1 )
         {
@@ -208,23 +210,34 @@ inline void xscal(int N, real alpha, real*X, int incX)
             for ( int i = 0; i < N; ++i )
                 Y[i*incY] = alpha * X[i*incX] + beta * Y[i*incY];
         }
-        //FORTRAN(scal)(&N, &beta, Y, &incY);
-        //FORTRAN(axpy)(&N, &alpha, X, &incX, Y, &incY);
     }
 #endif
 
-/// addition Y[i] <- Y[i] + X[i], for i in [0, N[; equivalent to xaxpy(N, 1.0, X, 1, Y, 1);
+
+/// calculates Y <- alpha * Y + X
+inline void xpay(int N, const real* X, real alpha, real* Y)
+{
+    #pragma ivdep
+    #pragma vector always
+    for ( int i = 0; i < N; ++i )
+        Y[i] = alpha * Y[i] + X[i];
+}
+
+
+/// addition Y[] <- Y[] + X[], for array of size N
 inline void add(int N, const real* X, real* Y)
 {
+    //xaxpy(N, 1.0, X, 1, Y, 1);
     #pragma ivdep
     #pragma vector always
     for ( int i = 0; i < N; ++i )
         Y[i] = Y[i] + X[i];
 }
     
-/// subtraction Y[i] <- Y[i] - X[i], for i in [0, N[; equivalent to xaxpy(N, -1.0, X, 1, Y, 1);
+/// subtraction Y[] <- Y[] - X[], for array of size N
 inline void sub(int N, const real* X, real* Y)
 {
+    //xaxpy(N, -1.0, X, 1, Y, 1);
     #pragma ivdep
     #pragma vector always
     for ( int i = 0; i < N; ++i )
@@ -375,33 +388,26 @@ namespace blas
  */
 inline real nrm8(const int N, const real* X, int inc)
 {
-#if ( 1 )
-    int inx = blas::ixamax(N, X, inc);
-    return fabs(X[inx]);
-#else
     if ( N == 0 )
         return 0;
     real u = std::abs(X[0]);
     for ( int i = 1; i < N; ++i )
         u = std::max(u, std::abs(X[i*inc]));
     return u;
-#endif
 }
 
 
-inline real nrm8(const int N, const real* X)
+inline real nrm8(const int siz, const real* X)
 {
-    if ( N == 0 )
-        return 0;
-    real u = std::abs(X[0]);
-    #pragma ivdep
-    #pragma vector always
-    for ( int i = 1; i < N; ++i )
-        u = std::max(u, std::abs(X[i]));
-    return u;
+    real res = std::abs(X[0]);
+#pragma ivdep
+#pragma vector always
+    for ( int i = 1; i < siz; ++i )
+        res = std::max(res, std::abs(X[i]));
+    return res;
 }
 
-    
+
 /**
  return the infinite norm of the difference between two vectors
  */

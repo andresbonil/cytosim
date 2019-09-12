@@ -29,13 +29,17 @@ inline void print(vec2 v, vec2 w, char const* s)
 }
 
 /*
-inline void print(__m128i v, char const* s)
+inline void print8(__m128i v, char const* s)
 {
-    int a = _mm_extract_epi32(v, 0);
-    int b = _mm_extract_epi32(v, 1);
-    int c = _mm_extract_epi32(v, 2);
-    int d = _mm_extract_epi32(v, 3);
-    printf("veci %s ( %8i %8i %8i %8i )\n", s, d, c, b, a);
+    uint16_t a = _mm_extract_epi16(v, 0);
+    uint16_t b = _mm_extract_epi16(v, 1);
+    uint16_t c = _mm_extract_epi16(v, 2);
+    uint16_t d = _mm_extract_epi16(v, 3);
+    uint16_t e = _mm_extract_epi16(v, 5);
+    uint16_t f = _mm_extract_epi16(v, 6);
+    uint16_t g = _mm_extract_epi16(v, 7);
+    uint16_t h = _mm_extract_epi16(v, 8);
+    printf("veci %s ( %3i %3i %3i %3i %3i %3i %3i %3i )\n", s, h, g, f, e, d, c, b, a);
 }
 */
 
@@ -54,7 +58,7 @@ inline vec2 load2(double const* a)           { return _mm_load_pd(a); }
 // unaligned load
 inline vec2 loadu2(double const* a)          { return _mm_loadu_pd(a); }
 
-// load 1 and duplicate
+// load 1 double and duplicate
 inline vec2 loaddup2(double const* a)        { return _mm_load1_pd(a); }
 
 inline vec2 loadhi2(vec2 a, double const* b) { return _mm_loadh_pd(a,b); }
@@ -136,8 +140,14 @@ inline void print(vec4f v, char const* s)
     printf("vec4f %s ( %5.2f %5.2f %5.2f %5.2f )\n", s, v[3], v[2], v[1], v[0]);
 }
 
-inline vec4f load4f(float const* a)          { return _mm_load_ps(a); }
-inline void store4f(float* a, vec4f b)       { return _mm_store_ps(a, b); }
+inline vec4f load4f(float const* a)      { return _mm_load_ps(a); }
+inline void store4f(float* a, vec4f b)   { return _mm_store_ps(a, b); }
+inline vec4f max4f(vec4f a, vec4f b)     { return _mm_max_ps(a,b); }
+inline vec4f min4f(vec4f a, vec4f b)     { return _mm_min_ps(a,b); }
+inline vec4f and4f(vec4f a, vec4f b)     { return _mm_and_ps(a,b); }
+inline vec4f andnot4f(vec4f a, vec4f b)  { return _mm_andnot_ps(a,b); }
+inline vec4f abs4f(vec4f a)              { return _mm_andnot_ps(_mm_set1_ps(-0.0), a); }
+#define permute4f(a,b)       _mm_permute_ps(a,b)       // same as shuffle2(a,a,b)
 
 #endif
 
@@ -160,6 +170,17 @@ inline void print(vec4 v, vec4 w, char const* s)
     printf("vec4 %s ( %5.2f %5.2f %5.2f %5.2f )( %5.2f %5.2f %5.2f %5.2f )\n",
            s, v[3], v[2], v[1], v[0], w[3], w[2], w[1], w[0]);
 }
+
+/*
+inline void print4(__m128i v, char const* s)
+{
+    uint32_t a = _mm_extract_epi32(v, 0);
+    uint32_t b = _mm_extract_epi32(v, 1);
+    uint32_t c = _mm_extract_epi32(v, 2);
+    uint32_t d = _mm_extract_epi32(v, 3);
+    printf("veci %s ( %5i %5i %5i %5i )\n", s, d, c, b, a);
+}
+*/
 
 #define set64x(a,b,c,d)     _mm256_setr_epi64x(a,b,c,d)
 
@@ -203,8 +224,9 @@ inline vec4 setzero4()                   { return _mm256_setzero_pd(); }
 inline vec4 duplo4(vec4 a)               { return _mm256_movedup_pd(a); }
 inline vec4 duphi4(vec4 a)               { return _mm256_permute_pd(a,15); }
 
-/// load one value into 4 positions
+/// load one double into all 4 positions
 inline vec4 broadcast1(double const* a)  { return _mm256_broadcast_sd(a); }
+/// load two double and duplicate: X, Y, X, Y
 inline vec4 broadcast2(double const* a)  { return _mm256_broadcast_pd((__m128d const*)a); }
 
 inline vec2 getlo(vec4 a)                { return _mm256_castpd256_pd128(a); }
@@ -310,11 +332,20 @@ inline void print(vec8f v, char const* x)
 inline vec8f load8f(float const* a)     { return _mm256_load_ps(a); }
 inline void store8f(float* a, vec8f b)  { return _mm256_store_ps(a, b); }
 
+inline vec8f setzero8f()                { return _mm256_setzero_ps(); }
 inline vec8f set8f(float const& a)      { return _mm256_set1_ps(a); }
 inline vec8f mulf(vec8f a, vec8f b)     { return _mm256_mul_ps(a,b); }
 inline vec8f divf(vec8f a, vec8f b)     { return _mm256_div_ps(a,b); }
 inline vec8f addf(vec8f a, vec8f b)     { return _mm256_add_ps(a,b); }
 inline vec8f subf(vec8f a, vec8f b)     { return _mm256_sub_ps(a,b); }
+
+inline vec8f max8f(vec8f a, vec8f b)    { return _mm256_max_ps(a,b); }
+inline vec8f min8f(vec8f a, vec8f b)    { return _mm256_min_ps(a,b); }
+inline vec8f and8f(vec8f a, vec8f b)    { return _mm256_and_ps(a,b); }
+inline vec8f andnot8f(vec8f a, vec8f b) { return _mm256_andnot_ps(a,b); }
+inline vec8f abs8f(vec8f a)             { return _mm256_andnot_ps(_mm256_set1_ps(-0.0), a); }
+
+#define permute8f128(a,b,c)  _mm256_permute4f128_ps(a,b,c)
 
 /// approximate inverse
 inline vec8f rcpf(vec8f a)              { return _mm256_rcp_ps(a); }

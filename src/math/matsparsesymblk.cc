@@ -377,14 +377,13 @@ size_t MatrixSparseSymmetricBlock::nbElements(index_t start, index_t end) const
 
 std::string MatrixSparseSymmetricBlock::what() const
 {
-    int nbe = SquareBlock::dimension() * SquareBlock::stride();
     std::ostringstream msg;
 #if MATRIXSSB_USES_AVX
-    msg << "MSSBx (" << nbe << "*" << nbElements() << ")";
+    msg << "MSSBx " << SquareBlock::what() << "*" << nbElements();
 #elif defined(__SSE3__) &&  REAL_IS_DOUBLE
-    msg << "MSSBe (" << nbe << "*" << nbElements() << ")";
+    msg << "MSSBe " << SquareBlock::what() << "*" << nbElements();
 #else
-    msg << "MSSB (" << nbe << "*" << nbElements() << ")";
+    msg << "MSSB " << SquareBlock::what() << "*" << nbElements();
 #endif
     return msg.str();
 }
@@ -597,7 +596,7 @@ void MatrixSparseSymmetricBlock::Column::vecMulAdd2D(const real* X, real* Y, ind
     assert_true( size_ > 0 );
     const Vector2 xx(X+jj);
     assert_true(inx_[0]==jj);
-    assert_true(blk_[0].is_symmetric());
+    assert_small(blk_[0].asymmetry());
     Vector2 yy = blk_[0].vecmul(xx);
     for ( index_t n = 1; n < size_; ++n )
     {
@@ -616,7 +615,7 @@ void MatrixSparseSymmetricBlock::Column::vecMulAdd3D(const real* X, real* Y, ind
     assert_true( size_ > 0 );
     const Vector3 xxx(X+jj);
     assert_true(inx_[0]==jj);
-    assert_true(blk_[0].is_symmetric());
+    assert_small(blk_[0].asymmetry());
     Vector3 yyy = blk_[0].vecmul(xxx);
     for ( index_t n = 1; n < size_; ++n )
     {
@@ -636,7 +635,7 @@ void MatrixSparseSymmetricBlock::Column::vecMulAdd4D(const real* X, real* Y, ind
     assert_true( size_ > 0 );
     const vec4 xxxx = load4(X+jj);
     assert_true(inx_[0]==jj);
-    assert_true(blk_[0].is_symmetric());
+    assert_small(blk_[0].asymmetry());
     vec4 yyyy = blk_[0].vecmul4(xxxx);
     for ( index_t n = 1; n < size_; ++n )
     {

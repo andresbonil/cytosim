@@ -60,7 +60,7 @@ void MatrixSparse::deallocate()
 {
     if ( mxCol )
     {
-        for ( size_t  ii = 0; ii < allocated_; ++ii )
+        for ( size_t ii = 0; ii < allocated_; ++ii )
             if ( mxCol[ii] )
             {
                 delete[] mxCol[ii];
@@ -275,13 +275,13 @@ bool MatrixSparse::nonZero() const
 }
 
 
-size_t MatrixSparse::nbElements(index_t start, index_t end) const
+size_t MatrixSparse::nbElements(index_t start, index_t stop) const
 {
-    assert_true( start <= end );
-    assert_true( end <= size_ );
+    assert_true( start <= stop );
+    assert_true( stop <= size_ );
     //all allocated elements are counted, even if the value is zero
     size_t cnt = 0;
-    for ( index_t jj = start; jj < end; ++jj )
+    for ( index_t jj = start; jj < stop; ++jj )
         if ( mxRow[jj] )
             for ( index_t ii = 0; mxRow[jj][ii] >= 0; ++ii )
                 ++cnt;
@@ -292,7 +292,7 @@ size_t MatrixSparse::nbElements(index_t start, index_t end) const
 std::string MatrixSparse::what() const
 {
     std::ostringstream msg;
-    msg << "mS (" << nbElements() << ")";
+    msg << "mS " << nbElements();
     return msg.str();
 }
 

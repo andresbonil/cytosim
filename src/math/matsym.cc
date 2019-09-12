@@ -70,12 +70,12 @@ bool MatrixSymmetric::nonZero() const
 }
 
 //------------------------------------------------------------------------------
-size_t MatrixSymmetric::nbElements(index_t start, index_t end) const
+size_t MatrixSymmetric::nbElements(index_t start, index_t stop) const
 {
-    assert_true( start <= end );
-    assert_true( end <= size_ );
+    assert_true( start <= stop );
+    assert_true( stop <= size_ );
 
-    return size_ * ( end - start );
+    return size_ * ( stop - start );
 }
 
 //------------------------------------------------------------------------------

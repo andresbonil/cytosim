@@ -6,14 +6,14 @@
 
 real Matrix22::rotationAngle() const
 {
-    return atan2( val[1], val[0] );
+    return atan2(val[1], val[0]);
 }
 
 
 /// returns a rotation of angle PI around axis Z
 Matrix22 Matrix22::rotation180()
 {
-    return Matrix22( -1.0, 0.0, -1.0, 0.0 );
+    return Matrix22(-1.0, 0.0, -1.0, 0.0);
 }
 
 

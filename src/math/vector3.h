@@ -77,7 +77,7 @@ public:
     Vector3(vec4 const& v) { vec = v; }
     /// conversion to SIMD vector
     operator vec4 () const { return vec; }
-#elif defined(__AVX__)
+#elif defined(__AVX__) && REAL_IS_DOUBLE
     /// conversion to SIMD vector
     operator vec4 () const { return load3(&XX); }
     /// construct from SIMD vector

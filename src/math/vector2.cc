@@ -44,7 +44,7 @@ std::istream& operator >> (std::istream& is, Vector2& v)
 
 std::ostream& operator << (std::ostream& os, Vector2 const& v)
 {
-    std::streamsize w = os.width();
+    int w = (int)os.width();
     os << v.XX << " " << std::setw(w) << v.YY;
     return os;
 }

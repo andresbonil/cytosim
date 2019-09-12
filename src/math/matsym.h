@@ -100,7 +100,7 @@ public:
     bool nonZero() const;
     
     /// number of element which are non-zero
-    size_t nbElements(index_t start, index_t end) const;
+    size_t nbElements(index_t start, index_t stop) const;
     
     /// returns a string which a description of the type of matrix
     std::string what() const;

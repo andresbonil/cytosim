@@ -95,13 +95,13 @@ public:
     //----------------------------------------------------------------------
     
     /// maximum absolute value among all the elements
-    virtual real norm() const;
+    virtual real norm_inf() const;
     
     /// true if the matrix is non-zero
     virtual bool nonZero() const;
     
     /// number of element which are not null
-    virtual size_t nbElements(index_t start, index_t end) const;
+    virtual size_t nbElements(index_t start, index_t stop) const;
     
     /// number of blocks which are not null
     size_t nbElements() const { return nbElements(0, size_); }

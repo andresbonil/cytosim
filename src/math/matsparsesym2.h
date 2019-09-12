@@ -57,10 +57,10 @@ private:
    
 #if MATRIX2_OPTIMIZED_MULTIPLY
     
-    /// col_next_[ii] is the index of the first non-empty column of index >= ii
-    index_t * col_next_;
+    /// next_[ii] is the index of the first non-empty column of index >= ii
+    index_t * next_;
     
-    /// update col_next_[], a pointer to the next non-empty column
+    /// update next_[], a pointer to the next non-empty column
     void setNextColumn();
 
     ///array of index for the optmized multiplication
@@ -115,8 +115,8 @@ public:
     /// multiplication of a vector: Y = Y + M * X with dim(X) = dim(M)
     void vecMulAdd(const real* X, real* Y) const;
     
-    /// multiplication of a vector: Y <- Y + M * X with dim(X) = dim(M)
-    void vecMulAdd_ALT(const real* X, real* Y)  const { vecMulAdd(X, Y); }
+    /// multiplication of a vector: Y = Y + M * X with dim(X) = dim(M)
+    void vecMulAdd_ALT(const real* X, real* Y) const { vecMulAdd(X, Y); }
 
     /// 2D isotropic multiplication of a vector: Y = Y + M * X with dim(X) = 2 * dim(M)
     void vecMulAddIso2D(const real* X, real* Y) const;
@@ -128,7 +128,7 @@ public:
     bool nonZero() const;
     
     /// number of element which are not null
-    size_t nbElements(index_t start, index_t end) const;
+    size_t nbElements(index_t start, index_t stop) const;
     
     /// number of blocks which are not null
     size_t nbElements() const { return nbElements(0, size_); }
