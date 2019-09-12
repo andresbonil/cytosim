@@ -28,9 +28,9 @@ void processMenuFiber(int item)
             case 24:  FD->coloring = FiberDisp::COLORING_DIRECTION; break;
             case 25:  FD->coloring = FiberDisp::COLORING_AGE;       break;
                 
-            case 30:  FD->show_average = 0;  break;
-            case 31:  FD->show_average = 1;  break;
-            case 32:  FD->show_average = 2;  break;
+            case 30:  FD->draw_average = 0;  break;
+            case 31:  FD->draw_average = 1;  break;
+            case 32:  FD->draw_average = 2;  break;
                 
             default:
                 std::cerr << "CYTOSIM ERROR: unknown menu code" << item << std::endl;
@@ -67,9 +67,9 @@ int buildMenuFiber()
         glutAddMenuEntry("Coloring by cluster",   23);
         glutAddMenuEntry("Coloring by direction", 24);
         glutAddMenuEntry("Coloring by age",       25);
-        glutAddMenuEntry("show_average=0", 30);
-        glutAddMenuEntry("show_average=1", 31);
-        glutAddMenuEntry("show_average=2", 32);
+        glutAddMenuEntry("draw_average=0", 30);
+        glutAddMenuEntry("draw_average=1", 31);
+        glutAddMenuEntry("draw_average=2", 32);
     }
     else
         glutAddMenuEntry("no fiber?", 0);

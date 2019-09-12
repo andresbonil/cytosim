@@ -616,8 +616,8 @@ void processKey(unsigned char key)
     {
         case 'h':
         {
-            view.show_memo = ( view.show_memo + 1 ) % 6;
-            view.memo = player.buildMemo(view.show_memo);
+            view.draw_memo = ( view.draw_memo + 1 ) % 6;
+            view.memo = player.buildMemo(view.draw_memo);
         } break;
         
 #if ENABLE_WRITE

@@ -291,7 +291,7 @@ public:
      and the centroid of the polymer mass.
      It is useful to evaluate the amount of order in the network.
      */
-    int          show_average;
+    int          draw_average;
 
     /// @}
 

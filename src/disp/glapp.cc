@@ -520,8 +520,8 @@ void glApp::processNormalKey(unsigned char c, int, int)
         
             
         case 'h':
-            view.show_memo = ( view.show_memo + 1 ) % 3;
-            if ( view.show_memo == 2 )
+            view.draw_memo = ( view.draw_memo + 1 ) % 3;
+            if ( view.draw_memo == 2 )
             {
                 std::ostringstream oss;
                 help(oss);
@@ -533,7 +533,7 @@ void glApp::processNormalKey(unsigned char c, int, int)
         
         
         case 'x':
-            view.show_axes = ( view.show_axes ? 0 : mDIM );
+            view.draw_axes = ( view.draw_axes ? 0 : mDIM );
             break;
 
 #if ( 0 )
@@ -785,7 +785,7 @@ void glApp::processMenuEvent(int item)
         case 0:   return;
         case 1:   view.reset();                      break;
         case 2:   view.scale_bar_mode = ! view.scale_bar_mode;    break;
-        case 3:   view.show_axes = ( view.show_axes ? 0 : mDIM ); break;
+        case 3:   view.draw_axes = ( view.draw_axes ? 0 : mDIM ); break;
         case 4:   toggleFullScreen();                break;
         case 7:   setDimensionality(mDIM==2?3:2);    break;
         

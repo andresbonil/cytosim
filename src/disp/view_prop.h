@@ -147,9 +147,9 @@ public:
     unsigned int     scale_bar_mode;
 
     /// display flag for displaying X-Y-Z axes
-    unsigned int     show_axes;
+    unsigned int     draw_axes;
     
-    /// length of axes (set a `show_axes[1]`, default=1)
+    /// length of axes (set a `draw_axes[1]`, default=1)
     real             axes_size;
 
     /// on/off flags for clipping (defined as `clip_plane?`)
@@ -198,7 +198,7 @@ public:
     std::string      memo;
     
     /// flag to display information on screen
-    int              show_memo;
+    int              draw_memo;
 
 public:
    

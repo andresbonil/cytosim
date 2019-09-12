@@ -679,9 +679,9 @@ void Display::drawMisc(Simul const& sim)
     for ( Property * i : sim.properties.find_all("fiber") )
     {
         FiberProp* fp = static_cast<FiberProp*>(i);
-        if ( fp->disp->show_average == 1 )
+        if ( fp->disp->draw_average == 1 )
             drawAverageFiber1(sim.fibers, fp);
-        else if ( fp->disp->show_average == 2 )
+        else if ( fp->disp->draw_average == 2 )
             drawAverageFiber2(sim.fibers, fp);
     }
 }

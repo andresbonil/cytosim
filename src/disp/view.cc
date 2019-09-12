@@ -121,8 +121,8 @@ void View::closeDisplay() const
 {
     endClipping();
     
-    if ( show_axes )
-        gleDrawAxes(axes_size, show_axes);
+    if ( draw_axes )
+        gleDrawAxes(axes_size, draw_axes);
     
     if ( scale_bar_mode )
     {
@@ -145,7 +145,7 @@ void View::closeDisplay() const
 */
 void View::drawInteractiveFeatures() const
 {
-    if ( show_memo && memo.size() )
+    if ( draw_memo && memo.size() )
     {
         glColor3f(1,1,1);
         drawText(memo, GLUT_BITMAP_8_BY_13, 0x000000CC, 4);

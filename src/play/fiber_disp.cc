@@ -59,7 +59,7 @@ void FiberDisp::clear()
     
     explode          = 0;
     explode_range    = 0;
-    show_average     = 0;
+    draw_average     = 0;
 }
 
 
@@ -122,7 +122,7 @@ void FiberDisp::read(Glossary& glos)
     
 #ifdef BACKWARD_COMPATIBILITY
     glos.set(end_length, 2,    "end_section");
-    glos.set(lattice_style,    "show_lattice");
+    glos.set(lattice_style,    "draw_lattice");
     glos.set(lattice_scale,    "lattice_max");
 #endif
     
@@ -167,7 +167,7 @@ void FiberDisp::read(Glossary& glos)
         explode = 1;
 #endif
     
-    glos.set(show_average,     "show_average");
+    glos.set(draw_average,     "draw_average");
 }
 
 
@@ -194,6 +194,6 @@ void FiberDisp::write_values(std::ostream& os) const
     write_value(os, "tension_scale",tension_scale);
     write_value(os, "forces",       force_scale, force_color);
     write_value(os, "explode",      explode, explode_range);
-    write_value(os, "show_average", show_average);
+    write_value(os, "draw_average", draw_average);
 }
 

@@ -27,7 +27,7 @@ void ViewProp::clear()
     
     label        = "Cytosim";
     memo         = "Please, visit www.cytosim.org";
-    show_memo    = 0;
+    draw_memo    = 0;
     message      = "";
     full_label   = "Cytosim";
 
@@ -41,7 +41,7 @@ void ViewProp::clear()
     scale_bar_size     = 10;
     scale_bar_color    = 0xFFFF88AA;
     scale_bar_mode     = 0;
-    show_axes          = 0;
+    draw_axes          = 0;
     axes_size          = 1;
     
     for ( int k = 0; k < NB_CLIP_PLANES; ++k )
@@ -76,7 +76,7 @@ void ViewProp::read(Glossary& glos)
     glos.set(perspective, "perspective");
     glos.set(slice, "slice", {{"off", 0},{"front", 1},{"back", 2},{"slice", 3}});
 
-    glos.set(back_color, "background_color");
+    glos.set(back_color, "background");
     if ( glos.set(back_color, "back_color") )
     {
         fog_color = back_color;
@@ -97,7 +97,7 @@ void ViewProp::read(Glossary& glos)
     glos.set(multisample, "gl_samples");
 #endif
     glos.set(label,       "label");
-    glos.set(show_memo,   "show_memo");
+    glos.set(draw_memo,   "draw_memo");
     
     glos.set(track_fibers,        "track_fibers");
     glos.set(window_position, 2,  "window_position");
@@ -124,8 +124,8 @@ void ViewProp::read(Glossary& glos)
     glos.set(scale_bar_mode,  "scale_bar", 2);
     glos.set(scale_bar_color, "scale_bar_color");
 
-    glos.set(show_axes,       "show_axes");
-    glos.set(axes_size,       "show_axes", 1);
+    glos.set(draw_axes,       "draw_axes");
+    glos.set(axes_size,       "draw_axes", 1);
     glos.set(axes_size,       "axes_size");
 
     for ( int k = 0; k < NB_CLIP_PLANES; ++k )
@@ -173,7 +173,7 @@ void ViewProp::write_values(std::ostream& os) const
     //write_value(os, "window_position", window_position, 2);
     write_value(os, "window_size",   window_size, 2);
     write_value(os, "scale_bar",     scale_bar_size, scale_bar_color, scale_bar_mode);
-    write_value(os, "show_axes",     show_axes, axes_size);
+    write_value(os, "draw_axes",     draw_axes, axes_size);
     for ( int k = 0; k < NB_CLIP_PLANES; ++k )
     {
         std::string var = "clip_plane" + std::to_string(k);
