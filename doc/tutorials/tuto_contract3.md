@@ -76,14 +76,14 @@ To make the filaments disassemble at a constant rate we add the activity `treadm
         activity        = treadmill
         growing_speed   =  0.0, 0.0  
         shrinking_speed = -0.0, -0.1             
-        growing_force   =    1, 0      
+        growing_force   = 3.0, 3.0      
     }
 
 With this activity, the filaments have the ability to either growth or shrink either of their end at fixed rates, depending on the status of each end. Parameters are:
 
  * `growing_speed`, the base assembly rate in um/s,
  * `shrinking_speed`, the base disassembly rate in um/s,
- * `growing_force`, the characteristic force of (de)polymerization in pN
+ * `growing_force`, the characteristic force of polymerization in pN
 
 The two values after each option refers to the plus-end and the minus-end of the filaments. Here we set the minus-end to shrink at rate '-0.1' and left the plus-end static.
 
