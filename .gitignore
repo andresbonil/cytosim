@@ -1,0 +1,11 @@
+build
+bin
+lib
+dep
+bin1
+bin2
+bin3
+*.cmo
+*.cym
+**/.DS_Store
+
