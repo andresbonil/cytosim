@@ -1,6 +1,6 @@
 # How to compile Cytosim
 
-The core of Cytosim is written in C++ and it is necessary to recompile the programs after each modification of the source code. Some of the accessory tools use [Python](https://www.python.org).
+The core of Cytosim is written in C++11 and it is necessary to recompile the programs after each modification of the source code. Some of the accessory tools use [Python](https://www.python.org).
  
 Compilation requires a C++ compiler: e.g. [gcc](http://gcc.gnu.org/), [Clang](http://clang.llvm.org) or the [Intel compiler](http://en.wikipedia.org/wiki/Intel_C%2B%2B_Compiler), together with a few libraries.
 Compilation is started from a terminal, with a program called [make](http://www.gnu.org/software/make/).
