@@ -13,6 +13,11 @@
 
 - [Collective effects of yeast cytoplasmic dynein based microtubule transport](http://dx.doi.org/10.1039/c8sm01434e)
 - [Chromosomes function as a barrier to mitotic spindle bipolarity in polyploid cells](https://www.biorxiv.org/content/10.1101/572099v1.full)  
+- [Prospects for Declarative Mathematical Modeling of Complex Biological Systems](https://arxiv.org/pdf/1804.11044.pdf)
+- [Visualization of myosin II filament dynamics in remodeling acto-myosin networks with interferometric scattering microscopy](https://www.biorxiv.org/content/10.1101/199778v4)
+- [Principles of self-organization and load adaptation by the actin cytoskeleton during clathrin-mediated endocytosis](https://www.biorxiv.org/content/10.1101/678797v1)
+- [Spherical Spindle Shape Promotes Perpendicular Cortical Orientation by Preventing Isometric Cortical Pulling on both Spindle Poles during C. elegans Female Meiosis](https://www.biorxiv.org/content/10.1101/596510v1)
+- [Centrosome-nuclear envelope tethering and microtubule motor-based pulling forces collaborate in centrosome positioning during mitotic entry](https://www.biorxiv.org/content/10.1101/442368v1)
 
 2018
 
