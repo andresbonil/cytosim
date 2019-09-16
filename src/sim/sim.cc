@@ -5,7 +5,7 @@
 #include "messages.h"
 #include "glossary.h"
 #include "exceptions.h"
-#include "backtrace.h"
+#include "filepath.h"
 #include "splash.h"
 #include "tictoc.h"
 #include <csignal>
@@ -87,6 +87,13 @@ int main(int argc, char* argv[])
         Cytosim::warn.redirect(Cytosim::out);
     }
     
+    // change working directory if specified:
+    if ( arg.has_key("directory") )
+    {
+        FilePath::change_dir(arg.value("directory", 0));
+        std::clog << "Cytosim working directory is " << FilePath::get_cwd() << '\n';
+    }
+
 #ifdef CODE_VERSION
     Cytosim::out << "CYTOSIM PI version " << CODE_VERSION << "\n";
 #else

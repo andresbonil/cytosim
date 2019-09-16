@@ -561,7 +561,14 @@ void Interface::execute_delete(std::string const& name, Glossary& opt, unsigned 
     else
         set = simul.findSet(name);
     if ( !set )
+    {
+        if ( name == "objects" )
+        {
+            simul.erase();     // deletes everything
+            return;
+        }
         throw InvalidSyntax("could not determine the class of `"+name+"'");
+    }
     
     Filter filter;
     filter.set(simul, pp, opt);
