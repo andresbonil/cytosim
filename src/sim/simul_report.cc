@@ -927,8 +927,8 @@ void Simul::reportFiberTension(std::ostream& out, Glossary& opt) const
     }
     else
     {
+        // if no plane is specified, sum all tension from all segments
         fibers.infoTension(cnt, ten);
-        ten /= cnt;
         out << LIN << cnt << SEP << ten;
     }
 }
