@@ -14,6 +14,10 @@ $(OBJ_MATH): %.o: %.cc %.h | build
 	$(COMPILE) $(INC_BM) -c $< -o build/$@
 
 
+matsparsesym2.o: %.o: %.cc %.h | build
+	$(COMPILE) $(INC_BM) -c $< -o build/$@
+
+
 matsparsesymblk.o: matsparsesymblk.cc matsparsesymblk.h
 	$(COMPILE) $(INC_BM) -c $< -o build/$@
 
