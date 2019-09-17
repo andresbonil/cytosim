@@ -75,7 +75,7 @@ void Chain::setStraight(Vector const& pos, Vector const& dir)
     Vector dpts = dir * ( fnCut / dir.norm() );
     //
     for ( unsigned p = 0 ; p < nPoints; ++p )
-        setPoint( p, pos + p * dpts );
+        setPoint(p, pos + p * dpts);
 }
 
 

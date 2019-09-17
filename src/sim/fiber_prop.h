@@ -95,9 +95,6 @@ public:
      */
     real         segmentation;
     
-    /// length or initial-length for dynamic fibers
-    real         length;
-    
     /// Minimum length (this limits the length in some cases)
     real         min_length;
     

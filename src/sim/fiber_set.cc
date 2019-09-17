@@ -21,7 +21,7 @@
  @defgroup FiberGroup Fiber and related
  @ingroup ObjectGroup
  @ingroup NewObject
- @brief The default Fiber is of fixed length, but derived class can change length.
+ @brief The Fiber has fixed length, but derived classes can change length.
 
  A fiber is a filament of constant length.
  Derived classes are available, where different models of how length may change

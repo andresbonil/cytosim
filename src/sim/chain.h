@@ -134,16 +134,16 @@ public:
     /// set position of 'ref', direction and length of Fiber
     void         setStraight(Vector const& pos, Vector const& dir, real len, FiberEnd ref);
     
-    /// import shape from the given array of size DIM*n_pts, and create a shape with `np` points
+    /// set shape with `np` points from the given array of size DIM*n_pts
     void         setShape(const real pts[], unsigned n_pts, unsigned np);
 
-    /// set shape as a random walk of length `len` with the given persistence length
-    void         setEquilibrated(real len, real persistence_length);
+    /// set shape as a random walk with given parameters
+    void         setEquilibrated(real length, real persistence_length);
 
     /// change the current segmentation to force `length()==len` (normally not needed)
-    void         imposeLength(real len) { setSegmentation( len / ( nbPoints() - 1 )); fnAbscissaP = fnAbscissaM + len; }
-
-    /// return updated `normal` that is orthogonal to `d` (used for display)
+    void         imposeLength(real len) { setSegmentation(len/nbSegments()); fnAbscissaP = fnAbscissaM + len; }
+    
+    /// return updated `normal` that is orthogonal to `d` (used for fake 3D display)
     Vector3      adjustedNormal(Vector3 const& d) const;
     
     //---------------------
@@ -328,7 +328,7 @@ public:
     /// automatically select the number of points if needed, and resegment the fiber
     void         adjustSegmentation();
     
-    /// change all vertices from given array of coordinates
+    /// change all vertices to given array of coordinates
     void         getPoints(real const*);
 
     /// restore the distance between successive vertices

@@ -112,7 +112,7 @@ Fiber* FiberProp::newFiber() const
 Fiber* FiberProp::newFiber(Glossary& opt) const
 {
     Fiber * fib = newFiber();
-    real len = length;
+    real len = 1.0;
     
     /* 
      initial length and reference point for placement can be specified in 'opt'
@@ -153,7 +153,8 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
                 throw InvalidParameter("fiber:points must be a list of comma-separated vectors");
             fib->setPoint(p, vec);
         }
-        fib->imposeLength(len);
+        if ( opt.has_key("length") )
+            fib->imposeLength(len);
     }
     else
 #endif
@@ -238,7 +239,6 @@ void FiberProp::clear()
 {
     rigidity            = -1;
     segmentation        = 1;
-    length              = 1;
     min_length          = 0.010;      // suitable for actin/microtubules
     max_length          = INFINITY;
     total_polymer       = INFINITY;
@@ -305,7 +305,6 @@ void FiberProp::read(Glossary& glos)
 {
     glos.set(rigidity,          "rigidity");
     glos.set(segmentation,      "segmentation");
-    glos.set(length,            "length");
     glos.set(min_length,        "min_length");
     glos.set(max_length,        "max_length");
     glos.set(total_polymer,     "total_polymer");
@@ -424,9 +423,6 @@ void FiberProp::complete(Simul const& sim)
             throw InvalidParameter(name()+":confine_stiffness must be specified and >= 0");
     }
 
-    if ( length <= 0 )
-        throw InvalidParameter("fiber:length should be > 0");
-
     if ( min_length < 0 )
         throw InvalidParameter("fiber:min_length should be >= 0");
 
@@ -527,7 +523,6 @@ void FiberProp::write_values(std::ostream& os) const
 {
     write_value(os, "rigidity",            rigidity);
     write_value(os, "segmentation",        segmentation);
-    write_value(os, "length",              length);
     write_value(os, "min_length",          min_length);
     write_value(os, "max_length",          max_length);
     write_value(os, "total_polymer",       total_polymer);
