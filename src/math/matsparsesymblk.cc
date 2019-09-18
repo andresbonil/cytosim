@@ -7,7 +7,7 @@
 #include <sstream>
 
 // Flag to enable AVX implementation
-#ifdef __AVX2__
+#ifdef __AVX__
 #  define MATRIXSSB_USES_AVX REAL_IS_DOUBLE
 #else
 #  define MATRIXSSB_USES_AVX 0

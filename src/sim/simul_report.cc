@@ -15,10 +15,10 @@ int column_width = 10;
 #define COM "\n% " << std::setw(column_width-2)
 
 /// use this macro at the beginning of a new line of data
-#define LIN  '\n' << std::setw(column_width)
+#define LIN '\n' << std::setw(column_width)
 
 /// use this macro to separate between values on a line of data
-#define SEP   ' ' << std::setw(column_width-1)
+#define SEP ' ' << std::setw(column_width-1)
 
 #include "accumulator.h"
 
