@@ -568,15 +568,11 @@ void Display::drawFields(FieldSet const& set)
     Vector3 dir(0,0,1);
 #endif
     
-#if ( 0 )
-    
-    for ( Field * obj = set.first(); obj; obj=obj->next() )
-        if ( obj->hasField() && obj->prop->visible )
-            obj->draw(false, dir, 0);
-    
-#else
-    
+#if ( 1 )
     Field * obj = set.first();
+#else
+    for ( Field * obj = set.first(); obj; obj=obj->next() )
+#endif
     
     if ( obj && obj->hasField() )
     {
@@ -585,7 +581,6 @@ void Display::drawFields(FieldSet const& set)
         else if ( obj->prop->visible == 2 )
             obj->draw();
     }
-#endif
 }
 
 
@@ -1527,7 +1522,7 @@ void Display::drawFiber(Fiber const& fib)
     }
 
     // draw other fiber elements only if fiber is fully visible:
-    if ( fib.disp->visible > 0 )
+    //if ( fib.disp->visible > 0 )
     {
         if ( disp->label_style )
         {
