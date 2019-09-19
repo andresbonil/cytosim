@@ -96,7 +96,7 @@ void PlayProp::toggleReport(bool alt)
             case 0: report = "";                   break;
             case 1: report = "inventory";          break;
             case 2: report = "platelet";           break;
-            case 3: report = "fiber:lattice";      break;
+            case 3: report = "fiber:lattice_density;field"; break;
             case 4: report = "fiber:segment";      break;
             case 5: report = "fiber:cluster";      break;
             case 6: report = "fiber:age";          break;

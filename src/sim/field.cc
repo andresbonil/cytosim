@@ -417,7 +417,7 @@ void Field::step(FiberSet& fibers)
 #endif
     
     
-#if ( 1 ) // disabled features below
+#if ( 0 ) // disabled features below
 
     Array<FiberSite> loc(1024);
     

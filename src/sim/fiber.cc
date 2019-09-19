@@ -1437,7 +1437,7 @@ void Fiber::infoLattice(FiberLattice const& lat, unsigned& cnt, real& sm, real& 
     const auto sup = lat.indexP();
     for ( auto i = lat.indexM(); i <= sup; ++i )
     {
-        cnt++;
+        ++cnt;
         sm += lat.data(i);
         real x = lat.data(i) * scale;
         mn = std::min(mn, x);

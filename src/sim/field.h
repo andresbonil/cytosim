@@ -19,8 +19,8 @@
 class FiberSet;
 
 #ifdef DISPLAY
-#include "gle.h"
-#include "grid_display.h"
+#  include "gle.h"
+#  include "grid_display.h"
 #endif
 
 
@@ -173,6 +173,9 @@ public:
     
     /// access to data
     value_type& cell(const real w[]) const { return mGrid.cell(w); }
+    
+    /// access to data
+    index_t nbCells() const { return mGrid.nbCells(); }
 
     /// info
     void infoValues(value_type& s, value_type& n, value_type& x) const { return mGrid.infoValues(s, n, x); }
@@ -413,7 +416,6 @@ public:
      */
     void draw(bool all, Vector3 const& dir, const real pos) const
     {
-        printf("in field:draw()\n");
         FieldDisplayParameters fdp;
         fdp.amp = 1.0 / ( prop->display_scale * mGrid.cellVolume() );
         if ( all )
@@ -437,8 +439,8 @@ public:
         glPopAttrib();
     }
 #else
-    void draw() const {}
-    void draw(bool all, Vector3 const& dir, const real pos) const { printf("no field:draw\n"); }
+    void draw() const { PRINT_ONCE("no field:draw()\n"); }
+    void draw(bool all, Vector3 const& dir, const real pos) const { PRINT_ONCE("no field:draw()\n"); }
 #endif
 };
 

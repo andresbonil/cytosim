@@ -66,7 +66,7 @@ void remove_plural(std::string & str)
 /** 
  @copydetails Simul::report0
  */
-void Simul::report(std::ostream& out, std::string const& arg, Glossary& opt) const
+void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
 {
     int p = 4;
     opt.set(p, "precision");
@@ -76,6 +76,13 @@ void Simul::report(std::ostream& out, std::string const& arg, Glossary& opt) con
     //out << "\n% start   " << prop->time; // historical
     out << "\n% time    " << prop->time;
     try {
+        std::string::size_type pos = arg.find(';');
+        while ( pos != std::string::npos )
+        {
+            report0(out, arg.substr(0, pos), opt);
+            arg = arg.substr(pos+1);
+            pos = arg.find(';');
+        }
         report0(out, arg, opt);
         out << "\n% end\n";
     }
@@ -219,7 +226,9 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
         if ( what == "hand" )
             return reportFiberHands(out);
         if ( what == "lattice" )
-            return reportFiberLattice(out);
+            return reportFiberLattice(out, false);
+        if ( what == "lattice_density" )
+            return reportFiberLattice(out, true);
         if ( what == "connector" )
             return reportFiberConnectors(out, opt);
 
@@ -562,21 +571,21 @@ void Simul::reportFiberHands(std::ostream& out) const
 /**
  Report quantity of substance in Field
  */
-void Simul::reportFiberLattice(std::ostream& out) const
+void Simul::reportFiberLattice(std::ostream& out, bool density) const
 {
     out << COM << ljust("class", 2, 2);
-    out << SEP << "length" << SEP << "total" << SEP << "avg" << SEP << "min" << SEP << "max";
+    out << SEP << "total" << SEP << "avg" << SEP << "min" << SEP << "max" << SEP << "length";
     
     // report substance on Fiber Lattices
     unsigned cnt;
     real len, sm, mn, mx;
-    fibers.infoLattice(len, cnt, sm, mn, mx, 0);
+    fibers.infoLattice(len, cnt, sm, mn, mx, density);
     out << LIN << ljust("fiber:lattice", 2);
-    out << SEP << len;
     out << SEP << sm;
     out << SEP << std::setprecision(4) << sm / cnt;
     out << SEP << std::fixed << std::setprecision(6) << mn;
     out << SEP << std::fixed << std::setprecision(6) << mx;
+    out << SEP << std::setprecision(3) << len;
 }
 
 
@@ -1516,20 +1525,10 @@ void Simul::reportField(std::ostream& out) const
         obj->infoValues(s, n, x);
         out << LIN << ljust(obj->prop->name(), 2);
         out << SEP << s;
-        out << SEP << s / vol;
+        out << SEP << s / ( vol * obj->nbCells() );
         out << SEP << n / vol;
         out << SEP << x / vol;
     }
-    
-    // report concentration of substance on Fiber Lattices
-    unsigned cnt;
-    real len, sm, mn, mx;
-    fibers.infoLattice(len, cnt, sm, mn, mx, 1);
-    out << LIN << ljust("fiber:lattice", 2);
-    out << SEP << sm;
-    out << SEP << sm / len;
-    out << SEP << mn;
-    out << SEP << mx;
 }
 
 
