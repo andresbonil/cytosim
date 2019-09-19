@@ -10,7 +10,7 @@ vpath %.cc src/tools
 
 #--------------------macros----------------------------------------------------
 
-TOOL_OBJ := cytosim.a cytospace.a cytomath.a matsparsesymblk.o cytobase.a
+TOOL_OBJ := cytosim.a cytomath.a matsparsesymblk.o cytobase.a
 
 TOOL_INC  = $(addprefix -Isrc/, math base sim sim/spaces sim/fibers sim/singles sim/organizers disp play)
 
@@ -44,19 +44,19 @@ report: report.cc frame_reader.o $(TOOL_OBJ) | bin
 vpath report bin
 
 
-bin1/report: report.cc frame_reader.o cytosimD1.a cytospaceD1.a cytomathD1.a cytobase.a
+bin1/report: report.cc frame_reader.o cytosimD1.a cytomathD1.a cytobase.a
 	$(COMPILE) -DDIM=1 $(TOOL_INC) $(OBJECTS) $(LINK) -o bin1/report
 	$(DONE)
 vpath bin1/report bin1
 
 
-bin2/report: report.cc frame_reader.o cytosimD2.a cytospaceD2.a cytomathD2.a cytobase.a
+bin2/report: report.cc frame_reader.o cytosimD2.a cytomathD2.a cytobase.a
 	$(COMPILE) -DDIM=2 $(TOOL_INC) $(OBJECTS) $(LINK) -o bin2/report
 	$(DONE)
 vpath bin2/report bin2
 
 
-bin3/report: report.cc frame_reader.o cytosimD3.a cytospaceD3.a cytomathD3.a cytobase.a
+bin3/report: report.cc frame_reader.o cytosimD3.a cytomathD3.a cytobase.a
 	$(COMPILE) -DDIM=3 $(TOOL_INC) $(OBJECTS) $(LINK) -o bin3/report
 	$(DONE)
 vpath bin3/report bin3

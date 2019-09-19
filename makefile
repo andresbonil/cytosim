@@ -74,7 +74,6 @@ info:
 include src/sim/makefile.inc
 include src/base/makefile.inc
 include src/math/makefile.inc
-include src/sim/spaces/makefile.inc
 include src/disp/makefile.inc
 include src/play/makefile.inc
 

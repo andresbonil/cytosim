@@ -148,7 +148,7 @@ test_rasterizer: test_rasterizer.cc rasterizerG.o cytomath.a $(OBJGLAP) cytobase
 	$(DONE)
 vpath test_rasterizer bin
 
-test_space: test_space.cc cytospace.a cytosim.a cytomath.a $(OBJGLAP) cytobase.a
+test_space: test_space.cc cytosim.a cytomath.a $(OBJGLAP) cytobase.a
 	$(TEST_MAKE) $(TEST_GL)
 	$(DONE)
 vpath test_space bin

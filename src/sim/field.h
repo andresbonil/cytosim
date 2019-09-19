@@ -413,6 +413,7 @@ public:
      */
     void draw(bool all, Vector3 const& dir, const real pos) const
     {
+        printf("in field:draw()\n");
         FieldDisplayParameters fdp;
         fdp.amp = 1.0 / ( prop->display_scale * mGrid.cellVolume() );
         if ( all )
@@ -437,7 +438,7 @@ public:
     }
 #else
     void draw() const {}
-    void draw(bool all, Vector3 const& dir, const real pos) const {}
+    void draw(bool all, Vector3 const& dir, const real pos) const { printf("no field:draw\n"); }
 #endif
 };
 
