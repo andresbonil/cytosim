@@ -4,10 +4,12 @@
 #include "stream_func.h"
 #include "simul_prop.h"
 #include "tokenizer.h"
+#include "messages.h"
 #include "glossary.h"
 #include "filepath.h"
 #include "tictoc.h"
 #include "simul.h"
+#include "event.h"
 #include "sim.h"
 #include <fstream>
 

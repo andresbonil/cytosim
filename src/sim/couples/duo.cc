@@ -4,6 +4,7 @@
 #include "duo_prop.h"
 #include "random.h"
 #include "modulo.h"
+#include "space.h"
 #include "sim.h"
 
 extern Modulo const* modulo;

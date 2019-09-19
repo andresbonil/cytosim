@@ -4,6 +4,7 @@
 #include <fstream>
 #include <unistd.h>
 #include "filepath.h"
+#include "messages.h"
 #include "parser.h"
 
 /// Current format version number used for writing object-files.

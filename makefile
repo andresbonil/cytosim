@@ -41,9 +41,6 @@ SRCDIR2 := $(addprefix src/sim/, spaces hands fibers singles couples organizers)
 SRCDIR  := $(SRCDIR1) $(SRCDIR2)
 
 
-#command used to build the dependencies files automatically
-MAKEDEP := gcc -MM $(addprefix -I, $(SRCDIR))
-
 #-----------------------GIT revision number-------------------------------------
 
 CODE_VERSION = $(shell git rev-parse --short HEAD || echo unknown)
@@ -168,6 +165,9 @@ sterile:
 
 #---------------------------- dependencies -------------------------------------
 .PHONY: dep
+
+#command used to build the dependencies files automatically
+MAKEDEP := g++ -std=gnu++11 -MM $(addprefix -I, $(SRCDIR))
 
 dep:
 	if ! test -d dep; then mkdir dep; else rm -f dep/*; fi

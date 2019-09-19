@@ -2,6 +2,7 @@
 #include "glossary.h"
 #include "iowrapper.h"
 #include "aster.h"
+#include "field.h"
 #include <iostream>
 #include <numeric>
 #include <list>

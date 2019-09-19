@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "fiber.h"
+#include "field.h"
 #include "messages.h"
 #include "glossary.h"
 #include "iowrapper.h"

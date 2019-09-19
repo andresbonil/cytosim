@@ -5,6 +5,26 @@
 #include "iowrapper.h"
 #include "glossary.h"
 #include "simul.h"
+#include "field.h"
+
+
+// first object
+Field * FieldSet::first() const
+{
+    return static_cast<Field*>(nodes.front());
+}
+
+// find object
+Field * FieldSet::findObject(Property const* p) const
+{
+    return static_cast<Field*>(ObjectSet::findObject(p));
+}
+
+// return pointer to the Object of given ID, or zero if not found
+Field * FieldSet::findID(ObjectID n) const
+{
+    return static_cast<Field*>(inventory.get(n));
+}
 
 //------------------------------------------------------------------------------
 

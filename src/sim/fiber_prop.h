@@ -6,9 +6,9 @@
 #include "real.h"
 #include "property.h"
 #include "common.h"
-#include "field.h"
 #include "sim.h"
 
+class Field;
 class Fiber;
 class FiberDisp;
 class SingleProp;

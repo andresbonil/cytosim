@@ -5,6 +5,7 @@
 #include "exceptions.h"
 #include "random.h"
 #include "modulo.h"
+#include "space.h"
 #include "meca.h"
 
 extern Modulo const* modulo;

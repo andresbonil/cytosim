@@ -3,6 +3,7 @@
 #include "field_prop.h"
 #include "property_list.h"
 #include "simul_prop.h"
+#include "messages.h"
 #include "glossary.h"
 #include "dim.h"
 

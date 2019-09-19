@@ -4,7 +4,20 @@
 #include "iowrapper.h"
 #include "glossary.h"
 #include "simul.h"
+#include "event.h"
 
+
+// first object
+Event * EventSet::first() const
+{
+    return static_cast<Event*>(nodes.front());
+}
+
+// return pointer to the Object of given ID, or zero if not found
+Event * EventSet::findID(ObjectID n) const
+{
+    return static_cast<Event*>(inventory.get(n));
+}
 
 void EventSet::step()
 {

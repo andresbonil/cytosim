@@ -2,6 +2,7 @@
 
 #include "simul_prop.h"
 #include "glossary.h"
+#include "messages.h"
 #include "offscreen.h"
 #include "saveimage.h"
 #include "filepath.h"

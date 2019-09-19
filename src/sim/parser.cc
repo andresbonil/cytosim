@@ -2,6 +2,7 @@
 
 #include "sim.h"
 #include "parser.h"
+#include "messages.h"
 #include "tokenizer.h"
 #include "glossary.h"
 #include "filepath.h"

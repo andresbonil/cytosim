@@ -4,9 +4,9 @@
 #define EVENT_SET_H
 
 #include "object_set.h"
-#include "event.h"
-class Simul;
 
+class Simul;
+class Event;
 
 /// a list of Event
 /**
@@ -35,16 +35,10 @@ public:
     //--------------------------
     
     /// first object
-    Event *     first() const
-    {
-        return static_cast<Event*>(nodes.front());
-    }
+    Event *     first() const;
     
-    ///  return pointer to the Object of given ID, or zero if not found
-    Event *     findID(ObjectID n) const
-    {
-        return static_cast<Event*>(inventory.get(n));
-    }
+    /// return pointer to the Object of given ID, or zero if not found
+    Event *     findID(ObjectID n) const;
     
     /// Monte-Carlo simulation step for every Object
     void        step();

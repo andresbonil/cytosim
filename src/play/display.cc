@@ -1,16 +1,17 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 #include "display.h"
+#include "organizer.h"
 #include "hand_prop.h"
 #include "sphere_prop.h"
 #include "fiber_prop.h"
 #include "point_disp.h"
 #include "fiber_disp.h"
 #include "line_disp.h"
-#include "field.h"
 #include "opengl.h"
 #include "modulo.h"
 #include "simul.h"
+#include "field.h"
 #include "gle.h"
 #include "gle_color.h"
 #include "gle_color_list.h"

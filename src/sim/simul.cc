@@ -2,6 +2,7 @@
 
 #include "sim.h"
 #include "simul.h"
+#include "messages.h"
 #include "exceptions.h"
 #include "hand_prop.h"
 #include "simul_prop.h"
@@ -27,6 +28,7 @@ extern Modulo const* modulo;
 #include "space_cylinderP.h"
 #include "fiber.h"
 #include "event.h"
+#include "field.h"
 
 #include <csignal>
 

@@ -4,10 +4,11 @@
 #define ORGANIZER_SET_H
 
 #include "object_set.h"
-#include "organizer.h"
 
-class Simul;
+class Mecable;
+class Organizer;
 class Aster;
+class Simul;
 
 /// a list of Organizer (Aster, Nucleus, Bundle)
 class OrganizerSet : public ObjectSet
@@ -37,16 +38,10 @@ public:
     void        add(Object *);
     
     /// first Organizer
-    Organizer * first() const
-    {
-        return static_cast<Organizer*>(nodes.front());
-    }
+    Organizer * first() const;
     
     /// find object with given ID
-    Organizer * findID(ObjectID n) const
-    {
-        return static_cast<Organizer*>(inventory.get(n));
-    }
+    Organizer * findID(ObjectID n) const;
     
     /// find Aster with given ID
     Aster *     findAster(ObjectID n) const;

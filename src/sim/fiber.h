@@ -9,11 +9,11 @@
 #include "fiber_prop.h"
 #include "node_list.h"
 #include "lattice.h"
-#include "field.h"
 #include "sim.h"
 
 
 class Hand;
+class Field;
 class Single;
 class FiberSet;
 class FiberSegment;

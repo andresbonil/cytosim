@@ -1,14 +1,28 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
-#include "glossary.h"
-#include "mecapoint.h"
 #include "organizer_set.h"
+#include "organizer.h"
+#include "mecapoint.h"
+#include "glossary.h"
 #include "nucleus.h"
 #include "bundle.h"
 #include "aster.h"
 #include "fake.h"
 #include "solid.h"
 #include "simul.h"
+
+
+// first Organizer
+Organizer * OrganizerSet::first() const
+{
+    return static_cast<Organizer*>(nodes.front());
+}
+
+// find object with given ID
+Organizer * OrganizerSet::findID(ObjectID n) const
+{
+    return static_cast<Organizer*>(inventory.get(n));
+}
 
 //------------------------------------------------------------------------------
 

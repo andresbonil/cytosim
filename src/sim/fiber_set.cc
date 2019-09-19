@@ -3,6 +3,7 @@
 #include "fiber_set.h"
 #include "fiber_segment.h"
 #include "iowrapper.h"
+#include "messages.h"
 #include "glossary.h"
 #include "fiber_prop.h"
 #include "growing_fiber_prop.h"

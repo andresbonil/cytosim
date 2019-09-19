@@ -22,7 +22,6 @@
 #include "point_grid.h"
 #include "property_list.h"
 #include "field_values.h"
-#include "field.h"
 #include "meca.h"
 
 class Meca1D;

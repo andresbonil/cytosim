@@ -4,6 +4,7 @@
 #include "couple.h"
 #include "couple_long.h"
 #include "hand_prop.h"
+#include "messages.h"
 #include "glossary.h"
 #include "property_list.h"
 #include "simul_prop.h"
