@@ -300,7 +300,7 @@ public:
     /// Number of points in the Mecable that has the most number of points
     unsigned largestMecable() const;
 
-    /// true if does not contain objects
+    /// true if system does not contain any object
     bool     empty() const { return nbPts == 0; }
     
     /// number of points in the system

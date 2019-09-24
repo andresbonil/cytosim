@@ -25,7 +25,7 @@ private:
     /// Lagrange multipliers associated with longitudinal imcompressibility
     real   *    rfLag;
     
-    /// stored normalized differences of successive vertices (array of size DIM*nbSegments)
+    /// normalized differences of successive vertices (size is DIM*nbSegments)
     real   *    rfDiff;
     
     /// work array allocated to hold DIM*nbPoints() coordinates
@@ -90,20 +90,21 @@ public:
     /// free allocated memory
     void        release();
 
-    /// compute Lagrange multiplier corresponding to the longitudinal tensions in the segments
+    /// compute longitudinal tensions in the segments
     void        computeTensions(const real* force);
     
     /// copy Lagrange multipliers computed in projectForces()
     void        storeTensions(const real* force);
 
-    /// longitudinal force along segment `p`
+    /// longitudinal force dipole between vertices `p` and `p+1`
     /**
      Tensions are calculated as the Lagrange multipliers associated with the
-     constrains of conserved segments lengths.
-     The tension is:
-     - positive when the fiber is being pulled
-     - negative when the fiber is under compression
+     distance between neigboring vertices, i.e. the fiber segment's lengths.
+     This tension is:
+     - positive when the segment is being pulled
+     - negative when the segment is under compression
      .
+     It is given in units of force (pico-Newton, if all quantitites use our units).
      */
     real        tension(unsigned p) const { assert_true(p+1<nPoints); return rfLag[p]; }
     
@@ -117,7 +118,7 @@ public:
     
     /// prepare for projection
     void        makeProjection();
-    
+
     /// prepare the correction to the projection
     void        makeProjectionDiff(const real* );
     
