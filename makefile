@@ -167,7 +167,7 @@ sterile:
 .PHONY: dep
 
 #command used to build the dependencies files automatically
-MAKEDEP := g++ -std=gnu++11 -MM $(addprefix -I, $(SRCDIR))
+MAKEDEP := g++ -std=c++11 -MM $(addprefix -I, $(SRCDIR))
 
 dep:
 	if ! test -d dep; then mkdir dep; else rm -f dep/*; fi
