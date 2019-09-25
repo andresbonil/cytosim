@@ -33,6 +33,7 @@ void FiberGrid::paintGrid(const Fiber * first, const Fiber * last)
     }
 }
 
+
 void FiberGrid::createCells()
 {
 }
@@ -64,11 +65,11 @@ void FiberGrid::tryToAttach(Vector const& place, Hand& ha) const
             if ( dis < ha.prop->binding_range_sqr )
             {
                 Fiber * fib = const_cast<Fiber*>(seg.fiber());
-                FiberSite bind(fib, seg.abscissa1()+abs);
+                FiberSite pos(fib, seg.abscissa1()+abs);
                 
-                if ( ha.attachmentAllowed(bind) )
+                if ( ha.attachmentAllowed(pos) )
                 {
-                    ha.attach(bind);
+                    ha.attach(pos);
                     return;
                 }
             }

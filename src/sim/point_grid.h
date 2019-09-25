@@ -2,16 +2,12 @@
 #ifndef POINT_GRID_H
 #define POINT_GRID_H
 
+#include "grid.h"
 #include "dim.h"
 #include "vector.h"
-#include "grid.h"
 #include "mecapoint.h"
 #include "fiber_segment.h"
 #include "array.h"
-
-#ifdef DISPLAY
-#include "grid_display.h"
-#endif
 
 class Space;
 class Modulo;
@@ -384,15 +380,8 @@ public:
 
 #endif
     
-#ifdef DISPLAY
-    void draw() const
-    {
-        glPushAttrib(GL_LIGHTING_BIT);
-        glDisable(GL_LIGHTING);
-        drawEdges(pGrid);
-        glPopAttrib();
-    }
-#endif
+    /// OpenGL display function
+    void draw() const;
 };
 
 

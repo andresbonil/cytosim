@@ -597,3 +597,22 @@ void  PointGrid::setInteractions(Meca& meca, PointGridParam const& pam,
 
 #endif
 
+
+//------------------------------------------------------------------------------
+#pragma mark - Display
+
+#ifdef DISPLAY
+
+#  include "grid_display.h"
+
+void PointGrid::draw() const
+{
+    glPushAttrib(GL_LIGHTING_BIT);
+    glDisable(GL_LIGHTING);
+    glColor3f(1, 0, 1);
+    glLineWidth(0.5);
+    drawEdges(pGrid);
+    glPopAttrib();
+}
+#endif
+

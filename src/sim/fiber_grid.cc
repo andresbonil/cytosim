@@ -349,9 +349,9 @@ FiberSegment FiberGrid::closestSegment(Vector const& place) const
 #endif
 
 
-//============================================================================
-//===                        TEST  ATTACHMENT                             ====
-//============================================================================
+//==============================================================================
+//===                        TEST  ATTACHMENT                               ====
+//==============================================================================
 #pragma mark - Test
 
 #include <map>
@@ -458,3 +458,20 @@ void FiberGrid::testAttach(FILE* out, const Vector pos, FiberSet const& set, Han
     }
 }
 
+//==============================================================================
+#pragma mark - Display
+
+#ifdef DISPLAY
+
+#  include "grid_display.h"
+
+void FiberGrid::draw() const
+{
+    glPushAttrib(GL_LIGHTING_BIT);
+    glDisable(GL_LIGHTING);
+    glColor4f(0, 1, 1, 1);
+    glLineWidth(0.5);
+    drawEdges(fGrid);
+    glPopAttrib();
+}
+#endif

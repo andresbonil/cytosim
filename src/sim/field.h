@@ -357,91 +357,12 @@ public:
         }
     }
     
-    //------------------------------- display ----------------------------------
+    /// OpenGL display
+    void draw() const;
     
-#ifdef DISPLAY
+    /// OpenGL display
+    void draw(bool all, Vector3 const& dir, const real pos) const;
     
-    class FieldDisplayParameters
-    {
-    public:
-        FieldDisplayParameters()
-        {
-            amp = 0;
-            spc = nullptr;
-        }
-        
-        /// amplification for color
-        real amp;
-        
-        /// Space for cropping
-        Space const* spc;
-    };
-    
-    
-    static bool field_set_color(void* arg, FieldGrid::value_type const& val, Vector const& pos)
-    {
-        FieldDisplayParameters * fdp = static_cast<FieldDisplayParameters*>(arg);
-        if ( fdp->spc && ! fdp->spc->inside(pos) )
-            return false;
-        val.setColor(fdp->amp);
-        return true;
-    }
-    
-    
-    /// openGL display function
-    void draw() const
-    {
-        FieldDisplayParameters fdp;
-        fdp.amp = 1.0 / ( prop->display_scale * mGrid.cellVolume() );
-        fdp.spc = nullptr;
-        
-        glPushAttrib(GL_ENABLE_BIT);
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        drawValues(mGrid, field_set_color, &fdp);
-        if ( 0 )
-        {
-            glColor4f(1, 0, 1, 1);
-            glLineWidth(0.5);
-            drawEdges(mGrid);
-        }
-        glPopAttrib();
-    }
-    
-    
-    /// openGL display function
-    /**
-     display all cells that are inside field:confine_space
-     */
-    void draw(bool all, Vector3 const& dir, const real pos) const
-    {
-        FieldDisplayParameters fdp;
-        fdp.amp = 1.0 / ( prop->display_scale * mGrid.cellVolume() );
-        if ( all )
-            fdp.spc = nullptr;
-        else
-            fdp.spc = prop->confine_space_ptr;
-        
-        //glPushAttrib(GL_ENABLE_BIT|GL_POLYGON_BIT);
-        glPushAttrib(GL_ENABLE_BIT);
-        glDisable(GL_LIGHTING);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        //glLineWidth(1);
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-#if ( DIM >= 3 )
-        drawValues(mGrid, field_set_color, &fdp, dir, pos);
-#else
-        drawValues(mGrid, field_set_color, &fdp);
-#endif
-        glPopAttrib();
-    }
-#else
-    void draw() const { PRINT_ONCE("no field:draw()\n"); }
-    void draw(bool all, Vector3 const& dir, const real pos) const { PRINT_ONCE("no field:draw()\n"); }
-#endif
 };
 
 
