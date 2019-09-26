@@ -409,7 +409,7 @@ public:
         return is_alpha(rec->at(inx).value_);
     }
     
-    /// check if value of `key[inx]` could be a number
+    /// check if string could be a number
     static int is_number(std::string const& str)
     {
         char const* ptr = str.c_str();

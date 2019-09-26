@@ -8,7 +8,7 @@ MACHINE := auto
 COMPILER := gcc
 
 #---------------- MODE = {F = Fast; D = Debug; P = Profiling; C = Coverage}
-MODE := D
+MODE := F
 
 #---------------- INTEL Math Kernel Library
 # If the Intel Math Kernel library is a free library providing BLAS+LAPACK,
@@ -89,7 +89,7 @@ ifeq ($(COMPILER),gcc)
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops #-floop-optimize2 -ftree-vectorize -mavx2 -mfma
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops -march=native -ffp-contract=fast
 
-    DEBUG    :=-g3 -ggdb
+    DEBUG    :=-g3 -ggdb -march=native
     COVERAGE :=-fprofile-arcs -ftest-coverage
     
 else ifeq ($(COMPILER),icc)

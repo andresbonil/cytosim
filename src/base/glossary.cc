@@ -335,7 +335,7 @@ int Glossary::read_value(Glossary::pair_type& res, std::istream& is)
     }
     
     is.unget();
-    throw InvalidSyntax("Unexpected token `"+std::string(1,c)+"'");
+    throw InvalidSyntax("syntax error: unexpected `"+std::string(1,c)+"'");
 }
 
 

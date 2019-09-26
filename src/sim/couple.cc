@@ -82,6 +82,36 @@ void Couple::setProperty(CoupleProp * p)
 //------------------------------------------------------------------------------
 #pragma mark -
 
+/* category of link:
+ Links on the side of the filaments:
+     - Parallel
+     - Antiparallel
+     - X = none of the above
+ Links at the ends of the filaments:
+     - T
+     - V
+ by Jamie Li Rickman, ~2017
+ */
+int Couple::configuration(FiberEnd end, real len) const
+{
+    int e = (cHand1->abscissaFrom(end) < len) + (cHand2->abscissaFrom(end) < len);
+    switch ( e )
+    {
+        case 0:
+            if (cosAngle() > 0.5)
+                return 0; // P: angle < PI/3
+            else if (cosAngle() < -0.5)
+                return 1; // A: angle > 2PI/3
+            return 2; // X
+        case 1:
+            return 3; // T
+        case 2:
+            return 4; // V
+    }
+    return 5; //should not happen!
+}
+
+
 real Couple::stiffness() const
 {
     return prop->stiffness;

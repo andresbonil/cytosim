@@ -130,6 +130,9 @@ public:
     /// the state of the Couple in { 0 ... 3 } representing { FF, FA, FA, AA }
     int            state()                const { return cHand1->attached() + 2 * cHand2->attached(); }
     
+    /// category of link: 0=parallel; 1=anti-parallel; 2=X; 3=T; 4=V
+    int            configuration(FiberEnd end, real len) const;
+
     ///stiffness of the link ( = prop->stiffness )
     real           stiffness()            const;
     

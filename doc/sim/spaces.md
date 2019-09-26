@@ -73,8 +73,6 @@ This corresponds to a potential that raises quadratically from the edge in both 
  [`cylinderZ`](doxygen/class_space_cylinder_z.html)  | radius bottom top
  [`cylinderP`](doxygen/class_space_cylinder_p.html)  | length radius
  [`ring`](doxygen/class_space_ring.html)             | length radius
- [`tee`](doxygen/class_space_tee.html)               | length radius junction arm_length
- [`mesh`](doxygen/class_space_mesh.html)             | file
 
 ### Dynamic Space with variable geometry 
  

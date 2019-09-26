@@ -43,12 +43,12 @@ class Glossary;
  
  \par Origin:
  
- An abscissa is a curvilinear distance taken along the backbone, but using an
- origin makes this independent of the vertices. Thus even if the fiber lengthen
- from its ends, a position described by an abscissa will remain associated with
- the same local lattice site.
+ An abscissa is a curvilinear distance taken along the Fiber,
+ and the Chain provides an origin to make this independent of the vertices. 
+ Thus even if the fiber lengthen from its ends, a position described by an abscissa will
+ stay associated with the same local lattice site.
  
- Functions are provided to convert abscissa measured from different references,
+ Functions are provided in Chain to convert abscissa measured from different references,
  and to obtain positions of the fiber for a given abcissa.
 
  \par Derived classes:
@@ -56,6 +56,7 @@ class Glossary;
  The class FiberSite keeps track of its position using an abscissa from the origin,
  and all Hand objects are built from this class.
  The class Fiber keeps track of the FiberSite that are attached to itself.
+ 
 */
 class Chain : public Mecable
 {
@@ -213,22 +214,25 @@ public:
 
     //---------------------
     
+    /// displace the ORIGIN of abscissa
+    void         setOrigin(real a) { fnAbscissaM = -a; fnAbscissaP = fnCut*nbSegments() - a; }
+
     /// signed distance from ORIGIN to MINUS_END (abscissa of MINUS_END)
-    real         abscissaM()             const { return fnAbscissaM; }
+    real         abscissaM() const { return fnAbscissaM; }
     
     /// abscissa of center, midway between MINUS_END and PLUS_END
     //real       abscissaC()             const { return fnAbscissaM + 0.5 * length(); }
-    real         abscissaC()             const { return 0.5 * (fnAbscissaM + fnAbscissaP); }
+    real         abscissaC() const { return 0.5 * (fnAbscissaM + fnAbscissaP); }
 
     /// signed distance from ORIGIN to PLUS_END (abscissa of PLUS_END)
     //real       abscissaP()             const { return fnAbscissaM + length(); }
-    real         abscissaP()             const { return fnAbscissaP; }
+    real         abscissaP() const { return fnAbscissaP; }
 
     /// signed distance from ORIGIN to vertex specified with index (or intermediate position)
     real         abscissaPoint(const real n) const { return fnAbscissaM + fnCut * n; }
 
     /// signed distance from the ORIGIN to the specified FiberEnd
-    real         abscissaEnd(FiberEnd end)  const;
+    real         abscissaEnd(FiberEnd end) const;
     
     /// converts distance from the specified FiberEnd, to abscissa from the ORIGIN
     real         abscissaFrom(real dis, FiberEnd ref) const;
@@ -330,7 +334,7 @@ public:
     
     /// change all vertices to given array of coordinates
     void         getPoints(real const*);
-
+    
     /// restore the distance between successive vertices
     void         reshape() { getPoints(pPos); }
 
@@ -362,8 +366,8 @@ public:
 
     //--------------------- Growing/Shrinking
     
-    /// merge two fibers by attaching `fib` at the PLUS_END of `this`
-    void         join(Chain const* fib);
+    /// merge two fibers by attaching given Chain at the PLUS_END of `this`
+    void         join(Chain const*);
 
     /// increase/decrease length of Fiber by `delta`, at the MINUS_END
     void         growM(real delta);

@@ -1860,7 +1860,7 @@ void Simul::reportCoupleLink(std::ostream& out, std::string const& which) const
  Export configuration of bridging couple, as
  P: parallel
  A: antiparallel
- X: other
+ X: other side-side links
  T: side-end
  V: end-end
  
@@ -1885,35 +1885,16 @@ void Simul::reportCoupleConfiguration(std::ostream& out, std::string const& whic
     opt.set(threshold, "threshold");
     opt.set(end, "end", {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}});
     
-    size_t cnt = 0;
-    size_t P = 0, A = 0, X = 0, T = 0, V = 0;
-    
-    out << COM << "total";
-    out << SEP << "P" << SEP << "A" << SEP << "X" << SEP << "T" << SEP << "V";
-    
+    size_t T[6] = { 0 };
     for ( Couple * obj=couples.firstAA(); obj ; obj=obj->next() )
     {
         if ( !selected || obj->prop == selected )
-        {
-            ++cnt;
-            real c = obj->cosAngle();
-            bool e1 = ( obj->hand1()->distanceToEnd(end) < threshold );
-            bool e2 = ( obj->hand2()->distanceToEnd(end) < threshold );
-            
-            if ( e1 && e2 )
-                ++V;
-            else if ( e1 || e2 )
-                ++T;
-            else if ( c > 0.5 )  // 0.5 is cos(PI/3)
-                ++P;
-            else if ( c < -0.5 )
-                ++A;
-            else
-                ++X;
-        }
+            ++T[obj->configuration(end, threshold)];
     }
+    size_t sum = T[0]+T[1]+T[2]+T[3]+T[4]+T[5];
     
-    out << LIN << cnt << SEP << P << SEP << A << SEP << X << SEP << T << SEP << V;
+    out << COM << "total" << SEP << "P" << SEP << "A" << SEP << "X" << SEP << "T" << SEP << "V";
+    out << LIN << sum << SEP << T[0] << SEP << T[1] << SEP << T[2] << SEP << T[3] << SEP << T[4];
  }
 
 

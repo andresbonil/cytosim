@@ -72,7 +72,6 @@
 		BB19FEF712F352A400ACEA12 /* inventoried.h in Headers */ = {isa = PBXBuildFile; fileRef = BB19FEF312F352A400ACEA12 /* inventoried.h */; };
 		BB19FEF812F352A400ACEA12 /* inventory.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB19FEF412F352A400ACEA12 /* inventory.cc */; };
 		BB19FEF912F352A400ACEA12 /* inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = BB19FEF512F352A400ACEA12 /* inventory.h */; };
-		BB1D4B5A16B86B320087CC48 /* quartic_solver.h in Headers */ = {isa = PBXBuildFile; fileRef = BB1D4B5916B86B320087CC48 /* quartic_solver.h */; };
 		BB1DCBF41421FE850061547C /* line_disp.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB1DCBF21421FE850061547C /* line_disp.cc */; };
 		BB1DCBF51421FE850061547C /* line_disp.h in Headers */ = {isa = PBXBuildFile; fileRef = BB1DCBF31421FE850061547C /* line_disp.h */; };
 		BB1F0BBF0653D5F4003F4957 /* exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73587505B98DA3006956D5 /* exceptions.h */; };
@@ -275,7 +274,6 @@
 		BB7191BB0EF1CD9900CED9E2 /* vector3.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBB89ED70BE3DED10054838A /* vector3.cc */; };
 		BB71926B0EF1D10600CED9E2 /* libcytomath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB7191C50EF1CD9900CED9E2 /* libcytomath.a */; };
 		BB738A6420C51E620039C670 /* SFMT.c in Sources */ = {isa = PBXBuildFile; fileRef = BBE447D12064697D0058ADAC /* SFMT.c */; };
-		BB749D6117935DAC00B43298 /* quartic_solver.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB749D6017935DAC00B43298 /* quartic_solver.cc */; };
 		BB749D661793645D00B43298 /* polygon.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB749D641793645C00B43298 /* polygon.cc */; };
 		BB749D671793645D00B43298 /* polygon.h in Headers */ = {isa = PBXBuildFile; fileRef = BB749D651793645D00B43298 /* polygon.h */; };
 		BB74F41A231C334D0019D68E /* matsparseblk.h in Headers */ = {isa = PBXBuildFile; fileRef = BB74F418231C334D0019D68E /* matsparseblk.h */; };
@@ -479,7 +477,6 @@
 		BBADE815091F4427007BB791 /* display.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBADE80D091F4427007BB791 /* display.cc */; };
 		BBADE817091F4427007BB791 /* display1.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBADE80F091F4427007BB791 /* display1.cc */; };
 		BBADE819091F4427007BB791 /* display3.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBADE811091F4427007BB791 /* display3.cc */; };
-		BBAE3DD4155B102600BE1914 /* simul_solvef.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBAE3DD3155B102600BE1914 /* simul_solvef.cc */; };
 		BBAEC4F80EF1D1DD00955B64 /* libcytomath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB7191C50EF1CD9900CED9E2 /* libcytomath.a */; };
 		BBAEC4FE0EF1D20000955B64 /* libcytomath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB7191C50EF1CD9900CED9E2 /* libcytomath.a */; };
 		BBAEC5080EF1D22300955B64 /* libcytomath.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB7191C50EF1CD9900CED9E2 /* libcytomath.a */; };
@@ -638,6 +635,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.cpp;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -646,6 +645,8 @@
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.gcc;
 			fileType = sourcecode.cpp;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 			);
@@ -1017,7 +1018,6 @@
 		BB19FEF312F352A400ACEA12 /* inventoried.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inventoried.h; sourceTree = "<group>"; };
 		BB19FEF412F352A400ACEA12 /* inventory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = inventory.cc; sourceTree = "<group>"; };
 		BB19FEF512F352A400ACEA12 /* inventory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inventory.h; sourceTree = "<group>"; };
-		BB1D4B5916B86B320087CC48 /* quartic_solver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = quartic_solver.h; path = src/math/quartic_solver.h; sourceTree = SOURCE_ROOT; };
 		BB1DCBF21421FE850061547C /* line_disp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = line_disp.cc; sourceTree = "<group>"; };
 		BB1DCBF31421FE850061547C /* line_disp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = line_disp.h; sourceTree = "<group>"; };
 		BB1F9C2B0FD5A9790047327F /* glossary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = glossary.h; path = src/base/glossary.h; sourceTree = SOURCE_ROOT; };
@@ -1209,7 +1209,6 @@
 		BB73591105B98DA3006956D5 /* test_rasterizer.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = test_rasterizer.cc; path = src/test/test_rasterizer.cc; sourceTree = SOURCE_ROOT; };
 		BB73591405B98DA3006956D5 /* test_solve.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = test_solve.cc; path = src/test/test_solve.cc; sourceTree = SOURCE_ROOT; };
 		BB73591705B98DA3006956D5 /* test_sphere.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = test_sphere.cc; path = src/test/test_sphere.cc; sourceTree = SOURCE_ROOT; };
-		BB749D6017935DAC00B43298 /* quartic_solver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = quartic_solver.cc; path = src/math/quartic_solver.cc; sourceTree = SOURCE_ROOT; };
 		BB749D621793620500B43298 /* test_quartic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_quartic.cc; sourceTree = "<group>"; };
 		BB749D641793645C00B43298 /* polygon.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon.cc; path = src/math/polygon.cc; sourceTree = SOURCE_ROOT; };
 		BB749D651793645D00B43298 /* polygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = polygon.h; path = src/math/polygon.h; sourceTree = SOURCE_ROOT; };
@@ -1379,7 +1378,6 @@
 		BBADE810091F4427007BB791 /* display1.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = display1.h; path = src/play/display1.h; sourceTree = SOURCE_ROOT; };
 		BBADE811091F4427007BB791 /* display3.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = display3.cc; path = src/play/display3.cc; sourceTree = SOURCE_ROOT; };
 		BBADE812091F4427007BB791 /* display3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = display3.h; path = src/play/display3.h; sourceTree = SOURCE_ROOT; };
-		BBAE3DD3155B102600BE1914 /* simul_solvef.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simul_solvef.cc; sourceTree = "<group>"; };
 		BBAF2B2E0FD01048006E8E27 /* hand_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hand_prop.h; path = src/sim/hand_prop.h; sourceTree = SOURCE_ROOT; };
 		BBAF2B2F0FD01048006E8E27 /* hand_prop.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = hand_prop.cc; path = src/sim/hand_prop.cc; sourceTree = SOURCE_ROOT; };
 		BBB1C6E40CB2CAA300679ADC /* blank */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = blank; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1905,7 +1903,6 @@
 				BB7358FD05B98DA3006956D5 /* simul_file.cc */,
 				BB19DAA206964B9900093FA2 /* simul_solve.cc */,
 				BB40C87F0CC6044E00EC90F8 /* meca1d.h */,
-				BBAE3DD3155B102600BE1914 /* simul_solvef.cc */,
 				BB3D8E1615F490D0001851E1 /* simul_report.cc */,
 				BB5921D2112612EF00E0DDA0 /* simul_custom.cc */,
 				BBE60C250EE979ED00FFAB27 /* simul_step.cc */,
@@ -1972,8 +1969,6 @@
 			isa = PBXGroup;
 			children = (
 				BB0CB11A20C170C10016D73D /* qmr.h */,
-				BB1D4B5916B86B320087CC48 /* quartic_solver.h */,
-				BB749D6017935DAC00B43298 /* quartic_solver.cc */,
 				BB21854D0B40836900B75436 /* linear_solvers.h */,
 				BB2185620B4084CC00B75436 /* linear_solvers.cc */,
 				BB8CB8551523147900505E89 /* bicgstab.h */,
@@ -3113,7 +3108,6 @@
 				BB8CB8571523147900505E89 /* bicgstab.h in Headers */,
 				BB9EC397209235CC00EF00E7 /* SFMT-avx2.h in Headers */,
 				BB4737BD2024B39300FE6CEC /* accumulator.h in Headers */,
-				BB1D4B5A16B86B320087CC48 /* quartic_solver.h in Headers */,
 				BB749D671793645D00B43298 /* polygon.h in Headers */,
 				BB560C301813DC8800CB1BF5 /* vecprint.h in Headers */,
 				BB6485F02057FDD5005F2CD1 /* monitor.h in Headers */,
@@ -3567,7 +3561,7 @@
 		BB73574F05B98A51006956D5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = EMBL;
 				TargetAttributes = {
 					BB18BBB61DFD78F600567023 = {
@@ -3827,7 +3821,6 @@
 				BB39EC26153806070047768E /* duo_long.cc in Sources */,
 				BB9B5E0D15429ED100C0B9B6 /* field.cc in Sources */,
 				BB1121841549B72B0031CC48 /* shackle_long.cc in Sources */,
-				BBAE3DD4155B102600BE1914 /* simul_solvef.cc in Sources */,
 				BB8481B2158348E80076C8C2 /* couple_long.cc in Sources */,
 				BB6662D515A1A75A0028AA2E /* interface.cc in Sources */,
 				BBA8C47E15FB6AE000F52094 /* rescuer_prop.cc in Sources */,
@@ -3903,7 +3896,6 @@
 				BB0E4BD91002698100A96B34 /* random_vector.cc in Sources */,
 				BB19DA9F231BF792001488A5 /* matrix34.cc in Sources */,
 				BB61CA8416D6310100A0F6A5 /* linear_solvers.cc in Sources */,
-				BB749D6117935DAC00B43298 /* quartic_solver.cc in Sources */,
 				BB749D661793645D00B43298 /* polygon.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4741,6 +4733,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -4753,6 +4746,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -4765,6 +4759,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -4778,6 +4773,7 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_USE_OPTIMIZATION_PROFILE = NO;
+				CODE_SIGN_IDENTITY = "-";
 				FEWER_WARNINGS = " -wd1224,161,1478";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4799,6 +4795,7 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_USE_OPTIMIZATION_PROFILE = NO;
+				CODE_SIGN_IDENTITY = "-";
 				FEWER_WARNINGS = " -wd1224,161,1478";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4818,6 +4815,7 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_USE_OPTIMIZATION_PROFILE = NO;
+				CODE_SIGN_IDENTITY = "-";
 				FEWER_WARNINGS = " -wd1224,161,1478";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4836,6 +4834,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = sieve;
 			};
 			name = Development;
@@ -4844,6 +4843,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = sieve;
 			};
 			name = Deployment;
@@ -4852,6 +4852,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = sieve;
 			};
 			name = Default;
@@ -4860,6 +4861,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = frametool;
 			};
 			name = Development;
@@ -4868,6 +4870,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = frametool;
 			};
 			name = Deployment;
@@ -4876,6 +4879,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = frametool;
 			};
 			name = Default;
@@ -4940,6 +4944,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = report;
 			};
 			name = Development;
@@ -4948,6 +4953,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = report;
 			};
 			name = Deployment;
@@ -4956,6 +4962,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				PRODUCT_NAME = report;
 			};
 			name = Default;
@@ -4964,6 +4971,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -4976,6 +4984,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -4988,6 +4997,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -5000,6 +5010,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -5012,6 +5023,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -5024,6 +5036,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -5036,6 +5049,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
@@ -5048,6 +5062,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
@@ -5060,6 +5075,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
@@ -5072,6 +5088,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -5084,6 +5101,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -5096,6 +5114,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
@@ -5493,6 +5512,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5504,6 +5524,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = blank;
@@ -5514,6 +5535,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = swim;
