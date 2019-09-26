@@ -175,7 +175,7 @@ void Display::prepareFiberDisp(FiberProp * p, PropertyList& alldisp, gle_color c
     // parse user-provided values:
     if ( p->display_fresh )
     {
-        disp->read_string(p->display, p->name()+":display");
+        disp->read_string(p->display, " in "+p->name()+":display");
         p->display_fresh = false;
     }
     
@@ -341,7 +341,7 @@ void Display::preparePointDisp(T * p, PropertyList& alldisp, gle_color col)
     // parse display string once:
     if ( p->display_fresh )
     {
-        disp->read_string(p->display, p->name()+":display");
+        disp->read_string(p->display, " in "+p->name()+":display");
         p->display_fresh = false;
     }
     

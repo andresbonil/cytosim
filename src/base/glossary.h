@@ -234,10 +234,10 @@ public:
     bool         value_is(key_type const& key, unsigned inx, std::string const& val) const;
     
     /// report unused values and values used more than `threshold` times
-    static int   warnings(std::ostream&, pair_type const&, unsigned threshold=1);
+    static int   warnings(std::ostream&, pair_type const&, unsigned threshold, std::string const& msg);
     
     /// report unused values and values used multiple times
-    int          warnings(std::ostream&, unsigned threshold=1) const;
+    int          warnings(std::ostream&, unsigned threshold=1, std::string const& msg="") const;
     
     //-------------------------------------------------------------------------------
     #pragma mark -

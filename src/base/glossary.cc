@@ -667,7 +667,7 @@ std::ostream& operator << (std::ostream& os, Glossary const& glos)
  - 0 otherwise
  .
  */
-int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsigned threshold)
+int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsigned threshold, std::string const& msg)
 {
     int used = 0, exhausted = 1, overused = 0;
     const rec_type& rec = pair.second;
@@ -694,7 +694,7 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
     
     if ( warn.size() )
     {
-        print_magenta(os, "Warning, " + warn + ":\n");
+        print_magenta(os, "Warning, " + warn + msg + ":\n");
         write(os, PREF, pair);
         os << "\n";
         if ( used )
@@ -717,11 +717,11 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
 /**
  @returns total number of warnings associated with entire set of terms
  */
-int Glossary::warnings(std::ostream& os, unsigned threshold) const
+int Glossary::warnings(std::ostream& os, unsigned threshold, std::string const& msg) const
 {
     int res = 0;
     for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )
-        res |= warnings(os, *i, threshold);
+        res |= warnings(os, *i, threshold, msg);
     return res;
 }
 

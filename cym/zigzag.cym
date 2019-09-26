@@ -26,7 +26,7 @@ set fiber filament
     rigidity = 10
     segmentation = 0.0625
     confine = inside, 100
-    display = ( color=blue; point=3,1; line=10,2; tension=10; )
+    display = ( color=blue; point=3,1; line=10,2; tension_scale=10; )
 }
 
 set hand binder

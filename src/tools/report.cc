@@ -244,9 +244,7 @@ int main(int argc, char* argv[])
         ofs.close();
 
     /// check if all specified parameters were used:
-    std::stringstream ss;
-    if ( arg.warnings(ss) > 1 )
-        std::cerr << ss.str() << '\n';
+    arg.warnings(std::cerr);
     
     return EXIT_SUCCESS;
 }
