@@ -133,9 +133,10 @@ This list may not be accurate:
  `fiber:energy`          | Fiber's elastic bending energy
  `fiber:confinement`     | Force applied by fibers on their confinement Space
  `fiber:binder`          | Positions of bridging hands along each fiber
- `fiber:lattice`         | Total quantites on fiber's lattices
+ `fiber:lattice`         | Total quantity on fiber's lattices
  `fiber:intersection`    | Intersections point of fibers
  `fiber:hand`            | Position of hands attached to fibers
+ `fiber:link`            | Positions of attached hands for which stiffness > 0
  `fiber:cluster`         | Clusters made of fibers connected by Couples
 
 

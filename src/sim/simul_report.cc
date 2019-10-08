@@ -130,11 +130,10 @@ void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
  `fiber:tension`         | Internal stress along fibers
  `fiber:energy`          | Fiber's elastic bending energy
  `fiber:confinement`     | Force applied by fibers on their confinement Space
- `fiber:hand`            | Positions of hands bound to fibers
- `fiber:link`            | Positions of bridging hands along each fiber
- `fiber:lattice`         | Total quantites on fiber's lattices
+ `fiber:lattice`         | Total quantity on fiber's lattices
  `fiber:intersection`    | Intersections point of fibers
  `fiber:hand`            | Position of hands attached to fibers
+ `fiber:link`            | Positions of attached hands for which stiffness > 0
  `fiber:cluster`         | Clusters made of fibers connected by Couples
 
 
@@ -235,7 +234,7 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
         if ( what == "connector" )
             return reportFiberConnectors(out, opt);
 
-        throw InvalidSyntax("I only know fiber: position, end, point, moment, speckle, sample, segment, dynamic, length, distribution, tension, force, cluster, age, energy, binder");
+        throw InvalidSyntax("I only know fiber: position, end, point, moment, speckle, sample, segment, dynamic, length, distribution, tension, force, cluster, age, energy, hand, link");
     }
     if ( who == "bead" )
     {
