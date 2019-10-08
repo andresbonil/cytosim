@@ -87,7 +87,7 @@ public:
     /// add upper triangular half of 'this' block ( idx, idx, idx+siz, idx+siz ) to `mat`
     void addTriangularBlock(real* mat, index_t ldd, index_t si, unsigned nb, unsigned dim) const;
     
-    ///optional optimization that may accelerate multiplications by a vector
+    /// prepare matrix for multiplications by a vector (must be called)
     void prepareForMultiply(int dim);
     
     /// multiplication of a vector: Y = Y + M * X with dim(X) = dim(M)

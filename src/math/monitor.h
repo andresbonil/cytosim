@@ -84,7 +84,7 @@ namespace LinearSolvers
                 if ( res > 2*res_ )
                 {
                     printf("Warning: slow convergence (time_step may be too big)");
-                    printf(" residual %9.6f at iteration %3u, %9.6f at %3u\n", res_, cntOld_, res, cnt_);
+                    printf(" residual %.3e at iteration %3u, %.3e at %3u\n", res_, cntOld_, res, cnt_);
                 }
                 cntOld_ = cnt_;
             }

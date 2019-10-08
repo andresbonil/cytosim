@@ -586,7 +586,7 @@ private:
 private:
     
     /// calculate the edge-characteristic from the size `s`, coordinate `c` and range `r`
-    static index_t edge_signature(const int s, const int r, const int c)
+    static index_t edge_signature(const index_t s, const int r, const int c)
     {
         if ( c < r )
             return r - c;

@@ -48,7 +48,7 @@ public:
     
     
     /// constructor from an existing array
-    MatrixSymmetric(int s)
+    MatrixSymmetric(index_t s)
     {
         resize(s);
         msLDD = s;
@@ -58,7 +58,7 @@ public:
     }
 
     /// constructor from an existing array
-    MatrixSymmetric(int s, real* array, int ldd)
+    MatrixSymmetric(index_t s, real* array, int ldd)
     {
         resize(s);
         msLDD = ldd;

@@ -6,16 +6,16 @@
 #include <cmath>
 
 #ifndef REAL_H
-#include "real.h"
+#  include "real.h"
 #endif
 
 #define SFMT_MEXP 19937
 
 #include "SFMT.h"
 
-#define TWO_POWER_MINUS_32 0x1p-32
-#define TWO_POWER_MINUS_31 0x1p-31
-#define TWO_POWER_MINUS_64 0x1p-64
+constexpr real TWO_POWER_MINUS_31 = 0x1p-31;
+constexpr real TWO_POWER_MINUS_32 = 0x1p-32;
+constexpr real TWO_POWER_MINUS_64 = 0x1p-64;
 
 
 /// Random Number Generator
@@ -300,10 +300,10 @@ public:
     template <typename T> 
     void shuffle(T val[], uint32_t size)
     {
-        int  jj = size, kk;
+        uint32_t jj = size, kk;
         while ( jj > 1 )
         {
-            kk = URAND32() % jj;
+            kk = pint(jj);
             --jj;
             T tmp   = val[jj];
             val[jj] = val[kk];
