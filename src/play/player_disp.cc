@@ -97,7 +97,7 @@ std::string Player::buildLabel() const
  */
 std::string Player::buildReport(std::string arg) const
 {
-    try
+    if ( ! arg.empty() )
     {
         Glossary glos;
         // separate options:
@@ -107,17 +107,19 @@ std::string Player::buildReport(std::string arg) const
             glos.read_string(arg.substr(pos+1).c_str(), 2);
             arg = arg.substr(0, pos);
         }
-        // get report:
-        std::stringstream ss;
-        simul.report(ss, arg, glos);
-        std::string res = ss.str();
-        if ( res.size() > 1  &&  res.at(0) == '\n' )
-            return res.substr(1);
-        return res;
-    }
-    catch ( Exception & e )
-    {
-        return e.message();
+        try
+        {
+            std::stringstream ss;
+            simul.report(ss, arg, glos);
+            std::string res = ss.str();
+            if ( res.size() > 1  &&  res.at(0) == '\n' )
+                return res.substr(1);
+            return res;
+        }
+        catch ( Exception & e )
+        {
+            return e.message();
+        }
     }
     return "";
 }
