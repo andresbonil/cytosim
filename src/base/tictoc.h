@@ -6,6 +6,13 @@
 
 #include <ctime>
 
+/// import __rdtsc()
+#if defined __APPLE__
+#  include <x86intrin.h>
+#else
+#  include <intrin.h>
+#endif
+
 /// A set of functions related to time
 /**
  Functions to get wall-time, and processor-time,
