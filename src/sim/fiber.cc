@@ -989,32 +989,35 @@ int comp_abscissa(const void* a, const void* b)
 void Fiber::sortHands() const
 {
     size_t cnt = nbHands();
-    Hand ** tmp = new Hand*[cnt];
-    
-    size_t i = 0;
-    Hand * n = handListFront;
-    
-    while ( n )
+    if ( cnt > 1 )
     {
-        tmp[i++] = n;
-        n = n->next();
+        Hand ** tmp = new Hand*[cnt];
+        
+        size_t i = 0;
+        Hand * n = handListFront;
+        
+        while ( n )
+        {
+            tmp[i++] = n;
+            n = n->next();
+        }
+        
+        qsort(tmp, cnt, sizeof(Hand*), comp_abscissa);
+        
+        n = tmp[0];
+        handListFront = n;
+        n->prev(nullptr);
+        for ( i = 1; i < cnt; ++i )
+        {
+            n->next(tmp[i]);
+            tmp[i]->prev(n);
+            n = tmp[i];
+        }
+        n->next(nullptr);
+        handListBack = n;
+        
+        delete[] tmp;
     }
-    
-    qsort(tmp, cnt, sizeof(Hand*), comp_abscissa);
-    
-    n = tmp[0];
-    handListFront = n;
-    n->prev(nullptr);
-    for ( i = 1; i < cnt; ++i )
-    {
-        n->next(tmp[i]);
-        tmp[i]->prev(n);
-        n = tmp[i];
-    }
-    n->next(nullptr);
-    handListBack = n;
-    
-    delete[] tmp;
 }
 
 

@@ -74,8 +74,8 @@ protected:
     Vector    otherDirection(Hand const*) const;
     /// specialization of HandMonitor
     real      interactionLength() const { return prop->length; }
-    /// stiffness of the interaction
-    real      interactionStiffness() const { return prop->stiffness; }
+    /// stiffness of the interaction, if the Couple is bridging
+    real      interactionStiffness() const { return ( cHand1->attached() && cHand2->attached() ) * prop->stiffness; }
 
     /// update position to account for diffusion in one time step
     void      diffuse() { cPos.addRand(prop->diffusion_dt); }

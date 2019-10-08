@@ -387,9 +387,12 @@ public:
     /// print radial component of forces experienced by Fibers due to confinement
     real      reportFiberConfinement(std::ostream& out) const;
 
-    /// print interection abscissa between fibers
+    /// print position of hands bound to fibers
     void      reportFiberHands(std::ostream&) const;
     
+    /// print position of bound hands that are associated with stiffness
+    void      reportFiberLinks(std::ostream&) const;
+
     /// print summary of Fiber's lattice quantities
     void      reportFiberLattice(std::ostream&, bool density) const;
 

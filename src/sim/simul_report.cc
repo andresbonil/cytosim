@@ -225,6 +225,8 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
             return reportFiberIntersections(out, opt);
         if ( what == "hand" )
             return reportFiberHands(out);
+        if ( what == "link" )
+            return reportFiberLinks(out);
         if ( what == "lattice" )
             return reportFiberLattice(out, false);
         if ( what == "lattice_density" )
@@ -552,17 +554,45 @@ void Simul::reportFiberSegments(std::ostream& out) const
 
 void Simul::reportFiberHands(std::ostream& out) const
 {
-    out << COM << "class" << SEP << "identity" << SEP << "abs1" << SEP << "abs2" << SEP << "...";
+    out << COM << "fib_type" << SEP << "fib_id" << SEP << "class" << SEP << "abs";
     for ( Fiber * fib=fibers.first(); fib; fib=fib->next() )
     {
-        fib->sortHands();
-        out << LIN << fib->prop->number();
-        out << SEP << fib->identity();
-        for ( Hand * ha = fib->firstHand(); ha; ha = ha->next() )
+        if ( fib->nbHands() > 0 )
         {
-            Hand * oh = ha->otherHand();
-            if ( oh && oh->attached() )
+            out << COM << "on fiber " << fib->reference();
+            fib->sortHands();
+            for ( Hand * ha = fib->firstHand(); ha; ha = ha->next() )
+            {
+                out << LIN << fib->prop->number();
+                out << SEP << fib->identity();
+                out << SEP << ha->prop->number();
                 out << SEP << ha->abscissa();
+            }
+        }
+    }
+}
+
+
+void Simul::reportFiberLinks(std::ostream& out) const
+{
+    out << COM << "fib_type" << SEP << "fib_id" << SEP << "class" << SEP << "abs" << SEP << "position";
+    for ( Fiber * fib=fibers.first(); fib; fib=fib->next() )
+    {
+        if ( fib->nbHands() > 0 )
+        {
+            out << COM << "on fiber " << fib->reference();
+            fib->sortHands();
+            for ( Hand * ha = fib->firstHand(); ha; ha = ha->next() )
+            {
+                if ( ha->interactionStiffness() > 0 )
+                {
+                    out << LIN << fib->prop->number();
+                    out << SEP << fib->identity();
+                    out << SEP << ha->prop->number();
+                    out << SEP << ha->abscissa();
+                    out << SEP << ha->otherPosition();
+                }
+            }
         }
     }
 }
