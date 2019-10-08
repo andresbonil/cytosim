@@ -130,7 +130,8 @@ void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
  `fiber:tension`         | Internal stress along fibers
  `fiber:energy`          | Fiber's elastic bending energy
  `fiber:confinement`     | Force applied by fibers on their confinement Space
- `fiber:binder`          | Positions of bridging hands along each fiber
+ `fiber:hand`            | Positions of hands bound to fibers
+ `fiber:link`            | Positions of bridging hands along each fiber
  `fiber:lattice`         | Total quantites on fiber's lattices
  `fiber:intersection`    | Intersections point of fibers
  `fiber:hand`            | Position of hands attached to fibers
