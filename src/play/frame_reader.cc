@@ -197,7 +197,7 @@ int FrameReader::seekFrame(const int frm)
 
         do {
             has_pos = !inputter.get_pos(pos);
-            inputter.get_line(line);
+            line = inputter.get_line();
             
             if ( inputter.eof() )
                 return 1;

@@ -117,12 +117,12 @@ void FileWrapper::put_line(const std::string& str, bool end)
 }
 
 
-void FileWrapper::get_line(std::string& line, const char sep)
+std::string FileWrapper::get_line(const char end)
 {
-    line.clear();
+    std::string res;
 
     if ( ferror(mFile) )
-        return;
+        return res;
 
     const size_t CHK = 16;
     char str[CHK];
@@ -136,23 +136,36 @@ void FileWrapper::get_line(std::string& line, const char sep)
         size_t s = fread(str, 1, CHK, mFile);
         
         // search for separator:
-        m = (char*)memchr(str, sep, s);
+        m = (char*)memchr(str, end, s);
         
         if ( m )
         {
-            line.append(str, m-str);
+            res.append(str, m-str);
             //reposition at end of line:
             fsetpos(mFile, &pos);
             fread(str, 1, m-str+1, mFile);
             //fprintf(stderr,"-|%s|-\n", line.c_str());
-            return;
+            break;
         }
-        line.append(str, s);
+        res.append(str, s);
     }
     
-    return;
+    return res;
 }
 
+
+std::string FileWrapper::get_word()
+{
+    std::string res;
+    int c = get_char();
+    while ( isspace(c) )
+        c = get_char();
+    do {
+        res.push_back(c);
+        c = get_char();
+    } while ( !isspace(c) );
+    return res;
+}
 
 /**
  This will search for the string and position the stream

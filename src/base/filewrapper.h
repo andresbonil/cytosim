@@ -100,8 +100,11 @@ public:
     void    put_line(const std::string&, bool end = 0);
 
     /// read until character `end` is found and set `line`, including terminating character
-    void    get_line(std::string& line, char end='\n');
+    std::string get_line(char end='\n');
     
+    /// Skip space and read next word separated by space
+    std::string get_word();
+
     /// read stream until given string is found
     void    skip_until(const char * str);
     

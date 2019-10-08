@@ -441,7 +441,7 @@ int Simul::readObjects(Inputter& in, ObjectSet* subset)
             c = in.get_char();
             if ( c == '#' )
             {
-                in.get_line(line);
+                line = in.get_line();
                 break;
             }
             tag = ( c & 127 );
