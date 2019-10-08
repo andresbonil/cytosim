@@ -6,7 +6,7 @@
  
  http://en.wikipedia.org/wiki/C%2B%2B11
  
- it should be compiled with icc -std=c++11
+ it should be compiled with icc -std=gnu++11
  
  
  199711L
