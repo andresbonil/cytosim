@@ -253,7 +253,7 @@ int Glossary::read_key(Glossary::pair_type& res, std::istream& is)
 void Glossary::add_value(Glossary::pair_type& res, std::string& str, bool def)
 {
     //remove any space at the end of the string:
-    std::string val = Tokenizer::trimmed(str);
+    std::string val = Tokenizer::trim(str);
     
     VLOG2("Glossary::SET" << std::setw(20) << res.first << "[" << res.second.size() << "] = |" << val << "|\n");
 
@@ -388,7 +388,7 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
 /// define one value for the key at specified index: `key[inx]=val`.
 void Glossary::define(key_type const& key, unsigned inx, const std::string& str)
 {
-    std::string val = Tokenizer::trimmed(str);
+    std::string val = Tokenizer::trim(str);
     map_type::iterator w = mTerms.find(key);
     
     if ( w == mTerms.end() )
@@ -733,7 +733,7 @@ int Glossary::warnings(std::ostream& os, unsigned threshold, std::string const& 
 template <>
 void Glossary::set_one(std::string& var, key_type const& key, std::string const& val) const
 {
-    //var = Tokenizer::trimmed(val);
+    //var = Tokenizer::trim(val);
     var = val;
     VLOG2("Glossary::SET STR   " << key << " = |" << var << "|\n");
 }

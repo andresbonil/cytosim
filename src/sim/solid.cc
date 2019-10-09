@@ -414,7 +414,7 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
             while ( opt.set(str, var, inx++) )
             {
                 // get a number and the name of a class:
-                unsigned num = Tokenizer::get_integer(str, 1);
+                unsigned num = Tokenizer::get_integer(str, 1U);
                 SingleProp * sip = sim.findProperty<SingleProp>("single", str);
                 
                 /* add Wrists anchored on the local coordinate system:
@@ -436,7 +436,7 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
             while ( opt.set(str, var, inx++) )
             {
                 // get a number and the name of a class:
-                unsigned num = Tokenizer::get_integer(str, 1);
+                unsigned num = Tokenizer::get_integer(str, 1U);
                 SingleProp * sip = sim.findProperty<SingleProp>("single", str);
                 
                 /* add Wrists anchored on the local coordinate system:

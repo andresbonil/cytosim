@@ -568,21 +568,21 @@ std::string Tokenizer::get_block(std::istream& is)
 }
 
 
-std::string Tokenizer::strip_block(std::string const& blok)
+std::string Tokenizer::strip_block(std::string const& arg)
 {
-    size_t s = blok.size();
+    size_t s = arg.size();
     
     if ( s < 2 )
-        return blok;
+        return arg;
     
-    char c = block_delimiter( blok[0] );
+    char c = block_delimiter(arg[0]);
     if ( c )
     {
-        if ( blok[s-1] != c )
+        if ( arg[s-1] != c )
             throw InvalidSyntax("mismatched enclosing symbols");
-        return blok.substr(1, s-2);
+        return arg.substr(1, s-2);
     }
-    return blok;
+    return arg;
 }
 
 
@@ -635,12 +635,12 @@ std::string Tokenizer::get_until(std::istream& is, std::string what)
 }
 
 
-std::string Tokenizer::trimmed(std::string const& str, const std::string& ws)
+std::string Tokenizer::trim(std::string const& str, const std::string& ws)
 {
-    std::string::size_type beg = str.find_first_not_of(ws);
-    if ( beg == std::string::npos )
+    std::string::size_type s = str.find_first_not_of(ws);
+    if ( s == std::string::npos )
         return std::string();
-    std::string::size_type end = str.find_last_not_of(ws);
-    return str.substr(beg, 1+end-beg);
+    std::string::size_type e = str.find_last_not_of(ws);
+    return str.substr(s, 1+e-s);
 }
 

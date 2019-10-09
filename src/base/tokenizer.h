@@ -9,11 +9,14 @@
 #include <vector>
 
 /// elementary tokenizer
-/** A Tokenizer is used cut a character stream into words */
+/**
+ The Tokenizer is used to cut a character stream into words,
+ and to interpret Cytosim's configuration file
+ */
 namespace Tokenizer
 {
-    /// return closing delimiter corresponding to `entry_char`, or 0 if this is not a known delimiter
-    char block_delimiter(char entry_char);
+    /// return closing delimiter corresponding to `arg`, or 0 if this is not a known delimiter
+    char block_delimiter(char arg);
     
     /// same as block_delimiter()
     inline char block_delimiter(int c) { return block_delimiter((char)c); }
@@ -33,10 +36,10 @@ namespace Tokenizer
     /// split string using the given separator.
     std::vector<std::string> split(std::string& str, char sep, bool get_empty_fields);
     
-    /// split `str` as `UNSIGNED_INT sub` is possible
+    /// read integer from `str` if possible, truncating `str`
     int get_integer(std::string& str, int default_value);
     
-    /// try to interpret `str` as `UNSIGNED_INT sub`. If successful, `str` is modified to be `sub`
+    /// read unsigned integer from `str` if possible, truncating `str`
     unsigned get_integer(std::string& str, unsigned default_value);
 
     
@@ -73,14 +76,14 @@ namespace Tokenizer
     /// read a delimited set of characters, return block with delimiters included
     std::string get_block(std::istream& is);
     
-    /// remove enclosing parenthesis at the start and at the end of `blok`
-    std::string strip_block(std::string const& blok);
+    /// remove matching parenthesis or other delimiters from the start and from the end of string
+    std::string strip_block(std::string const&);
 
-    /// read until `what` is found and stop immediately before (`what` is excluded from the returned string)
+    /// return text read until `what` is found, stoping immediately before
     std::string get_until(std::istream& is, std::string what);
 
     /// remove characters present in `ws` from the beggining and at the end of `str`
-    std::string trimmed(std::string const& str, const std::string& ws = " \t\n");
+    std::string trim(std::string const& str, const std::string& ws = " \t\n");
     
 }
 
