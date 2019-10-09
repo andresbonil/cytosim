@@ -1,6 +1,6 @@
 # Cytosim's Documentation
 
-*work in progress*
+*This is work in progress*
 
 *  [**Overview**](main/overview.md)
 *  [The configuration file](sim/config.md)
