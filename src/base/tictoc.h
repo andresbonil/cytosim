@@ -7,7 +7,7 @@
 #include <ctime>
 
 /// import __rdtsc()
-#if defined __APPLE__
+#if defined(__APPLE__) || defined(__linux)
 #  include <x86intrin.h>
 #else
 #  include <intrin.h>
