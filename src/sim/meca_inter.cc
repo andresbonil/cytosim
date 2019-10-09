@@ -242,6 +242,7 @@ void Meca::addTorque(const Interpolation & pta,
                      const real weight)
 {
     assert_true( weight >= 0 );
+    assert_small( cosinus*cosinus + sinus*sinus - 1.0 );
 
     //index in the matrix mC:
     const index_t ii0 = DIM * pta.matIndex1();
@@ -341,6 +342,8 @@ void Meca::addTorquePoliti(const Interpolation & pt1,
                            const real weight)
 {
     assert_true( weight >= 0 );
+    assert_small( cosinus*cosinus + sinus*sinus - 1.0 );
+
     if ( pt1.overlapping(pt2) )
         return;
     
