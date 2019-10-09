@@ -33,7 +33,7 @@ OBJ=platonic.o random.o exceptions.o vector3.o\
 #----------------------------targets--------------------------------------------
 
 blank: $(OBJ) SFMT.o
-	$(COMPILE) $^ $(LINKGL) -o $@
+	$(COMPILE) $^ $(GRAFIX) -o $@
 vpath blank .
 
 .PHONY: clean

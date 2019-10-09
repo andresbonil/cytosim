@@ -141,9 +141,9 @@ ifeq ($(MACHINE),mac)
 
     LINK   := -framework Accelerate
 
-    LINKGL := -framework GLUT -framework OpenGL -framework AGL
+    GRAFIX := -framework GLUT -framework OpenGL -framework AGL
     # Using brew's freeGLUT:
-    #LINKGL = -L/usr/local/Cellar/freeglut/3.0.0 -lglut -framework OpenGL
+    #GRAFIX := -L/usr/local/Cellar/freeglut/3.0.0 -lglut -framework OpenGL
     
     ifeq ($(HAS_PNG), 1)
 
@@ -195,7 +195,7 @@ ifeq ($(MACHINE),cluster)
     LINK   := /g/nedelec/lapack/liblapack.a /g/nedelec/lapack/librefblas.a -lgfortran -lpthread
 
     # linkage options for programs using graphics:
-    #LINKGL: =-L/usr/lib -L/usr/lib64 -lglut -lGL -lGLU -lXt -lX11
+    #GRAFIX := -L/usr/lib -L/usr/lib64 -lglut -lGL -lGLU -lXt -lX11
 
 endif
 
@@ -213,6 +213,7 @@ ifeq ($(MACHINE),linux)
 
     # specify the lib path:
     USRLIB := /usr/lib
+    USRLIB := /usr/lib/x86_64-linux-gnu
 
     ### For 64bit Centos 5.8 March 2012:
     # Centos  blas: yum install blas-devel
@@ -237,7 +238,7 @@ ifeq ($(MACHINE),linux)
 
     ### linkage options for programs using graphics:
     #   check for correct library libname.so otherwise give full path
-    LINKGL := -L$(USRLIB) -lglut -lGL -lGLU -lXt -lX11 -lGLEW
+    GRAFIX := -L$(USRLIB) -lglut -lGL -lGLU -lXt -lX11 -lGLEW
 
     ifneq ($(HAS_PNG), 0)
 
@@ -272,7 +273,7 @@ ifeq ($(MACHINE),cygwin)
     ### libXi:   yum install libXi-devel
     ### libXmu:  yum install libXmu-devel
     ###  check for correct library yourlibname.so otherwise give full path
-    LINKGL := -L/usr/lib -lglut -lGL -lGLU -lXt -lX11 -lGLEW
+    GRAFIX := -L/usr/lib -lglut -lGL -lGLU -lXt -lX11 -lGLEW
 
     ifneq ($(HAS_PNG), 0)
 
@@ -301,7 +302,7 @@ ifeq ($(MACHINE),windows)
     FlagsF := -O3 -finline-functions -march=i686 -ffast-math $(ALIGN)
   
     LINK   := -llapack -lblas
-    LINKGL := -lglut32 -lglu32 -lopengl32
+    GRAFIX  := -lglut32 -lglu32 -lopengl32
     BINEXT :=.exe
 
 endif

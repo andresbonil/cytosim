@@ -18,7 +18,7 @@ vpath %.cc src/test
 
 TEST_MAKE = $(COMPILE) $(addprefix -Isrc/, math base sim disp play) $(OBJECTS) $(LINK) -o bin/$@
 
-TEST_GL = -I src/disp $(LINKGL) $(IMAGE_LIB)
+TEST_GL = -I src/disp $(GRAFIX) $(IMAGES)
 
 
 #----------------------------Targets--------------------------------------------
@@ -110,16 +110,15 @@ vpath test_gillespie bin
 
 #----------------------------Targets with Graphics------------------------------
 
-#LINKGL :=-L /usr/local/Cellar/mesa/18.3.1/lib -lGL -lglut
 OBJGLAP := $(OBJ_DISPLAY) offscreen.o
 
 test_opengl: test_opengl.cc
-	$(CXX) $^ $(LINKGL) -o bin/$@
+	$(CXX) $^ $(GRAFIX) -o bin/$@
 	$(DONE)
 vpath test_opengl bin
 
 test_vbo: test_vbo.cc
-	$(CXX) $^ $(LINKGL) -o bin/$@
+	$(CXX) $^ $(GRAFIX) -o bin/$@
 	$(DONE)
 vpath test_vbo bin
 

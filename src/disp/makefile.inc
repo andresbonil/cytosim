@@ -8,13 +8,13 @@ OBJ_DISPLAY=gle.o gle_color.o gle_color_list.o view.o view_prop.o glapp.o
 
 #-----------------------LIB & DEF for PNG support-------------------------------
 
-IMAGE_LIB=
-IMAGE_DEF=
+IMAGES=
+IMAGES_DEF=
 
 ifneq ($(HAS_PNG), 0)
 
-    IMAGE_DEF+=-DHAS_PNG $(INC_PNG)
-    IMAGE_LIB+=$(LIB_PNG)
+    IMAGES_DEF+=-DHAS_PNG $(INC_PNG)
+    IMAGES+=$(LIB_PNG)
 
 endif
 
@@ -28,7 +28,7 @@ libcytodisp.a: $(OBJ_DISPLAY) offscreen.o saveimage.o grid_display.o
 
 
 saveimage.o: saveimage.cc saveimage.h
-	$(COMPILE) $(IMAGE_DEF) -c $< -o build/$@
+	$(COMPILE) $(IMAGES_DEF) -c $< -o build/$@
 
 
 offscreen.o: offscreen.cc offscreen.h offscreen_fbo.cc offscreen_glx.cc
