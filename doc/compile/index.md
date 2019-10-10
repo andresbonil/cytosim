@@ -56,6 +56,8 @@ Optionally, Cytosim can use the mouse wheel to zoom in and out, if you use FreeG
 
 ### Linux
 
+Check the [dedicated pages](linux.md).
+
 On Linux, you need to install the GNU compiler collection, BLAS and LAPACK. This is sufficient to compile `sim`.
 Recent Linux distributions provide precompiled BLAS/LAPACK as optional installation (check your distribution).
 
