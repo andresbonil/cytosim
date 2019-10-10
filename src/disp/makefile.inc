@@ -22,7 +22,7 @@ endif
 #----------------------------targets--------------------------------------------
 
 
-libcytodisp.a: $(OBJ_DISPLAY) offscreen.o saveimage.o grid_display.o
+cytodisp.a: $(OBJ_DISPLAY) offscreen.o saveimage.o grid_display.o
 	$(MAKELIB)
 	$(DONE)
 
