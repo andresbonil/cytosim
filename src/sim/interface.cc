@@ -510,8 +510,8 @@ public:
         }
         
         opt.set(mrk, "mark");
-        opt.set(st1, "state")    || opt.set(st1, "state1") || opt.set(st1, "stateP");
-        opt.set(st2, "state", 1) || opt.set(st2, "state2") || opt.set(st2, "stateM");
+        opt.set(st1, "state1") || opt.set(st1, "stateP") || opt.set(st1, "state");
+        opt.set(st2, "state2") || opt.set(st2, "stateM") || opt.set(st1, "state", 1);
     }
     
     /// return `true` if given object fulfills all the conditions specified
