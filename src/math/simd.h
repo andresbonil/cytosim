@@ -411,7 +411,7 @@ inline vec4 fnmadd4(vec4 a, vec4 b, vec4 c) { return _mm256_fnmadd_pd(a,b,c); }
 #else
 
 // define erzatz functions
-#warning "Patching SIMD' Fused Multiply Add functions"
+//#warning "Patching SIMD' Fused Multiply Add functions"
 
 #ifdef __SSE3__
 inline vec2 fmadd1(vec2 a, vec2 b, vec2 c)  { return _mm_add_sd(_mm_mul_sd(a,b), c); }
