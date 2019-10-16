@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     {
         if ( reader.hasFrame() )
         {
-            printf("Reader: Frame %i in buffer\n", reader.currentFrame());
+            printf("Reader: Frame %li in buffer\n", reader.currentFrame());
             simul.reportInventory(std::cout);
         }
         else
