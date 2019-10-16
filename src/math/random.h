@@ -117,12 +117,18 @@ public:
     /// access to immutable state vector
     uint32_t const* data() { return twister_.state[0].u; }
 
-    /// signed integer in [-2^31+1,2^31-1];
+    /// signed integer in [-2^31+1, 2^31-1];
     int32_t  sint()  { return RAND32(); }
 
-    /// unsigned integer in [0,2^32-1]
+    /// unsigned integer in [0, 2^32-1]
     uint32_t pint()  { return URAND32(); }
     
+    /// unsigned integer in [0, 2^64-1]
+    int64_t  slong() { return RAND64(); }
+
+    /// unsigned integer in [0, 2^64-1]
+    uint64_t plong() { return URAND64(); }
+
 #if ( 0 )
     /// unsigned integer in [0,n-1] for n < 2^32
     uint32_t pint(const uint32_t& n)  { return uint32_t(URAND32()*TWO_POWER_MINUS_32*n); }

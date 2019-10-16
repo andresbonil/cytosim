@@ -37,10 +37,10 @@ namespace Tokenizer
     std::vector<std::string> split(std::string& str, char sep, bool get_empty_fields);
     
     /// read integer from `str` if possible, truncating `str`
-    int get_integer(std::string& str, int default_value);
+    bool get_integer(std::string& str, int&);
     
     /// read unsigned integer from `str` if possible, truncating `str`
-    unsigned get_integer(std::string& str, unsigned default_value);
+    bool get_integer(std::string& str, unsigned&);
 
     
     /// read multiple forms of integer numbers

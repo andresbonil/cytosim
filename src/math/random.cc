@@ -498,7 +498,7 @@ uint32_t Random::geometric(const real P)
 {
     if ( P < 0 )
         return 0;
-    uint32_t pi = (uint32_t)( P * 0x1p32 );
+    const uint32_t pi = (uint32_t)( P * 0x1p32 );
     
     uint32_t s = 0;
     while ( URAND32() > pi )
@@ -511,7 +511,7 @@ uint32_t Random::binomial(const int N, const real P)
 {
     if ( P < 0 )
         return 0;
-    uint32_t pi = (uint32_t)( P * 0x1p32 );
+    const uint32_t pi = (uint32_t)( P * 0x1p32 );
     
     uint32_t s = 0;
     for ( int x = 0; x < N; ++x )

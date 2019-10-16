@@ -10,7 +10,7 @@
  adding support for visual output
  */
 #ifdef DISPLAY
-#include "opengl.h"
+#  include "opengl.h"
 bool rasterizer_draws = true;
 #endif
 
