@@ -266,7 +266,7 @@ void Inputter::readFloatVector(double a[], const unsigned D)
 
 
 /**
- This will read n * vecsize_ floats, and store the n * D ones in a[].
+ This will read `n * vecsize_` floats, and store `n * D` values in a[].
  */
 void Inputter::readFloatVector(double a[], const unsigned n, const unsigned D)
 {

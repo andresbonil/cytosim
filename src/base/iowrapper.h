@@ -13,7 +13,7 @@ class Inputter : public FileWrapper
 private:
         
     /// The format ID of the input: this allow backward compatibility with older formats
-    int       format_;
+    unsigned  format_;
     
     /// The dimensionality of vectors stored in the file
     unsigned  vecsize_;
@@ -70,25 +70,25 @@ public:
     void      reset();
     
     /// Constructor
-    Inputter(int d) : FileWrapper(nullptr), vecsize_(d) { reset(); }
+    Inputter(unsigned d) : FileWrapper(nullptr), vecsize_(d) { reset(); }
     
     /// Constructor
-    Inputter(int d, FILE * f, const char * path = nullptr) : FileWrapper(f, path), vecsize_(d) { reset(); }
+    Inputter(unsigned d, FILE * f, const char * path = nullptr) : FileWrapper(f, path), vecsize_(d) { reset(); }
     
     /// constructor which opens a file
-    Inputter(int d, const char* name, bool bin) : FileWrapper(name, bin?"rb":"r"), vecsize_(d) { reset(); }
+    Inputter(unsigned d, const char* name, bool bin) : FileWrapper(name, bin?"rb":"r"), vecsize_(d) { reset(); }
 
     /// return dimensionnally of vectors
-    int       vectorSize()      const { return vecsize_; }
+    unsigned  vectorSize()      const { return vecsize_; }
     
     /// Set dimentionnality of vectors
-    void      vectorSize(const int d) { vecsize_ = d; }
+    void      vectorSize(unsigned d)  { vecsize_ = d; }
     
     /// returns the type of input
-    int       formatID()        const { return format_; }
+    unsigned  formatID()        const { return format_; }
 
     /// returns the type of input
-    void      formatID(const int f)   { format_ = f; }
+    void      formatID(unsigned f)    { format_ = f; }
 
     /// Returns 1 for native binary format, 2 for non-native binary format, and 0 if not binary
     int       binary()          const { return binary_; }
