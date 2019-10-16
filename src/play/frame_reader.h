@@ -43,13 +43,13 @@ private:
     PosList  framePos;
     
     /// index of frame stored currently
-    int      frameIndex;
+    long     frameIndex;
 
     /// remember position `pos` as the place where frame `frm` should start
-    void     savePos(int frm, const fpos_t& pos, int status);
+    void     savePos(long frm, const fpos_t& pos, int status);
    
     /// go to a position where a frame close to `frm` is known to start
-    int      seekPos(int frm);
+    long     seekPos(long frm);
     
     /// check file validity
     void     checkFile();
@@ -58,7 +58,7 @@ private:
     int      badFile();
     
     /// return last
-    int      lastPossibleFrame() const { return framePos.size()-1; }
+    long     lastPossibleFrame() const { return framePos.size()-1; }
     
 public:
     
@@ -72,7 +72,7 @@ public:
     void     clearPositions();
     
     /// last frame seen in the file
-    int      lastKnownFrame() const;
+    long     lastKnownFrame() const;
     
     /// return state of file object
     bool     hasFile() { return inputter.file(); }
@@ -96,10 +96,10 @@ public:
     bool     hasFrame() const { return frameIndex >= 0; }
     
     /// find the starting point of frame `frm` by brute force !
-    int      seekFrame(int frm);
+    int      seekFrame(long frm);
     
     /// load specified frame into Simul (frm=0: first; frm=-1: last)
-    int      loadFrame(Simul&, int frm, bool reload = false);
+    int      loadFrame(Simul&, long frm, bool reload = false);
     
     /// read the next frame in the file, return 1 for EOF
     int      loadNextFrame(Simul&);

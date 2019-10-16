@@ -96,7 +96,7 @@ void FrameReader::clearPositions()
 }
 
 
-void FrameReader::savePos(int frm, const fpos_t& pos, int s)
+void FrameReader::savePos(long frm, const fpos_t& pos, int s)
 {
     if ( frm < 0 )
         return;
@@ -133,7 +133,7 @@ void FrameReader::savePos(int frm, const fpos_t& pos, int s)
  This uses the current knowledge to move to a position
  in the file where we should find frame `frm`.
 */
-int FrameReader::seekPos(int frm)
+long FrameReader::seekPos(long frm)
 {
     if ( inputter.eof() )
         inputter.clear();
@@ -145,7 +145,7 @@ int FrameReader::seekPos(int frm)
         return 0;
     }
     
-    int inx = std::min(frm, lastPossibleFrame());
+    long inx = std::min(frm, lastPossibleFrame());
 
     while ( inx > 0  &&  framePos[inx].status == 0 )
         --inx;
@@ -165,9 +165,9 @@ int FrameReader::seekPos(int frm)
 }
 
 
-int FrameReader::lastKnownFrame() const
+long FrameReader::lastKnownFrame() const
 {
-    int res = lastPossibleFrame();
+    long res = lastPossibleFrame();
     while ( 0 < res  &&  framePos[res].status < 2 )
         --res;
     return res;
@@ -180,7 +180,7 @@ int FrameReader::lastKnownFrame() const
  scan file forward from current position to find the next Cytosim frame
  @return 0 if no frame was found
 */
-int FrameReader::seekFrame(const int frm)
+int FrameReader::seekFrame(const long frm)
 {        
     VLOG("FrameReader: seekFrame("<< frm <<")\n");
     
@@ -232,7 +232,7 @@ int FrameReader::seekFrame(const int frm)
 /** 
  returns 0 for success, an error code, or throws an exception
  */
-int FrameReader::loadFrame(Simul& sim, int frm, const bool reload)
+int FrameReader::loadFrame(Simul& sim, long frm, const bool reload)
 {
     if ( badFile() )
         return 7;
@@ -245,7 +245,7 @@ int FrameReader::loadFrame(Simul& sim, int frm, const bool reload)
         int res = loadLastFrame(sim);
         if ( frm == -1 ) return res;
         VLOG("FrameReader: counting down from frame " << lastKnownFrame() << '\n');
-        frm = std::max(0, frm + 1 + lastKnownFrame());
+        frm = std::max(0L, frm + 1 + lastKnownFrame());
     }
     
     // what we are looking for might already be in the buffer:
@@ -303,12 +303,14 @@ int FrameReader::loadNextFrame(Simul& sim)
         ++frameIndex;
         
         // the position we used was good, to read this frame
-        if ( has_pos ) savePos(frameIndex, pos, 3);
+        if ( has_pos )
+            savePos(frameIndex, pos, 3);
 
         VLOG("FrameReader: loadNextFrame() after frame " << currentFrame() << '\n');
         
         // the next frame should start from the current position:
-        if ( !inputter.get_pos(pos) ) savePos(frameIndex+1, pos, 1);
+        if ( !inputter.get_pos(pos) )
+            savePos(frameIndex+1, pos, 1);
         return 0;
     } 
     else
