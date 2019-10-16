@@ -305,7 +305,7 @@ int FrameReader::loadNextFrame(Simul& sim)
         // the position we used was good, to read this frame
         if ( has_pos ) savePos(frameIndex, pos, 3);
 
-        VLOG("FrameReader: loadNextFrame() after frame " << currFrame() << '\n');
+        VLOG("FrameReader: loadNextFrame() after frame " << currentFrame() << '\n');
         
         // the next frame should start from the current position:
         if ( !inputter.get_pos(pos) ) savePos(frameIndex+1, pos, 1);
@@ -313,7 +313,7 @@ int FrameReader::loadNextFrame(Simul& sim)
     } 
     else
     {
-        VLOG("FrameReader: loadNextFrame() EOF after frame " << currFrame() << '\n');
+        VLOG("FrameReader: loadNextFrame() EOF after frame " << currentFrame() << '\n');
         return 1;
     }
 }

@@ -181,7 +181,7 @@ int main(int argc, char* argv[])
     arg.set(magnify, "magnify") || arg.set(magnify, "magnification");
 
     // The user can specify a frame index to be loaded:
-    int frm = 0;
+    long frm = 0;
     arg.set(frm, "frame");
 
     // change working directory if specified:
@@ -267,10 +267,10 @@ int main(int argc, char* argv[])
             {
                 // if EOF is reached, reload last frame in file:
                 thread.loadFrame(-1);
-                if ( thread.currFrame() > 0 )
-                    std::cerr << "Warning: could only load frame " << thread.currFrame() << '\n';
+                if ( thread.hasFrame() )
+                    std::cerr << "Warning: could only load frame " << thread.currentFrame() << '\n';
             }
-            frm = thread.currFrame();
+            frm = thread.currentFrame();
         }
         catch( Exception & e )
         {
@@ -322,7 +322,7 @@ int main(int argc, char* argv[])
             do {
                 thread.loadFrame(frm);
                 // only save requested frames:
-                if ( thread.currFrame() == frm )
+                if ( thread.currentFrame() == frm )
                 {
                     displayOffscreen(view, magnify);
                     if ( multi )

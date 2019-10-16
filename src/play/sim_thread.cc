@@ -483,10 +483,10 @@ void SimThread::exportObjects(bool binary)
     try {
         char str[64] = { '\0' };
         
-        snprintf(str, sizeof(str), "properties%04i.cmo", reader.currFrame());
+        snprintf(str, sizeof(str), "properties%04li.cmo", reader.currentFrame());
         simul.writeProperties(str, true);
         
-        snprintf(str, sizeof(str), "objects%04i.cmo", reader.currFrame());
+        snprintf(str, sizeof(str), "objects%04li.cmo", reader.currentFrame());
         simul.writeObjects(str, false, binary);
     }
     catch( Exception & e ) {

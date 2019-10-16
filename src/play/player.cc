@@ -45,8 +45,8 @@ void Player::loadFrame(int f)
 
 void Player::previousFrame()
 {
-    if ( thread.currFrame() > 0 )
-        thread.loadFrame(thread.currFrame()-1);
+    if ( thread.hasFrame() && thread.currentFrame() > 0 )
+        thread.loadFrame(thread.currentFrame()-1);
     else {
         if ( PP.loop )
             thread.loadFrame(-1);
@@ -117,7 +117,7 @@ bool Player::startBackward()
 {
     if ( PP.play != -1 )
     {
-        if ( thread.currFrame() == 0 )
+        if ( thread.currentFrame() == 0 )
             thread.loadFrame(-1);
         else
             flashText("Play reverse");

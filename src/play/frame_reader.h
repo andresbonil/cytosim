@@ -28,7 +28,7 @@ private:
     class file_pos 
     {
     public:
-        int    status;   ///< indicates if `value` is valid
+        int    status;   ///< indicates if `position` is valid
         fpos_t position; ///< starting position in the file
         file_pos() { status=0; }
     };
@@ -90,8 +90,11 @@ public:
     void     clear();
     
     /// return index of current frame 
-    int      currFrame() const { return frameIndex; }
+    long     currentFrame() const { return frameIndex; }
 
+    /// true if current frame is valid
+    bool     hasFrame() const { return frameIndex >= 0; }
+    
     /// find the starting point of frame `frm` by brute force !
     int      seekFrame(int frm);
     

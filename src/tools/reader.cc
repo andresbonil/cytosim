@@ -92,13 +92,13 @@ int main(int argc, char* argv[])
     printf("Reader: enter (h) for help\n");
     while ( true )
     {
-        if ( reader.currFrame() < 0 )
-            printf("Reader: Empty buffer\n");
-        else
+        if ( reader.hasFrame() )
         {
-            printf("Reader: Frame %i in buffer\n", reader.currFrame());
+            printf("Reader: Frame %i in buffer\n", reader.currentFrame());
             simul.reportInventory(std::cout);
         }
+        else
+            printf("Reader: Empty buffer\n");
         
         printf("Reader: ");
         fgets(user, sizeof(user), stdin);

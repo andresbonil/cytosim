@@ -679,7 +679,7 @@ void Simul::writeProperties(char const* name, bool prune) const
         //this should be equivalent to: writeProperties(os, prune);
         os << properties_saved << std::endl;
         os.close();
-        //std::clog << "Writing properties at frame " << currFrame() << std::endl;
+        //std::clog << "Writing properties at frame " << currentFrame() << std::endl;
     }
 }
 

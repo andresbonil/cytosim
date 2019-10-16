@@ -86,7 +86,7 @@ void timerCallback(const int value)
         {
             player.displayScene(glApp::views[1], 1.0);
             glFinish();
-            player.saveView("movie", thread.currFrame());
+            player.saveView("movie", thread.currentFrame());
         }
 
         if ( PP.play == 1 )
