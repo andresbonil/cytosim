@@ -19,7 +19,7 @@ set simul system
 set space cell
 {
     shape = ellipse
-    display = ( color=blue; )
+    display = ( color=0x0000FF33; )
 }
 
 new cell

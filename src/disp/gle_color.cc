@@ -114,7 +114,7 @@ std::istream& operator >> (std::istream& is, gle_color& col)
         else if ( '0'==c  &&  'x'==d )
         {
             is.get();
-            GLubyte u[4] = { 255 };
+            GLubyte u[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
             int i = 0;
             while ( i < 4 )
             {

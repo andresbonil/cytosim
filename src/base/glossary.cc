@@ -694,7 +694,7 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
     
     if ( warn.size() )
     {
-        print_magenta(os, "Warning, " + warn + msg + ":\n");
+        print_yellow(os, "Warning, " + warn + msg + ":\n");
         write(os, PREF, pair);
         os << "\n";
         if ( used )

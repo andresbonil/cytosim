@@ -7,29 +7,54 @@
 #include <cstdlib>
 
 
-#if ( 0 )
+#if ( 1 )
+
+#define KNRM  "\x1B[0m"
+#define KBLD  "\x1B[1m"
+#define KUND  "\x1B[4m"
+#define KREV  "\x1B[7m"
+
+#define KBLK  "\x1B[30m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
+#define KBLDRED  "\x1B[1m\x1B[31m"
+#define KBLDGRN  "\x1B[1m\x1B[32m"
+#define KBLDYEL  "\x1B[1m\x1B[33m"
+#define KBLDBLU  "\x1B[1m\x1B[34m"
+#define KBLDMAG  "\x1B[1m\x1B[35m"
+#define KBLDCYN  "\x1B[1m\x1B[36m"
+#define KBLDWHT  "\x1B[1m\x1B[37m"
 
 
-/* Return the number of colors that the terminal supports */
-int nb_colors_supported()
+/* Check the number of colors that the terminal supports */
+bool has_colors()
 {
     unsigned long n = 0;
-    FILE * fp = popen("tput colors 2> /dev/null", "r");
+    FILE * fp = popen("tput cols 2> /dev/null", "r");
     if ( fp ) {
         char str[32] = { 0 };
         if ( fgets(str, sizeof(str), fp) )
+        {
+            //printf("fgets: %s", str);
             n = strtoul(str, nullptr, 10);
-        printf("tput: %s\n", str);
+        }
+        //printf("tput: %li %s", n, str);
         pclose(fp);
     }
     //printf("%i colors\n", n);
-    return (int)n;
+    return n > 7;
 }
 
 
 void print_red(std::ostream& os, std::string const& str)
 {
-    if ( nb_colors_supported() > 7 )
+    if ( has_colors() )
         os << KBLDRED << str << KNRM;
     else
         os << str;
@@ -37,7 +62,7 @@ void print_red(std::ostream& os, std::string const& str)
 
 void print_green(std::ostream& os, std::string const& str)
 {
-    if ( nb_colors_supported() > 7 )
+    if ( has_colors() )
         os << KBLDGRN << str << KNRM;
     else
         os << str;
@@ -45,7 +70,7 @@ void print_green(std::ostream& os, std::string const& str)
 
 void print_yellow(std::ostream& os, std::string const& str)
 {
-    if ( nb_colors_supported() > 7 )
+    if ( has_colors() )
         os << KBLDYEL << str << KNRM;
     else
         os << str;
@@ -53,7 +78,7 @@ void print_yellow(std::ostream& os, std::string const& str)
 
 void print_blue(std::ostream& os, std::string const& str)
 {
-    if ( nb_colors_supported() > 7 )
+    if ( has_colors() )
         os << KBLDBLU << str << KNRM;
     else
         os << str;
@@ -61,7 +86,7 @@ void print_blue(std::ostream& os, std::string const& str)
 
 void print_magenta(std::ostream& os, std::string const& str)
 {
-    if ( nb_colors_supported() > 7 )
+    if ( has_colors() )
         os << KBLDMAG << str << KNRM;
     else
         os << str;
@@ -69,7 +94,7 @@ void print_magenta(std::ostream& os, std::string const& str)
 
 void print_cyan(std::ostream& os, std::string const& str)
 {
-    if ( nb_colors_supported() > 7 )
+    if ( has_colors() )
         os << KBLDCYN << str << KNRM;
     else
         os << str;
