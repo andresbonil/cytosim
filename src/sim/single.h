@@ -54,13 +54,13 @@ private:
     /// specialization of HandMonitor
     Vector    otherPosition(Hand const*) const { return posFoot(); }
     /// = identity() of the Object on which a Wrist is attached, or Single::identity()
-    ObjectID  nucleatorID() const { if ( base() ) return base()->identity(); return Object::identity(); }
-    /// Simul container
-    Simul*    simul_ptr() const { return &Object::simul(); }
+    ObjectID  nucleatorID()              const { return base()?base()->identity():Object::identity(); }
+    /// Simul pointer
+    Simul*    simul()                    const { return &Object::simul(); }
     /// specialization of HandMonitor
-    real      interactionLength() const { return prop->length; }
+    real      interactionLength()        const { return prop->length; }
     /// stiffness of the interaction
-    real      interactionStiffness() const { return 0; }
+    real      interactionStiffness()     const { return 0; }
 
 protected:
     

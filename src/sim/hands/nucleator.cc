@@ -161,7 +161,7 @@ void Nucleator::stepUnattached(const FiberGrid&, Vector const& pos)
         gspTime = RNG.exponential();
         try {
             Glossary opt(prop->fiber_spec);
-            makeFiber(*haMonitor->simul_ptr(), pos, prop->fiber_type, opt);
+            makeFiber(*haMonitor->simul(), pos, prop->fiber_type, opt);
         }
         catch( Exception & e )
         {

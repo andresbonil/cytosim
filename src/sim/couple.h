@@ -64,8 +64,8 @@ protected:
     void      beforeDetachment(Hand const*);
     /// specialization of HandMonitor
     ObjectID  nucleatorID() const { return Object::identity(); }
-    /// Simul container
-    Simul*    simul_ptr() const { return &Object::simul(); }
+    /// Simul pointer
+    Simul*    simul() const { return &Object::simul(); }
     /// specialization of HandMonitor
     Hand *    otherHand(Hand const*) const;
     /// specialization of HandMonitor
