@@ -144,7 +144,7 @@ void SpaceCylinderP::setInteraction(Vector const& pos, Mecapoint const& pe, real
 
 void SpaceCylinderP::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("cylinderP", 16);
     out.writeUInt16(2);
     out.writeFloat(length_);
     out.writeFloat(radius_);
@@ -157,10 +157,11 @@ void SpaceCylinderP::setLengths(const real len[])
     radius_ = len[1];
 }
 
+
 void SpaceCylinderP::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "cylinderP");
     setLengths(len);
 }
 

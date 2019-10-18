@@ -124,8 +124,8 @@ std::string FileWrapper::get_line(const char end)
     if ( ferror(mFile) )
         return res;
 
-    const size_t CHK = 16;
-    char str[CHK];
+    const size_t CHK = 32;
+    char buf[CHK];
     
     fpos_t pos;
     char * m;
@@ -133,23 +133,52 @@ std::string FileWrapper::get_line(const char end)
     while ( !feof(mFile) )
     {
         fgetpos(mFile, &pos);
-        size_t s = fread(str, 1, CHK, mFile);
+        size_t s = fread(buf, 1, CHK, mFile);
         
         // search for separator:
-        m = (char*)memchr(str, end, s);
+        m = (char*)memchr(buf, end, s);
         
         if ( m )
         {
-            res.append(str, m-str);
+            res.append(buf, m-buf);
             //reposition at end of line:
             fsetpos(mFile, &pos);
-            fread(str, 1, m-str+1, mFile);
+            fread(buf, 1, m-buf+1, mFile);
             //fprintf(stderr,"-|%s|-\n", line.c_str());
             break;
         }
-        res.append(str, s);
+        res.append(buf, s);
     }
     
+    return res;
+}
+
+
+void FileWrapper::put_characters(std::string const& str, size_t cnt)
+{
+    // write characters from 'str':
+    size_t s = std::min(cnt, str.size());
+    cnt -= fwrite(str.c_str(), 1, s, mFile);
+    // fill the rest with '0'
+    const size_t CHK = 32;
+    char buf[CHK] = { 0 };
+    while ( cnt > 0 )
+        cnt -= fwrite(buf, 1, std::min(CHK, cnt), mFile);
+}
+
+
+std::string FileWrapper::get_characters(size_t cnt)
+{
+    std::string res;
+    const size_t CHK = 32;
+    char buf[CHK] = { 0 };
+    
+    while ( cnt > 0 )
+    {
+        size_t s = fread(buf, 1, std::min(CHK, cnt), mFile);
+        res.append(buf, s);
+        cnt -= s;
+    }
     return res;
 }
 

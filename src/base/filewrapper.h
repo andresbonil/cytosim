@@ -101,7 +101,13 @@ public:
 
     /// read until character `end` is found and set `line`, including terminating character
     std::string get_line(char end='\n');
+
+    /// put `cnt` characters from str
+    void    put_characters(std::string const&, size_t cnt);
     
+    /// read `cnt` characters
+    std::string get_characters(size_t cnt);
+
     /// Skip space and read next word separated by space
     std::string get_word();
 

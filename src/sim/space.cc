@@ -417,7 +417,7 @@ void Space::setInteraction(Interpolation const& pi, Meca & meca, real stiff, Con
 
 void Space::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("space", 16);
     out.writeUInt16(0);
 }
 
@@ -425,12 +425,12 @@ void Space::write(Outputter& out) const
 void Space::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "space");
     setLengths(len);
 }
 
 
-void Space::read_data(Inputter& in, real len[8])
+void Space::read_data(Inputter& in, real len[8], std::string const& expected)
 {
 #ifdef BACKWARD_COMPATIBILITY
     if ( in.formatID() < 35 )
@@ -452,27 +452,32 @@ void Space::read_data(Inputter& in, real len[8])
     }
 #endif
     
-    // read the 'shape' stored as a space-terminated string
+    // now read the 'shape':
+    if ( ! isalpha(in.peek()) )
+        throw InvalidIO("unexpected non-alphabetic character");
+    
     std::string str;
-    int c = in.get_char();
-    if ( c == ' ' )
-        c = in.get_char();
-    do {
-        str.push_back(c);
-        c = in.get_char();
-    } while ( c != ' ' );
-
-    // check that this matches current Space:
-    if ( str.compare(0, prop->shape.size(), prop->shape) )
+#ifdef BACKWARD_COMPATIBILITY
+    if ( in.formatID() < 52 )
+        str = in.get_word(); // stored as a space-terminated string
+    else
+#endif
+    {
+        str = in.get_characters(16); // stored as 16 characters
+        std::string::size_type e = str.find_last_not_of(" ");
+        str = str.substr(0, e+1);
+    }
+    
+    // compare with expected shape:
+    if ( str.compare(0, expected.size(), expected) )
     {
         std::ostringstream oss;
-        oss << "Space `" << prop->name() << "' has shape " << str;
-        oss << " in objects and " << prop->shape << " in property";
+        oss << "found space:shape `" << str << "' in file but `" << expected << "' was expected";
         throw InvalidIO(oss.str());
     }
     
     // read the dimensions:
-    unsigned n = 0;
+    size_t n = 0;
 #ifdef BACKWARD_COMPATIBILITY
     if ( in.formatID() < 43 )
         n = in.readUInt8();
@@ -480,8 +485,7 @@ void Space::read_data(Inputter& in, real len[8])
 #endif
         n = in.readUInt16();
     
-    n = std::min(n, 8U);
-    for ( unsigned d = 0; d < n; ++d )
+    for ( size_t d = 0; d < n; ++d )
         len[d] = in.readFloat();
 }
 

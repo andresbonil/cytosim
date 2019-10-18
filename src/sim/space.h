@@ -34,6 +34,11 @@ The edges are considered to be inside.
 */
 class Space : public Object
 {
+protected:
+    
+    /// read numbers from file
+    static void read_data(Inputter&, real*, std::string const&);
+
 public:
     
     /// parameters
@@ -173,9 +178,6 @@ public:
     
     /// get dimensions from array `len`
     virtual void   setLengths(const real len[8]) {}
-
-    /// read numbers from file
-    virtual void   read_data(Inputter&, real*);
 
     //------------------------------ DISPLAY ----------------------------------
     

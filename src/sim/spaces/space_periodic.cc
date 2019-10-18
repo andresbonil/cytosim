@@ -116,11 +116,12 @@ Vector SpacePeriodic::project(Vector const&) const
 
 void SpacePeriodic::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("periodic", 16);
+    out.writeUInt16(4);
     out.writeFloat(length_[0]);
     out.writeFloat(length_[1]);
     out.writeFloat(length_[2]);
+    out.writeFloat(0.f);
 }
 
 
@@ -135,7 +136,7 @@ void SpacePeriodic::setLengths(const real len[])
 void SpacePeriodic::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "periodic");
     setLengths(len);
 }
 

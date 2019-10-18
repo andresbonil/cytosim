@@ -190,11 +190,12 @@ Vector3 SpaceEllipse::project3D(Vector3 const& w) const
 
 void SpaceEllipse::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("ellipse", 16);
+    out.writeUInt16(4);
     out.writeFloat(length_[0]);
     out.writeFloat(length_[1]);
     out.writeFloat(length_[2]);
+    out.writeFloat(0.f);
 }
 
 void SpaceEllipse::setLengths(const real len[])
@@ -208,7 +209,7 @@ void SpaceEllipse::setLengths(const real len[])
 void SpaceEllipse::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "ellipse");
     setLengths(len);
 }
 

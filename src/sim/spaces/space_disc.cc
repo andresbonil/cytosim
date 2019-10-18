@@ -129,7 +129,7 @@ void SpaceDisc::step()
 
 void SpaceDisc::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("disc", 16);
     out.writeUInt16(2);
     out.writeFloat(radius_);
     out.writeFloat(force_);
@@ -145,7 +145,7 @@ void SpaceDisc::setLengths(const real len[])
 void SpaceDisc::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "disc");
     setLengths(len);
 }
 

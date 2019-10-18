@@ -12,6 +12,7 @@
  This is the initial value to Inputter::formatID()
  History of changes in file format:
 
+ 52: 18/10/2019 Space's shape is stored always on 16 characters
  51: 03/03/2019 Storing number of Aster links
  50: 19/12/2018 Fiber's birth time moved to Filament (now Chain)
  49: 12/12/2018 FiberSite writes the Lattice index but not the abscissa
