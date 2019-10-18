@@ -23,7 +23,7 @@ class CrosslinkLong : public Crosslink
     
 public:
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     CrosslinkLong(CrosslinkProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor

@@ -32,7 +32,7 @@ public:
     /// property
     BridgeProp const* prop;
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     Bridge(BridgeProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor

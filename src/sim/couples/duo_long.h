@@ -29,7 +29,7 @@ class DuoLong : public Duo
     
 public:
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     DuoLong(DuoProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor

@@ -82,7 +82,7 @@ protected:
     
 public:
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     Couple(CoupleProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor

@@ -95,7 +95,7 @@ public:
     /// initialize according to options given in Glossary
     ObjectList  build(Glossary&, Simul&);
     
-    /// create following the specifications in the SolidProp
+    /// constructor
     Solid(SolidProp const*);
     
     /// Copy constructor

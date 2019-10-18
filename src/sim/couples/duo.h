@@ -43,7 +43,7 @@ public:
     /// property
     DuoProp const* prop;
     
-    /// create following the specifications in the DuoProp
+    /// constructor
     Duo(DuoProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor

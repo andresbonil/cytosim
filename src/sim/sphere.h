@@ -65,7 +65,7 @@ public:
     /// create but do not initialize
     Sphere(SphereProp const*);
 
-    /// create and initialize following the specifications of SphereProp
+    /// constructor
     Sphere(SphereProp const*, real radius);
     
     /// Copy constructor
