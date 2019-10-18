@@ -601,21 +601,18 @@ void SingleSet::uniAttach(FiberSet const& fibers)
  */
 bool SingleSet::uniPrepare(PropertyList const& properties)
 {
-    unsigned inx = 0;
     bool res = false;
-    
+    unsigned last = 0;
+
     for ( Property const* i : properties.find_all("single") )
     {
         SingleProp const* p = static_cast<SingleProp const*>(i);
-        if ( p->fast_diffusion )
-            res = true;
-        
-        if ( p->number() > inx )
-            inx = p->number();
+        res = res | p->fast_diffusion;
+        last = std::max(last, p->number());
     }
     
     if ( res )
-        uniLists.resize(inx+1);
+        uniLists.resize(last+1);
     
     return res;
 }
