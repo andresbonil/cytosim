@@ -776,7 +776,7 @@ bool CoupleSet::uniPrepare(PropertyList const& properties)
     for ( Property const* i : properties.find_all("couple") )
     {
         CoupleProp const * p = static_cast<CoupleProp const*>(i);
-        res = res | p->fast_diffusion;
+        res |= p->fast_diffusion;
         last = std::max(last, p->number());
     }
     

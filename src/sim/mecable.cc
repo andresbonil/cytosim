@@ -309,16 +309,12 @@ void Mecable::foldPosition(Modulo const* s)
 
 bool Mecable::allInside(Space const* spc) const
 {
-    bool res = true;
     for ( unsigned ii = 0; ii < nPoints; ++ii )
     {
         if ( spc->outside(posP(ii)) )
-        {
-            res = false;
-            break;
-        }
+            return false;
     }
-    return res;
+    return true;
 }
 
 //------------------------------------------------------------------------------

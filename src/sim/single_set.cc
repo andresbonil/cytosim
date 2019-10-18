@@ -607,7 +607,7 @@ bool SingleSet::uniPrepare(PropertyList const& properties)
     for ( Property const* i : properties.find_all("single") )
     {
         SingleProp const* p = static_cast<SingleProp const*>(i);
-        res = res | p->fast_diffusion;
+        res |= p->fast_diffusion;
         last = std::max(last, p->number());
     }
     
