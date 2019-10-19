@@ -34,10 +34,13 @@ The actual operations need to be implemented by redefining the virtual functions
 class Movable
 {
     
-public:
+    /// read a position primitives, such as 'circle 5', etc.
+    static Vector readPosition0(std::istream&, Space const*);
     
-    /// read a position specified with primitives, such as 'circle 5', etc.
-    static Vector readPrimitive(std::istream&, Space const*);
+    /// read a direction primitives, such as 'horizontal', etc.
+    static Vector readDirection0(std::istream&, Vector const&, Space const*);
+
+public:
     
     /// read a position in space
     static Vector readPosition(std::istream&, Space const*);

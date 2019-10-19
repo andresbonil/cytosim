@@ -89,7 +89,7 @@ void Movable::revolve(Rotation const& T)
  chosen randomly inside this area following a uniform probability.
  */
 
-Vector Movable::readPrimitive(std::istream& is, Space const* spc)
+Vector Movable::readPosition0(std::istream& is, Space const* spc)
 {
     int c = Tokenizer::skip_space(is, false);
 
@@ -402,10 +402,11 @@ Vector Movable::readPrimitive(std::istream& is, Space const* spc)
             throw InvalidParameter("Unknown position specification `"+tok+"' (with no space defined)");
     }
     
-    // expect a vector to be specified:
-    real x = 0, y = 0, z = 0;
-    is >> x >> y >> z;
-    return Vector(x,y,z);
+    // accept a Vector:
+    Vector vec(0,0,0);
+    if ( is >> vec )
+        return vec;
+    throw InvalidParameter("expected a vector specifying a `position`");
 }
 
 
@@ -444,7 +445,7 @@ Vector Movable::readPosition(std::istream& is, Space const* spc)
         if ( is.fail() )
             return pos;
         isp = is.tellg();
-        pos = readPrimitive(is, spc);
+        pos = readPosition0(is, spc);
         is.clear();
         
         while ( !is.eof() )
@@ -465,7 +466,7 @@ Vector Movable::readPosition(std::istream& is, Space const* spc)
             // Convolve with shape
             else if ( tok == "add" )
             {
-                Vector vec = readPrimitive(is, spc);
+                Vector vec = readPosition0(is, spc);
                 pos = pos + vec;
             }
             // Alignment with a vector is specified with 'align'
@@ -491,14 +492,14 @@ Vector Movable::readPosition(std::istream& is, Space const* spc)
             // returns a random position between the two points specified
             else if ( tok == "to" )
             {
-                Vector vec = readPrimitive(is, spc);
+                Vector vec = readPosition0(is, spc);
                 return pos + ( vec - pos ) * RNG.preal();
             }
             // returns one of the two points specified
             else if ( tok == "or" )
             {
-                if ( RNG.flip() )
-                    return readPosition(is, spc);
+                Vector alt = readPosition0(is, spc);
+                if ( RNG.flip() ) pos = alt;
             }
             else
             {
@@ -561,7 +562,7 @@ Vector Movable::readPosition(std::istream& is, Space const* spc)
  */
 
 
-Vector Movable::readDirection(std::istream& is, Vector const& pos, Space const* spc)
+Vector Movable::readDirection0(std::istream& is, Vector const& pos, Space const* spc)
 {
     int c = Tokenizer::skip_space(is, false);
     
@@ -603,7 +604,7 @@ Vector Movable::readDirection(std::istream& is, Vector const& pos, Space const* 
         {
             Vector vec;
             if ( is >> vec )
-                return RNG.sflip() * normalize(vec);
+                return vec.normalized(RNG.sflip());
             throw InvalidParameter("expected vector after `align`");
         }
         
@@ -698,6 +699,68 @@ Vector Movable::readDirection(std::istream& is, Vector const& pos, Space const* 
 }
 
 
+Vector Movable::readDirection(std::istream& is, Vector const& pos, Space const* spc)
+{
+    std::string tok;
+    Vector dir(1,0,0);
+    std::streampos isp = 0;
+    
+    try
+    {
+        if ( is.fail() )
+            return dir;
+        isp = is.tellg();
+        dir = readDirection0(is, pos, spc);
+        is.clear();
+        
+        while ( !is.eof() )
+        {
+            isp = is.tellg();
+            tok = Tokenizer::get_symbol(is);
+
+            if ( tok.size() == 0 )
+                return dir;
+            
+            // Gaussian noise specified with 'blur'
+            else if ( tok == "blur" )
+            {
+                real blur = 0;
+                is >> blur;
+                dir = Rotation::randomRotation(blur*RNG.gauss()) * dir;
+            }
+            // returns one of the two points specified
+            else if ( tok == "or" )
+            {
+                Vector alt = readDirection0(is, pos, spc);
+                if ( RNG.flip() ) dir = alt;
+            }
+            else
+            {
+                /*
+                We need to work around a bug in the stream extraction operator,
+                which eats extra characters ('a','n','e','E') if a double is read
+                19.10.2015
+                */
+                is.clear();
+                is.seekg(isp);
+                is.seekg(-1, std::ios_base::cur);
+                int c = is.peek();
+                if ( c=='a' || c=='b' )
+                    continue;
+                
+                throw InvalidParameter("unexpected `"+tok+"'");
+            }
+        }
+    }
+    catch ( InvalidParameter& e )
+    {
+        e << "\n" << StreamFunc::marked_line(is, isp, PREF);
+        throw;
+    }
+    return dir;
+}
+
+
 /**
  The initial orientation of objects is defined by a rotation, which can be
  specified as follows:
@@ -789,17 +852,6 @@ Rotation Movable::readRotation(std::istream& is, Vector const& pos, Space const*
 
     // The last option is to specity a direction:
     Vector vec = readDirection(is, pos, spc);
-    
-    isp = is.tellg();
-    if ( "or" == Tokenizer::get_symbol(is) )
-    {
-        if ( RNG.flip() )
-            vec = readDirection(is, pos, spc);
-    }
-    else
-    {
-        is.seekg(isp);
-    }
     
     /*
      A single Vector does not uniquely define a rotation in 3D:

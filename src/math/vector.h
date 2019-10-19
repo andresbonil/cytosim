@@ -18,7 +18,7 @@ typedef real    Torque;
 const   Torque  nullTorque(0);
 
 /// helper function to normalize a 'Torque'
-inline real normalize(Torque x) { return std::copysign(1.0, x); }
+inline Torque normalize(Torque x) { return std::copysign(1.0, x); }
 
 #elif ( DIM == 2 )
 
@@ -27,7 +27,7 @@ typedef real    Torque;
 const   Torque  nullTorque(0);
 
 /// helper function to normalize a 'Torque'
-inline real normalize(Torque x) { return std::copysign(1.0, x); }
+inline Torque normalize(Torque x) { return std::copysign(1.0, x); }
 
 #elif ( DIM == 3 )
 
