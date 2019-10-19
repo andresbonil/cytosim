@@ -356,6 +356,9 @@ public:
     
     /// a random rotation chosen uniformly
     static Matrix11 randomRotation();
+    
+    /// a random rotation of given angle
+    static Matrix11 randomRotation(real);
 
 };
 

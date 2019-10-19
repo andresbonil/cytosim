@@ -590,7 +590,7 @@ private:
     {
         if ( c < r )
             return r - c;
-        else if ( c + r + 1 > s )
+        else if ( c + r + 1 > (int)s )
             return 2 * r + c - s + 1;
         else
             return 0;

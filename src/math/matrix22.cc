@@ -26,6 +26,15 @@ Matrix22 Matrix22::randomRotation()
 }
 
 
+Matrix22 Matrix22::randomRotation(real angle)
+{
+    real a = angle*RNG.sflip();
+    real c = cos(a);
+    real s = sin(a);
+    return Matrix22(c, s, -s, c);
+}
+
+
 Matrix22 Matrix22::rotationToVector(const Vector2& vec)
 {
     real n = vec.norm();

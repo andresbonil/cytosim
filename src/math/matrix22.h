@@ -784,6 +784,9 @@ public:
     
     /// a random rotation chosen uniformly
     static Matrix22 randomRotation();
+    
+    /// a rotation of angle '+/- angle'
+    static Matrix22 randomRotation(real angle);
 
 };
 
