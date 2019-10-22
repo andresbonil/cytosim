@@ -388,6 +388,8 @@ int main(int argc, char* argv[])
         gle::initialize();
         player.setStyle(DP.style);
         buildMenus();
+        glutAttachMenu(GLUT_RIGHT_BUTTON);
+        glutMenuStatusFunc(menuCallback);
         glutTimerFunc(100, timerCallback, 0);
         if ( glApp::isFullScreen() )
             glutFullScreen();
