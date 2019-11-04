@@ -14,7 +14,10 @@ void* operator new(std::size_t size)
     constexpr std::size_t sup = 1 << 30;
     // we align all memory to 32 bytes
     if ( size < sup )
-        posix_memalign(&ptr, 32, size);
+    {
+        if ( posix_memalign(&ptr, 32, size) )
+            throw std::bad_alloc();
+    }
 #else
     // system's default (unaligned) memory
     ptr = std::malloc(size);
@@ -24,6 +27,7 @@ void* operator new(std::size_t size)
     //std::printf("Cytosim new %5zu %p\n", s, ptr);
     return ptr;
 }
+
 
 void operator delete(void * ptr) throw()
 {

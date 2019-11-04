@@ -97,7 +97,13 @@ uint32_t Random::seed()
     {
         int cnt = 0;
         while ( s == 0 && ++cnt < 32 )
-            fread(&s, sizeof(s), 1, f);
+        {
+            if ( fread(&s, sizeof(s), 1, f) < sizeof(s) )
+            {
+                s = 0;
+                break;
+            }
+        }
     }
     // use clock otherwise
     if ( s == 0 )

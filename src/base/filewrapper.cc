@@ -143,7 +143,9 @@ std::string FileWrapper::get_line(const char end)
             res.append(buf, m-buf);
             //reposition at end of line:
             fsetpos(mFile, &pos);
-            fread(buf, 1, m-buf+1, mFile);
+            s = m-buf+1;
+            if ( s != fread(buf, 1, s, mFile) )
+                throw InvalidIO("unexpected error");
             //fprintf(stderr,"-|%s|-\n", line.c_str());
             break;
         }
@@ -246,7 +248,8 @@ void FileWrapper::skip_until(const char * str)
                 if ( *s == 0 )
                 {
                     fsetpos(mFile, &match);
-                    fread(buf, 1, offset, mFile);
+                    if ( offset != fread(buf, 1, offset, mFile) )
+                        throw InvalidIO("unexpected error");
                     return;
                 }
             }

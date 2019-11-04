@@ -40,9 +40,11 @@ bool FilePath::is_dir(std::string const& str)
 
 std::string FilePath::get_cwd()
 {
-    char cwd[1024];
-    getcwd(cwd, sizeof(cwd));
-    return cwd;
+    char cwd[1024] = { 0 };
+    if ( getcwd(cwd, sizeof(cwd)) )
+        return cwd;
+    else
+        return "";
 }
 
 
@@ -108,7 +110,7 @@ std::vector<std::string>  FilePath::list_dir(std::string const& path, std::strin
 
 std::string FilePath::dir_part(std::string const& path)
 {
-    char* res, tmp[PATH_MAX];
+    char* res, tmp[PATH_MAX] = { 0 };
     
     if ( !realpath(path.c_str(), tmp) )
         return ".";
@@ -124,7 +126,7 @@ std::string FilePath::dir_part(std::string const& path)
 
 std::string FilePath::file_part(std::string const& path)
 {
-    char str[MAXPATHLEN];
+    char str[MAXPATHLEN] = { 0 };
     strncpy(str, path.c_str(), MAXPATHLEN);
     char * res = basename(str);
     

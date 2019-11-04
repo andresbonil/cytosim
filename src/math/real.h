@@ -16,6 +16,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdint>
+#include <new>
 
 /**
  It is possible to select double or single precision throughout Cytosim
@@ -66,7 +67,8 @@ inline real* new_real(size_t size)
 {
     void* ptr = nullptr;
     // we align to 4 doubles (of size 8 bytes), hence 32 bytes
-    posix_memalign(&ptr, 32, size*sizeof(real));
+    if ( posix_memalign(&ptr, 32, size*sizeof(real)) )
+        throw std::bad_alloc();
     //printf("new_real(%lu)  %lu\n", size, ((uintptr_t)ptr&63));
     return (real*)ptr;
 }
