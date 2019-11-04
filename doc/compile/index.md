@@ -134,12 +134,24 @@ If you get an error at this stage, check that the compiler is linking the correc
 To find the libraries on your system, this command may help:
 
 	find /usr/lib -name libblas.*
-	
+
+For example, if the result is:
+
+	/usr/lib/libblas.so
+
+You should adjust `makefile.inc` to specify the corresponding path:
+
+    USRLIB := /usr/lib
+
+Ensure that no other line changes the value of `USRLIB`. For example, this one is commented out with the `#`:
+
+    #USRLIB := /usr/lib/x86_64-linux-gnu
+
 #### Check if it can read a configuration file:
 
 	make test_glos
 
-#### At this stage, you can compile `sim`:
+#### At this stage, you can attempt to compile `sim`:
 
 	make sim
 
