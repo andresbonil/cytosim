@@ -1086,7 +1086,7 @@ You could for example cut filaments at the positions where they make a sharp ang
 </summary>
 That is feasible, using 
 
-	real RigidFiber::tension(unsigned p) const 
+	real RigidFiber::tension(size_t p) const 
 
 You could make this code dependent on a parameter, and link the value of the parameter to the config fie. This requires some work, but it is not difficult.
 </details>
@@ -1109,7 +1109,7 @@ To make the corresponding object immobile, set `Y` to zero like this:
 	
 	void projectForces(const real*, real* Y) const
 	{
-	   for(int i=0; i < DIM*nbPoints(); ++i)
+	   for(size_t i=0; i < DIM*nbPoints(); ++i)
 	   		Y[i] = 0;
 	}
 

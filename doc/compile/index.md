@@ -108,7 +108,7 @@ Recompile Cytosim entirely:
 Compilation is specified in `makefile` and `makefile.inc`, and these files may need to be adjusted manually.
 Check  `makefile.inc` first and verify the [compile options](options.md).
 
-It attepts to automatically detect the platforms:
+Makefile attempts to automatically detect the platforms:
 
 	#---------------- MACHINE = {mac, linux, cygwin, auto}
 	MACHINE := auto
@@ -120,7 +120,7 @@ and check the parameters set lower in the `makefile.inc`, for this platform, for
 		...
 	endif
 
-To poinpoint the problem, try to build the objects in the order of how many depencies they have:
+To pinpoint the problem, try to build objects that have fewer depencies first:
 
 #### Check your compiler for C++11 support and compilation switches
 
@@ -129,6 +129,11 @@ To poinpoint the problem, try to build the objects in the order of how many depe
 #### Check your BLAS/LAPACK directly:
 
 	make test_blas
+	
+If you get an error at this stage, check that the compiler is linking the correct libraries.
+To find the libraries on your system, this command may help:
+
+	find /usr/lib -name libblas.*
 	
 #### Check if it can read a configuration file:
 
