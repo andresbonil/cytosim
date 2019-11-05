@@ -33,10 +33,10 @@ Parser::Parser(Simul& s, bool ds, bool dc, bool dn, bool dr, bool dw)
 }
 
 
-void Parser::show_lines(std::istream& is, std::streampos pos)
+void Parser::show_lines(std::istream& is, std::streampos start)
 {
-    std::cerr << "in\n";
-    StreamFunc::print_lines(std::cerr, is, pos, is.tellg());
+    std::cerr << "  in\n";
+    StreamFunc::print_lines(std::cerr, is, start, is.tellg());
 }
 
 

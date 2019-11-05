@@ -706,7 +706,10 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
     if ( warn.size() )
     {
         print_yellow(os, "Warning, " + warn + msg + ":\n");
-        write_counts(os, PREF, pair);
+        if ( used )
+            write_counts(os, PREF, pair);
+        else
+            write(os, PREF, pair);
         os << std::endl;
         
         if ( ! used )
