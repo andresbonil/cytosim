@@ -36,27 +36,27 @@ extern Modulo const* modulo;
 
 void out_of_memory_handler()
 {
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
-    write(STDERR_FILENO, "Cytosim: memory allocation failed", 33);
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "Cytosim: memory allocation failed", 33);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
     print_backtrace();
     _exit(1);
 }
 
 void termination_handler()
 {
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
-    write(STDERR_FILENO, "Cytosim: uncaught exception", 27);
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "Cytosim: uncaught exception", 27);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
     print_backtrace();
     abort();
 }
 
 void signal_handler(int sig)
 {
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
     psignal(sig, "Cytosim");
-    write(STDERR_FILENO, "* * * * *\n", 10);
+    (void) write(STDERR_FILENO, "* * * * *\n", 10);
     print_backtrace();
     _exit(sig);
 }

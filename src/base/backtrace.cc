@@ -27,11 +27,11 @@ void print_backtrace(int out)
 #if ( 1 )
     char** strs = backtrace_symbols(buffer, size);
 
-    write(out, "Cytosim execution stack:\n", 25);
+    (void) write(out, "Cytosim execution stack:\n", 25);
     for ( int ii = 0; ii < size; ++ii )
     {
-        write(out, strs[ii], strlen(strs[ii]));
-        write(out, "\n", 1);
+        (void) write(out, strs[ii], strlen(strs[ii]));
+        (void) write(out, "\n", 1);
     }
     free(strs);
 #else
@@ -43,7 +43,7 @@ void print_backtrace(int out)
 
 void print_backtrace(int out)
 {
-    write(out, "Execution stack information unavailable\n", 40);
+    (void) write(out, "Execution stack information unavailable\n", 40);
 }
 
 #endif

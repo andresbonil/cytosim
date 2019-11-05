@@ -32,7 +32,7 @@ void handle_signal(int sig)
     strncpy(str, "Cytosim received signal   \n", 128);
     str[25] = '0' +  sig     % 10;
     str[24] = '0' + (sig/10) % 10;
-    write(STDERR_FILENO, str, 28);
+    (void) write(STDERR_FILENO, str, 28);
     _exit(sig);
 }
 
