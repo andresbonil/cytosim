@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     catch(...) {
-        std::cerr << "\nAn unknown exception occured\n";
+        std::cerr << "\nError: an unknown exception occured\n";
         return EXIT_FAILURE;
     }
     

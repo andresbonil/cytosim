@@ -503,19 +503,22 @@ Vector Movable::readPosition(std::istream& is, Space const* spc)
             }
             else
             {
+                // unget last token:
+                is.clear();
+                is.seekg(isp);
+#if 0
                 /*
                 We need to work around a bug in the stream extraction operator,
                 which eats extra characters ('a','n','e','E') if a double is read
                 19.10.2015
                 */
-                is.clear();
-                is.seekg(isp);
                 is.seekg(-1, std::ios_base::cur);
                 int c = is.peek();
                 if ( c=='a' || c=='b' )
                     continue;
-                
-                throw InvalidParameter("unexpected `"+tok+"'");
+#endif
+                break;
+                //throw InvalidParameter("unexpected `"+tok+"'");
             }
         }
     }
@@ -736,19 +739,22 @@ Vector Movable::readDirection(std::istream& is, Vector const& pos, Space const* 
             }
             else
             {
+                // unget last token
+                is.clear();
+                is.seekg(isp);
+#if 0
                 /*
                 We need to work around a bug in the stream extraction operator,
                 which eats extra characters ('a','n','e','E') if a double is read
                 19.10.2015
                 */
-                is.clear();
-                is.seekg(isp);
                 is.seekg(-1, std::ios_base::cur);
                 int c = is.peek();
                 if ( c=='a' || c=='b' )
                     continue;
-                
-                throw InvalidParameter("unexpected `"+tok+"'");
+#endif
+                break;
+                //throw InvalidParameter("unexpected `"+tok+"'");
             }
         }
     }
