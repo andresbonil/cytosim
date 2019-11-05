@@ -30,7 +30,13 @@ void SpaceStrip::resize(Glossary& opt)
         length_[d] = len;
     }
     if ( length_[DIM-1] <= 0 )
-        throw InvalidParameter("strip:length[DIM-1] must be > 0");
+    {
+        real rad = 0;
+        if ( opt.set(rad, "radius") )
+            length_[DIM-1] = rad;
+        if ( length_[DIM-1] <= 0 )
+            throw InvalidParameter("strip:length[DIM-1] must be > 0");
+    }
 }
 
 

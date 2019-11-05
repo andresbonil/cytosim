@@ -67,7 +67,7 @@ set hand dynein
     unloaded_speed = -0.025 % Gennerich et al. Cell 2007, 131, 952-965 = 0.05 um/s
     bind_also_end = 1
     stall_force = 7 % Shingyoji et al. Nature 1998, 393 = 6 pN ; Gennerich et al. Cell 2007, 131, 952-965 = 7 pN
-    display = ( color=white, gray; size=8; back_color=black )
+    display = ( color=white, gray; size=8; )
 }
 
 set single anchored_dynein
