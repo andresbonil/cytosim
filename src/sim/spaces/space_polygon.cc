@@ -14,6 +14,8 @@ SpacePolygon::SpacePolygon(SpaceProp const* p)
 {
     volume_ = 0;
     height_ = 0;
+    inf_.reset();
+    sup_.reset();
     
     if ( DIM == 1 )
         throw InvalidParameter("polygon is not usable in 1D");

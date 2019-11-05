@@ -34,16 +34,16 @@ class SpacePolygon : public Space
 private:
 
     /// The 2D polygon object
-    Polygon           poly_;
+    Polygon     poly_;
         
     /// pre-calculated bounding box derived from poly_
-    Vector            inf_, sup_;
+    Vector      inf_, sup_;
     
     /// Volume calculated from poly_
-    real              volume_;
+    real        volume_;
     
     /// half the total height in Z
-    real              height_;
+    real        height_;
 
     /// update
     void        update();

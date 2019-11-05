@@ -173,7 +173,11 @@ Isometry Interface::read_placement(Glossary& opt)
         if ( has_trail(iss) ) warn_trail(iss, "position = "+str);
     }
     else if ( spc )
+    {
+        if ( spc->volume() <= 0 )
+            throw InvalidParameter("Cannot pick point inside space of volume = 0");
         iso.mov = spc->randomPlace();
+    }
     
     // Rotation applied before the translation
     if ( opt.set(str, "orientation") )

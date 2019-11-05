@@ -995,7 +995,7 @@ void Parser::parse_for(std::istream& is)
     
     std::string code = Tokenizer::get_block(is, '{');
     
-    for ( unsigned int c = start; c < end; ++c )
+    for ( size_t c = start; c < end; ++c )
     {
         std::string sub = code;
         // substitute Variable name for this iteration:

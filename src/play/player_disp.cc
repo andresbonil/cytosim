@@ -191,14 +191,11 @@ void Player::autoScale(SpaceSet const& spaces, View& view)
 {
     real rad = 0;
     for ( Space const* spc = spaces.first(); spc; spc=spc->next() )
-    {
-        real r = 2 * spc->max_extension();
-        if ( r > rad ) rad = r;
-    }
+        rad = std::max(rad, spc->max_extension());
     if ( rad > 0 )
     {
         //std::clog << "auto_scale " << rad << '\n';
-        view.view_size = GLfloat(rad);
+        view.view_size = GLfloat(2*rad);
         view.zoom_in(0.933033);
         --view.auto_scale;
     }

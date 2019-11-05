@@ -366,7 +366,7 @@ real Polygon::surface() const
  @return
  0    : point is ouside
  1    : point is inside
- edge : point is near the boundary, a distance threshold
+ edge : point is near the boundary, within distance `threshold`
  .
 */
 int Polygon::inside(real xx, real yy, int edge, real threshold) const
