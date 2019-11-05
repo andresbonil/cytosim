@@ -81,14 +81,9 @@ void MatrixSparseSymmetricBlock::Column::allocate(size_t alc)
         void * ptr = new_real(alc*sizeof(SquareBlock)/sizeof(real));
         SquareBlock * blk_new  = new(ptr) SquareBlock[alc];
 
-<<<<<<< HEAD
-        posix_memalign(&ptr, 32, alc*sizeof(index_t));
-        index_t * inx_new = (index_t*)ptr;
-=======
-        if ( posix_memalign(&ptr, 32, alc*sizeof(size_t)) )
+        if ( posix_memalign(&ptr, 32, alc*sizeof(index_t)) )
             throw std::bad_alloc();
-        size_t * inx_new = (size_t*)ptr;
->>>>>>> 44955f2... fixed warning due to ignoring return values of functions
+        index_t * inx_new = (index_t*)ptr;
 
         if ( inx_ )
         {
