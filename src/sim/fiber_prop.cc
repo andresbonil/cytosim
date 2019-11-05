@@ -209,7 +209,10 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
     int p = STATE_WHITE;
 #ifdef BACKWARD_COMPATIBILITY
     if ( opt.set(p, "plus_end_state") )
+    {
+        fib->setDynamicStateP(p);
         Cytosim::warn << "use `plus_end = STATE` instead of `plus_end_state = STATE`" << std::endl;
+    }
 #endif
     if ( opt.set(p, "plus_end", keys) || opt.set(p, "end_state", keys) )
         fib->setDynamicStateP(p);
@@ -218,7 +221,10 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
     int m = STATE_WHITE;
 #ifdef BACKWARD_COMPATIBILITY
     if ( opt.set(m, "minus_end_state") )
+    {
         Cytosim::warn << "use `minus_end = STATE` instead of `minus_end_state = STATE`" << std::endl;
+        fib->setDynamicStateM(m);
+    }
 #endif
     if ( opt.set(m, "minus_end", keys) || opt.set(m, "end_state", 1, keys) )
         fib->setDynamicStateM(m);
@@ -315,9 +321,9 @@ void FiberProp::read(Glossary& glos)
     {
         persistent = !ds;
         if ( ds )
-            Cytosim::warn << "please use `persistent=0` instead of `delete_stub=1`" << std::endl;
+            Cytosim::warn << "use `persistent=0` instead of `delete_stub=1`" << std::endl;
         else
-            Cytosim::warn << "please use `persistent=1` instead of `delete_stub=0`" << std::endl;
+            Cytosim::warn << "use `persistent=1` instead of `delete_stub=0`" << std::endl;
     }
 #endif
     

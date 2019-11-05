@@ -14,6 +14,9 @@ namespace Cytosim
     /// a class representing an output stream
     class Output
     {
+        /// prefix to all messages
+        std::string   pref_;
+
         /// pointer to the current destination of output
         std::ostream* out_;
         
@@ -29,7 +32,7 @@ namespace Cytosim
     public:
         
         /// create stream directed to given stream with `max_output` allowed
-        Output(std::ostream& os, unsigned n_out = 1<<16) : out_(&os), cnt_(n_out)
+        Output(std::ostream& os, unsigned n_out = 1<<16, std::string const& p = "") : pref_(p), out_(&os), cnt_(n_out)
         {
             nul_.open("/dev/null");
         }
@@ -87,7 +90,7 @@ namespace Cytosim
             if ( out_->good() && cnt_ )
             {
                 --cnt_;
-                (*out_) << x;
+                (*out_) << pref_ << x;
                 return *out_;
             }
             return nul_;

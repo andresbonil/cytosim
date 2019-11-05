@@ -39,7 +39,7 @@ void WalkerProp::read(Glossary& glos)
     glos.set(unbinding_chance, "unbinding", 2);
     
     if ( glos.has_key("dangling_chance") )
-        Cytosim::warn << "please use `hold_growing_end` instead of `dangling_chance`\n";
+        Cytosim::warn << "use `hold_growing_end` instead of `dangling_chance`\n";
     
 #ifdef BACKWARD_COMPATIBILITY
     if ( glos.set(hold_growing_end,  "hold_fiber") )
