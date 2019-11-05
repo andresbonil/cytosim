@@ -31,7 +31,7 @@ void Aster::step()
         {
             Glossary opt(prop->fiber_spec);
             sim.add(makeFiber(sim, ii, prop->fiber_type, opt));
-            opt.warnings(std::cerr, 1, "in aster:nucleate");
+            opt.warnings(std::cerr, 1, " in aster:nucleate[1]");
         }
     }
 }
