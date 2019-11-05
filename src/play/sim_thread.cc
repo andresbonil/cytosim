@@ -96,7 +96,7 @@ void SimThread::run()
     }
     catch( Exception & e ) {
         simul.relax();
-        std::cerr << std::endl << "Error: " << e.what() << std::endl;
+        std::cerr << "\nError: " << e.what() << std::endl;
         //flashText("Error: simulation died");
     }
     // the thread terminates normally:

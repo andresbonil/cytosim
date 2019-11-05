@@ -47,19 +47,19 @@ void help(std::ostream& os)
 }
 
 
-FILE * openFile(const char base[], int ix)
+FILE * openFile(const char base[], unsigned ix)
 {
     char name[256] = { 0 };
     FILE * f = 0;
     
     if ( binary )
     {
-        snprintf(name, sizeof(name), "%s%04i.bin", base, ix);
+        snprintf(name, sizeof(name), "%s%04u.bin", base, ix);
         f = fopen(name, "wb");
     }
     else
     {
-        snprintf(name, sizeof(name), "%s%04i.txt", base, ix);
+        snprintf(name, sizeof(name), "%s%04u.txt", base, ix);
         f = fopen(name, "w");
     }
     if ( f == 0 )

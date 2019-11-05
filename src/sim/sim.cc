@@ -5,6 +5,7 @@
 #include "messages.h"
 #include "glossary.h"
 #include "exceptions.h"
+#include "ansi_colors.h"
 #include "filepath.h"
 #include "splash.h"
 #include "tictoc.h"
@@ -105,7 +106,8 @@ int main(int argc, char* argv[])
         simul.initialize(arg);
     }
     catch( Exception & e ) {
-        std::cerr << "Error: " << e.what() << '\n';
+        print_magenta(std::cerr, "Error: ");
+        std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
     catch(...) {
@@ -121,7 +123,8 @@ int main(int argc, char* argv[])
             std::cerr << "You must specify a config file\n";
     }
     catch( Exception & e ) {
-        std::cerr << "\nError: " << e.what() << '\n';
+        print_magenta(std::cerr, "Error: ");
+        std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
     catch(...) {

@@ -174,8 +174,6 @@ Isometry Interface::read_placement(Glossary& opt)
     }
     else if ( spc )
     {
-        if ( spc->volume() <= 0 )
-            throw InvalidParameter("cannot pick point inside space of null volume");
         iso.mov = spc->randomPlace();
     }
     

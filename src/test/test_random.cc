@@ -21,10 +21,10 @@ void print_bits(FILE * f, const void * v, const int size)
 
 void speed_test()
 {
-    const unsigned int cnt = 1 << 30;
+    const size_t cnt = 1 << 30;
     TicToc::tic();
     uint32_t u = 10;
-    for (uint32_t j=0; j<cnt; ++j)
+    for (size_t j=0; j<cnt; ++j)
     {
         u = RNG.pint(1024);
         RNG.pint(u);
@@ -127,10 +127,10 @@ void testbits()
 
 
 #define TEST test
-void test_test( const real prob, const int MAX )
+void test_test( const real prob, const size_t MAX )
 {
     int cnt = 0, a, b, c;
-    for ( int jj=0; jj < MAX; ++jj )
+    for ( size_t jj=0; jj < MAX; ++jj )
     {
         a = RNG.TEST(prob) + RNG.TEST(prob) + RNG.TEST(prob) + RNG.TEST(prob);
         b = RNG.TEST(prob) + RNG.TEST(prob) + RNG.TEST(prob) + RNG.TEST(prob);
@@ -140,9 +140,9 @@ void test_test( const real prob, const int MAX )
     printf("prob = %f measured = %f cnt = %i\n", prob, cnt / double(12*MAX), cnt);
 }
 
-void test_RNG(const int MAX)
+void test_RNG(const size_t MAX)
 {
-    for ( int jj=0; jj < MAX; ++jj )
+    for ( size_t jj=0; jj < MAX; ++jj )
     {
         RNG.preal();RNG.preal();RNG.preal();RNG.preal();RNG.preal();
         RNG.preal();RNG.preal();RNG.preal();RNG.preal();RNG.preal();
@@ -214,10 +214,10 @@ void test_float()
 
 void test_uniform()
 {
-    unsigned cnt = 1<<28;
+    size_t cnt = 1<<28;
     real avg = 0;
     real var = 0;
-    for ( unsigned i = 0; i < cnt; ++i )
+    for ( size_t i = 0; i < cnt; ++i )
     {
         real x = RNG.sreal();
         real y = RNG.sreal();
@@ -236,17 +236,17 @@ void test_uniform()
 void test_gauss()
 {
     printf("Gauss\n");
-    int  cnt = 0;
+    size_t cnt = 0;
     real avg = 0;
     real var = 0;
     const size_t n_max = 1<<6;
     real vec[n_max] = { 0 };
-    for ( int i = 0; i < 10000000; ++i )
+    for ( size_t i = 0; i < 10000000; ++i )
     {
         size_t n = RNG.pint(n_max);
         RNG.gauss_set(vec, n);
         cnt += n;
-        for ( int u = 0; u < n; ++u )
+        for ( size_t u = 0; u < n; ++u )
         {
             avg += vec[u];
             var += vec[u] * vec[u];
@@ -261,9 +261,9 @@ void test_gauss()
 
 void test_prob()
 {
-    int cnt = 1 << 28;
-    int avg = 0;
-    for ( int i = 0; i < cnt; ++i )
+    size_t avg = 0;
+    size_t cnt = 1 << 28;
+    for ( size_t i = 0; i < cnt; ++i )
         avg += RNG.flip_8th();
 
     printf("8th      prob = %.6f\n", avg/(double)cnt);
@@ -272,10 +272,10 @@ void test_prob()
 
 void test_exponential()
 {
-    int cnt = 1 << 29;
+    size_t cnt = 1 << 29;
     real avg = 0;
     real var = 0;
-    for ( int i = 0; i < cnt; ++i )
+    for ( size_t i = 0; i < cnt; ++i )
     {
         real x = RNG.exponential();
         real y = RNG.exponential();
@@ -291,9 +291,9 @@ void test_exponential()
 }
 
 
-void test_poisson(unsigned int sup)
+void test_poisson(size_t sup)
 {
-    for ( unsigned n = 0; n < sup; ++n )
+    for ( size_t n = 0; n < sup; ++n )
     {
         int x = (int)(RNG.gauss() * sqrt(n) + n);
         printf("%10i %9i %9i %9i\n", n, RNG.poisson_knuth(n), RNG.poisson(n), x);
@@ -609,7 +609,7 @@ int main(int argc, char* argv[])
             break;
             
         case 7:
-            test_gaussian(1 << 18);
+            test_gaussian(1<<18);
             break;
     }
     

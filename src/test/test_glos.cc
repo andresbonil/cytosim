@@ -1,6 +1,5 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
-#include "ansi_colors.h"
 #include "exceptions.h"
 #include "glossary.h"
 
@@ -36,7 +35,7 @@ int main(int argc, char* argv[])
     }
     catch ( Exception& e )
     {
-        print_magenta(std::cout, "Error : "+e.message());
+        std::cout << "Error : " << e.what();
         return EXIT_FAILURE;
     }
 }

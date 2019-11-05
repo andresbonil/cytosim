@@ -7,6 +7,7 @@
 #include "saveimage.h"
 #include "filepath.h"
 #include "splash.h"
+#include "ansi_colors.h"
 
 #include "opengl.h"
 #include "player.h"
@@ -396,7 +397,7 @@ int main(int argc, char* argv[])
     }
     catch ( Exception & e )
     {
-        printf("Initialization error: %s\n", e.what());
+        std::cerr << "\nInitialization Error: " << e.what() << '\n';
         return EXIT_FAILURE;
     }
     

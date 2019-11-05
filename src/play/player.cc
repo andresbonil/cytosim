@@ -77,7 +77,7 @@ void Player::nextFrame()
     }
     catch( Exception & e )
     {
-        flashText("Error:\n %s", e.what());
+        flashText("Error:\n %s", e.c_str());
         if ( thread.eof() )
             stop();
     }
@@ -187,7 +187,7 @@ void Player::restart()
         thread.start();
     }
     catch( Exception & e ) {
-        flashText("Error: %s", e.what());
+        flashText("Error: %s", e.c_str());
     }
 }
 

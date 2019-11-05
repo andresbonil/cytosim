@@ -118,7 +118,7 @@ std::string Player::buildReport(std::string arg) const
         }
         catch ( Exception & e )
         {
-            return e.message();
+            return e.what();
         }
     }
     return "";

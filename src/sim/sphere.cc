@@ -305,10 +305,10 @@ void Sphere::setDragCoefficientPiston()
     real eps = ( thickness - rad ) / rad;
     
     if ( eps <= 0 )
-        throw InvalidParameter("Error: piston formula yield invalid value");
+        throw InvalidParameter("Error: piston formula yields invalid value");
 
     if ( eps > 1 )
-        throw InvalidParameter("Error: piston formula yield invalid value");
+        throw InvalidParameter("Error: piston formula yields invalid value");
 
     spDrag    = 9*M_PI*M_PI * prop->viscosity * rad * M_SQRT2 / ( 4 * pow(eps,2.5) );
     spDragRot = 2*M_PI*M_PI * prop->viscosity * rad * rad * rad * sqrt(2.0/eps);

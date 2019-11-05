@@ -24,32 +24,31 @@ class Exception
     
 protected:
     
-    /// message associated with the exception
+    /// brief description of the issue
     std::string msg;
-    
+
 public:
     
     /// Creator with empty message
     Exception()
     {
-        msg = "\0";
     }
     
     /// constructor with given message
-    Exception(const std::string m)
+    Exception(std::string const& m)
     {
         msg = m;
         //printf("Exception(%s)\n", msg.c_str());
     }
     
     /// return copy of the message
-    std::string message() const
+    std::string what() const
     {
         return msg;
     }
 
-    /// return the message
-    const char* what() const
+    /// return copy of the message
+    char const* c_str() const
     {
         return msg.c_str();
     }

@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
                         printf("Reader: frame not found: ");
                 }
                 catch( Exception & e ) {
-                    printf("Reader: excetion in `read` %i: %s\n", frame, e.what());
+                    printf("Reader: exception in `read` %i: %s\n", frame, e.c_str());
                 }
             }
         }
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
                         if ( err ) printf("Reader error with `next`: %i\n", err);
                     }
                     catch( Exception & e ) {
-                        printf("Reader: exception in `next`: %s\n", e.what());
+                        printf("Reader: exception in `next`: %s\n", e.c_str());
                     }
                     break;
                     

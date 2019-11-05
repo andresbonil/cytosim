@@ -292,7 +292,7 @@ void split(FILE * in)
     int frm = 0;
     int  code = 0;
     char name[128] = { 0 };
-    snprintf(name, sizeof(name), "objects%04i.cmo", frm);
+    snprintf(name, sizeof(name), "objects%04li.cmo", frm);
     FILE * out = fopen(name, "w");
    
     while ( code != EOF )
@@ -307,7 +307,7 @@ void split(FILE * in)
                 fclose(out);
             }
             ++frm;
-            snprintf(name, sizeof(name), "objects%04i.cmo", frm);
+            snprintf(name, sizeof(name), "objects%04li.cmo", frm);
             out = openfile(name, "w");
             if ( out )
                 flockfile(out);
