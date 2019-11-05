@@ -166,20 +166,6 @@ void fillMatrix(MatrixSparseSymmetricBlock& mat, const int i, const int j)
     else
         mat.block(j,i).add_full(M.transposed());
 }
-
-
-void fillMatrix(MatrixSparseBlock& mat, const int i, const int j)
-{
-    Matrix34 M(alpha, -beta, beta, -beta, alpha, -beta, beta, -beta, alpha);
-    
-    mat.diag_block(i).add_half(M);
-    mat.diag_block(j).add_half(M);
-    
-    if ( i > j )
-        mat.block(i,j).add_full(M);
-    else
-        mat.block(j,i).add_full(M.transposed());
-}
 #endif
 
 
