@@ -35,20 +35,21 @@
 /* Check the number of colors that the terminal supports */
 bool has_colors()
 {
-    unsigned long n = 0;
-    FILE * fp = popen("tput cols 2> /dev/null", "r");
-    if ( fp ) {
-        char str[32] = { 0 };
-        if ( fgets(str, sizeof(str), fp) )
-        {
-            //printf("fgets: %s", str);
-            n = strtoul(str, nullptr, 10);
+    static int n_colors = 0;
+    if ( n_colors == 0 )
+    {
+        long n = 1;
+        FILE * fp = popen("tput cols 2> /dev/null", "r");
+        if ( fp ) {
+            char str[32] = { 0 };
+            if ( fgets(str, sizeof(str), fp) )
+                n = strtol(str, nullptr, 10);
+            pclose(fp);
+            //printf("terminal has %li colors: %s", n, str);
         }
-        //printf("tput: %li %s", n, str);
-        pclose(fp);
+        n_colors = n;
     }
-    //printf("%i colors\n", n);
-    return n > 7;
+    return n_colors > 7;
 }
 
 

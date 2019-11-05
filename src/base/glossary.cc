@@ -354,22 +354,22 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
     {
         // for a new key, we accept all values
         rec_type & rec = mTerms[pair.first];
-        for ( unsigned v = 0; v < pair.second.size(); ++v )
-            rec.push_back(pair.second[v]);
+        for ( size_t i = 0; i < pair.second.size(); ++i )
+            rec.push_back(pair.second[i]);
     }
     else
     {
         // for pre-existing keys, we check every values:
         rec_type & rec = w->second;
-        for ( unsigned v = 0; v < pair.second.size(); ++v )
+        for ( size_t i = 0; i < pair.second.size(); ++i )
         {
-            if ( rec.size() <= v )
-                rec.push_back(pair.second[v]);
+            if ( rec.size() <= i )
+                rec.push_back(pair.second[i]);
             else
             {
-                if ( !rec[v].defined_  ||  !no_overwrite )
-                    rec[v] = pair.second[v];
-                else if ( pair.second[v].value_ != rec[v].value_  &&  no_overwrite > 1 )
+                if ( !rec[i].defined_  ||  !no_overwrite )
+                    rec[i] = pair.second[i];
+                else if ( pair.second[i].value_ != rec[i].value_  &&  no_overwrite > 1 )
                 {
                     std::ostringstream oss;
                     oss << "conflicting definitions:\n";
@@ -606,14 +606,24 @@ std::string Glossary::format_value(std::string const& str)
 }
 
 
+std::string Glossary::format_count(size_t c)
+{
+    if ( c == 0 )
+        return " ( not used ) ";
+    if ( c == 1 )
+        return " ( used once ) ";
+    return " ( used " + std::to_string(c) + " times ) ";
+}
+    
+
 void Glossary::write(std::ostream& os, std::string const& prefix, Glossary::pair_type const& pair)
 {
     os << prefix << pair.first;
     if ( pair.second.size() > 0 )
     {
         os << " = " << format_value(pair.second[0].value_);
-        for ( size_t v = 1; v < pair.second.size(); ++v )
-            os << ", " << format_value(pair.second[v].value_);
+        for ( size_t i = 1; i < pair.second.size(); ++i )
+            os << ", " << format_value(pair.second[i].value_);
         os << ";";
     }
 }
@@ -624,12 +634,13 @@ void Glossary::write(std::ostream& os, std::string const& prefix, Glossary::pair
  */
 void Glossary::write_counts(std::ostream& os, std::string const& prefix, Glossary::pair_type const& pair)
 {
+    os << prefix << pair.first;
     if ( pair.second.size() > 0 )
     {
-        os << prefix << std::setw(pair.first.size()) << "used" << " : ";
-        os << std::setw(format_value(pair.second[0].value_).size()) << pair.second[0].count_;
-        for ( size_t v = 1; v < pair.second.size(); ++v )
-            os << "," << std::setw(format_value(pair.second[v].value_).size()+1) << pair.second[v].count_;
+        os << " = " << format_value(pair.second[0].value_) << format_count(pair.second[0].count_);
+        for ( size_t i = 1; i < pair.second.size(); ++i )
+            os << ", " << format_value(pair.second[i].value_) << format_count(pair.second[i].count_);
+        os << ";";
     }
 }
 
@@ -672,9 +683,9 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
     int used = 0, exhausted = 1, overused = 0;
     const rec_type& rec = pair.second;
         
-    for ( size_t v = 0; v < rec.size(); ++v )
+    for ( size_t i = 0; i < rec.size(); ++i )
     {
-        val_type const& val = rec[v];
+        val_type const& val = rec[i];
         if ( val.count_ > 0 )
             used = 1;
         if ( !val.count_ && val.defined_ )
@@ -695,14 +706,8 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
     if ( warn.size() )
     {
         print_yellow(os, "Warning, " + warn + msg + ":\n");
-        write(os, PREF, pair);
-        os << "\n";
-        if ( used )
-        {
-            write_counts(os, PREF, pair);
-            os << "\n";
-        }
-        std::flush(os);
+        write_counts(os, PREF, pair);
+        os << std::endl;
         
         if ( ! used )
             return 4;

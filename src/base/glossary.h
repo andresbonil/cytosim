@@ -95,6 +95,9 @@ private:
     /// write a value, adding enclosing parenthesis if it contains space characters
     static std::string format_value(const std::string&);
     
+    /// write the number of time parameter was used
+    static std::string format_count(size_t);
+
     /// read key and assignement operator
     static int   read_key(pair_type&, std::istream&);
     
