@@ -1,11 +1,11 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 #include "stream_func.h"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <cctype>
-
 
 void StreamFunc::clean_stream(std::ostream& os, std::istream& is)
 {
