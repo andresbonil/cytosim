@@ -8,8 +8,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
 #include <errno.h>
 #include <cmath>
+#include <sys/param.h>
+
 #include "gle_color.h"
 
 /// child process id:

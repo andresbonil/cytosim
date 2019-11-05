@@ -384,7 +384,7 @@ void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void *
         glPointSize(6);
         glBegin(GL_POINTS);
         glColor3f(1.0, 0.0, 0.0);
-        for ( int n=0; n<n_pts; ++n )
+        for ( size_t n = 0; n < n_pts; ++n )
             glVertex3d( pts[n].XX, pts[n].YY, pts[n].ZZ );
         glEnd();
         
@@ -392,8 +392,8 @@ void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void *
         glLineWidth(0.5);
         glBegin(GL_LINES);
         glColor3f(0.0, 1.0, 1.0);
-        for ( int n = 0;   n < n_pts; ++n )
-        for ( int m = n+1; m < n_pts; ++m )
+        for ( size_t n = 0;   n < n_pts; ++n )
+        for ( size_t m = n+1; m < n_pts; ++m )
             if ( pts[n].UU  &  pts[m].UU )
             {
                 glVertex3d( pts[n].XX, pts[n].YY, pts[n].ZZ );

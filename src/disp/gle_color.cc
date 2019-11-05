@@ -59,15 +59,20 @@ std::string gle_color::to_string() const
 }
 
 
-GLubyte hex2int(char c)
+GLubyte hex2byte(int c)
 {
     if ( '0' <= c && c <= '9' )
-        return c - '0';
+        return (GLubyte)(c - '0');
     else if ( 'A' <= c && c <= 'F' )
-        return c - ( 'A' - 10 );
+        return (GLubyte)(c - ( 'A' - 10 ));
     else if ( 'a' <= c && c <= 'f' )
-        return c - ( 'a' - 10 );
+        return (GLubyte)(c - ( 'a' - 10 ));
     throw InvalidSyntax("invalid hexadecimal digit");
+}
+
+GLubyte hex2byte(int a, int b)
+{
+    return (GLubyte)( hex2byte(a) << 4 ) | hex2byte(b);
 }
 
 /**
@@ -127,7 +132,7 @@ std::istream& operator >> (std::istream& is, gle_color& col)
                     is.clear();
                     break;
                 }
-                u[i++] = 16 * hex2int((char)c) + hex2int((char)d);
+                u[i++] = hex2byte(c, d);
             }
             col.set_bytes(u[0], u[1], u[2], u[3]);
         }
@@ -202,7 +207,7 @@ void gle_color::HSV2RGB(const GLfloat h, const GLfloat s, const GLfloat v, GLflo
     }
     GLfloat hc = h/60;               // sector 0 to 5
     i = (int)floor(hc);
-    f = hc - i;                      // factorial part of h
+    f = hc - (GLfloat)i;             // fractional part of h
     p = v * ( 1 - s );
     q = v * ( 1 - s * f );
     t = v * ( 1 - s * ( 1 - f ) );
@@ -223,11 +228,11 @@ void gle_color::HSV2RGB(const GLfloat h, const GLfloat s, const GLfloat v, GLflo
  set a RGB color as a function of a Hue value `a` in [-PI, PI].
  The colors follow in this order: red, green, blue, red ...
 */
-void gle_color::set_hue_components(GLfloat& r, GLfloat& g, GLfloat& b, const float h)
+void gle_color::set_hue_components(GLfloat& r, GLfloat& g, GLfloat& b, const GLfloat h)
 {
     GLfloat x = 3 * GLfloat( h * M_1_PI + 1 );
     int i = (int)floor(x);
-    GLfloat f = x-i;
+    GLfloat f = x-(GLfloat)i;
     switch( i % 6 )
     {
         case 0: r = 1;   g = f;   b = 0;   break;
@@ -250,7 +255,7 @@ void gle_color::set_hue_components(GLfloat& r, GLfloat& g, GLfloat& b, const flo
  - 3 : red
  - 4 : full red
  */
-void gle_color::set_jet_components(GLfloat& r, GLfloat& g, GLfloat& b, const float h)
+void gle_color::set_jet_components(GLfloat& r, GLfloat& g, GLfloat& b, const GLfloat h)
 {
     if ( h <= 0.4 )
     {
@@ -261,7 +266,7 @@ void gle_color::set_jet_components(GLfloat& r, GLfloat& g, GLfloat& b, const flo
     else
     {
         int i = (int)floor(h);
-        GLfloat f = h-i;
+        GLfloat f = h-(GLfloat)i;
         switch( i )
         {
             case 0:  r = 0;   g = 0;   b = f;   break;
@@ -284,7 +289,7 @@ void gle_color::set_jet_components(GLfloat& r, GLfloat& g, GLfloat& b, const flo
  - 4 : yellow
  - 5 : white
  */
-void gle_color::set_jet_components_dark(GLfloat& r, GLfloat& g, GLfloat& b, const float h)
+void gle_color::set_jet_components_dark(GLfloat& r, GLfloat& g, GLfloat& b, const GLfloat h)
 {
     if ( h <= 0.1 )
     {
@@ -295,7 +300,7 @@ void gle_color::set_jet_components_dark(GLfloat& r, GLfloat& g, GLfloat& b, cons
     else
     {
         int i = (int)floor(h);
-        GLfloat f = h-i;
+        GLfloat f = h-(GLfloat)i;
         switch( i )
         {
             case 0:  r = 0;   g = 0;   b = f;   break;
