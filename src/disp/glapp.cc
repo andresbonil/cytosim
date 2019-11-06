@@ -93,14 +93,12 @@ namespace glApp
 #pragma mark -
 
 /**
- initialize views[0]
+ initialize a single View: views[0]
  */
 void glApp::initialize()
 {
-    /// start with one single view
     views.clear();
-    View tmp("*");
-    views.push_back(tmp);
+    views.push_back(View("*"));
 }
 
 

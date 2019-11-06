@@ -14,15 +14,6 @@ class View : public ViewProp
 {
 private:
     
-    /// set OpenGL Fog, with mode (GL_EXP or GL_LINEAR), intensity and color
-    void       setFog(GLint mode, GLfloat density, gle_color) const;
-    
-    /// window number in GLUT
-    int        mWindowId;
-    
-    /// used to check that getMatrices() was called
-    bool       hasMatrices;
-    
     /// viewport obtained by getMatrices()
     GLint      mViewport[4];
     
@@ -33,13 +24,22 @@ private:
     GLdouble   mProjection[16];
     
     /// half-size of the OpenGL visible region in OpenGL units
-    GLfloat    visRegion[3];
+    GLfloat    visRegion[4];
     
     /// translation between center of volume and camera
-    GLfloat    eyePosition[3];
+    GLfloat    eyePosition[4];
     
+    /// window number in GLUT
+    int        mWindowId;
+    
+    /// used to check that getMatrices() was called
+    bool       hasMatrices;
+
     /// display callback
     void (*displayCallback)(View&, int);
+    
+    /// set OpenGL Fog, with mode (GL_EXP or GL_LINEAR), intensity and color
+    void       setFog(GLint mode, GLfloat density, gle_color) const;
 
 public:
     

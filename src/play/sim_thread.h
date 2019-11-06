@@ -63,7 +63,7 @@ private:
     /// return list of Handles
     ObjectList    allHandles(SingleProp const*) const;
 
-    /// True if thread is 'mChild'
+    /// True if current thread is 'child'
     bool          isChild() const { return pthread_equal(pthread_self(), child_); }
     
 public:
