@@ -141,14 +141,14 @@ void CoupleProp::complete(Simul const& sim)
          In most cases, this is not desirable and physically inconsistent.
          */
         if ( length > hand1_prop->binding_range )
-            Cytosim::warn << "hand1:binding_range should be >= couple:length for " << name() << std::endl;
+            Cytosim::warn << "hand1:binding_range should be >= couple:length for " << name() << "\n";
 
         if ( hand2_prop != hand1_prop )
         {
             hand2_prop->checkStiffness(stiffness, length, 2, sim.prop->kT);
         
             if ( length > hand2_prop->binding_range )
-                Cytosim::warn << "hand2:binding_range should be >= couple:length for " << name() << std::endl;
+                Cytosim::warn << "hand2:binding_range should be >= couple:length for " << name() << "\n";
         }
     }
 }

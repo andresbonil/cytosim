@@ -232,11 +232,13 @@ int glApp::createWindow(void (*func)(View&, int))
     glutInitWindowPosition(view.window_position[0], view.window_position[1]);
     
     // create window with title containing current working directory:
+    int win = 0;
     char str[256] = { 0 };
     strncpy(str, "Cytosim    ", sizeof(str));
-    getcwd(str+10, 246);
-
-    int win = glutCreateWindow(str);
+    if ( getcwd(str+10, 246) )
+        win = glutCreateWindow(str);
+    else
+        win = glutCreateWindow("Cytosim");
     assert_true( win > 0 );
     //std::clog << "new window " << win << std::endl;
 

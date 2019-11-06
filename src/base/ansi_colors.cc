@@ -35,7 +35,7 @@
 /* Check the number of colors that the terminal supports */
 bool has_colors()
 {
-    static int n_colors = 0;
+    static long n_colors = 0;
     if ( n_colors == 0 )
     {
         long n = 1;

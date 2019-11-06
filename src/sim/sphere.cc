@@ -197,7 +197,7 @@ ObjectList Sphere::build(Glossary & opt, Simul& sim)
     // attach Singles distributed over the surface points:
     inx = 0;
     while ( opt.set(str, "attach", inx++) )
-        res.append(sim.singles.makeWrists(this, nbRefPts, nbSurfacePoints(), str));
+        res.append(sim.singles.makeWrists(this, nbRefPoints, nbSurfacePoints(), str));
 
     
     // final verification of the number of points:
@@ -385,7 +385,7 @@ real Sphere::addBrownianForces(real const* rnd, real sc, real* res) const
      Add random forces to the surface points, and calculate the resulting force
      and momentum in F and T. They will be subtracted from the reference points.
      */
-    for ( unsigned p = nbRefPts; p < nPoints; ++p )
+    for ( unsigned p = nbRefPoints; p < nPoints; ++p )
     {
         real * rhs = res + DIM * p;
         real * pos = pPos + DIM * p;
@@ -414,7 +414,7 @@ real Sphere::addBrownianForces(real const* rnd, real sc, real* res) const
     T /= - ( DIM - 1 ) * spRadius * spRadius;
     Vector R = cross(Vector(cx,cy,cz), T);
 
-    for ( unsigned p = 1; p < nbRefPts; ++p )
+    for ( unsigned p = 1; p < nbRefPoints; ++p )
     {
         real * rhs = res + DIM * p;
         real const* pos = pPos + DIM * p;
@@ -457,7 +457,7 @@ void Sphere::orthogonalize(unsigned i)
     const unsigned iz = 1 + (i+2)%3;
     
     Vector cen(pPos);
-    assert_true( nPoints >= nbRefPts );
+    assert_true( nPoints >= nbRefPoints );
     
     // reduce to the center of mass an normalize
     Vector tmpX = posP(ix) - cen;
@@ -519,11 +519,11 @@ void Sphere::projectForces(const real* X, real* Y) const {}
  */
 void Sphere::makeProjection()
 {
-    assert_true( nPoints >= nbRefPts );
+    assert_true( nPoints >= nbRefPoints );
     
     // calculate radial vectors from center:
     real curv = 1.0 / spRadius;
-    for ( unsigned p = nbRefPts; p < nPoints; ++p )
+    for ( unsigned p = nbRefPoints; p < nPoints; ++p )
     {
         real * ppp = sRad + DIM * p;
         real * pos = pPos + DIM * p;
@@ -572,7 +572,7 @@ void Sphere::projectForces(const real* X, real* Y) const
     //scale by point mobility:
     real mob = prop->point_mobility;
 
-    for ( unsigned p = 0; p < nbRefPts; ++p )
+    for ( unsigned p = 0; p < nbRefPoints; ++p )
     {
         real * yyy = Y + DIM * p;
         real * pos = pPos + DIM * p;
@@ -588,7 +588,7 @@ void Sphere::projectForces(const real* X, real* Y) const
 #endif
     }
     
-    for ( unsigned p = nbRefPts; p < nPoints; ++p )
+    for ( unsigned p = nbRefPoints; p < nPoints; ++p )
     {
         real * yyy = Y + DIM * p;
         real * pos = pPos + DIM * p;

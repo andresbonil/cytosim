@@ -47,15 +47,12 @@
 
 #else
 
-  #include "backtrace.h"
-
   #define assert_true(expression)\
         if (!(expression)) {\
             fprintf(stderr, "*  *  *  *  *  *  *  *  *  *  *  *  *  *\n");\
             fprintf(stderr, "Cytosim failed assert(%s)\n", #expression);\
             TRACE;\
             fprintf(stderr, "*  *  *  *  *  *  *  *  *  *  *  *  *  *\n");\
-            print_backtrace();\
             abort();\
         }
 
@@ -66,7 +63,6 @@
             fprintf(stderr, "Cytosim failed assert_false(%s) with value %i\n", #expression, e);\
             TRACE;\
             fprintf(stderr, "*  *  *  *  *  *  *  *  *  *  *  *  *  *\n");\
-            print_backtrace();\
             abort();\
         } }
 

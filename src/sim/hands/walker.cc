@@ -11,7 +11,7 @@ Walker::Walker(WalkerProp const* p, HandMonitor* h)
 : Digit(p,h), nextStep(0), prop(p)
 {
     // works if digit:step_size == lattice:step_size
-    stride = std::copysign(1, prop->unloaded_speed);
+    stride = ( prop->unloaded_speed > 0 ? 1 : -1);
 }
 
 

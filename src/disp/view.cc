@@ -803,7 +803,7 @@ void View::drawScaleH(GLfloat s, GLfloat a, GLfloat b) const
     
     // draw tick marks
     GLfloat w = 2.0;
-    char str[8] = {0};
+    char str[16] = {0};
     do {
         s /= 10;
         a /= 10;
@@ -853,7 +853,7 @@ void View::drawScaleV(GLfloat s, GLfloat a, GLfloat b) const
     
     // draw tick marks
     GLfloat w = 2.0;
-    char str[8] = {0};
+    char str[16] = {0};
     do {
         s /= 10;
         a /= 10;

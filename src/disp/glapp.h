@@ -78,7 +78,7 @@ namespace glApp
 
     //-----------------------------------KEYS------------------------------------
 
-    /// returns a string describing mouse and keyboard driven events
+    /// returns a string describing mouse and keyboard commands
     void       help(std::ostream&);
     
     /// callback function for normal keys

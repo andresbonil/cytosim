@@ -7,7 +7,7 @@
 #include "fiber_prop.h"
 #include "glossary.h"
 
-//------------------------------------------------------------------------------
+
 void AsterProp::clear()
 {
     stiffness[0]    = -1;
@@ -59,8 +59,6 @@ void AsterProp::complete(Simul const& sim)
     fiber_prob = -std::expm1( -fiber_rate * sim.prop->time_step );
 }
 
-
-//------------------------------------------------------------------------------
 
 void AsterProp::write_values(std::ostream& os) const
 {

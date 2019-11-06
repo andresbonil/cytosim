@@ -209,7 +209,7 @@ namespace gle
     void gleCone1();
     /// display a cylindrical box, directed along Z, of length 1, radius 1 in Z=[-0.5, +0.5]
     void gleCylinderZ();
-    /// display a dumbbell align with the Z axis, or radius 1/3, lenth 1
+    /// display a dumbbell aligned with the Z axis, or radius 1/3, lenth 1
     void gleDumbbell1();
     /// display 3 arrow fins aligned with the Z axis, or radius 1, lenth 2, Z=[-0.5, 1.5]
     void gleArrowTail1();

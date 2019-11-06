@@ -306,7 +306,7 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
         }
     }
     
-    Cytosim::warn << "placement failed" << std::endl;
+    Cytosim::warn << "placement failed\n";
     iso.reset();
     return iso;
 }

@@ -67,7 +67,7 @@ void ClassicFiberProp::read(Glossary& glos)
 #ifdef BACKWARD_COMPATIBILITY
     
     if ( glos.set(growing_force[0], "dynamic_force") )
-        Cytosim::warn << "fiber:dynamic_force was renamed growing_force" << std::endl;
+        Cytosim::warn << "fiber:dynamic_force was renamed growing_force\n";
 
     // change made 13 October 2014
     if ( glos.nb_values("growing_force") == 1 )
@@ -75,7 +75,7 @@ void ClassicFiberProp::read(Glossary& glos)
         real x = 0;
         if ( glos.peek(x, "catastrophe_rate", 1) && x > 0 )
         {
-            Cytosim::warn << "catastrophe_rate[1] was renamed catastrophe_rate_stalled[0]" << std::endl;
+            Cytosim::warn << "catastrophe_rate[1] was renamed catastrophe_rate_stalled[0]\n";
             catastrophe_rate_stalled[0] = x;
             catastrophe_rate[1] = 0;
         }
@@ -86,7 +86,7 @@ void ClassicFiberProp::read(Glossary& glos)
     int f = 0;
     if ( glos.set(f, "fate", {{"none", 0}, {"destroy", 1}, {"rescue", 2}}))
     {
-        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`" << std::endl;
+        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`\n";
         persistent = ( f != 1 );
         rebirth_rate[0] = ( f == 2 ? INFINITY : 0 );
     }
@@ -135,7 +135,7 @@ void ClassicFiberProp::complete(Simul const& sim)
                 throw InvalidParameter("fiber:catastrophe_rate_stalled must be greater than catastrophe_rate");
 
             if ( sim.ready()  &&  growing_speed[i] + growing_off_speed[i] <= 0 )
-                Cytosim::warn << "fiber:growing_speed + growing_off_speed <= 0" << std::endl;
+                Cytosim::warn << "fiber:growing_speed + growing_off_speed <= 0\n";
             
             if ( growing_speed[i] + growing_off_speed[i] <= 0 )
                 catastrophe_coef[i] = 0;

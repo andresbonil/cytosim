@@ -218,7 +218,7 @@ void HandProp::read(Glossary& glos)
 
 #ifdef BACKWARD_COMPATIBILITY
     if ( glos.set(hold_growing_end, "hold_growing_ends") )
-        Cytosim::warn << "hand:hold_growing_ends was renamed hold_growing_end" << std::endl;
+        Cytosim::warn << "hand:hold_growing_ends was renamed hold_growing_end\n";
 #endif
 }
 
@@ -252,16 +252,16 @@ void HandProp::complete(Simul const& sim)
     if ( sim.ready() )
     {
         if ( binding_rate_dt_8 > sim.prop->acceptable_rate )
-            Cytosim::warn << name() << ":binding_rate is too high: decrease time_step" << std::endl;
+            Cytosim::warn << name() << ":binding_rate is too high: decrease time_step\n";
     
         if ( unbinding_rate_dt > sim.prop->acceptable_rate )
-            Cytosim::warn << name() << ":unbinding_rate is too high: decrease time_step" << std::endl;
+            Cytosim::warn << name() << ":unbinding_rate is too high: decrease time_step\n";
     }
     
 #ifdef BACKWARD_COMPATIBILITY
     if ( unbinding_force == 0 )
     {
-        Cytosim::warn << "assuming that hand:unbinding_force=+inf, since the set value was zero" << std::endl;
+        Cytosim::warn << "assuming that hand:unbinding_force=+inf, since the set value was zero\n";
         unbinding_force = INFINITY;
     }
 #endif
@@ -298,7 +298,7 @@ void HandProp::checkStiffness(real stiff, real len, real mul, real kT) const
     if ( en > 10.0 && binding_rate > 0 )
     {
         Cytosim::warn << "hand `" << name() << "' overcomes high energy when binding:\n"\
-        << PREF << "stiffness * binding_range^2 = " << en << " kT" << std::endl;
+        << PREF << "stiffness * binding_range^2 = " << en << " kT\n";
         //<< PREF << "you could decrease stiffness or binding_range\n";
     }
     
@@ -308,7 +308,7 @@ void HandProp::checkStiffness(real stiff, real len, real mul, real kT) const
     if ( ap > 10.0 )
     {
         Cytosim::warn << "hand `" << name() << "' may unbind just after binding:\n"\
-        << PREF << "exp( stiffness * binding_range / unbinding_force ) = " << ap << std::endl;
+        << PREF << "exp( stiffness * binding_range / unbinding_force ) = " << ap << "\n";
         //<< PREF << "you could decrease stiffness or binding_range\n";
     }
 }

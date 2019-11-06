@@ -712,8 +712,8 @@ void CoupleSet::uniAttach(FiberSet const& fibers)
         avg += s;
         var += s*s;
     }
-    avg /= cnt;
-    var = var/cnt - avg * avg;
+    avg /= (real)cnt;
+    var = var/(real)cnt - avg * avg;
     printf("UNI-FIBER-SITES(1)  avg = %9.2f   var = %9.2f\n", avg, var);
     
 #endif

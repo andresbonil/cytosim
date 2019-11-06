@@ -84,7 +84,7 @@ Vector Organizer::position() const
     Vector res(0,0,0);
     for ( Mecable const* i : mObjects )
         res += i->position();
-    return res / mObjects.size();
+    return res / (real)mObjects.size();
 }
 
 
@@ -93,7 +93,7 @@ Vector Organizer::positionP(unsigned ix) const
     Vector res(0,0,0);
     for ( Mecable const* i : mObjects )
         res += i->posPoint(ix);
-    return res / mObjects.size();
+    return res / (real)mObjects.size();
 }
 
 

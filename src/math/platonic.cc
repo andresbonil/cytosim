@@ -512,64 +512,56 @@ namespace Platonic
                 && ((vertex_[1]==X.vertex_[1] && t*weight_[1]==s*X.weight_[1]) || (weight_[1]==0 && X.weight_[1]==0))
                 && ((vertex_[2]==X.vertex_[2] && t*weight_[2]==s*X.weight_[2]) || (weight_[2]==0 && X.weight_[2]==0)));
     }
+        
     
+    void Vertex::store(real C[3]) const
+    {
+        C[0] = 0;
+        C[1] = 0;
+        C[2] = 0;
+        
+        for ( int i = 0; i < 3; ++i )
+        {
+            Corner const* v = vertex_[i];
+            if ( v )
+            {
+                real w = weight_[i];
+                C[0] += w * v->pos_[0];
+                C[1] += w * v->pos_[1];
+                C[2] += w * v->pos_[2];
+            }
+        }
+        
+        //normalize:
+        real n = C[0]*C[0] + C[1]*C[1] + C[2]*C[2];
+        if ( n > 0 )
+        {
+            n = sqrt(n);
+            for ( int d = 0; d < 3; ++d )
+                C[d] /= n;
+        }
+    }
     
+#if REAL_IS_DOUBLE
     void Vertex::store(float C[3]) const
     {
-        C[0] = 0.0;
-        C[1] = 0.0;
-        C[2] = 0.0;
-        
-        for ( int i = 0; i < 3; ++i )
-        {
-            Corner const* v = vertex_[i];
-            if ( v )
-            {
-                real w = weight_[i];
-                C[0] += w * v->pos_[0];
-                C[1] += w * v->pos_[1];
-                C[2] += w * v->pos_[2];
-            }
-        }
-        
-        //normalize:
-        float n = sqrt( C[0]*C[0] + C[1]*C[1] + C[2]*C[2] );
-        if ( n > 0 )
-        {
-            for ( int dd = 0; dd < 3; ++dd )
-                C[dd] /= n;
-        }
+        double tmp[3];
+        store(tmp);
+        C[0] = (float)tmp[0];
+        C[1] = (float)tmp[1];
+        C[2] = (float)tmp[2];
     }
-    
-    
+#else
     void Vertex::store(double C[3]) const
     {
-        C[0] = 0.0;
-        C[1] = 0.0;
-        C[2] = 0.0;
-        
-        for ( int i = 0; i < 3; ++i )
-        {
-            Corner const* v = vertex_[i];
-            if ( v )
-            {
-                real w = weight_[i];
-                C[0] += w * v->pos_[0];
-                C[1] += w * v->pos_[1];
-                C[2] += w * v->pos_[2];
-            }
-        }
-        
-        //normalize:
-        double n = sqrt( C[0]*C[0] + C[1]*C[1] + C[2]*C[2] );
-        if ( n > 0 )
-        {
-            for ( int dd = 0; dd < 3; ++dd )
-                C[dd] /= n;
-        }
+        float tmp[3];
+        store(tmp);
+        C[0] = (double)tmp[0];
+        C[1] = (double)tmp[1];
+        C[2] = (double)tmp[2];
     }
-    
-    
+#endif
+
     void Vertex::print(unsigned inx, std::ostream& out) const
     {
         out << "P" << inx << " = ( ";

@@ -7,7 +7,6 @@
 #include "simul_prop.h"
 
 
-//------------------------------------------------------------------------------
 void BundleProp::clear()
 {
     stiffness  = -1;
@@ -53,8 +52,6 @@ void BundleProp::complete(Simul const& sim)
         throw InvalidParameter("bundle:stiffness must be specified and >= 0");
 }
 
-
-//------------------------------------------------------------------------------
 
 void BundleProp::write_values(std::ostream& os) const
 {
