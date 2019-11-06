@@ -124,14 +124,13 @@ To pinpoint the problem, try to build objects that have fewer depencies first:
 
 #### Check your compiler for C++11 support and compilation switches
 
-    make test_cxx
+	make test_cxx
 
 #### Check your BLAS/LAPACK directly:
 
 	make test_blas
 	
-If you get an error at this stage, check that the compiler is linking the correct libraries.
-To find the libraries on your system, this command may help:
+If you get an error at this stage, check that the compiler is linking the correct libraries. To find the libraries on your system, this command may help:
 
 	find /usr/lib -name libblas.*
 
@@ -141,19 +140,11 @@ For example, if the result is:
 
 You should adjust `makefile.inc` to specify the corresponding path:
 
-<<<<<<< HEAD
-    USRLIB := /usr/lib
-=======
-	LIBDIR := /usr/lib
->>>>>>> 3d09d27... attempting to automatically find BLAS lib
+	USRLIB := /usr/lib
 
 Ensure that no other line changes the value of `LIBDIR`. For example, this one is commented out with the `#`:
 
-<<<<<<< HEAD
-    #USRLIB := /usr/lib/x86_64-linux-gnu
-=======
 	#LIBDIR := /usr/lib/x86_64-linux-gnu
->>>>>>> 3d09d27... attempting to automatically find BLAS lib
 
 #### Check if it can read a configuration file:
 
