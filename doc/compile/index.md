@@ -141,11 +141,19 @@ For example, if the result is:
 
 You should adjust `makefile.inc` to specify the corresponding path:
 
+<<<<<<< HEAD
     USRLIB := /usr/lib
+=======
+	LIBDIR := /usr/lib
+>>>>>>> 3d09d27... attempting to automatically find BLAS lib
 
-Ensure that no other line changes the value of `USRLIB`. For example, this one is commented out with the `#`:
+Ensure that no other line changes the value of `LIBDIR`. For example, this one is commented out with the `#`:
 
+<<<<<<< HEAD
     #USRLIB := /usr/lib/x86_64-linux-gnu
+=======
+	#LIBDIR := /usr/lib/x86_64-linux-gnu
+>>>>>>> 3d09d27... attempting to automatically find BLAS lib
 
 #### Check if it can read a configuration file:
 
