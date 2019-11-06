@@ -19,8 +19,8 @@
 SimThread::SimThread(void (*callback)(void))
 : Parser(simul, 1, 1, 1, 1, 0), hold_callback(callback)
 {
+    hasChild = false;
     mFlag   = 0;
-    mState  = 0;
     mHold   = 0;
     mPeriod = 1;
     pthread_mutex_init(&mMutex, nullptr);
@@ -39,7 +39,6 @@ SimThread::~SimThread()
     stop();
     pthread_cond_destroy(&mCondition);
     pthread_mutex_destroy(&mMutex);
-    pthread_detach(mChild);
 }
 
 //------------------------------------------------------------------------------
@@ -49,9 +48,18 @@ SimThread::~SimThread()
 void SimThread::debug(const char* msg) const
 {
     if ( isChild() )
-        fprintf(stdout, "- - -   %s\n", msg);
+        fprintf(stdout, "\n- - -  %-16s", msg);
     else
-        fprintf(stdout, "+ + +   %s\n", msg);
+        fprintf(stdout, "\n* * *  %-16s", msg);
+}
+
+
+void SimThread::gubed(const char* msg) const
+{
+    if ( isChild() )
+        fprintf(stdout, "  - - %12s ", msg);
+    else
+        fprintf(stdout, "  * * %12s ", msg);
 }
 
 
@@ -60,7 +68,7 @@ void SimThread::hold()
     assert_true( isChild() );
 
     if ( mFlag )
-        terminate();
+        pthread_exit(nullptr);
     
     if ( ++mHold >= mPeriod )
     {
@@ -68,28 +76,19 @@ void SimThread::hold()
         //debug("holding");
         hold_callback();
         if ( mFlag )
-            terminate();
-        wait();
+            pthread_exit(nullptr);
+        wait();  // this also unlocks and locks the mutex
     }
 }
 
 
-void SimThread::terminate()
-{
-    assert_true( isChild() );
-    // gently terminate:
-    mState = 0;
-    unlock();
-    //debug("terminate");
-    pthread_exit(nullptr);
-}
+//------------------------------------------------------------------------------
+#pragma mark - Lauching threads
 
 
 void SimThread::run()
 {
     assert_true( isChild() );
-    mState = 1;
-    
     try {
         if ( Parser::readConfig() )
             std::cerr << "You must specify a config file\n";
@@ -97,53 +96,37 @@ void SimThread::run()
     catch( Exception & e ) {
         simul.relax();
         std::cerr << "\nError: " << e.what() << std::endl;
-        //flashText("Error: simulation died");
+        //flashText("Error: the simulation died");
     }
-    // the thread terminates normally:
     hold_callback();
-    mState = 0;
-    unlock();
 }
 
 
-void* run_helper(void * arg)
+/** C-style function to cleanup after thread has terminated */
+void child_cleanup(void * arg)
+{
+    SimThread * st = static_cast<SimThread*>(arg);
+    //st->debug("cleanup");
+    st->hasChild = 0;
+    st->unlock();
+}
+
+
+/** C-style function to start a new thread */
+void* run_launcher(void * arg)
 {
     //std::clog << "slave  " << pthread_self() << '\n';
-    SimThread * lt = static_cast<SimThread*>(arg);
-    lt->run();
+    SimThread * st = static_cast<SimThread*>(arg);
+    if ( 0 == st->trylock() )
+    {
+        pthread_cleanup_push(child_cleanup, arg);
+        st->run();
+        pthread_cleanup_pop(1);
+        pthread_detach(st->child());
+    }
     return nullptr;
 }
 
-
-void SimThread::extend_run()
-{
-    assert_true( isChild() );
-    mState = 1;
-    
-    try {
-        Parser::execute_run(100000);
-    }
-    catch( Exception & e ) {
-        std::cerr << std::endl << "Error: " << e.what() << '\n';
-        simul.relax();
-        //flashText("Error: %s", e.what());
-    }
-    hold_callback();
-    mState = 0;
-    unlock();
-}
-
-
-void* extend_helper(void * arg)
-{
-    //std::clog << "slave  " << pthread_self() << '\n';
-    SimThread * lt = static_cast<SimThread*>(arg);
-    lt->extend_run();
-    return nullptr;
-}
-
-//------------------------------------------------------------------------------
-#pragma mark - Process initiation / termination
 
 /**
  This attempts to start the live simulation by
@@ -152,13 +135,48 @@ void* extend_helper(void * arg)
 void SimThread::start()
 {
     assert_false( isChild() );
-    if ( 0 == mState && 0 == trylock() )
+    if ( !hasChild )
     {
         mFlag = 0;
         //std::clog << "master " << pthread_self() << '\n';
-        if ( pthread_create(&mChild, nullptr, run_helper, this) )
+        if ( pthread_create(&child_, nullptr, run_launcher, this) )
             throw Exception("failed to create thread");
+        hasChild = 1;
     }
+}
+
+
+//------------------------------------------------------------------------------
+
+
+void SimThread::extend_run()
+{
+    assert_true( isChild() );
+    try {
+        Parser::execute_run(100000);
+    }
+    catch( Exception & e ) {
+        std::cerr << "\nError: " << e.what() << '\n';
+        simul.relax();
+        //flashText("Error: %s", e.what());
+    }
+    hold_callback();
+}
+
+
+/** C-style function to start a new thread */
+void* extend_launcher(void * arg)
+{
+    //std::clog << "slave  " << pthread_self() << '\n';
+    SimThread * st = static_cast<SimThread*>(arg);
+    if ( 0 == st->trylock() )
+    {
+        pthread_cleanup_push(child_cleanup, arg);
+        st->extend_run();
+        pthread_cleanup_pop(1);
+        pthread_detach(st->child());
+    }
+    return nullptr;
 }
 
 
@@ -166,22 +184,27 @@ void SimThread::start()
 int SimThread::extend()
 {
     assert_false( isChild() );
-    if ( 0 == mState && 0 == trylock() )
+    if ( !hasChild && 0 == trylock() )
     {
         mFlag = 0;
         //std::clog << "master " << pthread_self() << '\n';
-        if ( pthread_create(&mChild, nullptr, extend_helper, this) )
+        if ( pthread_create(&child_, nullptr, extend_launcher, this) )
             throw Exception("failed to create thread");
+        hasChild = 1;
         return 0;
     }
     return 1;
 }
 
 
+//------------------------------------------------------------------------------
+#pragma mark - Thread control & termination
+
+
 void SimThread::step()
 {
     assert_false( isChild() );
-    if ( mState )
+    if ( hasChild )
         signal();
 }
 
@@ -192,15 +215,16 @@ void SimThread::step()
 void SimThread::stop()
 {
     assert_false( isChild() );
-    if ( mState )
+    if ( hasChild )
     {
         // request clean termination:
         mFlag = 1;
         signal();
-        //debug("waiting on join()");
+        //debug("join...");
         // wait for termination:
-        pthread_join(mChild, nullptr);
-        mState = 0;
+        pthread_join(child_, nullptr);
+        pthread_detach(child_);
+        hasChild = 0;
     }
 }
 
@@ -210,15 +234,17 @@ void SimThread::stop()
 void SimThread::cancel()
 {
     assert_false( isChild() );
-    if ( mState )
+    if ( hasChild )
     {
         mFlag = 2;
+        //debug("cancel...");
         // force termination:
-        if ( 0 == pthread_cancel(mChild) )
+        if ( 0 == pthread_cancel(child_) )
         {
             // wait for termination:
-            pthread_join(mChild, nullptr);
-            mState = 0;
+            pthread_join(child_, nullptr);
+            pthread_detach(child_);
+            hasChild = 0;
             unlock();
         }
     }
