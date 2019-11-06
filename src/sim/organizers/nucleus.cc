@@ -24,13 +24,13 @@ void Nucleus::setInteractions(Meca & meca) const
     
     if ( sph )
     {
-        unsigned nix = sphere()->nbPoints() - Sphere::nbRefPts;
+        unsigned nix = sphere()->nbPoints() - Sphere::nbRefPoints;
         
         for ( unsigned ix = 0; ix < nix; ++ix )
         {
             const Fiber * fib = fiber(ix);
             if ( fib )
-                meca.addLink(Mecapoint(sph, ix+Sphere::nbRefPts),
+                meca.addLink(Mecapoint(sph, ix+Sphere::nbRefPoints),
                                fib->exactEnd(MINUS_END),
                                prop->stiffness );
         }
@@ -133,7 +133,7 @@ ObjectList Nucleus::build(Glossary& opt, Simul& sim)
  */
 bool Nucleus::getLink(size_t inx, Vector& pos1, Vector& pos2) const
 {
-    unsigned i = inx + Sphere::nbRefPts;
+    size_t i = inx + Sphere::nbRefPoints;
     if ( sphere() && i < sphere()->nbPoints() )
     {
         pos1 = sphere()->posP(i);

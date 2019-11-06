@@ -67,7 +67,7 @@ public:
     void reset(real time);
     
     /// a unique character identifying the class
-    static const ObjectTag TAG = 't';
+    static const ObjectTag TAG = 'q';
 
     /// an ASCII character identifying the class of this object
     ObjectTag       tag() const { return TAG; }

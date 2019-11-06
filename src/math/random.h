@@ -153,7 +153,7 @@ public:
                 leftover = (uint32_t) multiresult;
             }
         }
-        return multiresult >> 32;
+        return (uint32_t)(multiresult >> 32);
     }
     
     /// unsigned integer in [0,n-1] for n < 2^64, Daniel Lemire's method

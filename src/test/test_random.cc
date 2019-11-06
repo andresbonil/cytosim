@@ -296,7 +296,7 @@ void test_poisson(size_t sup)
     for ( size_t n = 0; n < sup; ++n )
     {
         int x = (int)(RNG.gauss() * sqrt(n) + n);
-        printf("%10i %9i %9i %9i\n", n, RNG.poisson_knuth(n), RNG.poisson(n), x);
+        printf("%10lu %9i %9i %9i\n", n, RNG.poisson_knuth(n), RNG.poisson(n), x);
     }
 }
 

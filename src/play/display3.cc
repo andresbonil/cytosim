@@ -852,7 +852,7 @@ void Display3::drawSphere(Sphere const& obj)
     {
         bodyColor(disp, obj.signature());
         drawPoint(obj.posP(0), disp);
-        for ( unsigned ii = obj.nbRefPoints(); ii < obj.nbPoints(); ++ii )
+        for ( unsigned ii = obj.nbRefPoints; ii < obj.nbPoints(); ++ii )
             drawPoint(obj.posP(ii), disp);
     }
 
@@ -860,7 +860,7 @@ void Display3::drawSphere(Sphere const& obj)
     if ( disp->size > 0  &&  disp->style & 8 )
     {
         bodyColor(disp, obj.signature());
-        for ( unsigned ii = 1; ii < obj.nbRefPoints(); ii++ )
+        for ( unsigned ii = 1; ii < obj.nbRefPoints; ii++ )
             drawPoint(obj.posP(ii), disp);
     }
 }

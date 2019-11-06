@@ -38,7 +38,7 @@ namespace gle
     */
     void circle(size_t cnt, GLfloat co[], GLfloat si[], GLfloat rad, double start)
     {
-        const double theta = 2.0 * M_PI / cnt;
+        const double theta = 2.0 * M_PI / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
     
@@ -63,7 +63,7 @@ namespace gle
     void arc(size_t cnt, GLfloat co[], GLfloat si[], GLfloat rad,
              double start, double end, GLfloat cx, GLfloat cy )
     {
-        const double theta = ( end - start ) / cnt;
+        const double theta = ( end - start ) / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
     
@@ -89,7 +89,7 @@ namespace gle
     // This works only if 'GLfloat == float'
     void circle(size_t cnt, float cosi[], float rad)
     {
-        const double theta = 2.0 * M_PI / cnt;
+        const double theta = 2.0 * M_PI / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
         const double c2 = c * c - s * s;
@@ -116,7 +116,7 @@ namespace gle
 #else
     void circle(size_t cnt, GLfloat cosi[], GLfloat rad)
     {
-        const double theta = 2.0 * M_PI / cnt;
+        const double theta = 2.0 * M_PI / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
     
@@ -1119,30 +1119,30 @@ namespace gle
     
     void gleCylinderZ()
     {
-        const GLfloat top =  0.5;
-        const GLfloat bot = -0.5;
+        const GLfloat T =  0.5;
+        const GLfloat B = -0.5;
         
         glBegin(GL_TRIANGLE_FAN);
         glNormal3f( 0, 0, -1 );
-        glVertex3f( 0, 0, -1 );
+        glVertex3f( 0, 0,  B );
         for ( size_t n = 0; n <= ncircle; ++n )
-            glVertex3f(co_[n], -si_[n], bot);
+            glVertex3f(co_[n], -si_[n], B);
         glEnd();
         
         glBegin(GL_TRIANGLE_STRIP);
         for ( size_t n = 0; n <= ncircle; ++n )
         {
-            glNormal3f(co_[n], si_[n],  0 );
-            glVertex3f(co_[n], si_[n], top);
-            glVertex3f(co_[n], si_[n], bot);
+            glNormal3f(co_[n], si_[n], 0);
+            glVertex3f(co_[n], si_[n], T);
+            glVertex3f(co_[n], si_[n], B);
         }
         glEnd();
         
         glBegin(GL_TRIANGLE_FAN);
         glNormal3f( 0, 0, 1 );
-        glVertex3f( 0, 0, 0 );
+        glVertex3f( 0, 0, T );
         for ( size_t n = 0; n <= ncircle; ++n )
-            glVertex3f(co_[n], -si_[n], top);
+            glVertex3f(co_[n], si_[n], T);
         glEnd();
     }
     

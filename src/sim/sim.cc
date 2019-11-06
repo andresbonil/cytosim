@@ -31,8 +31,8 @@ void handle_signal(int sig)
      */
     char str[128] = { 0 };
     strncpy(str, "Cytosim received signal   \n", 128);
-    str[25] = '0' +  sig     % 10;
-    str[24] = '0' + (sig/10) % 10;
+    str[25] = (char)('0' + ( sig     % 10));
+    str[24] = (char)('0' + ((sig/10) % 10));
     (void) write(STDERR_FILENO, str, 28);
     _exit(sig);
 }
@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
 
     if ( arg.use_key("info") || arg.use_key("--version")  )
     {
+        splash(std::cout);
         print_version(std::cout);
         std::cout << "    DIM = " << DIM << '\n';
         return EXIT_SUCCESS;
@@ -134,7 +135,7 @@ int main(int argc, char* argv[])
     
     Cytosim::out << "% " << TicToc::date() << "\n";
     sec = TicToc::seconds_since_1970() - sec;
-    Cytosim::out << "end  " << sec << " s ( " << ( sec / 60 ) / 60.0 << " h )\n";
+    Cytosim::out << "end  " << sec << " s ( " << (real)( sec / 60 ) / 60.0 << " h )\n";
     Cytosim::out.close();
     return EXIT_SUCCESS;
 }

@@ -369,7 +369,7 @@ public:
         // collect
         while ( s < e )
         {
-            res += *s;
+            res += (SUM)*s;
             *s = 0;
             ++s;
         }

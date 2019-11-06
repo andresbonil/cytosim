@@ -46,7 +46,7 @@ Vector Space::randomPlace() const
 
         if ( ++ouf > nb_trials )
         {
-            Cytosim::warn << "placement failed in Space::randomPlace()" << std::endl;
+            Cytosim::warn << "placement failed in Space::randomPlace()\n";
             return Vector(0,0,0);
             //throw InvalidParameter("placement failed in Space::randomPlace()");
         }
@@ -206,7 +206,7 @@ real Space::estimateVolume(unsigned long cnt) const
         in += inside(pos);
     }
     
-    real vol = in / real(cnt);
+    real vol = real(in) / real(cnt);
     for ( int d = 0; d < DIM; ++d )
         vol *= dif[d];
 

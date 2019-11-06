@@ -86,7 +86,7 @@ void MightyProp::checkStiffness(real stiff, real len, real mul, real kT) const
     {
         Cytosim::warn << "simulating `" << name() << "' may fail as:\n"\
         << PREF << "time_step * stiffness * unloaded_speed / stall_force = " << ef << '\n'\
-        << PREF << "-> reduce time_step (really)" << std::endl;
+        << PREF << "-> reduce time_step (really)\n";
         //throw InvalidParameter(oss.str());
     }
     
@@ -99,7 +99,7 @@ void MightyProp::checkStiffness(real stiff, real len, real mul, real kT) const
     {
         Cytosim::warn << "The stall force of `" << name() << "' is too small:\n"\
         << PREF << "DIM * kT * stiffness > stall_force\n"\
-        << PREF << "-> reduce stiffness or increase stall_force" << std::endl;
+        << PREF << "-> reduce stiffness or increase stall_force\n";
     }
     
     /*
@@ -111,14 +111,14 @@ void MightyProp::checkStiffness(real stiff, real len, real mul, real kT) const
     {
         Cytosim::warn << "The efficiency of `" << name() << "' is low because\n"\
         << PREF << "stiffness * unloaded_speed / unbinding_rate << stall_force\n"\
-        << PREF << "ratio = " << ef << std::endl;
+        << PREF << "ratio = " << ef << "\n";
     }
     
     /*
      Compare detachment rate at stall-force, with detachment rate at rest
      */
     if ( exp( stall_force * unbinding_force_inv ) > 100 )
-        Cytosim::warn << "Hand:exp( stall_force / unbinding_force ) is greater than 100" << std::endl;
+        Cytosim::warn << "Hand:exp( stall_force / unbinding_force ) is greater than 100\n";
 }
 
 

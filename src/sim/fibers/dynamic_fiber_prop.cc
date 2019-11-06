@@ -57,12 +57,12 @@ void DynamicFiberProp::read(Glossary& glos)
 #ifdef BACKWARD_COMPATIBILITY
     
     if ( glos.set(growing_force[0], "dynamic_force") )
-        Cytosim::warn << "fiber:dynamic_force was renamed growing_force" << std::endl;
+        Cytosim::warn << "fiber:dynamic_force was renamed growing_force\n";
     
     int f = 0;
     if ( glos.set(f, "fate", {{"none", 0}, {"destroy", 1}, {"rescue", 2}}))
     {
-        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`" << std::endl;
+        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`\n";
         persistent = ( f != 1 );
         rebirth_rate[0] = ( f == 2 ? INFINITY : 0 );
     }
