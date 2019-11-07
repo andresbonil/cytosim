@@ -277,7 +277,7 @@ ifeq ($(MACHINE),cygwin)
     ### libXi:   yum install libXi-devel
     ### libXmu:  yum install libXmu-devel
     ###  check for correct library yourlibname.so otherwise give full path
-    GRAFIX := -L/usr/lib -lglut -lGL -lGLU -lXt -lX11 -lGLEW
+    GRAFIX := -L/usr/lib -lglut -lGL -lGLU -lX11 -lGLEW
 
     ifneq ($(HAS_PNG), 0)
 
