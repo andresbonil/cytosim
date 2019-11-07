@@ -266,6 +266,12 @@ public:
 
     /// position of PLUS_END
     Vector       posEndP() const { return Vector(pPos+DIM*(nPoints-1)); }
+    
+    /// external force acting on MINUS_END
+    Vector       netForceEndM() const { return netForce(0); }
+    
+    /// external force acting on PLUS_END
+    Vector       netForceEndP() const { return netForce(nPoints-1); }
 
     //---------------------
     
