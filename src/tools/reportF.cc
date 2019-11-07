@@ -20,7 +20,7 @@ int verbose = 1;
 
 void help(std::ostream& os)
 {
-    os << "Cytosim-reportF "<<DIM<<"D, file version %i\n" << Simul::currentFormatID << '\n';
+    os << "Cytosim-reportF "<<DIM<<"D, file version " << Simul::currentFormatID << '\n';
     os << "       generate reports/statistics about cytosim's objects\n";
     os << "\n";
     os << "Syntax:\n";

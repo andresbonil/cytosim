@@ -21,7 +21,7 @@ int prefix = 0;
 
 void help(std::ostream& os)
 {
-    os << "Cytosim-report "<<DIM<<"D, file version %i\n" << Simul::currentFormatID << '\n';
+    os << "Cytosim-report "<<DIM<<"D, file version " << Simul::currentFormatID << '\n';
     os << "       generates reports/statistics from a trjacetory file\n";
     os << "Syntax:\n";
     os << "       report [time] WHAT [OPTIONS]\n";
