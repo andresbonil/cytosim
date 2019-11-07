@@ -4,9 +4,8 @@
 
 #include "backtrace.h"
 
-// You can disable backtrace by changing the line below into '#if ( 0 )'
-#ifdef __GNUC__
-
+// enable/disable backtrace with the '#if' below:
+#if 0
 
 #include <execinfo.h>
 #include <stdlib.h>
@@ -43,7 +42,6 @@ void print_backtrace(int out)
 
 void print_backtrace(int out)
 {
-    (void) write(out, "Execution stack information unavailable\n", 40);
 }
 
 #endif

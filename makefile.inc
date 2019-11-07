@@ -269,7 +269,7 @@ ifeq ($(MACHINE),cygwin)
     ### Needs
     # blas:   yum install blas-devel
     # lapack: yum install lapack-devel
-    LINK := -L/usr/lib -L/bin -llapack -lblas -lpthread -lgfortran
+    LINK := -L/usr/lib -L/bin -llapack -lblas -lpthread
 
     ### linkage options for programs using graphics:
     ### Needs
