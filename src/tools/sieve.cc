@@ -7,10 +7,11 @@
 #include "exceptions.h"
 #include "simul_prop.h"
 
+
 void help()
 {
-    printf("Cytosim-sieve %iD, file version %i\n", DIM, Simul::currentFormatID);
-    printf("    built on %s\n", __DATE__);
+    printf("Cytosim-sieve %iD\n", DIM);
+    printf("    file version %i built on %s\n", Simul::currentFormatID, __DATE__);
     printf("Synopsis:\n");
     printf("   `sieve` let you to manipulate cytosim trajectory file.\n");
     printf("   It reads a trajectory files, and loads the objects in memory\n");
@@ -68,12 +69,12 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     
-    //std::clog << ">>>>>> Copying `" << input << "' -> `" << output << "'" << std::endl;
+    std::clog << ">>>>>> Sieve `" << input << "' -> `" << output << "'" << std::endl;
     
-    unsigned frm = 0, frame = 0;
+    size_t frm = 0, frame = 0;
     
     // a frame index can be specified:
-    bool one_frame = arg.set(frame, "frame");
+    bool has_frame = arg.set(frame, "frame");
     
     while ( in.good() )
     {
@@ -95,7 +96,7 @@ int main(int argc, char* argv[])
         */
         
         try {
-            if ( !one_frame || ( frm == frame ) )
+            if ( !has_frame || ( frm == frame ) )
                 simul.writeObjects(output, true, binary);
         }
         catch( Exception & e ) {
@@ -103,7 +104,7 @@ int main(int argc, char* argv[])
             std::clog << "    " << e.what() << std::endl;
             return EXIT_FAILURE;
         }
-        if ( one_frame && frm == frame )
+        if ( has_frame && frm == frame )
             break;
         ++frm;
     }

@@ -178,29 +178,28 @@ public:
     void       openFile(std::string const& name) { reader.openFile(name); }
     
     /// true if ready to read from file
-    bool       goodFile()  const { return reader.good(); }
+    bool       goodFile()     const { return reader.good(); }
     
     /// status of file
-    int        eof()       const { return reader.eof(); }
+    int        eof()          const { return reader.eof(); }
     
     /// rewind file
-    void       rewind()          { lock(); reader.rewind(); unlock(); }
- 
-
+    void       rewind()             { lock(); reader.rewind(); unlock(); }
+    
     /// attempt to load specified frame from file (0 = first frame; -1 = last frame)
-    int        loadFrame(long f) { lock(); int r=reader.loadFrame(simul, f); unlock(); return r; }
+    int        loadFrame(size_t f)  { lock(); int r=reader.loadFrame(simul, f); unlock(); return r; }
 
     /// load next frame in file
-    int        loadNextFrame()   { lock(); int r=reader.loadNextFrame(simul); unlock(); return r; }
+    int        loadNextFrame()      { lock(); int r=reader.loadNextFrame(simul); unlock(); return r; }
     
     /// attempt to load last frame from file
-    int        loadLastFrame()   { lock(); int r=reader.loadLastFrame(simul); unlock(); return r; }
+    int        loadLastFrame()      { lock(); int r=reader.loadLastFrame(simul); unlock(); return r; }
         
     /// true if current frame is valid
-    bool       hasFrame() const { return reader.hasFrame(); }
+    bool       hasFrame()     const { return reader.hasFrame(); }
 
     /// index of current frame
-    long       currentFrame() const { return reader.currentFrame(); }
+    size_t     currentFrame() const { return reader.currentFrame(); }
 
     
     /// return the Single that is manipulated by the User

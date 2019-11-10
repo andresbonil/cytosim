@@ -18,13 +18,13 @@ int n_points = 12;
 
 //------------------------------------------------------------------------------
 
-void batch(unsigned nbp, unsigned repeat)
+void batch(unsigned long nbp, int repeat)
 {
-    unsigned iterations = 0;
+    size_t iterations = 0;
     real energy = INFINITY;
     real distance = 0;
     
-    printf("%4i pts :", nbp);
+    printf("%4lu pts :", nbp);
     printf(" %6.4f :", S.expectedDistance(nbp));
     
     for ( int m=0; m < repeat; ++m )
@@ -40,7 +40,7 @@ void batch(unsigned nbp, unsigned repeat)
     
     printf("   distance %9.6f",    distance);
     printf("   energy %14.5f",     energy);
-    printf("   iterations %12u\n", iterations);
+    printf("   iterations %12lu\n", iterations);
 }
 
 //------------------------------------------------------------------------------
@@ -178,7 +178,6 @@ int main(int argc, char* argv[])
         
         for (unsigned nbp = min; nbp < max; nbp += 7)
             batch(nbp, 16);
-        
         return EXIT_SUCCESS;
     }
     

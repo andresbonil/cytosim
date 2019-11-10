@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     arg.set(magnify, "magnify") || arg.set(magnify, "magnification");
 
     // The user can specify a frame index to be loaded:
-    long frm = 0;
+    size_t frm = 1;
     arg.set(frm, "frame");
 
     // change working directory if specified:
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
     
     //---------Open trajectory file and read state
 
-    if ( ! player.goLive || frm )
+    if ( ! player.goLive || frm > 1 )
     {
         try
         {

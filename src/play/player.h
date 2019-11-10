@@ -102,9 +102,6 @@ public:
     /// reset the sim-state and timer
     void restart();
 
-    /// load specified frame
-    void loadFrame(int);
-
     /// load previous frame
     void previousFrame();
     

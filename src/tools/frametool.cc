@@ -32,7 +32,7 @@ enum { COUNT, COPY, LAST, SIZE, EPID, SPLIT };
 enum { UNKNOWN, FRAME_START, FRAME_SECTION, FRAME_END };
 
 FILE * output = stdout;
-const size_t buf_size = 64;
+const size_t buf_size = 128;
 char buf[buf_size];
 
 unsigned long frame_pid = 0;
@@ -108,19 +108,13 @@ int whatline(FILE* in, FILE* out)
 
 //=============================================================================
 
-void error(const char* message)
-{
-    fprintf(stderr, "ERROR: %s\n", message);
-    exit(EXIT_FAILURE);
-}
-
 
 /// Slice represents a regular subset of indices
 class Slice
 {
-    unsigned s; ///< start
-    unsigned i; ///< increment
-    unsigned e; ///< end
+    size_t s; ///< start
+    size_t i; ///< increment
+    size_t e; ///< end
     
 public:
     
@@ -138,25 +132,39 @@ public:
         e = ~0U;
 
         int c = 0;
-        c = sscanf(arg, "%u:%u:%u", &s, &i, &e);
-        //fprintf(stderr, "%s:%i\n", arg, c);
-        
-        if ( arg[strlen(arg)-1] == ':' )
+        char * str;
+        errno = 0;
+        s = strtoul(arg, &str, 10);
+        if ( errno ) goto finish;
+        if ( *str == ':' )
         {
-            if ( c == 3 )
-                error("unexpected third ':'");
+            c = 1;
+            ++str;
+            i = strtoul(str, &str, 10);
+            if ( errno ) goto finish;
+            if ( *str == ':' )
+            {
+                c = 2;
+                ++str;
+                e = strtoul(str, &str, 10);
+                if ( errno ) goto finish;
+            }
         }
-        else
-        {
-            if ( c == 1 )
-                e = s;
-            if ( c == 2 )
-            { e = i; i = 1; }
-        }
-        //fprintf(stderr, "slice %u:%u:%u\n", s, p, e);
+        if ( *str ) goto finish;
+
+        if ( c == 0 )
+            e = s;
+        if ( c == 1 )
+        { e = i; i = 1; }
+
+        //fprintf(stderr, "slice %lu:%lu:%lu\n", s, i, e);
+        return;
+    finish:
+        fprintf(stderr, "syntax error (expected START:INCREMENT:END)\n");
+        exit(EXIT_FAILURE);
     }
     
-    bool match(unsigned n)
+    bool match(size_t n)
     {
         if ( n < s )
             return false;
@@ -175,7 +183,7 @@ public:
 
 void countFrame(const char str[], FILE* in)
 {
-    int  frm = 0;
+    size_t frm = 0;
     int code = 0;
     do {
         code = whatline(in, nullptr);
@@ -183,13 +191,15 @@ void countFrame(const char str[], FILE* in)
             ++frm;
     } while ( code != EOF );
     
-    printf("%40s: %i frames\n", str, frm);
+    printf("%40s: %lu frames\n", str, frm);
 }
 
 
 void sizeFrame(FILE* in)
 {
-    int  code = 0, frm = -1, cnt = 0, oldcnt = 0;
+    long cnt = 0, oldcnt = 0;
+    size_t frm = 0;
+    int  code = 0;
 
     while ( code != EOF )
     {
@@ -198,7 +208,7 @@ void sizeFrame(FILE* in)
         
         if ( code == FRAME_END )
         {
-            printf("%lu  frame %5i: %7i lines (%+i)\n", frame_pid, frm, cnt, cnt-oldcnt);
+            printf("%lu  frame %5lu: %7li lines (%+li)\n", frame_pid, frm, cnt, cnt-oldcnt);
             oldcnt = cnt;
         }
         
@@ -213,7 +223,7 @@ void sizeFrame(FILE* in)
 
 void extract(FILE* in, FILE* out, Slice sli)
 {
-    unsigned frm = 0;
+    size_t frm = 0;
     int  code = 0;
     FILE * file = sli.match(0) ? out : nullptr;
 
@@ -307,7 +317,7 @@ void split(FILE * in)
                 fclose(out);
             }
             ++frm;
-            snprintf(name, sizeof(name), "objects%04li.cmo", frm);
+            snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
             out = openfile(name, "w");
             if ( out )
                 flockfile(out);

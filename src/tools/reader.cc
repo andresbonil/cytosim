@@ -48,15 +48,15 @@ void instructions(std::ostream& os = std::cout)
 
 int main(int argc, char* argv[])
 {
-    int frame;
     Simul simul;
-    char user[1024] = "\0";
     FrameReader reader;
-    Glossary arg;
+    Glossary opt;
+    char cmd[1024] = "\0";
+    size_t frm = 0;
+
+    opt.read_strings(argc-1, argv+1);
     
-    arg.read_strings(argc-1, argv+1);
-    
-    if ( arg.use_key("help") )
+    if ( opt.use_key("help") )
     {
         help(std::cout);
         instructions();
@@ -66,11 +66,11 @@ int main(int argc, char* argv[])
     std::string input = TRAJECTORY;
     std::string output = "output.cmo";
     
-    arg.set(output, "output");
-    arg.set(input, "input") || arg.set(input, ".cmo");
+    opt.set(output, "output");
+    opt.set(input, "input") || opt.set(input, ".cmo");
 
     bool binary = true;
-    arg.set(binary, "binary");
+    opt.set(binary, "binary");
     
     try {
         simul.loadProperties();
@@ -101,24 +101,27 @@ int main(int argc, char* argv[])
             printf("Reader: Empty buffer\n");
         
         printf("Reader: ");
-        fgets(user, sizeof(user), stdin);
+        fgets(cmd, sizeof(cmd), stdin);
         
-        if ( isdigit( user[0] ))
+        if ( isdigit(cmd[0]))
         {
-            if ( 1 == sscanf(user, "%i", &frame ) )
+            char * end;
+            frm = strtoul(cmd, &end, 10);
+            if ( !errno && end > cmd )
             {
                 try {
-                    if ( 0 != reader.loadFrame(simul, frame) )
+                    if ( 0 != reader.loadFrame(simul, frm) )
                         printf("Reader: frame not found: ");
                 }
                 catch( Exception & e ) {
-                    printf("Reader: exception in `read` %i: %s\n", frame, e.c_str());
+                    printf("Reader: exception in `read` %lu: %s\n", frm, e.c_str());
                 }
             }
+            printf("Reader: error reading: %s\n", cmd);
         }
         else
         {
-            switch( user[0] )
+            switch( cmd[0] )
             {
                 case '\n':
                 case 'n':

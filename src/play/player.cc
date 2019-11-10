@@ -37,15 +37,10 @@ void Player::clear()
 //------------------------------------------------------------------------------
 #pragma mark - I/O
 
-void Player::loadFrame(int f)
-{
-    thread.loadFrame(f);
-}
-
 
 void Player::previousFrame()
 {
-    if ( thread.hasFrame() && thread.currentFrame() > 0 )
+    if ( thread.hasFrame() && thread.currentFrame() > 1 )
         thread.loadFrame(thread.currentFrame()-1);
     else {
         if ( PP.loop )
@@ -67,7 +62,7 @@ void Player::nextFrame()
             if ( PP.exit_at_eof )
                 exit(EXIT_SUCCESS);
             if ( PP.loop )
-                thread.loadFrame(0);
+                thread.loadFrame(1);
             else
             {
                 flashText("end-of-file\n");
@@ -93,7 +88,7 @@ void Player::rewind()
     {
         stop();
         thread.rewind();
-        thread.loadFrame(0);
+        thread.loadFrame(1);
         glApp::postRedisplay();
     }
 }

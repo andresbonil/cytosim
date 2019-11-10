@@ -75,7 +75,7 @@ public:
          downsample = 2
          
      */
-    unsigned       downsample;
+    unsigned int   downsample;
     
     /** @} */
 
@@ -83,13 +83,13 @@ public:
     bool           exit_at_eof;
     
     /// index of report which is displayed
-    int            report_index;
+    unsigned int   report_index;
 
     /// index used to build the name of the exported image
-    int            image_index;
+    unsigned int   image_index;
     
     /// index used to build the name of the exported poster
-    int            poster_index;
+    unsigned int   poster_index;
    
     /// the piece of cytosim code executed when `magic_key` is pressed (set as `magic_key[1]`)
     std::string    magic_code[NB_MAGIC_KEYS];
