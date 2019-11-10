@@ -114,6 +114,7 @@ public:
         start_ = twister_.state[0].u;
         end_ = start_ + SFMT_N32;
     }
+    
     /// access to immutable state vector
     uint32_t const* data() { return twister_.state[0].u; }
 
