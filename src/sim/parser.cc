@@ -1162,11 +1162,17 @@ void Parser::evaluate(std::istream& is)
             parse_for(is);
         else if ( tok == "restart" )
         {
-            // use with caution!
-            // this will rewind the config file and drive an infinite loop
-            simul.erase();
-            is.clear();
-            is.seekg(0);
+            static unsigned long cnt = 0;
+            unsigned long num = 1;
+            Tokenizer::get_integer(is, num);
+            if ( do_run && cnt++ < num )
+            {
+                // reset simulation and rewind config file
+                simul.erase();
+                is.clear();
+                is.seekg(0);
+                continue;
+            }
         }
         else if ( tok == "end" )
             return;//parse_end(is);

@@ -117,13 +117,11 @@ void* run_launcher(void * arg)
 {
     //std::clog << "slave  " << pthread_self() << '\n';
     SimThread * st = static_cast<SimThread*>(arg);
-    if ( 0 == st->trylock() )
-    {
-        pthread_cleanup_push(child_cleanup, arg);
-        st->run();
-        pthread_cleanup_pop(1);
-        pthread_detach(st->child());
-    }
+    st->lock();
+    pthread_cleanup_push(child_cleanup, arg);
+    st->run();
+    pthread_cleanup_pop(1);
+    pthread_detach(st->child());
     return nullptr;
 }
 
@@ -169,13 +167,11 @@ void* extend_launcher(void * arg)
 {
     //std::clog << "slave  " << pthread_self() << '\n';
     SimThread * st = static_cast<SimThread*>(arg);
-    if ( 0 == st->trylock() )
-    {
-        pthread_cleanup_push(child_cleanup, arg);
-        st->extend_run();
-        pthread_cleanup_pop(1);
-        pthread_detach(st->child());
-    }
+    st->lock();
+    pthread_cleanup_push(child_cleanup, arg);
+    st->extend_run();
+    pthread_cleanup_pop(1);
+    pthread_detach(st->child());
     return nullptr;
 }
 
@@ -184,7 +180,7 @@ void* extend_launcher(void * arg)
 int SimThread::extend()
 {
     assert_false( isChild() );
-    if ( !hasChild && 0 == trylock() )
+    if ( !hasChild )
     {
         mFlag = 0;
         //std::clog << "master " << pthread_self() << '\n';

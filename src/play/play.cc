@@ -407,7 +407,7 @@ int main(int argc, char* argv[])
         {
             thread.period(PP.period);
             
-            if ( frm > 0 )
+            if ( frm > 1 )
                 thread.extend();
             else
                 thread.start();

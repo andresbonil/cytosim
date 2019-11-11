@@ -112,7 +112,7 @@ public:
 #else
     
     /// lock access to the Simulation data
-    void       lock()    {  debug("  lock..."); pthread_mutex_lock(&mMutex); debug("  lock"); }
+    void       lock()    {  debug("  lock..."); pthread_mutex_lock(&mMutex); debug("  locked!"); }
     
     /// unlock access to the Simulation data
     void       unlock()  { pthread_mutex_unlock(&mMutex); gubed("  unlock"); }

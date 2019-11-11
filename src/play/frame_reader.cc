@@ -7,8 +7,8 @@
 
 
 // Use the second definition to get some verbose reports:
-//#define VLOG(ARG) ((void) 0)
-#define VLOG(ARG) std::clog << ARG;
+#define VLOG(ARG) ((void) 0)
+//#define VLOG(ARG) std::clog << ARG;
 
 //------------------------------------------------------------------------------
 
@@ -353,11 +353,14 @@ int FrameReader::loadLastFrame(Simul& sim, size_t cnt)
             return NOT_FOUND;
         
         res = sim.reloadObjects(inputter);
-
-            VLOG("FrameReader: counting down from frame " << lastKnownFrame() << '\n');
-            frm = std::max(0UL, frm + 1 + lastKnownFrame());
+        
+        if ( res == SUCCESS )
+        {
+            frm = frm - cnt;
+            VLOG("FrameReader: loadFrame("<< frm <<") successful\n");
+            frameIndex = frm;
         }
-
+    }
     
     return res;
 }
