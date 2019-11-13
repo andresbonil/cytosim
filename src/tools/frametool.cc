@@ -199,7 +199,7 @@ void sizeFrame(FILE* in)
 {
     long cnt = 0, oldcnt = 0;
     size_t frm = 0;
-    int  code = 0;
+    int code = 0;
 
     while ( code != EOF )
     {
@@ -224,7 +224,7 @@ void sizeFrame(FILE* in)
 void extract(FILE* in, FILE* out, Slice sli)
 {
     size_t frm = 0;
-    int  code = 0;
+    int code = 0;
     FILE * file = sli.match(0) ? out : nullptr;
 
     while ( code != EOF )
@@ -299,10 +299,10 @@ void extractLast(FILE* in)
 
 void split(FILE * in)
 {
-    int frm = 0;
-    int  code = 0;
+    size_t frm = 0;
+    int code = 0;
     char name[128] = { 0 };
-    snprintf(name, sizeof(name), "objects%04li.cmo", frm);
+    snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
     FILE * out = fopen(name, "w");
    
     while ( code != EOF )

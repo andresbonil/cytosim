@@ -73,7 +73,7 @@ std::string Player::buildLabel() const
     if ( sh && sh->attached() )
         oss << "\nHandle: " << sh->force().norm() << "pN";
 
-    if ( thread.alive() )
+    if ( thread.alive() && goLive )
     {
         oss << "\nLive";
         //display ratio number-of-time-step / frame
@@ -335,8 +335,8 @@ int Player::saveView(const char* root, unsigned indx, int verbose) const
     snprintf(name, sizeof(name), "%s%04i.%s", root, indx, format);
     if ( PP.image_dir.length() )
     {
-        getcwd(cwd, sizeof(cwd));
-        chdir(PP.image_dir.c_str());
+        if ( getcwd(cwd, sizeof(cwd)) )
+            chdir(PP.image_dir.c_str());
     }
     GLint vp[4];
     glGetIntegerv(GL_VIEWPORT, vp);
@@ -415,8 +415,8 @@ int Player::saveViewMagnified(const int mag, const char* root, unsigned indx, co
     snprintf(name, sizeof(name), "%s%04i.%s", root, indx, format);
     if ( PP.image_dir.length() )
     {
-        getcwd(cwd, sizeof(cwd));
-        chdir(PP.image_dir.c_str());
+        if ( getcwd(cwd, sizeof(cwd)) )
+            chdir(PP.image_dir.c_str());
     }
     int err = saveViewMagnified(mag, name, format, downsample);
     if ( cwd[0] )
