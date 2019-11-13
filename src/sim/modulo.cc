@@ -2,10 +2,21 @@
 
 #include "modulo.h"
 #include "dim.h"
+#include "exceptions.h"
 
 constexpr int PERIODIC_XYZ = ( 1 << DIM ) - 1;
 constexpr int PERIODIC_YZ  = ( 1 << (DIM-1) ) - 1;
 constexpr int PERIODIC_X   = 1;
+
+
+/// enable periodicity in dimension 'd'
+void Modulo::enable(int d, real size)
+{
+    if ( size <= 0 )
+        throw InvalidParameter("periodic:length must be > 0");
+    mMode |= 1<<d;
+    mSize[d] = size;
+}
 
 
 const Vector Modulo::periodicity(int d) const

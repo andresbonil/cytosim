@@ -38,7 +38,7 @@ public:
     /// @}
     
     /// BACKWARD_COMPATIBILITY
-    std::string  dimensions;
+    std::string  dimensions_;
     
     /// equal to time_step / viscosity
     real         mobility_dt, mobility_rot_dt;

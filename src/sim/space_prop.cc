@@ -121,7 +121,7 @@ Space * SpaceProp::newSpace(Glossary& opt) const
     if ( spc )
     {
 #ifdef BACKWARD_COMPATIBILITY
-        std::string str = dimensions;
+        std::string str = dimensions_;
         if ( str.size() || opt.set(str, "dimensions") )
         {
             std::stringstream iss(str);
@@ -164,7 +164,7 @@ void SpaceProp::read(Glossary& glos)
     if ( glos.set(shape, "shape") )
     {
 #ifdef BACKWARD_COMPATIBILITY
-        glos.set(dimensions, "dimensions");
+        glos.set(dimensions_, "dimensions");
     }
     else
     {
@@ -173,8 +173,8 @@ void SpaceProp::read(Glossary& glos)
         {
             std::stringstream iss(str);
             iss >> shape >> std::ws;
-            std::getline(iss, dimensions);
-            if ( dimensions.empty() )
+            std::getline(iss, dimensions_);
+            if ( dimensions_.empty() )
                 throw InvalidParameter("space:geometry should contains dimensions");
         }
 #endif

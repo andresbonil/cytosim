@@ -452,10 +452,6 @@ void Space::read_data(Inputter& in, real len[8], std::string const& expected)
     }
 #endif
     
-    // now read the 'shape':
-    if ( ! isalpha(in.peek()) )
-        throw InvalidIO("unexpected non-alphabetic character");
-    
     std::string str;
 #ifdef BACKWARD_COMPATIBILITY
     if ( in.formatID() < 52 )

@@ -38,7 +38,7 @@ private:
 public:
     
     /// constructor
-    Modulo() { mMode = 0; }
+    Modulo() { mMode = 0; for (int d=0; d<DIM; ++d) mSize[d] = 0; }
 
     /// destructor
     ~Modulo() {}
@@ -47,7 +47,7 @@ public:
     void disable() { mMode = 0; }
     
     /// enable periodicity in dimension 'd'
-    void enable(int d, real size) { mMode |= 1<<d; mSize[d] = size; }
+    void enable(int d, real size);
     
     /// true if at least one direction has periodic boundaries
     bool isPeriodic() const { return mMode; }

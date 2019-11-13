@@ -38,7 +38,7 @@ public:
     void        boundaries(Vector& inf, Vector& sup) const;
     
     /// the volume inside
-    real        volume()           const;
+    real        volume() const;
     
     /// true if the point is inside the Space
     bool        inside(Vector const&) const;
