@@ -130,7 +130,8 @@ To pinpoint the problem, try to build objects that have fewer depencies first:
 
 	make test_blas
 	
-If you get an error at this stage, check that the compiler is linking the correct libraries. To find the libraries on your system, this command may help:
+If you get an error at this stage, check that the compiler is linking the correct libraries.
+To find the libraries on your system, this command may help:
 
 	find /usr/lib -name libblas.*
 

@@ -1,6 +1,6 @@
 # Physical units in Cytosim
  
- Cytosim is not aware of units, and it is the responsability of the user to provide coherent values. The parameters could thus in principle be specified in any system of units, but the same system must be used consistently for all values! However, for convenience, cytosim provides default values for some parameters, and this is done in a particular system of units. Specifically:
+ Cytosim is not aware of units, and the user's responsability to provide coherent values. The parameters could thus in principle be specified in any system of units, but the same system must be used consistently for all values! However, for convenience, cytosim provides default values for some parameters, and this is done in a particular system of units. Specifically:
 
  Parameter   | Default value    |
  ------------|-------------------

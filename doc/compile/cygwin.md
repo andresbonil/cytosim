@@ -12,6 +12,7 @@ Run the [Cygwin installer](https://cygwin.com/install.html) with default setting
 - libLAPACK		(Linear Algebra PACKage)
 - OpenGL			(Open Graphics Library)
 - GLEW				(OpenGL Extension Wrangler Library)
+- GLUT				(OpenGL Utility Toolkit)
 - X11    	    	(X Window System)
 - python3     	(python interpreter for cygwin)
 
