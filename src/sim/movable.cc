@@ -506,7 +506,7 @@ Vector Movable::readPosition(std::istream& is, Space const* spc)
                 // unget last token:
                 is.clear();
                 is.seekg(isp);
-#if 0
+#if 1
                 /*
                 We need to work around a bug in the stream extraction operator,
                 which eats extra characters ('a','n','e','E') if a double is read
@@ -742,7 +742,7 @@ Vector Movable::readDirection(std::istream& is, Vector const& pos, Space const* 
                 // unget last token
                 is.clear();
                 is.seekg(isp);
-#if 0
+#if 1
                 /*
                 We need to work around a bug in the stream extraction operator,
                 which eats extra characters ('a','n','e','E') if a double is read

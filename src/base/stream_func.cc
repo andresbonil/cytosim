@@ -102,8 +102,12 @@ void print_line(std::ostream& os, int num, std::string const& line)
  */
 void print_line(std::ostream& os, const char prefix[], std::string const& line)
 {
-    os << prefix << " " << line << '\n';
+    if ( prefix )
+        os << prefix << " " << line << '\n';
+    else
+        os << line << '\n';
 }
+
 
 /**
  Print the one line extracted from `is` containing `pos` and indicate
@@ -111,42 +115,42 @@ void print_line(std::ostream& os, const char prefix[], std::string const& line)
  */
 void StreamFunc::mark_line(std::ostream& os, std::istream& is, std::streampos pos, const char prefix[])
 {
-    if ( !is.good() )
-        is.clear();
-    
+    is.clear();
     std::streampos isp, sos = is.tellg();
-    if ( pos < 0 ) pos = sos;
     is.seekg(0);
 
+    // get the line containing 'pos'
     std::string line;
-    
     while ( is.good()  &&  is.tellg() <= pos )
     {
         isp = is.tellg();
         std::getline(is, line);
     }
-    
-    print_line(os, prefix, line);
-    is.clear();
-    is.seekg(isp);
-    
-    line.clear();
-    int c = 0;
-    while ( is.tellg() < pos )
-    {
-        c = is.get();
-        if ( c == EOF )
-            break;
-        if ( isspace(c) )
-            line.push_back((char)c);
-        else
-            line.push_back(' ');
-    }
-    line.push_back('^');
-    print_line(os, prefix, line);
-
+    std::streamoff off = pos - isp;
+    // reset stream
     is.clear();
     is.seekg(sos);
+
+    std::string sub;
+    int i = 0, c = 0;
+    while ( i < off )
+    {
+        c = line[i++];
+        if ( c == 0 )
+            break;
+        sub.push_back(isspace(c)?(char)c:' ');
+    }
+    sub.push_back('^');
+    //sub.append(" ("+std::string(1, is.peek())+")");
+    print_line(os, prefix, line);
+    print_line(os, prefix, sub);
+}
+
+
+void StreamFunc::mark_line(std::ostream& os, std::istream& is)
+{
+    is.clear();
+    mark_line(os, is, is.tellg(), nullptr);
 }
 
 
