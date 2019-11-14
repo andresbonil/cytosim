@@ -396,15 +396,17 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
             // 'pts' is a set of unit vectors:
             std::vector<Vector> pts(nbs, Vector(0,0,0));
 
-            // we decrease gradually the separation, until all points can fit:
+            // separation should not be greater than diameter:
+            sep = std::min(sep, 2*rad);
+            // decrease separation gradually, until all points can fit:
             real dis = sep;
             size_t ouf = 0;
-            while ( tossPointsSphere(pts, dis/rad, 1024) < nbs )
+            while ( tossPointsSphere(pts, dis/rad, 128) < nbs )
             {
-                if ( ++ouf > 1024 )
+                if ( ++ouf > 128 )
                 {
                     ouf = 0;
-                    dis /= 1.1892;
+                    dis /= 1.0905044; // sqrt(sqrt(sqrt(2)))
                 }
             }
             if ( dis < sep )
