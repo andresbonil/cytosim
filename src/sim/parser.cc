@@ -80,9 +80,11 @@ void Parser::parse_set(std::istream& is)
     std::string name, para, blok;
     
 #ifdef BACKWARD_COMPATIBILITY
-    // Read formats anterior to 3.11.2017 ('set hand 2 kinesin')
-    unsigned inx = 0;
-    Tokenizer::get_integer(is, inx);
+    {
+        // Read formats anterior to 3.11.2017 ('set hand 2 kinesin')
+        unsigned inx = 0;
+        Tokenizer::get_integer(is, inx);
+    }
 #endif
     
     Glossary opt;
@@ -1162,7 +1164,7 @@ void Parser::evaluate(std::istream& is)
             parse_for(is);
         else if ( tok == "restart" )
         {
-            static unsigned long cnt = 0;
+            static unsigned cnt = 0;
             unsigned num = 1;
             Tokenizer::get_integer(is, num);
             if ( do_run && cnt++ < num )

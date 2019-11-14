@@ -74,7 +74,7 @@ void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
     opt.set(column_width, "column") || opt.set(column_width, "width");
 
     //out << "\n% start   " << prop->time; // historical
-    out << "\n% time    " << prop->time;
+    out << "\n% time " << std::fixed << std::setprecision(3) << prop->time;
     try {
         std::string::size_type pos = arg.find(';');
         while ( pos != std::string::npos )
@@ -1100,7 +1100,7 @@ void Simul::reportFiberIntersections(std::ostream& out, Glossary& opt) const
 
 
 //------------------------------------------------------------------------------
-#pragma mark - Objects: Beads, Solid, Space, etc.
+#pragma mark - Beads, Solid, Space
 
 
 void Simul::reportTime(std::ostream& out) const
@@ -1113,7 +1113,7 @@ void Simul::reportInventory(std::ostream& out) const
 {
     //out << COM << "properties:";
     //properties.write_names(out, "");
-    out << COM << "objects:\n";
+    //out << COM << "objects:";
     spaces.report(out);
     fields.report(out);
     fibers.report(out);

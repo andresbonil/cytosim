@@ -329,17 +329,17 @@ void SingleSet::report(std::ostream& os) const
 {
     if ( size() > 0 )
     {
-        os << title() << "\n";
+        os << '\n' << title();
         PropertyList plist = simul.properties.find_all(title());
         for ( Property * i : plist )
         {
             SingleProp * p = static_cast<SingleProp*>(i);
             unsigned cnt = count(match_property, p);
-            os << std::setw(10) << cnt << " " << p->name();
-            os << " ( " << p->hand << " )\n";
+            os << '\n' << std::setw(10) << cnt << ' ' << p->name();
+            os << " ( " << p->hand << " )";
         }
         if ( plist.size() > 1 )
-            os << std::setw(10) << size() << " total\n";
+            os << '\n' << std::setw(10) << size() << " total";
     }
 }
 

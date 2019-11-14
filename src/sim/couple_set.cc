@@ -519,17 +519,17 @@ void CoupleSet::report(std::ostream& os) const
 {
     if ( size() > 0 )
     {
-        os << title() << "\n";
+        os << '\n' << title();
         PropertyList plist = simul.properties.find_all(title());
         for ( Property * i : plist )
         {
             CoupleProp * p = static_cast<CoupleProp*>(i);
             unsigned cnt = count(match_property, p);
-            os << std::setw(10) << cnt << " " << p->name();
-            os << " ( " << p->hand1 << " | " << p->hand2 << " )\n";
+            os << '\n' << std::setw(10) << cnt << " " << p->name();
+            os << " ( " << p->hand1 << " | " << p->hand2 << " )";
         }
         if ( plist.size() > 1 )
-            os << std::setw(10) << size() << " total\n";
+            os << '\n' << std::setw(10) << size() << " total";
     }
 }
 
