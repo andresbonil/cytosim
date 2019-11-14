@@ -167,19 +167,13 @@ void HandProp::clear()
 
 void HandProp::read(Glossary& glos)
 {
-    glos.set(binding_rate,       "binding_rate");
-    glos.set(binding_range,      "binding_range");
-    glos.set(binding_key,        "binding_key");
-    //alternative syntax:
-    glos.set(binding_rate,       "binding", 0);
-    glos.set(binding_range,      "binding", 1);
-    glos.set(binding_key,        "binding", 2);
+    glos.set(binding_rate,  "binding_rate")  || glos.set(binding_rate,  "binding", 0);
+    glos.set(binding_range, "binding_range") || glos.set(binding_range, "binding", 1);
+    glos.set(binding_key,   "binding_key")   || glos.set(binding_key,   "binding", 2);
     
-    glos.set(unbinding_rate,     "unbinding_rate");
-    glos.set(unbinding_force,    "unbinding_force");
-    //alternative syntax:
-    glos.set(unbinding_rate,     "unbinding", 0);
-    glos.set(unbinding_force,    "unbinding", 1);
+    glos.set(unbinding_rate,  "unbinding_rate")  || glos.set(unbinding_rate,  "unbinding", 0);
+    glos.set(unbinding_force, "unbinding_force") || glos.set(unbinding_force, "unbinding", 1);
+    
     
     glos.set(bind_also_end, "bind_also_end", {{"off",       NO_END},
                                               {"plus_end",  PLUS_END},
@@ -190,8 +184,8 @@ void HandProp::read(Glossary& glos)
                                               {"plus_end",  PLUS_END},
                                               {"minus_end", MINUS_END},
                                               {"both_ends", BOTH_ENDS}});
-    glos.set(bind_end_range,     "bind_only_end", 1);
-    glos.set(bind_end_range,     "bind_end_range");
+    
+    glos.set(bind_end_range, "bind_end_range") || glos.set(bind_end_range, "bind_only_end", 1);
 
 #ifdef BACKWARD_COMPATIBILITY
     glos.set(bind_also_end, "bind_also_ends", {{"off",       NO_END},
