@@ -1163,7 +1163,7 @@ void Parser::evaluate(std::istream& is)
         else if ( tok == "restart" )
         {
             static unsigned long cnt = 0;
-            unsigned long num = 1;
+            unsigned num = 1;
             Tokenizer::get_integer(is, num);
             if ( do_run && cnt++ < num )
             {
