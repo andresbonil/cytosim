@@ -126,7 +126,7 @@ typedef Array<FatSegment> FatSegmentList;
 
 /// number of panes in the steric engine
 /** This should normally be set equal to 1, for optimal performance */
-#define NB_STERIC_PANES 3
+#define NB_STERIC_PANES 1
 
 
 /// a set of lists associated with the same location
