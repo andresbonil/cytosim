@@ -281,14 +281,6 @@ public:
     /// read C-style command-line arguments
     void         read_strings(int argc, char* argv[], int no_overwrite = 2);
 
-    //-------------------------------------------------------------------------------
-
-    /// write [ key = value1, value2, ... ]
-    static void  write(std::ostream&, std::string const& prefix, pair_type const&);
-
-    /// write the number of time each value has been used
-    static void  write_counts(std::ostream&, std::string const& prefix, pair_type const&);
-
     /// write all [key, values]
     void         write(std::ostream&, std::string const& prefix = "") const;
     

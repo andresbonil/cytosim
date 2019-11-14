@@ -39,6 +39,61 @@ Glossary::Glossary(const std::string& str)
     read(iss);
 }
 
+
+//------------------------------------------------------------------------------
+#pragma mark - Formating
+
+std::string format_value(std::string const& str)
+{
+    if ( std::string::npos != str.find_first_of(" ;") )
+        return '(' + str + ')';
+    else
+        return str;
+}
+
+
+std::string format_count(size_t c)
+{
+    if ( c == 0 )
+        return " (not used)";
+    if ( c == 1 )
+        return " (used once)";
+    return " (used " + std::to_string(c) + " times) ";
+}
+    
+
+std::string format(Glossary::pair_type const& pair)
+{
+    std::ostringstream os;
+    os << pair.first;
+    if ( pair.second.size() > 0 )
+    {
+        os << " = " << format_value(pair.second[0].value_);
+        for ( size_t i = 1; i < pair.second.size(); ++i )
+            os << ", " << format_value(pair.second[i].value_);
+        os << ";";
+    }
+    return os.str();
+}
+
+/**
+ Write the usage-counter for each value.
+ The width of each record will match what is printed by Glossary::write()
+ */
+std::string format_counts(Glossary::pair_type const& pair)
+{
+    std::ostringstream os;
+    os << pair.first;
+    if ( pair.second.size() > 0 )
+    {
+        os << " = " << format_value(pair.second[0].value_) << format_count(pair.second[0].count_);
+        for ( size_t i = 1; i < pair.second.size(); ++i )
+            os << ", " << format_value(pair.second[i].value_) << format_count(pair.second[i].count_);
+    }
+    return os.str();
+}
+
+
 //------------------------------------------------------------------------------
 #pragma mark - Access
 
@@ -373,9 +428,9 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
                 {
                     std::ostringstream oss;
                     oss << "conflicting definitions:\n";
-                    write(oss, PREF, *w);
+                    oss << PREF << format(*w);
                     oss << "\n";
-                    write(oss, PREF, pair);
+                    oss << PREF << format(pair);
                     oss << "\n";
                     throw InvalidSyntax(oss.str());
                 }
@@ -425,6 +480,33 @@ void Glossary::define(key_type const& k, const std::string& rhs)
     define(k, 0, rhs);
 }
 
+
+//------------------------------------------------------------------------------
+#pragma mark - Output
+
+
+void Glossary::write(std::ostream& os, std::string const& prefix) const
+{
+    for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )
+    {
+        os << prefix << format(*i);
+        std::endl(os);
+    }
+}
+
+
+std::ostream& operator << (std::ostream& os, Glossary::pair_type const& pair)
+{
+    os << "  " << format(pair);
+    return os;
+}
+
+
+std::ostream& operator << (std::ostream& os, Glossary const& glos)
+{
+    glos.write(os, "  ");
+    return os;
+}
 
 //------------------------------------------------------------------------------
 #pragma mark - Input
@@ -595,79 +677,6 @@ std::istream& operator >> (std::istream& is, Glossary& glos)
 }
 
 //------------------------------------------------------------------------------
-#pragma mark - Output
-
-std::string Glossary::format_value(std::string const& str)
-{
-    if ( std::string::npos != str.find_first_of(" ;") )
-        return '(' + str + ')';
-    else
-        return str;
-}
-
-
-std::string Glossary::format_count(size_t c)
-{
-    if ( c == 0 )
-        return " ( not used ) ";
-    if ( c == 1 )
-        return " ( used once ) ";
-    return " ( used " + std::to_string(c) + " times ) ";
-}
-    
-
-void Glossary::write(std::ostream& os, std::string const& prefix, Glossary::pair_type const& pair)
-{
-    os << prefix << pair.first;
-    if ( pair.second.size() > 0 )
-    {
-        os << " = " << format_value(pair.second[0].value_);
-        for ( size_t i = 1; i < pair.second.size(); ++i )
-            os << ", " << format_value(pair.second[i].value_);
-        os << ";";
-    }
-}
-
-/**
- Write the usage-counter for each value.
- The width of each record will match what is printed by Glossary::write()
- */
-void Glossary::write_counts(std::ostream& os, std::string const& prefix, Glossary::pair_type const& pair)
-{
-    os << prefix << pair.first;
-    if ( pair.second.size() > 0 )
-    {
-        os << " = " << format_value(pair.second[0].value_) << format_count(pair.second[0].count_);
-        for ( size_t i = 1; i < pair.second.size(); ++i )
-            os << ", " << format_value(pair.second[i].value_) << format_count(pair.second[i].count_);
-        os << ";";
-    }
-}
-
-
-void Glossary::write(std::ostream& os, std::string const& prefix) const
-{
-    for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )
-    {
-        write(os, prefix, *i);
-        std::endl(os);
-    }
-}
-
-
-std::ostream& operator << (std::ostream& os, Glossary::pair_type const& pair)
-{
-    Glossary::write(os, "  ", pair);
-    return os;
-}
-
-std::ostream& operator << (std::ostream& os, Glossary const& glos)
-{
-    glos.write(os, "  ");
-    return os;
-}
-
-//------------------------------------------------------------------------------
 #pragma mark -
 
 /**
@@ -697,20 +706,19 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
     std::string warn;
     
     if ( !used )
-        warn = "this parameter was ignored";
+        warn = "Warning, this parameter was ignored";
     else if ( !exhausted )
-        warn = "a value was ignored";
+        warn = "Warning, a value was ignored";
     if ( overused )
-        warn = "some value might have been overused";
+        warn = "Warning, some value might have been overused";
     
     if ( warn.size() )
     {
-        print_yellow(os, "Warning, " + warn + msg + ":\n");
         if ( used )
-            write_counts(os, PREF, pair);
+            print_yellow(os, warn + msg + ": " + format_counts(pair));
         else
-            write(os, PREF, pair);
-        os << std::endl;
+            print_yellow(os, warn + msg + ": " + format(pair));
+        std::endl(os);
         
         if ( ! used )
             return 4;
