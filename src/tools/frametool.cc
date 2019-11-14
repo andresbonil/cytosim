@@ -36,6 +36,7 @@ const size_t buf_size = 128;
 char buf[buf_size];
 
 unsigned long frame_pid = 0;
+double frame_time = 0;
 
 
 FILE * openfile(char name[], char const* mode)
@@ -101,6 +102,8 @@ int whatline(FILE* in, FILE* out)
         if ( 0 == strncmp(buf, "#end ", 5) )     return FRAME_END;
         if ( 0 == strncmp(buf, " #end ", 6) )    return FRAME_END;
         if ( 0 == strncmp(buf, "#section ", 9) ) return FRAME_SECTION;
+        if ( 0 == strncmp(buf, "#time ", 6) )
+            frame_time = strtod(buf+6, 0);
     }
     return UNKNOWN;
 }
@@ -203,12 +206,12 @@ void sizeFrame(FILE* in)
 
     while ( code != EOF )
     {
-        ++cnt;
         code = whatline(in, nullptr);
         
         if ( code == FRAME_END )
         {
-            printf("%lu  frame %5lu: %7li lines (%+li)\n", frame_pid, frm, cnt, cnt-oldcnt);
+            printf("pid %lu   frame %5lu    time %8.3f   %7li lines (%+li)\n",
+                   frame_pid, frm, frame_time, cnt, cnt-oldcnt);
             oldcnt = cnt;
         }
         
@@ -223,7 +226,7 @@ void sizeFrame(FILE* in)
 
 void extract(FILE* in, FILE* out, Slice sli)
 {
-    size_t frm = 0;
+    size_t frm = 1;
     int code = 0;
     FILE * file = sli.match(0) ? out : nullptr;
 
@@ -299,7 +302,7 @@ void extractLast(FILE* in)
 
 void split(FILE * in)
 {
-    size_t frm = 0;
+    size_t frm = 1;
     int code = 0;
     char name[128] = { 0 };
     snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
@@ -398,7 +401,7 @@ int main(int argc, char* argv[])
                 mode = LAST;
             else if ( 0 == strncmp(cmd, "split", 5) )
                 mode = SPLIT;
-            else if ( 0 == strncmp(cmd, "size", 4) )
+            else if ( 0 == strncmp(cmd, "size", 4) || *cmd == '+' )
                 mode = SIZE;
             else if ( 0 == strncmp(cmd, "count", 5) )
                 mode = COUNT;
