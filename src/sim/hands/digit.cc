@@ -46,7 +46,6 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
  */
 void Digit::attach(FiberSite const& sit)
 {
-    assert_true(sit.lattice());
     Hand::attach(sit);
     assert_true(vacant(site()));
     inc();
