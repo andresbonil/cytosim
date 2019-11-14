@@ -395,12 +395,6 @@ public:
 
     /// print summary of Fiber's lattice quantities
     void      reportFiberLattice(std::ostream&, bool density) const;
-
-    /// print interection abscissa between fibers
-    void      reportFiberConnectors(std::ostream&, Glossary&) const;
-
-    /// print interection abscissa between fibers
-    void      reportNetworkBridges(std::ostream&, Glossary&) const;
     
     /// print positions of interection between two fibers
     void      reportFiberIntersections(std::ostream&, Glossary&) const;
