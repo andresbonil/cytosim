@@ -212,7 +212,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `equator R T`");
             Vector2 vec2 = Vector2::randU();
-            return Vector(R*vec2.XX, R*vec2.YY, T*RNG.sreal_half());
+            return Vector(R*vec2.XX, R*vec2.YY, T*RNG.shalf());
         }
        
         if ( tok == "cylinder" )
@@ -224,7 +224,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             if ( R < 0 )
                 throw InvalidParameter("you must specify a radius R >= 0 in `cylinder L R`");
             Vector2 YZ = Vector2::randB(R);
-            return Vector(L*RNG.sreal_half(), YZ.XX, YZ.YY);
+            return Vector(L*RNG.shalf(), YZ.XX, YZ.YY);
         }
         
         if ( tok == "circle" )
@@ -263,7 +263,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `disc R T`");
             Vector2 V = Vector2::randB(R);
-            return Vector(V.XX, V.YY, T*RNG.sreal_half());
+            return Vector(V.XX, V.YY, T*RNG.shalf());
 #endif
             //in 2D, a disc in the XY-plane
             return Vector::randB(R);
@@ -278,7 +278,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `discXZ R T`");
             Vector2 V = Vector2::randB(R);
-            return Vector(V.XX, T*RNG.sreal_half(), V.YY);
+            return Vector(V.XX, T*RNG.shalf(), V.YY);
         }
         
         if ( tok == "discYZ"  )
@@ -290,7 +290,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `discYZ R T`");
             Vector2 V = Vector2::randB(R);
-            return Vector(T*RNG.sreal_half(), V.XX, V.YY);
+            return Vector(T*RNG.shalf(), V.XX, V.YY);
         }
         
         if ( tok == "ellipse" )
@@ -317,9 +317,9 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 throw InvalidParameter("the thickness T must be >= 0 in `line L T`");
 #if ( DIM >= 3 )
             Vector2 V = Vector2::randB(T);
-            return Vector(L*RNG.sreal_half(), V.XX, V.YY);
+            return Vector(L*RNG.shalf(), V.XX, V.YY);
 #endif
-            return Vector(L*RNG.sreal_half(), T*RNG.sreal_half(), 0);
+            return Vector(L*RNG.shalf(), T*RNG.shalf(), 0);
         }
         
         if ( tok == "arc" )
@@ -333,11 +333,11 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real x = 0, y = 0;
             if ( A == 0 ) {
                 x = 0;
-                y = L * RNG.sreal_half();
+                y = L * RNG.shalf();
             }
             else {
                 real R = L / A;
-                real angle = A * RNG.sreal_half();
+                real angle = A * RNG.shalf();
                 x = R * cos(angle) - R; // origin centered on arc
                 y = R * sin(angle);
             }
@@ -361,7 +361,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
         {
             real x = 0, y = 0, z = 0;
             is >> x >> y >> z;
-            return Vector(x,y,z).e_mul(Vector::randS());
+            return Vector(x,y,z).e_mul(Vector::randH());
         }
 
 #if ( 1 )
@@ -374,7 +374,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             
             // straight
             if ( bending == 0 ) {
-                x = thickness * RNG.sreal_half();
+                x = thickness * RNG.shalf();
                 y = length * RNG.preal();
             } else {
                 real radius = length / (bending * M_PI);

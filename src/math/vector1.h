@@ -513,6 +513,9 @@ public:
     /// Vector with random independent coordinates in [-1,+1]
     static const Vector1 randS();
     
+    /// Vector with random independent coordinates in [-1/2,+1/2]
+    static const Vector1 randH();
+    
     /// Vector with random independent coordinates in [-n,+n]
     static const Vector1 randS(real n);
     

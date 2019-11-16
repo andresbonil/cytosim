@@ -231,7 +231,7 @@ public:
     real sreal()                 { return RAND32() * TWO_POWER_MINUS_31; }
     
     /// signed real number in ]-1/2, 1/2[, boundaries excluded
-    real sreal_half()            { return RAND32() * TWO_POWER_MINUS_32; }
+    real shalf()                 { return RAND32() * TWO_POWER_MINUS_32; }
     
     /// returns -1.0 or 1.0 with equal chance
     real sflip()                 { return std::copysign(1.0, RAND32()); }
@@ -318,7 +318,8 @@ public:
     }
 };
 
-// declaration of a global object:
+
+/// declaring a global Random Number Generator
 extern Random RNG;
 
 /**

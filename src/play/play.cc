@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
     
-    if ( arg.use_key("live") )
+    if ( arg.use_key("live") || arg.has_key(".cym") )
         player.goLive = true;
     
     if ( arg.use_key("image") )
