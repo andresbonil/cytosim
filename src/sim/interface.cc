@@ -147,8 +147,7 @@ void warn_trail(std::istream& is, std::string const& msg)
 {
     std::string str;
     std::getline(is, str);
-    std::cerr << "Error: unexpected tokens `" << str;
-    throw InvalidSyntax("syntax error `"+msg+"'");
+    throw InvalidSyntax("unexpected tokens `"+str+"'");
 }
 
 /**
