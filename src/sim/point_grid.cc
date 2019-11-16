@@ -94,11 +94,10 @@ void PointGrid::add(unsigned pan, Mecapoint const& pe, real rd, real rg) const
     //we check that the grid would correctly detect collision of two particles
     if ( max_diameter < 2 * rg - REAL_EPSILON )
     {
-        std::ostringstream oss;
-        oss << "simul:steric_max_range is too short" << std::endl;
-        oss << PREF << "steric_max_range should be greater than 2 * ( particle_radius + extra_range )" << std::endl;
-        oss << PREF << "= " << 2 * rg << " for some particles" << std::endl;
-        throw InvalidParameter(oss.str());
+        InvalidParameter e("simul:steric_max_range is too short\n");
+        e << PREF << "steric_max_range should be greater than 2 * ( particle_radius + extra_range )\n";
+        e << PREF << "= " << 2 * rg << " for some particles\n";
+        throw e;
     }
 #endif
 }
@@ -119,12 +118,11 @@ void PointGrid::add(unsigned pan, FiberSegment const& fl, real rd, real rg) cons
     real diag = sqrt( fl.len() * fl.len() + 4 * rg * rg );
     if ( max_diameter < diag - REAL_EPSILON )
     {
-        std::ostringstream oss;
-        oss << "simul:steric_max_range is too short" << std::endl;
-        oss << PREF << "steric_max_range should be greater than sqrt( sqr(segment_length) + 4*sqr(range) )" << std::endl;
-        oss << PREF << "where normally segment_length ~ 4/3 segmentation" << std::endl;
-        oss << PREF << "= " << diag << " for some fibers" << std::endl;
-        throw InvalidParameter(oss.str());
+        InvalidParameter("simul:steric_max_range is too short\n");
+        e << PREF << "steric_max_range should be greater than sqrt( sqr(segment_length) + 4*sqr(range) )\n";
+        e << PREF << "where normally segment_length ~ 4/3 segmentation\n";
+        e << PREF << "= " << diag << " for some fibers\n";
+        throw e;
     }
 #endif
 }

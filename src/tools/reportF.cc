@@ -77,7 +77,8 @@ int main(int argc, char* argv[])
     std::string root = "report", str, what = argv[1];
     
     Glossary arg;
-    arg.read_strings(argc-2, argv+2);
+    if ( arg.read_strings(argc-2, argv+2) )
+        return EXIT_FAILURE;
     arg.set(input, ".cmo") || arg.set(input, "input");
     if ( arg.use_key("-") ) verbose = 0;
     arg.set(verbose, "verbose");

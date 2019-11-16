@@ -135,13 +135,8 @@ int main(int argc, char* argv[])
     Cytosim::all_silent();
     std::atexit(goodbye);
 
-    try {
-        arg.read_strings(argc-1, argv+1);
-    }
-    catch( Exception & e ) {
-        std::cerr << "Error: " << e.what() << '\n';
+    if ( arg.read_strings(argc-1, argv+1) )
         return EXIT_FAILURE;
-    }
     
     // check for major options:
     
@@ -198,7 +193,8 @@ int main(int argc, char* argv[])
     }
     catch( Exception & e )
     {
-        std::cerr << "Error: " << e.what() << '\n';
+        print_magenta(std::cerr, "Error: "+e.brief());
+        std::cerr << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
@@ -240,7 +236,8 @@ int main(int argc, char* argv[])
     }
     catch( Exception & e )
     {
-        std::cerr << "Error: " << e.what() << '\n';
+        print_magenta(std::cerr, "Error: "+e.brief());
+        std::cerr << e.info() << '\n';
         return EXIT_FAILURE;
     }
     

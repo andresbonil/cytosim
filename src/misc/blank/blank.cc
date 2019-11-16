@@ -207,7 +207,8 @@ int main(int argc, char* argv[])
 {
     //parse the config file
     Glossary arg;
-    arg.read_strings(argc+1, argv-1);
+    if ( arg.read_strings(argc-1, argv+1) )
+        return EXIT_FAILURE;
     PAM.read(arg);
     
     if ( arg.use_key("help") )

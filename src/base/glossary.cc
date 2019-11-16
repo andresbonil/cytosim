@@ -426,13 +426,10 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
                     rec[i] = pair.second[i];
                 else if ( pair.second[i].value_ != rec[i].value_  &&  no_overwrite > 1 )
                 {
-                    std::ostringstream oss;
-                    oss << "conflicting definitions:\n";
-                    oss << PREF << format(*w);
-                    oss << "\n";
-                    oss << PREF << format(pair);
-                    oss << "\n";
-                    throw InvalidSyntax(oss.str());
+                    InvalidSyntax e("conflicting definitions:\n");
+                    e << PREF << format(*w) << "\n";
+                    e << PREF << format(pair) << "\n";
+                    throw e;
                 }
             }
         }
@@ -653,20 +650,23 @@ void Glossary::read_string(const char arg[], int no_overwrite)
  
  Strings corresponding to existing directories
  */
-void Glossary::read_strings(int argc, char* argv[], int no_overwrite)
+int Glossary::read_strings(int argc, char* argv[], int no_overwrite)
 {
-    for ( int ii = 0; ii < argc; ++ii )
+    int res = 0;
+    for ( int i = 0; i < argc; ++i )
     {
         try
         {
-            read_string(argv[ii], no_overwrite);
+            read_string(argv[i], no_overwrite);
         }
         catch( Exception & e )
         {
-            e << " in `" << argv[ii] << "'\n";
-            throw;
+            print_magenta(std::cerr, "Error: "+e.brief());
+            std::cerr << e.info() << '\n';
+            res = 1;
         }
     }
+    return res;
 }
 
 

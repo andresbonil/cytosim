@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
     
     std::string input  = argv[1];
     std::string output = argv[2];
-    arg.read_strings(argc-3, argv+3);
+    if ( arg.read_strings(argc-3, argv+3) )
+        return EXIT_FAILURE;
     
     ObjectSet * skip_set = nullptr;
     std::string skip;

@@ -50,13 +50,14 @@ int main(int argc, char* argv[])
 {
     Simul simul;
     FrameReader reader;
-    Glossary opt;
+    Glossary arg;
     char cmd[1024] = "\0";
     size_t frm = 0;
 
-    opt.read_strings(argc-1, argv+1);
-    
-    if ( opt.use_key("help") )
+    if ( arg.read_strings(argc-1, argv+1) )
+        return EXIT_FAILURE;
+
+    if ( arg.use_key("help") )
     {
         help(std::cout);
         instructions();
@@ -66,11 +67,11 @@ int main(int argc, char* argv[])
     std::string input = TRAJECTORY;
     std::string output = "output.cmo";
     
-    opt.set(output, "output");
-    opt.set(input, "input") || opt.set(input, ".cmo");
+    arg.set(output, "output");
+    arg.set(input, "input") || arg.set(input, ".cmo");
 
     bool binary = true;
-    opt.set(binary, "binary");
+    arg.set(binary, "binary");
     
     try {
         simul.loadProperties();

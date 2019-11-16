@@ -467,9 +467,9 @@ void Space::read_data(Inputter& in, real len[8], std::string const& expected)
     // compare with expected shape:
     if ( str.compare(0, expected.size(), expected) )
     {
-        std::ostringstream oss;
-        oss << "found space:shape `" << str << "' in file but `" << expected << "' was expected";
-        throw InvalidIO(oss.str());
+        InvalidIO e("space:shape mismatch");
+        e << "found space:shape `" << str << "' in file but `" << expected << "' was expected";
+        throw e;
     }
     
     // read the dimensions:

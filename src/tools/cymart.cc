@@ -317,7 +317,8 @@ int main(int argc, char* argv[])
     std::string fiber_type = argv[1];
     Property * selected = 0;
     
-    arg.read_strings(argc-2, argv+2);
+    if ( arg.read_strings(argc-2, argv+2) )
+        return EXIT_FAILURE;
 
     arg.set(binary, "binary");
     arg.set(style, "style", {{"filament", 1}, {"actin", 2}, {"microtubule", 3}});

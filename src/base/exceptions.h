@@ -15,13 +15,15 @@ extern const char PREF[];
 
 
 /// A mechanism to handle errors (see C++ manual)
-/** 
-Throw an Exception (not a pointer), and catch a reference to an exception.
-This ensures proper memory managment (coordinated calls of constructor / destructor)
+/**
+ The exception carry a 'message' and associated 'info', which are both strings.
+ The message is set by the constructor, and the info is set by the << operator.
+ 
+ Usage: Throw an Exception (not a pointer), and catch a reference to an exception.
+ This ensures proper memory managment (coordinated calls of constructor / destructor)
 */
 class Exception 
 {
-    
 protected:
     
     /// brief description of the issue
@@ -110,26 +112,26 @@ public:
         msg_ = oss.str();
     }
 
-    /// append string to message
-    Exception&  operator << (const std::string m)
+    /// append string to info
+    Exception& operator << (const std::string m)
     {
-        if ( info_.size() < 1 || !isspace(*info_.rbegin()) )
-            info_.push_back(' ');
+        if ( msg_.size() > 0 && !isspace(*msg_.rbegin()) )
+            msg_.push_back(' ');
         info_.append(m);
         return *this;
     }
     
-    /*
-    /// append string-representation of `x` to message
+    /// append string-representation of `x` to info
     template<typename T>
-    Exception&  operator << (const T& x)
+    Exception& operator << (const T& x)
     {
+        if ( msg_.size() > 0 && !isspace(*msg_.rbegin()) )
+            msg_.push_back(' ');
         std::ostringstream oss;
         oss << x;
-        msg_.append(oss.str());
+        info_.append(oss.str());
         return *this;
     }
-     */
 };
 
 

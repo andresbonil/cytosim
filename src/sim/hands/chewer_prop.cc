@@ -72,12 +72,12 @@ void ChewerProp::checkStiffness(real stiff, real len, real mul, real kT) const
     real a = mobility_dt * stiff * mul;
     if ( a > 1.0 )
     {
-        std::ostringstream oss;
-        oss << "simulating `" << name() << "' may fail as:\n";
-        oss << PREF << "mobility = " << diffusion / kT << '\n';
-        oss << PREF << "mobility * stiffness * time_step = " << a << '\n';
-        oss << PREF << "-> reduce time_step (really)\n";
-        throw InvalidParameter(oss.str());
+        InvalidParameter e("unstable chewer\n");
+        e << "simulating `" << name() << "' may fail as:\n";
+        e << PREF << "mobility = " << diffusion / kT << '\n';
+        e << PREF << "mobility * stiffness * time_step = " << a << '\n';
+        e << PREF << "-> reduce time_step (really)\n";
+        throw e;
     }
     
 }

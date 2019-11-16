@@ -141,21 +141,22 @@ int main(int argc, char* argv[])
     std::ofstream ofs;
 
     // check for prefix:
-    int inx = 1;
-    while ( argc > inx+1 )
+    int ax = 1;
+    while ( argc > ax+1 )
     {
-        if ( strstr(argv[inx], "time") )
+        if ( strstr(argv[ax], "time") )
             prefix |= 1;
-        else if ( strstr(argv[inx], "frame") )
+        else if ( strstr(argv[ax], "frame") )
             prefix |= 2;
         else
             break;
-        ++inx;
+        ++ax;
     }
     
-    what = argv[inx++];
-    arg.read_strings(argc-inx, argv+inx);
-    
+    what = argv[ax++];
+    if ( arg.read_strings(argc-ax, argv+ax) )
+        return EXIT_FAILURE;
+
 #ifdef BACKWARD_COMPATIBILITY
     if ( arg.set(str, "prefix") && str=="time" )
         prefix = 1;
