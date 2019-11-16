@@ -544,7 +544,7 @@ void Glossary::read_entry(std::istream& is, int no_overwrite)
     }
     catch( Exception& e )
     {
-        e << '\n' << StreamFunc::marked_line(is, isp, PREF);
+        e << "\n" << StreamFunc::marked_line(is, isp, PREF);
         throw;
     }
     

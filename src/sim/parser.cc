@@ -1003,7 +1003,7 @@ void Parser::parse_for(std::istream& is)
         // substitute Variable name for this iteration:
         StreamFunc::find_and_replace(sub, var, std::to_string(c));
         //we use a fresh stream and Parser for each instance:
-        Parser(*this).evaluate(sub, ", inside `for'");
+        Parser(*this).evaluate(sub, "in `for' loop");
         //hold();
     }
 }

@@ -25,8 +25,11 @@ class Exception
 protected:
     
     /// brief description of the issue
-    std::string msg;
+    std::string msg_;
 
+    /// background information
+    std::string info_;
+    
 public:
     
     /// Creator with empty message
@@ -37,26 +40,38 @@ public:
     /// constructor with given message
     Exception(std::string const& m)
     {
-        msg = m;
+        msg_ = m;
         //printf("Exception(%s)\n", msg.c_str());
     }
     
-    /// return copy of the message
-    std::string what() const
+    /// return the message
+    std::string brief()
     {
-        return msg;
+        return msg_;
+    }
+    
+    /// return supplementary messare
+    std::string info() const
+    {
+        return info_;
     }
 
     /// return copy of the message
-    char const* c_str() const
+    std::string what() const
     {
-        return msg.c_str();
+        return msg_ + info_;
+    }
+
+    /// return copy of the message
+    char const* msg() const
+    {
+        return msg_.c_str();
     }
     
     /// change the message
-    void what(const std::string& m)
+    void message(const std::string& m)
     {
-        msg = m;
+        msg_ = m;
     }
     
     /// concatenate `s` and `a` to build message
@@ -65,7 +80,7 @@ public:
     {
         std::ostringstream oss;
         oss << s << a;
-        msg = oss.str();
+        msg_ = oss.str();
     }
     
     /// concatenate `s`, `a` and `b` to build message
@@ -74,7 +89,7 @@ public:
     {
         std::ostringstream oss;
         oss << s << a << b;
-        msg = oss.str();
+        msg_ = oss.str();
     }
 
     /// concatenate `s`, `a`, `b` and `c` to build message
@@ -83,7 +98,7 @@ public:
     {
         std::ostringstream oss;
         oss << s << a << b << c;
-        msg = oss.str();
+        msg_ = oss.str();
     }
 
     /// concatenate `s`, `a`, `b`, `c` and `d` to build message
@@ -92,27 +107,29 @@ public:
     {
         std::ostringstream oss;
         oss << s << a << b << c << d;
-        msg = oss.str();
+        msg_ = oss.str();
     }
 
-    /// append `m` to message
+    /// append string to message
     Exception&  operator << (const std::string m)
     {
-        if ( msg.size() > 1 && !isspace(*msg.rbegin()) )
-            msg.push_back(' ');
-        msg.append(m);
+        if ( info_.size() < 1 || !isspace(*info_.rbegin()) )
+            info_.push_back(' ');
+        info_.append(m);
         return *this;
     }
     
-    /// append `x` to message
+    /*
+    /// append string-representation of `x` to message
     template<typename T>
     Exception&  operator << (const T& x)
     {
         std::ostringstream oss;
         oss << x;
-        msg.append(oss.str());
+        msg_.append(oss.str());
         return *this;
     }
+     */
 };
 
 
