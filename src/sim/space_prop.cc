@@ -106,10 +106,11 @@ Space * SpaceProp::newSpace() const
 #endif
     if ( s=="ring" )                           return new SpaceRing(this);
     
-#if ( 1 )
+#if ( 0 )
     std::cerr << "Warning: substituting unbounded Space for unknown `"+s+"'\n";
     return new Space(this);
 #endif
+    throw InvalidParameter("unknown space:shape `"+s+"'");
     return nullptr;
 }
 

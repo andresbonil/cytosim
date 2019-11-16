@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
     if ( arg.has_key("directory") )
     {
         FilePath::change_dir(arg.value("directory", 0));
-        std::clog << "Cytosim working directory is " << FilePath::get_cwd() << '\n';
+        //std::clog << "Cytosim working directory is " << FilePath::get_cwd() << '\n';
     }
 
 #ifdef CODE_VERSION
