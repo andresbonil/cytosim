@@ -7,8 +7,8 @@
 
 
 // Use the second definition to get some verbose reports:
-//#define VLOG(ARG) ((void) 0)
-#define VLOG(ARG) std::clog << ARG;
+#define VLOG(ARG) ((void) 0)
+//#define VLOG(ARG) std::clog << ARG;
 
 //------------------------------------------------------------------------------
 
