@@ -60,7 +60,7 @@ ObjectList SolidSet::newObjects(const std::string& name, Glossary& opt)
 }
 
 
-void TubuleSet::write(Outputter& out) const
+void SolidSet::write(Outputter& out) const
 {
     if ( size() > 0 )
     {
