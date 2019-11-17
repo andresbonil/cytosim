@@ -463,6 +463,7 @@ void ObjectSet::write(Outputter& out) const
 
 /**
  Load an object from file, overwritting the current object if it is found
+ in the ObjectSet, to make it identical to what was saved in the file.
  */
 Object * ObjectSet::readObject(Inputter& in, const ObjectTag tag, bool fat)
 {
@@ -552,8 +553,24 @@ Object * ObjectSet::readObject(Inputter& in, const ObjectTag tag, bool fat)
     }
 
     w->mark(mk);
-    w->flag(0);
     return w;
+}
+
+
+/**
+ Load an object from file, overwritting the current object in the ObjectSet
+ */
+void ObjectSet::loadObject(Inputter& in, const ObjectTag tag, bool fat, bool skip)
+{
+    Object * w = readObject(in, tag, fat);
+    
+    // clear flag to indicate that object was refreshed:
+    w->flag(0);
+
+    if ( skip )
+        delete(w);
+    else if ( !w->linked() )
+        add(w);
 }
 
 

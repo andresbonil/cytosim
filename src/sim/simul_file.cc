@@ -392,7 +392,6 @@ int Simul::loadObjects(Inputter& in, ObjectSet* subset)
     }
     catch(Exception & e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
         in.unlock();
         throw;
     }
@@ -593,29 +592,22 @@ int Simul::readObjects(Inputter& in, ObjectSet* subset)
 #endif
             try
             {
-                Object * obj = nullptr;
                 if ( objset )
                 {
                     // check that we are using the correct ObjectSet:
                     assert_true( objset == findSetT(tag) );
-                    obj = objset->readObject(in, tag, fat);
+                    bool skip = ( subset && subset!=objset );
+                    objset->loadObject(in, tag, fat, skip);
                 }
                 else
                 {
+                    // this is the 'older' pathway
                     ObjectSet * set = findSetT(tag);
                     if ( set )
                     {
-                        obj = set->readObject(in, tag, fat);
-                        if ( !obj->linked() )
-                            set->add(obj);
+                        bool skip = ( subset && subset!=set );
+                        set->loadObject(in, tag, fat, skip);
                     }
-                }
-                if ( !obj->linked() )
-                {
-                    if ( !subset || subset==objset )
-                        objset->add(obj);
-                    else
-                        delete(obj);
                 }
             }
             catch( Exception & e )

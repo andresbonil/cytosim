@@ -121,13 +121,13 @@ public:
     virtual std::string title() const = 0;
 
     /// create a new property of category `cat` for a class `name`
-    virtual Property *  newProperty(const std::string& cat, const std::string& name, Glossary&) const = 0;
+    virtual Property * newProperty(const std::string& cat, const std::string& name, Glossary&) const = 0;
     
     /// create objects of class `name`, given the options provided in `opt`
-    virtual ObjectList  newObjects(const std::string& name, Glossary& opt) = 0;
+    virtual ObjectList newObjects(const std::string& name, Glossary& opt) = 0;
    
     /// create new Object with given Tag and Property `num` (used for reading trajectory file)
-    virtual Object *    newObject(ObjectTag, unsigned num) = 0;
+    virtual Object *   newObject(ObjectTag, unsigned num) = 0;
     
     //--------------------------
     
@@ -201,6 +201,9 @@ public:
 
     /// read one Object from file
     Object *           readObject(Inputter&, ObjectTag tag, bool fat);
+    
+    /// load one Object from file, or skip it if `skip==true`
+    void               loadObject(Inputter&, ObjectTag tag, bool fat, bool skip);
 
     /// write all Objects to file
     virtual void       write(Outputter&) const;

@@ -218,10 +218,10 @@ Mecable* Simul::toMecable(Object * obj)
  */
 Mecable * Simul::findMecable(const std::string& arg) const
 {
-    Object  * obj = fibers.findObject(arg);
-    if (!obj) obj = solids.findObject(arg);
-    if (!obj) obj = spheres.findObject(arg);
-    if (!obj) obj = beads.findObject(arg);
+    Object  * obj = fibers.findObject(arg, fibers.title());
+    if (!obj) obj = solids.findObject(arg, solids.title());
+    if (!obj) obj = spheres.findObject(arg, spheres.title());
+    if (!obj) obj = beads.findObject(arg, beads.title());
     return static_cast<Mecable*>(obj);
 }
 
@@ -298,20 +298,20 @@ void Simul::mark(ObjectList const& objs, ObjectMark mrk)
 ObjectSet * Simul::findSet(const std::string& cat)
 {
     //std::clog << "findSet("<<kind<<")"<<std::endl;
-    if ( cat == "space" )        return &spaces;
-    if ( cat == "field" )        return &fields;
-    if ( cat == "fiber" )        return &fibers;
-    if ( cat == "bead" )         return &beads;
-    if ( cat == "solid" )        return &solids;
-    if ( cat == "sphere" )       return &spheres;
-    if ( cat == "single" )       return &singles;
-    if ( cat == "couple" )       return &couples;
-    if ( cat == "organizer" )    return &organizers;
-    if ( cat == "aster" )        return &organizers;
-    if ( cat == "bundle" )       return &organizers;
-    if ( cat == "nucleus" )      return &organizers;
-    if ( cat == "fake" )         return &organizers;
-    if ( cat == "event" )        return &events;
+    if ( cat == spaces.title() )     return &spaces;
+    if ( cat == fields.title() )     return &fields;
+    if ( cat == fibers.title() )     return &fibers;
+    if ( cat == beads.title() )      return &beads;
+    if ( cat == solids.title() )     return &solids;
+    if ( cat == spheres.title() )    return &spheres;
+    if ( cat == singles.title() )    return &singles;
+    if ( cat == couples.title() )    return &couples;
+    if ( cat == organizers.title() ) return &organizers;
+    if ( cat == "aster" )            return &organizers;
+    if ( cat == "bundle" )           return &organizers;
+    if ( cat == "nucleus" )          return &organizers;
+    if ( cat == "fake" )             return &organizers;
+    if ( cat == events.title() )     return &events;
     return nullptr;
 }
 
