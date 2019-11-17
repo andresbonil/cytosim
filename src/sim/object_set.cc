@@ -436,7 +436,7 @@ void ObjectSet::prune(NodeList const& list, ObjectFlag f, ObjectFlag g)
 /**
  Write Reference and Object's data, for all Objects in `list`
  */
-void ObjectSet::writeNodes(NodeList const& list, Outputter& out)
+void ObjectSet::writeNodes(Outputter& out, NodeList const& list)
 {
     for ( Node const* n=list.front(); n; n=n->next() )
     {
@@ -444,19 +444,6 @@ void ObjectSet::writeNodes(NodeList const& list, Outputter& out)
         //std::clog << "writeObject " << o->reference() << '\n';
         o->writeHeader(out, o->tag());
         o->write(out);
-    }
-}
-
-
-/**
- Export all objects to file
- */
-void ObjectSet::write0(Outputter& out, const std::string& title) const
-{
-    if ( size() > 0 )
-    {
-        out.put_line("\n#section "+title, out.binary());
-        writeNodes(nodes, out);
     }
 }
 
@@ -577,7 +564,7 @@ void ObjectSet::loadObject(Inputter& in, const ObjectTag tag, bool fat, bool ski
 //------------------------------------------------------------------------------
 
 
-void ObjectSet::report0(std::ostream& os, const std::string& title) const
+void ObjectSet::writeAssets(std::ostream& os, const std::string& title) const
 {
     if ( size() > 0 )
     {
@@ -587,7 +574,7 @@ void ObjectSet::report0(std::ostream& os, const std::string& title) const
         {
             for ( Property * p : plist )
             {
-                unsigned cnt = count(match_property, p);
+                size_t cnt = count(match_property, p);
                 os << '\n' << std::setw(10) << cnt << " " << p->name();
             }
             if ( plist.size() > 1 )

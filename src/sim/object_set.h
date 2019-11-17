@@ -71,13 +71,10 @@ protected:
     static ObjectList collect(NodeList const&, bool (*func)(Object const*, void const*), void const*);
 
     /// write Object in NodeList to file
-    static void       writeNodes(NodeList const&, Outputter&);
+    static void       writeNodes(Outputter&, NodeList const&);
     
-    /// print a summary of the content (nb of objects, class)
-    void              report0(std::ostream&, const std::string& title) const;
-
-    /// write all Objects to file
-    void              write0(Outputter&, const std::string& title) const;
+    /// print a list of the content (nb of objects, class)
+    void              writeAssets(std::ostream&, const std::string& title) const;
 
 public:
     

@@ -107,6 +107,16 @@ ObjectList BeadSet::newObjects(const std::string& name, Glossary& opt)
 }
 
 
+void BeadSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
+}
+
+
 void BeadSet::remove(Object * obj)
 {
     ObjectSet::remove(obj);

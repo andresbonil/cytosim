@@ -103,6 +103,16 @@ ObjectList OrganizerSet::newObjects(const std::string& nom, Glossary& opt)
     return res;
 }
 
+
+void OrganizerSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
+}
+
 //------------------------------------------------------------------------------
 
 void OrganizerSet::add(Object * obj)

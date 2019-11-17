@@ -139,3 +139,13 @@ ObjectList SpaceSet::newObjects(const std::string& name, Glossary& opt)
         
     return res;
 }
+
+
+void SpaceSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
+}

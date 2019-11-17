@@ -225,6 +225,16 @@ Object * FiberSet::newObject(const ObjectTag tag, unsigned num)
     return nullptr;
 }
 
+
+void FiberSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
+}
+
 //------------------------------------------------------------------------------
 #pragma mark -
 

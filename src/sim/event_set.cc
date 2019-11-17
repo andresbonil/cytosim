@@ -62,3 +62,13 @@ ObjectList EventSet::newObjects(const std::string&, Glossary& opt)
     return res;
 }
 
+
+void EventSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
+}
+
