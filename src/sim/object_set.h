@@ -52,7 +52,7 @@ public:
     
     /// the Simul containing this set
     Simul&            simul;
-        
+    
 protected:
     
     /// mark all objects from given list with value `f`
@@ -61,6 +61,24 @@ protected:
     /// delete objects which are marked as `f` from given list, and mark objects with `s`
     static void       prune(NodeList const&, ObjectFlag f, ObjectFlag g);
     
+    /// collect objects from NodeList for which func(obj, val) == true
+    static unsigned   count(NodeList const&, bool (*func)(Object const*, void const*), void const*);
+
+    /// collect all objects
+    static ObjectList collect(NodeList const&);
+
+    /// collect objects from NodeList for which func(obj, val) == true
+    static ObjectList collect(NodeList const&, bool (*func)(Object const*, void const*), void const*);
+
+    /// write Object in NodeList to file
+    static void       writeNodes(NodeList const&, Outputter&);
+    
+    /// print a summary of the content (nb of objects, class)
+    void              report0(std::ostream&, const std::string& title) const;
+
+    /// write all Objects to file
+    void              write0(Outputter&, const std::string& title) const;
+
 public:
     
     /// mark objects before import
@@ -93,20 +111,6 @@ public:
     /// apply Isometry to unflagged Objects in list
     static void       moveObjects(ObjectList const&, Isometry const&, ObjectFlag f);
 
-protected:
-    
-    /// collect objects from NodeList for which func(obj, val) == true
-    static unsigned   count(NodeList const&, bool (*func)(Object const*, void const*), void const*);
-
-    /// collect all objects
-    static ObjectList collect(NodeList const&);
-
-    /// collect objects from NodeList for which func(obj, val) == true
-    static ObjectList collect(NodeList const&, bool (*func)(Object const*, void const*), void const*);
-
-    /// write Object in NodeList to file
-    static void       write(NodeList const&, Outputter&);
-    
 public:
     
     /// creator
@@ -116,9 +120,6 @@ public:
     virtual ~ObjectSet() { erase(); }    
     
     //--------------------------
-    
-    /// identifies the category of objects stored in this set
-    virtual std::string title() const = 0;
 
     /// create a new property of category `cat` for a class `name`
     virtual Property * newProperty(const std::string& cat, const std::string& name, Glossary&) const = 0;
@@ -128,7 +129,7 @@ public:
    
     /// create new Object with given Tag and Property `num` (used for reading trajectory file)
     virtual Object *   newObject(ObjectTag, unsigned num) = 0;
-    
+
     //--------------------------
     
     /// register Object, and add it at the end of the list
@@ -152,7 +153,7 @@ public:
     /// remove Object, and delete it
     void               erase(Object *);
     
-    /// delete all Objects in list
+    /// delete  Objects specified in given list
     void               erase(NodeList&);
 
     /// delete all Objects in list and forget all serial numbers
@@ -177,10 +178,12 @@ public:
     Object *           findObject(Property const*) const;
 
     /// return Object corresponding to specifications
-    Object *           findObject(std::string spec, long identity) const;
+    Object *           findObject(std::string spec, long identity, const std::string&) const;
     
     /// return Object corresponding to a certain criteria (eg. 'first' or 'last')
-    Object *           findObject(std::string spec) const;
+    Object *           findObject(std::string spec, const std::string&) const;
+    
+    //--------------------------
     
     /// number of objects for which ( func(obj, val) == true )
     virtual unsigned   count(bool (*func)(Object const*, void const*), void const*) const;
@@ -194,20 +197,18 @@ public:
     /// collect objects for which ( obj->property() == prop )
     ObjectList         collect(Property* prop) const;
 
-    //--------------------------
-    
-    /// print a summary of the content (nb of objects, class)
-    virtual void       report(std::ostream&) const;
-
     /// read one Object from file
     Object *           readObject(Inputter&, ObjectTag tag, bool fat);
     
     /// load one Object from file, or skip it if `skip==true`
     void               loadObject(Inputter&, ObjectTag tag, bool fat, bool skip);
-
+    
     /// write all Objects to file
-    virtual void       write(Outputter&) const;
-   
+    virtual void       write(Outputter&) const = 0;
+    
+    /// print a summary of the content (nb of objects, class)
+    virtual void       report(std::ostream&) const = 0;
+
 };
 
 #endif

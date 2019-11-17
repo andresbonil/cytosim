@@ -474,7 +474,7 @@ FiberSite FiberSet::someSite(std::string const& key, Glossary& opt) const
             return randomSite();
         else
         {
-            Fiber* fib = Fiber::toFiber(findObject(str));
+            Fiber* fib = Fiber::toFiber(findObject(str, title()));
             
             if ( !fib )
             {

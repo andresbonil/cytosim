@@ -299,7 +299,7 @@ ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, unsigned& origin)
     std::string spec;
     if ( opt.set(spec, "solid") )
     {
-        sol = Solid::toSolid(sim.solids.findObject(spec));
+        sol = Solid::toSolid(sim.solids.findObject(spec, "solid"));
         
         if ( !sol )
         {

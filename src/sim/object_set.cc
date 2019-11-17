@@ -192,7 +192,7 @@ void ObjectSet::erase(NodeList & list)
 
 void ObjectSet::erase(Object * obj)
 {
-    //std::clog << "ObjectSet::erase " << title() << " " << obj->reference() << '\n';
+    //std::clog << "ObjectSet::erase " << obj->reference() << '\n';
     remove(obj);
     delete(obj);
 }
@@ -205,10 +205,10 @@ void ObjectSet::erase()
 }
 
 
-Object* ObjectSet::findObject(std::string spec, long num) const
+Object* ObjectSet::findObject(std::string spec, long num, const std::string& title) const
 {
     // check for a string starting with the class name (eg. 'fiber'):
-    if ( spec == title() )
+    if ( spec == title )
     {
         Inventoried * inv = nullptr;
         if ( num > 0 )
@@ -256,7 +256,7 @@ Object* ObjectSet::findObject(std::string spec, long num) const
     else
     {
         // 'microtubule0' would return a random 'microtubule'
-        Property * prop = simul.findProperty(title(), spec);
+        Property * prop = simul.findProperty(title, spec);
         if ( prop )
         {
             ObjectList sel = collect(match_property, prop);
@@ -301,7 +301,7 @@ bool splitObjectSpec(std::string& str, long& num)
  - `fiber-1` the penultimate fiber, etc.
  .
  */
-Object* ObjectSet::findObject(std::string spec) const
+Object* ObjectSet::findObject(std::string spec, const std::string& title) const
 {
     //std::clog << "ObjectSet::findObject " << spec << std::endl;
     
@@ -314,10 +314,10 @@ Object* ObjectSet::findObject(std::string spec) const
     // try to split into a word and a number:
     long num = 0;
     if ( splitObjectSpec(spec, num) )
-        return findObject(spec, num);
+        return findObject(spec, num, title);
 
     // check category name, eg. 'fiber':
-    if ( spec == title() )
+    if ( spec == title )
     {
         ObjectList all = collect();
         if ( all.size() > 0 )
@@ -436,7 +436,7 @@ void ObjectSet::prune(NodeList const& list, ObjectFlag f, ObjectFlag g)
 /**
  Write Reference and Object's data, for all Objects in `list`
  */
-void ObjectSet::write(NodeList const& list, Outputter& out)
+void ObjectSet::writeNodes(NodeList const& list, Outputter& out)
 {
     for ( Node const* n=list.front(); n; n=n->next() )
     {
@@ -451,12 +451,12 @@ void ObjectSet::write(NodeList const& list, Outputter& out)
 /**
  Export all objects to file
  */
-void ObjectSet::write(Outputter& out) const
+void ObjectSet::write0(Outputter& out, const std::string& title) const
 {
     if ( size() > 0 )
     {
-        out.put_line("\n#section "+title(), out.binary());
-        write(nodes, out);
+        out.put_line("\n#section "+title, out.binary());
+        writeNodes(nodes, out);
     }
 }
 
@@ -577,12 +577,12 @@ void ObjectSet::loadObject(Inputter& in, const ObjectTag tag, bool fat, bool ski
 //------------------------------------------------------------------------------
 
 
-void ObjectSet::report(std::ostream& os) const
+void ObjectSet::report0(std::ostream& os, const std::string& title) const
 {
     if ( size() > 0 )
     {
-        os << '\n' << title();
-        PropertyList plist = simul.properties.find_all(title());
+        os << '\n' << title;
+        PropertyList plist = simul.properties.find_all(title);
         if ( plist.size() > 0 )
         {
             for ( Property * p : plist )
@@ -595,7 +595,7 @@ void ObjectSet::report(std::ostream& os) const
         }
         else
         {
-            os << '\n' << std::setw(10) << size() << " " << title();
+            os << '\n' << std::setw(10) << size() << " " << title;
         }
     }
 }
