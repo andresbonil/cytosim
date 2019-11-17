@@ -7,8 +7,8 @@
 
 
 // Use the second definition to get some verbose reports:
-#define VLOG(ARG) ((void) 0)
-//#define VLOG(ARG) std::clog << ARG;
+//#define VLOG(ARG) ((void) 0)
+#define VLOG(ARG) std::clog << ARG;
 
 //------------------------------------------------------------------------------
 
@@ -275,7 +275,7 @@ int FrameReader::loadFrame(Simul& sim, size_t frm, const bool reload)
         VLOG("FrameReader: loadFrame("<< frm <<") successful\n");
         frameIndex = frm;
         if ( has_pos )
-            savePos(frameIndex, pos, 3);
+            savePos(frameIndex, pos, 4);
         // the next frame should start at the current position:
         if ( 0 == inputter.get_pos(pos) )
             savePos(frameIndex+1, pos, 1);
@@ -306,7 +306,7 @@ int FrameReader::loadNextFrame(Simul& sim)
         
         // the position we used was good, to read this frame
         if ( has_pos )
-            savePos(frameIndex, pos, 3);
+            savePos(frameIndex, pos, 4);
 
         VLOG("FrameReader: loadNextFrame() after frame " << currentFrame() << '\n');
         
@@ -339,12 +339,10 @@ int FrameReader::loadLastFrame(Simul& sim, size_t cnt)
         inputter.rewind();
     
     /// go from here to last frame:
+    frameIndex = frm;
     int res = NOT_FOUND;
     while ( SUCCESS == loadNextFrame(sim) )
-    {
-        ++frm;
         res = SUCCESS;
-    }
     
     if ( res == SUCCESS && cnt > 0 )
     {
