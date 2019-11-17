@@ -1206,7 +1206,8 @@ void Parser::evaluate(std::istream& is, std::string const& msg)
     }
     catch( Exception & e )
     {
-        e << msg + ":\n";
+        //e << ", " + msg + ":\n";
+        e << ":\n";
         e << StreamFunc::get_lines(is, spos, is.tellg());
         spos = saved;
         throw;

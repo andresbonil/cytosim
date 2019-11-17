@@ -102,7 +102,7 @@ void print_line(std::ostream& os, int num, std::string const& line)
  */
 void print_line(std::ostream& os, const char prefix[], std::string const& line)
 {
-    if ( prefix )
+    if ( prefix && *prefix )
         os << prefix << " " << line << '\n';
     else
         os << line << '\n';
@@ -176,7 +176,7 @@ void StreamFunc::print_lines(std::ostream& os, std::istream& is,
     is.seekg(0);
     std::string line;
     
-    unsigned int cnt = 0;
+    size_t cnt = 0;
     while ( is.good()  &&  is.tellg() <= start  )
     {
         std::getline(is, line);
@@ -205,7 +205,22 @@ std::string StreamFunc::get_lines(std::istream& is, std::streampos s, std::strea
 }
 
 
-unsigned StreamFunc::line_number(std::istream& is, std::streampos pos)
+std::string StreamFunc::get_line(std::istream& is, std::streampos pos)
+{
+    if ( !is.good() )
+        is.clear();
+    
+    is.seekg(0);
+    std::string line;
+    
+    while ( is.good()  &&  is.tellg() <= pos )
+        std::getline(is, line);
+
+    return line;
+}
+
+
+size_t StreamFunc::line_number(std::istream& is, std::streampos pos)
 {
     if ( !is.good() )
         is.clear();
@@ -216,7 +231,7 @@ unsigned StreamFunc::line_number(std::istream& is, std::streampos pos)
     if ( pos == -1 )
         pos = sos;
     
-    unsigned cnt = 0;
+    size_t cnt = 0;
     std::string line;
     
     while ( is.good()  &&  is.tellg() <= pos )

@@ -818,12 +818,14 @@ Rotation Movable::readRotation(std::istream& is, Vector const& pos, Space const*
             ang *= M_PI/180.0;
 #if ( DIM >= 3 )
             Vector dir(0,0,1);
-            isp = is.tellg();
-            tok = Tokenizer::get_symbol(is);
-            if ( tok == "axis" )
-                is >> dir;
-            else
-                is.seekg(isp);
+            if ( is.good() )
+            {
+                isp = is.tellg();
+                if ( Tokenizer::get_symbol(is) == "axis" )
+                    is >> dir;
+                else
+                    is.seekg(isp);
+            }
             return Rotation::rotationAroundAxis(normalize(dir), cos(ang), sin(ang));
 #else
             return Rotation::rotation(cos(ang), sin(ang));
