@@ -75,21 +75,21 @@ set single gDynein
 
 
 % female motif
-new 1200  gKinesin ( circle 3 at -3 2 blur 0.18 )
-new  200  gKinesin ( rectangle 0 2 0 at -3 -3.0 blur 0.18 )
-new  200  gKinesin ( rectangle 2 0 0 at -3 -2.9 blur 0.18 )
+new 600 gKinesin ( circle 3 0 at -3 2 blur 0.18 )
+new 100 gKinesin ( rectangle 0 4 at -3 -3.0 blur 0.18 )
+new 100 gKinesin ( rectangle 4 0 at -3 -2.9 blur 0.18 )
 
 
 % male motif
-new 1200  gDynein ( circle 3 at +3 -2 blur 0.18 )
-new  200  gDynein ( rectangle 1.5 at 4.5 0 align 1 1.5 at 3 -2 blur 0.18 )
+new 600 gDynein ( circle 3 0 at +3 -2 blur 0.18 )
+new 100 gDynein ( rectangle 3.0 0 at 4.5 0 align 1 1.5 at 3 -2 blur 0.18 )
 
-new  200  gDynein ( rectangle 1.0 at -1.0 0 align 1 +1 at 6 0 align 1 1.5 at 3 -2 blur 0.18 )
-new  200  gDynein ( rectangle 1.0 at -1.0 0 align 1 -1 at 6 0 align 1 1.5 at 3 -2 blur 0.18 )
+new 100 gDynein ( rectangle 2.0 0 at -1.0 0 align 1 +1 at 6 0 align 1 1.5 at 3 -2 blur 0.18 )
+new 100 gDynein ( rectangle 2.0 0 at -1.0 0 align 1 -1 at 6 0 align 1 1.5 at 3 -2 blur 0.18 )
 
 % cortical pool
-new 1000  gKinesin ( surface 0.1 blur 0.18 )
-new 500   gDynein  ( surface 0.1 )
+new 800  gKinesin ( surface 0.1 blur 0.18 )
+new 200  gDynein  ( surface 0.1 )
 
 
 run system
