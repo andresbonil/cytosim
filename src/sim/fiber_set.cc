@@ -84,7 +84,7 @@ bool splitNumber(std::string& arg, unsigned& num)
         num = (unsigned)var;
         while ( isspace(*end) )
             ++end;
-        arg.erase(0, end-ptr);
+        arg.erase(0, (size_t)(end-ptr));
         return true;
     }
     return false;

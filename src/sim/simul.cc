@@ -55,7 +55,7 @@ void termination_handler()
 void signal_handler(int sig)
 {
     (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
-    psignal(sig, "Cytosim");
+    psignal((unsigned)sig, "Cytosim");
     (void) write(STDERR_FILENO, "* * * * *\n", 10);
     print_backtrace();
     _exit(sig);

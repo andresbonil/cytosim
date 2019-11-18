@@ -815,7 +815,7 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
             evaluate(code, "in run:code");
 
         delta = real(nb_steps) / real(nb_frames);
-        check = (int)delta;
+        check = delta;
     }
     
     simul.prepare();
@@ -836,7 +836,7 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
             }
             if ( sss >= nb_steps )
                 break;
-            check = (int)( ++frame * delta );
+            check = ( ++frame * delta );
         }
 
         hold();

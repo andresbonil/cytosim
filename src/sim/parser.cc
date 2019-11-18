@@ -292,7 +292,7 @@ void Parser::parse_change(std::istream& is)
         else
             execute_change(name, opt);
  
-        if ( opt.warnings(std::cerr, ~0) )
+        if ( opt.warnings(std::cerr, ~0U) )
             show_lines(is, spos);
     }
     else if ( para == "display" )
@@ -440,7 +440,7 @@ void Parser::parse_new(std::istream& is)
             if ( opt.has_key("display") )
                 throw InvalidParameter("display parameters should be specified within `set'");
             
-            if ( opt.warnings(std::cerr, ~0) )
+            if ( opt.warnings(std::cerr, ~0U) )
                 show_lines(is, spos);
         }
     }
@@ -522,7 +522,7 @@ void Parser::parse_delete(std::istream& is)
 #endif
     if ( !has_cnt  &&  name == "all" )
     {
-        cnt = ~0; // this is very large
+        cnt = ~0U; // this is very large
         name = Tokenizer::get_symbol(is);
     }
     std::string blok = Tokenizer::get_block(is, '{');
@@ -560,7 +560,7 @@ void Parser::parse_delete(std::istream& is)
 
 void Parser::parse_mark(std::istream& is)
 {
-    unsigned cnt = -1;
+    unsigned cnt = 0;
     bool has_cnt = Tokenizer::get_integer(is, cnt);
     std::string name = Tokenizer::get_symbol(is);
 #ifdef BACKWARD_COMPATIBILITY
