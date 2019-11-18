@@ -67,10 +67,10 @@ public:
     Fiber * findID(ObjectID n) const { return static_cast<Fiber*>(inventory.get(n)); }
 
     /// Cut all segments intersecting the plane defined by <em> n.pos + a = 0 </em>
-    void planarCut(Vector const& n, real a, int stateP, int stateM);
+    void planarCut(Vector const& n, real a, state_t stateP, state_t stateM);
 
     /// Cut fibers in the list
-    void planarCut(ObjectList&, Vector const& n, real a, int stateP, int stateM);
+    void planarCut(ObjectList&, Vector const& n, real a, state_t stateP, state_t stateM);
     
     /// Monte-Carlo step for every Fiber
     void step();

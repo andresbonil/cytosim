@@ -65,11 +65,11 @@ private:
     {
     public:
         real    abs;      ///< abscissa of the cut, from the reference
-        int     stateM;   ///< state of the new MINUS_END
-        int     stateP;   ///< state of the new PLUS_END
+        state_t stateM;   ///< state of the new MINUS_END
+        state_t stateP;   ///< state of the new PLUS_END
         
         /// constructor (abscissa, new_plus_end_state, new_minus_end_state)
-        SeverPos(real a, int p, int m) { abs=a; stateP=p; stateM=m; }
+        SeverPos(real a, state_t p, state_t m) { abs=a; stateP=p; stateM=m; }
         
         /// sort from PLUS_END to MINUS_END, i.e. with decreasing abscissa
         real operator < (SeverPos const&b) const { return abs > b.abs; }
@@ -149,7 +149,7 @@ public:
     void           cutP(real len);
     
     /// Cut all segments intersecting the plane defined by <em> n.pos + a = 0 </em>
-    void           planarCut(Vector const& n, real a, int stateP, int stateM);
+    void           planarCut(Vector const& n, real a, state_t stateP, state_t stateM);
     
     /// cut fiber at distance `abs` from the MINUS_END; returns section `[ abs - PLUS_END ]`
     Fiber *        severP(real abs);
@@ -158,7 +158,7 @@ public:
     Fiber *        severNow(real abs) { return severP(abs-abscissaM()); }
 
     /// register a cut at abscissa `a` from the ORIGIN, with `m` and `p` the states of the new ends
-    void           sever(real a, int p, int m) { pendingCuts.insert(SeverPos(a, p, m)); }
+    void           sever(real a, state_t p, state_t m) { pendingCuts.insert(SeverPos(a, p, m)); }
     
     /// perform all the cuts registered by sever()
     void           severNow();
@@ -188,23 +188,23 @@ public:
     //--------------------------------------------------------------------------
     
     /// return assembly/disassembly state of MINUS_END
-    virtual unsigned dynamicStateM() const { return STATE_WHITE; }
+    virtual state_t dynamicStateM() const { return STATE_WHITE; }
 
     /// return assembly/disassembly state of PLUS_END
-    virtual unsigned dynamicStateP() const { return STATE_WHITE; }
+    virtual state_t dynamicStateP() const { return STATE_WHITE; }
 
     /// return assembly/disassembly state of the FiberEnd
-    unsigned         dynamicState(FiberEnd end) const;
+    state_t         dynamicState(FiberEnd end) const;
 
     
     /// change state of MINUS_END
-    virtual void   setDynamicStateM(unsigned) {}
+    virtual void   setDynamicStateM(state_t) {}
 
     /// change state of PLUS_END
-    virtual void   setDynamicStateP(unsigned) {}
+    virtual void   setDynamicStateP(state_t) {}
 
     /// change state of FiberEnd `end` to `s`
-    void           setDynamicState(FiberEnd end, unsigned s);
+    void           setDynamicState(FiberEnd end, state_t s);
     
     
     /// the length of freshly assembled polymer at the MINUS_END during the last time step

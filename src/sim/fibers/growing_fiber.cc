@@ -29,19 +29,19 @@ GrowingFiber::~GrowingFiber()
 //------------------------------------------------------------------------------
 #pragma mark -
 
-unsigned GrowingFiber::dynamicStateM() const
+state_t GrowingFiber::dynamicStateM() const
 {
     return mStateM;
 }
 
 
-unsigned GrowingFiber::dynamicStateP() const
+state_t GrowingFiber::dynamicStateP() const
 {
     return mStateP;
 }
 
 
-void GrowingFiber::setDynamicStateM(unsigned s)
+void GrowingFiber::setDynamicStateM(state_t s)
 {
     if ( s == STATE_WHITE || s == STATE_GREEN )
         mStateM = s;
@@ -50,7 +50,7 @@ void GrowingFiber::setDynamicStateM(unsigned s)
 }
 
 
-void GrowingFiber::setDynamicStateP(unsigned s)
+void GrowingFiber::setDynamicStateP(state_t s)
 {
     if ( s == STATE_WHITE || s == STATE_GREEN )
         mStateP = s;

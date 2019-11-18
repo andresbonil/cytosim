@@ -27,33 +27,21 @@ ClassicFiber::~ClassicFiber()
 }
 
 
-bool valid_state(unsigned s)
+void ClassicFiber::setDynamicStateM(state_t s)
 {
-    return  s==STATE_WHITE || s==STATE_GREEN || s==STATE_RED;
-}
-
-
-void ClassicFiber::setDynamicStateM(unsigned s)
-{
-    if ( !valid_state(s) )
+    if ( s==STATE_WHITE || s==STATE_GREEN || s==STATE_RED )
+        mStateM = s;
+    else
         throw InvalidParameter("Invalid AssemblyState for ClassicFiber MINUS_END");
-    
-    if ( s != mStateM )
-    {
-        mStateM = (AssemblyState)s;
-    }
 }
 
 
-void ClassicFiber::setDynamicStateP(unsigned s)
+void ClassicFiber::setDynamicStateP(state_t s)
 {
-    if ( !valid_state(s) )
+    if ( s==STATE_WHITE || s==STATE_GREEN || s==STATE_RED )
+        mStateP = s;
+    else
         throw InvalidParameter("Invalid AssemblyState for ClassicFiber PLUS_END");
-    
-    if ( s != mStateP )
-    {
-        mStateP = (AssemblyState)s;
-    }
 }
 
 

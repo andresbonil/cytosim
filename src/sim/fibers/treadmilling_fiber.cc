@@ -30,18 +30,18 @@ TreadmillingFiber::~TreadmillingFiber()
 //------------------------------------------------------------------------------
 #pragma mark -
 
-unsigned TreadmillingFiber::dynamicStateM() const
+state_t TreadmillingFiber::dynamicStateM() const
 {
     return mStateM;
 }
 
 
-void TreadmillingFiber::setDynamicStateM(unsigned s)
+void TreadmillingFiber::setDynamicStateM(state_t s)
 {
-    if ( s!=STATE_WHITE && s!=STATE_GREEN && s!=STATE_RED )
+    if ( s == STATE_WHITE || s == STATE_GREEN || s == STATE_RED )
+        mStateM = s;
+    else
         throw InvalidParameter("Invalid AssemblyState for TreadmillingFiber MINUS_END");
-    
-    mStateM = s;
 }
 
 
@@ -51,18 +51,18 @@ real TreadmillingFiber::freshAssemblyM() const
 }
 
 
-unsigned TreadmillingFiber::dynamicStateP() const
+state_t TreadmillingFiber::dynamicStateP() const
 {
     return mStateP;
 }
 
 
-void TreadmillingFiber::setDynamicStateP(unsigned s)
+void TreadmillingFiber::setDynamicStateP(state_t s)
 {
-    if ( s!=STATE_WHITE && s!=STATE_GREEN && s!=STATE_RED )
+    if ( s == STATE_WHITE || s == STATE_GREEN || s == STATE_RED )
+        mStateP = s;
+    else
         throw InvalidParameter("Invalid AssemblyState for TreadmillingFiber PLUS_END");
-    
-    mStateP = s;
 }
 
 

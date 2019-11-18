@@ -644,7 +644,7 @@ void Interface::execute_cut(std::string const& name, Glossary& opt)
     opt.set(n, "plane");
     opt.set(a, "plane", 1);
     
-    int stateP = STATE_RED, stateM = STATE_GREEN;
+    state_t stateP = STATE_RED, stateM = STATE_GREEN;
     opt.set(stateP, "new_end_state");
     opt.set(stateM, "new_end_state", 1);
     

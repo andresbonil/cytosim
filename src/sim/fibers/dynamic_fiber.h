@@ -99,19 +99,19 @@ private:
     unsigned   unitP[3];
     
     /// dynamic state of PLUS_END
-    unsigned   mStateP;
+    state_t    mStateP;
     
     /// state of units near the MINUS_END
     unsigned   unitM[3];
     
     /// dynamic state of MINUS_END
-    unsigned   mStateM;
+    state_t    mStateM;
 
     /// calculate dynamic state from unit states near PLUS_END
-    unsigned   calculateStateP() const;
+    state_t    calculateStateP() const;
     
     /// calculate dynamic state from unit states near MINUS_END
-    unsigned   calculateStateM() const;
+    state_t    calculateStateM() const;
    
 public:
     
@@ -127,16 +127,16 @@ public:
     //--------------------------------------------------------------------------
     
     /// return assembly/disassembly state of MINUS_END
-    unsigned    dynamicStateM() const;
+    state_t     dynamicStateM() const;
     
     /// return assembly/disassembly state of PLUS_END
-    unsigned    dynamicStateP() const;
+    state_t     dynamicStateP() const;
     
     /// change state of MINUS_END
-    void        setDynamicStateM(unsigned s);
+    void        setDynamicStateM(state_t s);
     
     /// change state of PLUS_END
-    void        setDynamicStateP(unsigned s);
+    void        setDynamicStateP(state_t s);
     
     /// the amount of freshly assembled polymer during the last time step
     real        freshAssemblyM() const;
