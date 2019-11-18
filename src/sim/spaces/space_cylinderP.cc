@@ -87,8 +87,8 @@ bool SpaceCylinderP::allInside(Vector const& w, const real rad ) const
 Vector SpaceCylinderP::randomPlace() const
 {
 #if ( DIM >= 3 )
-    Vector2 sec = Vector2::randB(radius_);
-    return Vector(length_*RNG.sreal(), sec.XX, sec.YY);
+    const Vector2 V = Vector2::randB(radius_);
+    return Vector(length_*RNG.sreal(), V.XX, V.YY);
 #elif ( DIM > 1 )
     return Vector(length_*RNG.sreal(), radius_*RNG.sreal());
 #else
@@ -111,9 +111,9 @@ Vector SpaceCylinderP::project(Vector const& w) const
     }
     else
     {
-        Vector2 yz = Vector2::randU();
-        p.YY = radius_ * yz.XX;
-        p.ZZ = radius_ * yz.YY;
+        const Vector2 V = Vector2::randU();
+        p.YY = radius_ * V.XX;
+        p.ZZ = radius_ * V.YY;
     }
 #endif
     return p;

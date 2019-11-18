@@ -129,8 +129,8 @@ Vector SpaceCapsule::randomPlace() const
 #elif ( DIM == 2 )
         res.set((length_+radius_)*RNG.sreal(), radius_*RNG.sreal());
 #else
-        Vector2 sec = Vector2::randB(radius_);
-        res.set((length_+radius_)*RNG.sreal(), sec.XX, sec.YY);
+        const Vector2 V = Vector2::randB(radius_);
+        res.set((length_+radius_)*RNG.sreal(), V.XX, V.YY);
 #endif
         
         if ( ++ouf > nb_trials )

@@ -273,10 +273,10 @@ const Vector3 Vector3::randOrthoU(const real len) const
     real n = normSqr();
     if ( n > REAL_EPSILON )
     {
-        Vector2 d = Vector2::randU();
+        const Vector2 V = Vector2::randU();
         Vector3 x, y, z = *this / sqrt(n);
         z.orthonormal(x, y);
-        return x * ( len * d.XX ) + y * ( len * d.YY );
+        return x * ( len * V.XX ) + y * ( len * V.YY );
     }
     return randU(len);
 }
@@ -288,10 +288,10 @@ const Vector3 Vector3::randOrthoU(const real len) const
  */
 const Vector3 Vector3::randOrthoU(const real len) const
 {
-    Vector2 d = Vector2::randU();
+    const Vector2 V = Vector2::randU();
     Vector3 b = orthogonal(1);
     Vector3 c = normalize(cross(*this, b));
-    return b * ( len * d.XX ) + c * ( len * d.YY );
+    return b * ( len * V.XX ) + c * ( len * V.YY );
 }
 
 #endif
@@ -299,10 +299,10 @@ const Vector3 Vector3::randOrthoU(const real len) const
 const Vector3 Vector3::randOrthoB(const real len) const
 {
     //this assumes norm(*this) == 1
-    Vector2 d = Vector2::randB();
+    const Vector2 V = Vector2::randB();
     Vector3 x, y;
     orthonormal(x, y);
-    return x * ( len * d.XX ) + y * ( len * d.YY );
+    return x * ( len * V.XX ) + y * ( len * V.YY );
 }
 
 //------------------------------------------------------------------------------
@@ -338,13 +338,13 @@ size_t tossPointsDisc(std::vector<Vector2>& pts, real sep, size_t limit_trials)
         if ( ++ouf > limit_trials )
             break;
         
-        Vector2 xy = Vector2::randB();
+        const Vector2 V = Vector2::randB();
         
         for ( size_t i = 0; i < n; ++i )
-            if ( distanceSqr(xy, pts[i]) < ss )
+            if ( distanceSqr(V, pts[i]) < ss )
                 goto toss;
         
-        vec = xy;
+        vec = V;
         ouf = 0;
         ++n;
     }

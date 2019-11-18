@@ -82,8 +82,8 @@ bool  SpaceCylinderZ::allInside(Vector const& w, const real rad ) const
 
 Vector SpaceCylinderZ::randomPlace() const
 {
-    Vector2 sec = Vector2::randB(radius_);
-    return Vector(sec.XX, sec.YY, bot_+RNG.preal()*(top_-bot_));
+    const Vector2 V = Vector2::randB(radius_);
+    return Vector(V.XX, V.YY, bot_+RNG.preal()*(top_-bot_));
 }
 
 //------------------------------------------------------------------------------

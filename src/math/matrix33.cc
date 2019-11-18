@@ -167,8 +167,8 @@ Matrix33 Matrix33::randomRotationToVector(const Vector3& vec)
     real c = cos(a), s = sin(a);
     res.setColumns(Z, X*c+Y*s, Y*c-X*s);
 #else
-    Vector2 cs = Vector2::randU();
-    res.setColumns(Z, X*cs.XX+Y*cs.YY, Y*cs.XX-X*cs.YY);
+    const Vector2 V = Vector2::randU();
+    res.setColumns(Z, X*V.XX+Y*V.YY, Y*V.XX-X*V.YY);
 #endif
     return res;
 }

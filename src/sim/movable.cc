@@ -163,8 +163,8 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
 #if ( DIM < 3 )
                 return Vector(S+(E-S)*x, R*RNG.sreal(), 0);
 #else
-                Vector2 h = Vector2::randU();
-                return Vector(S+(E-S)*x, R*h.XX, R*h.YY);
+                const Vector2 V = Vector2::randU();
+                return Vector(S+(E-S)*x, R*V.XX, R*V.YY);
 #endif
             }
         
@@ -186,8 +186,8 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
 #if ( DIM < 3 )
                 return Vector(S+E*x, R*RNG.sreal(), 0);
 #else
-                Vector2 h = Vector2::randU();
-                return Vector(S+E*x, R*h.XX, R*h.YY);
+                const Vector2 V = Vector2::randU();
+                return Vector(S+E*x, R*V.XX, R*V.YY);
 #endif
             }
         }
@@ -211,8 +211,8 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 throw InvalidParameter("you must specify a radius R >= 0 in `equator R T`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `equator R T`");
-            Vector2 vec2 = Vector2::randU();
-            return Vector(R*vec2.XX, R*vec2.YY, T*RNG.shalf());
+            const Vector2 V = Vector2::randU();
+            return Vector(R*V.XX, R*V.YY, T*RNG.shalf());
         }
        
         if ( tok == "cylinder" )
@@ -223,8 +223,8 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 throw InvalidParameter("you must specify a length L >= 0 in `cylinder L R`");
             if ( R < 0 )
                 throw InvalidParameter("you must specify a radius R >= 0 in `cylinder L R`");
-            Vector2 YZ = Vector2::randB(R);
-            return Vector(L*RNG.shalf(), YZ.XX, YZ.YY);
+            const Vector2 V = Vector2::randB(R);
+            return Vector(L*RNG.shalf(), V.XX, V.YY);
         }
         
         if ( tok == "circle" )
@@ -237,8 +237,8 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 throw InvalidParameter("the thickness T must be >= 0 in `circle R T`");
             //StreamFunc::mark_line(std::cout, is, is.tellg(), ">>>>");
 #if ( DIM >= 3 )
-            Vector2 XY = Vector2::randU(R);
-            return Vector3(XY.XX, XY.YY, 0) + (0.5*T) * Vector3::randU();
+            const Vector2 V = Vector2::randU(R);
+            return Vector3(V.XX, V.YY, 0) + (0.5*T) * Vector3::randU();
 #endif
             return Vector::randU(R) + Vector::randU(T*0.5);
         }
@@ -262,7 +262,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             //in 3D, a disc in the XY-plane of thickness T in Z-direction
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `disc R T`");
-            Vector2 V = Vector2::randB(R);
+            const Vector2 V = Vector2::randB(R);
             return Vector(V.XX, V.YY, T*RNG.shalf());
 #endif
             //in 2D, a disc in the XY-plane
@@ -277,7 +277,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 throw InvalidParameter("you must specify a radius R >= 0 in `discXZ R`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `discXZ R T`");
-            Vector2 V = Vector2::randB(R);
+            const Vector2 V = Vector2::randB(R);
             return Vector(V.XX, T*RNG.shalf(), V.YY);
         }
         
@@ -289,7 +289,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 throw InvalidParameter("you must specify a radius R >= 0 in `discYZ R`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `discYZ R T`");
-            Vector2 V = Vector2::randB(R);
+            const Vector2 V = Vector2::randB(R);
             return Vector(T*RNG.shalf(), V.XX, V.YY);
         }
         
@@ -316,7 +316,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `line L T`");
 #if ( DIM >= 3 )
-            Vector2 V = Vector2::randB(T);
+            const Vector2 V = Vector2::randB(T);
             return Vector(L*RNG.shalf(), V.XX, V.YY);
 #endif
             return Vector(L*RNG.shalf(), T*RNG.shalf(), 0);
@@ -586,21 +586,21 @@ Vector Movable::readDirection0(std::istream& is, Vector const& pos, Space const*
             return Vector(0, RNG.sflip(), 0);
         if ( tok == "XY" )
         {
-            Vector2 h = Vector2::randU();
-            return Vector(h.XX, h.YY, 0);
+            const Vector2 V = Vector2::randU();
+            return Vector(V.XX, V.YY, 0);
         }
 #if ( DIM >= 3 )
         if ( tok == "Z" )
             return Vector(0, 0, RNG.sflip());
         if ( tok == "XZ" )
         {
-            Vector2 h = Vector2::randU();
-            return Vector(h.XX, 0, h.YY);
+            const Vector2 V = Vector2::randU();
+            return Vector(V.XX, 0, V.YY);
         }
         if ( tok == "YZ" )
         {
-            Vector2 h = Vector2::randU();
-            return Vector(0, h.XX, h.YY);
+            const Vector2 V = Vector2::randU();
+            return Vector(0, V.XX, V.YY);
         }
 #endif
 
