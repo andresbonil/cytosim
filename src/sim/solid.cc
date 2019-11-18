@@ -388,8 +388,8 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
         addTriad(rad);
 
 #if ( DIM > 1 )
-        real sep = 1.0, dev = 0.0;
-        if ( opt.set(dev, "deviation") && opt.set(sep, "separation") )
+        real sep = 1.0;
+        if ( opt.set(sep, "separation") )
         {
             // attach Single on the surface of this sphere:
             size_t nbs = opt.nb_values(var) - 2;
@@ -411,6 +411,9 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
             }
             if ( dis < sep )
                 std::cerr << "Warning: solid:separation reduced to " << dis << "\n";
+            real dev = 0.0;
+            if ( opt.set(dev, "deviation") && dev > rad )
+                throw InvalidParameter("solid:deviation should be <= radius\n");
             
             inx = 2;
             while ( opt.set(str, var, inx++) )
