@@ -60,7 +60,7 @@ private:
     unsigned int    precondCounter;
     
     /// stores cpu time to automatically set the preconditionning option
-    unsigned long   precondCPU[4];
+    double          precondCPU[4];
     
     /// a copy of the properties as they were stored to file
     mutable std::string properties_saved;

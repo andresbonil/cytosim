@@ -53,10 +53,10 @@ namespace TicToc
     double  seconds_today();
     
     /// number of centiseconds since midnight
-    long    centiseconds();
+    double  centiseconds();
  
     /// number of microseconds
-    int     microseconds();
+    double  microseconds();
     
     /// return CPU time in seconds and update `clk` to current time
     double  processor_time(clock_t&);
