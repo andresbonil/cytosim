@@ -140,11 +140,11 @@ std::string FileWrapper::get_line(const char end)
         
         if ( m )
         {
-            res.append(buf, m-buf);
+            s = (size_t)( m - buf );
+            res.append(buf, s);
             //reposition at end of line:
             fsetpos(mFile, &pos);
-            s = m-buf+1;
-            if ( s != fread(buf, 1, s, mFile) )
+            if ( s+1 != fread(buf, 1, s+1, mFile) )
                 throw InvalidIO("unexpected error");
             //fprintf(stderr,"-|%s|-\n", line.c_str());
             break;
@@ -212,7 +212,7 @@ void FileWrapper::skip_until(const char * str)
     char buf[CHK+2];
 
     fpos_t pos, match;
-    size_t offset = 0;
+    size_t off = 0;
     
     const char ccc = str[0];
     const char * s = str;
@@ -230,7 +230,7 @@ void FileWrapper::skip_until(const char * str)
             if ( !b )
                 continue;
             match  = pos;
-            offset = b - buf;
+            off = (size_t)(b - buf);
             ++s;
             ++b;
         }
@@ -248,7 +248,7 @@ void FileWrapper::skip_until(const char * str)
                 if ( *s == 0 )
                 {
                     fsetpos(mFile, &match);
-                    if ( offset != fread(buf, 1, offset, mFile) )
+                    if ( off != fread(buf, 1, off, mFile) )
                         throw InvalidIO("unexpected error");
                     return;
                 }
@@ -256,11 +256,11 @@ void FileWrapper::skip_until(const char * str)
             else
             {
                 s = str;
-                b = (char*)memchr(b, ccc, nbuf-(b-buf));
+                b = (char*)memchr(b, ccc, nbuf-(size_t)(b - buf));
                 if ( !b )
                     break;
                 match  = pos;
-                offset = b - buf;
+                off = (size_t)(b - buf);
                 ++s;
             }
             ++b;

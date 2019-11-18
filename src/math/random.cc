@@ -68,7 +68,7 @@ void Random::seed(const uint32_t s)
  Better than uint32_t(x) in case x is floating point in [0,1]
  Based on code by Lawrence Kirby (fred@genesis.demon.co.uk)
  */
-uint32_t hash(time_t t, clock_t c)
+uint32_t hash(long t, int32_t c)
 {
     uint32_t h1 = 0;
     unsigned char* p = (unsigned char*) &t;
@@ -308,7 +308,7 @@ void Random::gauss_set(real vec[], size_t cnt, real v = 1.0)
  */
 void Random::gauss_set(real vec[], size_t cnt)
 {
-    size_t n = next_gaussian_ - gaussians_;
+    size_t n = (size_t)( next_gaussian_ - gaussians_ );
     // check if `vec` would consume all the buffer:
     while ( n <= cnt )
     {
@@ -317,7 +317,7 @@ void Random::gauss_set(real vec[], size_t cnt)
         vec += n;
         cnt -= n;
         refill_gaussians();
-        n = next_gaussian_ - gaussians_;
+        n = (size_t)( next_gaussian_ - gaussians_ );
     };
     
     // use `cnt` values from buffer:

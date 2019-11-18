@@ -132,10 +132,10 @@ void StreamFunc::mark_line(std::ostream& os, std::istream& is, std::streampos po
     is.seekg(sos);
 
     std::string sub;
-    int i = 0, c = 0;
+    unsigned i = 0;
     while ( i < off )
     {
-        c = line[i++];
+        int c = line[i++];
         if ( c == 0 )
             break;
         sub.push_back(isspace(c)?(char)c:' ');
