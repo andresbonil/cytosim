@@ -24,13 +24,13 @@ class TreadmillingFiber : public Fiber
 private:
     
     /// state of PLUS_END
-    int        mStateP;
+    unsigned   mStateP;
     
     /// assembly during last time-step
     real       mGrowthP;
     
     /// state of MINUS_END
-    int        mStateM;
+    unsigned   mStateM;
     
     /// assembly during last time-step
     real       mGrowthM;

@@ -27,7 +27,7 @@ ClassicFiber::~ClassicFiber()
 }
 
 
-bool valid_state(int s)
+bool valid_state(unsigned s)
 {
     return  s==STATE_WHITE || s==STATE_GREEN || s==STATE_RED;
 }

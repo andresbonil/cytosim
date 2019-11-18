@@ -50,13 +50,13 @@ class GrowingFiber : public Fiber
 private:
     
     /// state of PLUS_END (static or growing)
-    int        mStateP;
+    unsigned   mStateP;
     
     /// assembly at PLUS_END during last time-step
     real       mGrowthP;
     
     /// state of MINUS_END (static or growing)
-    int        mStateM;
+    unsigned   mStateM;
     
     /// assembly at MINUS_END during last time-step
     real       mGrowthM;
