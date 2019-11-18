@@ -315,7 +315,7 @@ bool Tokenizer::get_integer(std::string& arg, int& val)
         while ( isspace(*end) )
             ++end;
         // remove consumed characters:
-        arg.erase(0, end-ptr);
+        arg.erase(0, (size_t)(end-ptr));
         return true;
     }
     return false;
@@ -338,7 +338,7 @@ bool Tokenizer::get_integer(std::string& arg, unsigned int& val)
         while ( isspace(*end) )
             ++end;
         // remove consumed characters:
-        arg.erase(0, end-ptr);
+        arg.erase(0, (size_t)(end-ptr));
         return true;
     }
     return false;
@@ -598,7 +598,7 @@ std::string Tokenizer::get_until(std::istream& is, std::string what)
 {
     std::string res;
     res.reserve(16384);
-    int d = 0;
+    unsigned d = 0;
     char c = 0;
     is.get(c);
     
@@ -620,7 +620,7 @@ std::string Tokenizer::get_until(std::istream& is, std::string what)
             {
                 res.push_back(what[0]);
                 if ( d > 1 ) {
-                    is.seekg(-d, std::ios_base::cur);
+                    is.seekg(-(int)d, std::ios_base::cur);
                     d = 0;
                 } else {
                     if ( c == what[0] )
