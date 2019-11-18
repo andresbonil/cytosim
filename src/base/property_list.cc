@@ -20,7 +20,7 @@ void PropertyList::deposit(Property * p)
 {
     if ( p )
     {
-        int cnt = 0;
+        unsigned cnt = 0;
         for ( Property* i : vec_ )
         {
             if ( i->category() == p->category() )
