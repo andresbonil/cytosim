@@ -39,7 +39,7 @@ set hand motor
     activity = move
     unloaded_speed = -0.2
     stall_force = 6
-    display = ( line=0.5, 1; color=green; )
+    display = ( width=0.5; color=green; )
 }
 
 set couple complex
@@ -55,7 +55,7 @@ set hand binder
 {
     binding = 10, 0.02
     unbinding = 0.2, inf
-    display = ( line=0.5, 1; color=blue; )
+    display = ( width=0.5; color=blue; )
 }
 
 set couple crosslinker

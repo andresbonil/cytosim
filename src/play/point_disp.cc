@@ -521,7 +521,7 @@ void PointDisp::read(Glossary& glos)
     // set 'color2' as a darker tone of 'color':
     if ( glos.set(color,   "color") )
         color2 = color.alpha(0.5);
-    glos.set(color2,       "color", 1);
+    glos.set(color2,       "color", 1) || glos.set(color2, "back_color");
     glos.set(coloring,     "coloring");
     
     // if 'size' is specified, width is set accordingly:

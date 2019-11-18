@@ -68,7 +68,7 @@ set fiber microtubule
     growing_force  = 5
     min_length = 0.08
     
-    display = { color=0xFFFFFFAA; interval=1.0; line_style=0; show_lattice=1; line_width=3; end_size=4,4 }
+    display = { color=0xFFFFFFAA; interval=1.0; line_style=0; lattice=1; line_width=3; end_size=4,4 }
 }
 
 new 20000 eg5

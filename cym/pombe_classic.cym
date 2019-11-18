@@ -35,7 +35,7 @@ set fiber microtubule
     rebirth_rate   = 1
     min_length     = 0.5
    
-    display = {show_average=2}
+    display = ( draw_average=2 )
 }
 
 set sphere envelope

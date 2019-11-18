@@ -23,7 +23,7 @@ set fiber filament
     segmentation = 0.0275
     max_length = 4
     steric = 1, 0.004  % should be greater than 0.0035 nm
-    display = ( line=7, 1; color=red; inner_color=red; )
+    display = ( line=7, 1; color=red, red; )
 }
 
 set hand binder
