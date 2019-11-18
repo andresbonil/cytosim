@@ -193,20 +193,20 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
     }
     
     // possible dynamic states of the ends
-    Glossary::dict_type<int> keys({{"white",     STATE_WHITE},
-                                   {"green",     STATE_GREEN},
-                                   {"yellow",    STATE_YELLOW},
-                                   {"orange",    STATE_ORANGE},
-                                   {"red",       STATE_RED},
-                                   {"static",    STATE_WHITE},
-                                   {"grow",      STATE_GREEN},
-                                   {"growing",   STATE_GREEN},
-                                   {"shrink",    STATE_RED},
-                                   {"shrinking", STATE_RED}});
+    Glossary::dict_type<state_t> keys({{"white",     STATE_WHITE},
+                                       {"green",     STATE_GREEN},
+                                       {"yellow",    STATE_YELLOW},
+                                       {"orange",    STATE_ORANGE},
+                                       {"red",       STATE_RED},
+                                       {"static",    STATE_WHITE},
+                                       {"grow",      STATE_GREEN},
+                                       {"growing",   STATE_GREEN},
+                                       {"shrink",    STATE_RED},
+                                       {"shrinking", STATE_RED}});
     
     
     // set state of plus ends:
-    int p = STATE_WHITE;
+    state_t p = STATE_WHITE;
 #ifdef BACKWARD_COMPATIBILITY
     if ( opt.set(p, "plus_end_state") )
     {
@@ -218,7 +218,7 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         fib->setDynamicStateP(p);
 
     // set state of minus ends:
-    int m = STATE_WHITE;
+    state_t m = STATE_WHITE;
 #ifdef BACKWARD_COMPATIBILITY
     if ( opt.set(m, "minus_end_state") )
     {
