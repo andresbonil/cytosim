@@ -143,8 +143,8 @@ private:
             char const* chr = val.c_str() + iss.tellg();
             if ( not_space(chr) )
             {
-                std::cerr << "Warning: ignored trailing `" << val.substr(iss.tellg()) << "' in ";
-                std::cerr << key << " = " << val << '\n';
+                std::cerr << "Warning: ignored trailing `" << chr;
+                std::cerr << "' in `" << key << " = " << val << "'\n";
             }
         }
     }

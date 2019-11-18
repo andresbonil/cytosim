@@ -273,7 +273,8 @@ int main(int argc, char* argv[])
         catch( Exception & e )
         {
             arg.warnings(std::cerr);
-            std::cerr << "\nError: " << e.what() << '\n';
+            print_magenta(std::cerr, "Error: "+e.brief());
+            std::cerr << e.info() << '\n';
             return EXIT_FAILURE;
         }
     }
@@ -394,7 +395,8 @@ int main(int argc, char* argv[])
     }
     catch ( Exception & e )
     {
-        std::cerr << "\nInitialization Error: " << e.what() << '\n';
+        print_magenta(std::cerr, "Error: "+e.brief());
+        std::cerr << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
@@ -411,7 +413,8 @@ int main(int argc, char* argv[])
         }
         catch( Exception & e )
         {
-            std::cerr << "\nError: " << e.what() << '\n';
+            print_magenta(std::cerr, "Error: "+e.brief());
+            std::cerr << e.info() << '\n';
             return EXIT_FAILURE;
         }
     }
