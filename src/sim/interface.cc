@@ -232,7 +232,7 @@ enum PlacementType { PLACE_NOT, PLACE_ANYWHERE, PLACE_INSIDE, PLACE_EDGE,
  By default, the specifications are relative to the last Space that was defined,
  but a different space can be specified as second argument of PLACEMENT.
  
- You can set the density of objects by setting `nb_trials=1`:
+ You can set the density of objects with `nb_trials=1`:
  
      new 100 grafted
      {
@@ -241,8 +241,8 @@ enum PlacementType { PLACE_NOT, PLACE_ANYWHERE, PLACE_INSIDE, PLACE_EDGE,
      }
  
  In this way an object will be created only if its randomly chosen position falls
- inside the Space, and the density will be exactly what is specified from the 
- `position` range (here 100/10*10 = 1).
+ inside the Space, and the density will thus be exactly what is specified from the
+ `position` range (here 100/10*10 = 1 object per squared micrometer).
  */
 Isometry Interface::find_placement(Glossary& opt, int placement)
 {
@@ -308,7 +308,8 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
         }
     }
     
-    Cytosim::warn << "placement failed\n";
+    //Cytosim::warn << "could not fulfill `position=" + opt.value("position", 0) + "'\n";
+    throw InvalidParameter("could not fulfill `position=" + opt.value("position", 0) + "'");
     iso.reset();
     return iso;
 }

@@ -41,16 +41,13 @@ Vector Space::randomPlace() const
     
     size_t ouf = 0;
     do {
-        
         res = inf + dif.e_mul(Vector::randP());
-
         if ( ++ouf > nb_trials )
         {
-            Cytosim::warn << "placement failed in Space::randomPlace()\n";
+            throw InvalidParameter("random placement failed for space `"+prop->name()+"'\n");
+            //Cytosim::warn << "random placement failed for space `"+prop->name()+"'\n";
             return Vector(0,0,0);
-            //throw InvalidParameter("placement failed in Space::randomPlace()");
         }
-        
     } while ( ! inside(res) );
     
     return res;
@@ -64,13 +61,16 @@ Vector Space::randomPlace() const
  */
 Vector Space::randomPlaceNearEdge(real rad, size_t nb_trials) const
 {
+    if ( rad <= 0 )
+        throw InvalidParameter("a distance must be > 0");
+
     size_t ouf = 0;
     Vector res;
     do {
         res = randomPlace();
         assert_true( inside(res) );
         if ( ++ouf > nb_trials )
-            throw InvalidParameter("placement failed in Space::randomPlaceNearEdge()");
+            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'\n");
     } while ( allInside(res, rad) );
     return res;
 }
@@ -86,7 +86,7 @@ Vector Space::randomPlaceNearEdge(real rad, size_t nb_trials) const
 Vector Space::randomPlaceOnEdge(real rad, size_t nb_trials) const
 {
     if ( rad <= 0 )
-        throw InvalidParameter("surface:distance must be > 0");
+        throw InvalidParameter("a distance must be > 0");
 
     size_t ouf = 0;
     real d, rr = rad * rad;
@@ -101,7 +101,7 @@ Vector Space::randomPlaceOnEdge(real rad, size_t nb_trials) const
         res = project(pos);
         d = ( pos - res ).normSqr();
         if ( ++ouf > nb_trials )
-            throw InvalidParameter("placement failed in Space::randomPlaceOnEdge()");
+            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'\n");
     } while ( d > rr );
     
     return res;

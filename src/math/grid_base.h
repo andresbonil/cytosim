@@ -839,7 +839,7 @@ public:
              ...
          }
      
-     Note: you must call createRegions() first
+     Note: createRegions() must be called first
     */
     int getRegion(int*& offsets, const index_t indx) const
     {

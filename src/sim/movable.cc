@@ -110,7 +110,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 real R = 0;
                 is >> R;
                 if ( R < REAL_EPSILON )
-                    throw InvalidParameter("you must specify a distance R > 0 in `edge R`");
+                    throw InvalidParameter("distance R must be > 0 in `edge R`");
                 return spc->randomPlaceNearEdge(R);
             }
             
@@ -126,7 +126,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
                 real R = 0;
                 is >> R;
                 if ( R < 0 )
-                    throw InvalidParameter("you must specify a radius R >= 0 in `outside_sphere R`");
+                    throw InvalidParameter("distance R must be >= 0 in `outside_sphere R`");
                 Vector P;
                 do
                     P = spc->randomPlace();
@@ -197,7 +197,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real R = -1, T = 0;
             is >> R >> T;
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `sphere R`");
+                throw InvalidParameter("radius R must be >= 0 in `sphere R`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `sphere R T`");
             return Vector::randU(R) + Vector::randU(T*0.5);
@@ -208,7 +208,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real R = 0, T = 0;
             is >> R >> T;
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `equator R T`");
+                throw InvalidParameter("radius R must be >= 0 in `equator R T`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `equator R T`");
             const Vector2 V = Vector2::randU();
@@ -220,9 +220,9 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real L = -1, R = -1;
             is >> L >> R;
             if ( L < 0 )
-                throw InvalidParameter("you must specify a length L >= 0 in `cylinder L R`");
+                throw InvalidParameter("length L must be >= 0 in `cylinder L R`");
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `cylinder L R`");
+                throw InvalidParameter("radius R must be >= 0 in `cylinder L R`");
             const Vector2 V = Vector2::randB(R);
             return Vector(L*RNG.shalf(), V.XX, V.YY);
         }
@@ -232,7 +232,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real R = -1, T = 0;
             is >> R >> T;
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `circle R T`");
+                throw InvalidParameter("radius R must be >= 0 in `circle R T`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `circle R T`");
             //StreamFunc::mark_line(std::cout, is, is.tellg(), ">>>>");
@@ -248,7 +248,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real R = -1;
             is >> R;
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `ball R`");
+                throw InvalidParameter("radius R must be >= 0 in `ball R`");
             return Vector::randB(R);
         }
         
@@ -257,7 +257,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real R = -1, T = 0;
             is >> R >> T;
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `disc R`");
+                throw InvalidParameter("radius R must be >= 0 in `disc R`");
 #if ( DIM >= 3 )
             //in 3D, a disc in the XY-plane of thickness T in Z-direction
             if ( T < 0 )
@@ -274,7 +274,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real R = -1, T = 0;
             is >> R >> T;
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `discXZ R`");
+                throw InvalidParameter("radius R must be >= 0 in `discXZ R`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `discXZ R T`");
             const Vector2 V = Vector2::randB(R);
@@ -286,7 +286,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real R = -1, T = 0;
             is >> R >> T;
             if ( R < 0 )
-                throw InvalidParameter("you must specify a radius R >= 0 in `discYZ R`");
+                throw InvalidParameter("radius R must be >= 0 in `discYZ R`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `discYZ R T`");
             const Vector2 V = Vector2::randB(R);
@@ -312,7 +312,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             real L = -1, T = 0;
             is >> L >> T;
             if ( L < 0 )
-                throw InvalidParameter("you must specify a length L >= 0 in `line L`");
+                throw InvalidParameter("length L must be >= 0 in `line L`");
             if ( T < 0 )
                 throw InvalidParameter("the thickness T must be >= 0 in `line L T`");
 #if ( DIM >= 3 )
@@ -328,7 +328,7 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             is >> L >> A;
             
             if ( L <= 0 )
-                throw InvalidParameter("you must specify a length L >= 0 in `arc L`");
+                throw InvalidParameter("length must be L >= 0 in `arc L`");
             
             real x = 0, y = 0;
             if ( A == 0 ) {
