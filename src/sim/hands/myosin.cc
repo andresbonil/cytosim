@@ -37,7 +37,7 @@ void Myosin::stepUnloaded()
     while ( nextStep <= 0 )
     {
         assert_true( attached() );
-        site_t s = site() + 1;
+        lati_t s = site() + 1;
         if ( outsideMP(s) )
         {
             //immediately detach at the end of the Fiber:
@@ -68,7 +68,7 @@ void Myosin::stepLoaded(Vector const& force, real force_norm)
     while ( nextStep <= 0 )
     {
         assert_true( attached() );
-        site_t s = site() + 1;
+        lati_t s = site() + 1;
         if ( outsideMP(s) )
         {
             //immediately detach at the end of the Fiber:

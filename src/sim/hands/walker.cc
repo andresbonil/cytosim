@@ -51,7 +51,7 @@ void Walker::stepUnloaded()
             return;
         }
         
-        site_t s = site() + stride;
+        lati_t s = site() + stride;
         
         if ( outsideMP(s) )
         {
@@ -94,7 +94,7 @@ void Walker::stepLoaded(Vector const& force, real force_norm)
             return;
         }
 
-        site_t s = site() + stride;
+        lati_t s = site() + stride;
 
         if ( outsideMP(s) )
         {

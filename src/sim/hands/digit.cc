@@ -26,7 +26,7 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
             throw InvalidParameter("fiber:lattice was not defined");
         
         // index to site containing given abscissa:
-        site_t s = lat->index(sit.abscissa());
+        lati_t s = lat->index(sit.abscissa());
 
         if ( lat->outsideMP(s) || unavailable(lat, s) )
             return false;
@@ -67,7 +67,7 @@ void Digit::detach()
 //------------------------------------------------------------------------------
 #pragma mark -
 
-void Digit::hop(site_t s)
+void Digit::hop(lati_t s)
 {
     assert_true( attached() );
 #if FIBER_HAS_LATTICE
@@ -89,8 +89,8 @@ void Digit::hop(site_t s)
  */
 void Digit::crawlP(const int n)
 {
-    site_t s = site();
-    site_t e = s + n;
+    lati_t s = site();
+    lati_t e = s + n;
     
     while ( s < e )
     {
@@ -111,8 +111,8 @@ void Digit::crawlP(const int n)
  */
 void Digit::crawlM(const int n)
 {
-    site_t s = site();
-    site_t e = s - n;
+    lati_t s = site();
+    lati_t e = s - n;
     
     while ( s > e )
     {

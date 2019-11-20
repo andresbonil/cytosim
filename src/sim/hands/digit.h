@@ -43,13 +43,13 @@ public:
 #if FIBER_HAS_LATTICE > 0
 
     /// true if given Lattice's site is outside Lattice's range
-    bool          outsideMP(site_t s) const { return fbLattice->outsideMP(s); }
+    bool          outsideMP(lati_t s) const { return fbLattice->outsideMP(s); }
 
     /// true if given Lattice's site is occupied
-    bool          unavailable(FiberLattice* lat, site_t s) const { return lat->data(s) & prop->footprint; }
+    bool          unavailable(FiberLattice* lat, lati_t s) const { return lat->data(s) & prop->footprint; }
 
     /// true if given Lattice's site is unoccupied (check footprint bits)
-    bool          vacant(site_t s) const { return 0 == (fbLattice->data(s) & prop->footprint); }
+    bool          vacant(lati_t s) const { return 0 == (fbLattice->data(s) & prop->footprint); }
 
     /// flip footprint bits on current site
     void          inc() { fbLattice->data(fbSite) ^= prop->footprint; }
@@ -60,13 +60,13 @@ public:
 #elif FIBER_HAS_LATTICE < 0
 
     /// true if given Lattice's site is outside Lattice's range
-    bool          outsideMP(site_t s) const { return fbLattice->outsideMP(s); }
+    bool          outsideMP(lati_t s) const { return fbLattice->outsideMP(s); }
 
     /// true if given Lattice's site is occupied
-    bool          unavailable(FiberLattice* lat, site_t s) const { return lat->data(s) != 0.0; }
+    bool          unavailable(FiberLattice* lat, lati_t s) const { return lat->data(s) != 0.0; }
 
     /// true if given Lattice's site is unoccupied
-    bool          vacant(site_t s) const { return fbLattice->data(s) == 0.0; }
+    bool          vacant(lati_t s) const { return fbLattice->data(s) == 0.0; }
 
     /// add 1.0 to Lattice's site
     void          inc() { fbLattice->data(fbSite) += 1.0; }
@@ -76,9 +76,9 @@ public:
     
 #else
 
-    site_t        site() const { return std::round(fbAbs/prop->step_size); }
-    bool          outsideMP(site_t) const { return false; }
-    bool          vacant(site_t) const { return true; }
+    lati_t        site() const { return std::round(fbAbs/prop->step_size); }
+    bool          outsideMP(lati_t) const { return false; }
+    bool          vacant(lati_t) const { return true; }
     void          inc() {}
     void          dec() {}
     
@@ -95,10 +95,10 @@ public:
 
     
     /// transfer to given site
-    void   hop(site_t);
+    void   hop(lati_t);
 
     /// transfer to given site if it is vacant
-    void   jumpTo(site_t p) { if ( vacant(p) ) hop(p); }
+    void   jumpTo(lati_t p) { if ( vacant(p) ) hop(p); }
     
     /// relocate without checking intermediate sites
     void   jumpToEndM() { jumpTo(lattice()->indexM()); }
