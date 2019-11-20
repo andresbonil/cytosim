@@ -1,6 +1,7 @@
 # Cytosim's Configuration File
 
-The virtual system and the sequence of actions to be performed is specified in a configuration file. This config file must be a plain text file produced by many text editor.
+The virtual system and the sequence of actions to be performed is specified in a configuration file. 
+This config file must be a plain (ASCII) text file, as produced by many text editor (but not word processors).
 By default, it is called **`config.cym`**.
  
 Cytosim understand a [small set of commands](commands.md) and [predefined objects](objects.md) with their [associated parameters](parameters.md).
@@ -19,10 +20,25 @@ About the config file:
 - Two parameters can be specified on the same line if they are separated by a semi-column: `;`
 - Curly brackets `{  }` are used to group the parameters together in logical units
 - Parentheses `(  )` can be used for subgroups, such as `display`
+- Strings are also encapsulated by parentheses  
+
+# Editing
+
+Cytosim's configuration files `*.cym` are plain text ASCII file, and should be edited using a [PLAIN TEXT editor](https://en.wikipedia.org/wiki/Text_editor).
+Do not use word processors such as Microsoft Word. 
+
+Recommended editors:
+
+- [TextMate](https://macromates.com)
+- [Atom](https://atom.io)
+- [Gleany](https://www.geany.org)
+- [Sublime text](https://www.sublimetext.com)
+
+Manuel Lera-Ramirez produced a [syntax highlighting configuration](../misc/Cytosim.tmbundle.zip) for TextMate.
 
 # Example
  
-Many examples can be found in the directory called [***cym***](../../cym).
+Many examples can be found in the directory [***cym/***](../../cym).
 	 
 
 	% Self organization of Microtubules driven by bivalent Motors
@@ -65,7 +81,7 @@ Many examples can be found in the directory called [***cym***](../../cym).
 		bind_also_end = 1
 		hold_growing_end = 1
 	
-		display = ( size=7; width=7 )
+		display = ( size=7; width=7; )
 	}
 	
 	set couple complex
