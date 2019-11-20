@@ -20,7 +20,7 @@ About the config file:
 - Two parameters can be specified on the same line if they are separated by a semi-column: `;`
 - Curly brackets `{  }` are used to group the parameters together in logical units
 - Parentheses `(  )` can be used for subgroups, such as `display`
-- Strings are also encapsulated by parentheses  
+- Strings can be encapsulated by double quotes `" "` or parentheses  
 
 # Editing
 
@@ -34,7 +34,7 @@ Recommended editors:
 - [Gleany](https://www.geany.org)
 - [Sublime text](https://www.sublimetext.com)
 
-Manuel Lera-Ramirez produced a [syntax highlighting configuration](../misc/Cytosim.tmbundle.zip) for TextMate.
+Manuel Lera-Ramirez made a [syntax highlighting configuration](../misc/Cytosim.tmbundle.zip) for TextMate.
 
 # Example
  
