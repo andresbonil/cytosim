@@ -322,9 +322,9 @@ For cytoskeletal filaments, the dominating forces are usually the [Brownian moti
 
 In the model, the drag is linear in the length of the microtubule. Longer ones are more difficult to move than shorter ones. The drag coefficient is calculated using a formula similar to Stoke's law, but which was derived for a cylinder instead of a sphere:
 
-> Tirado and de la Torre. J. Chem. Phys 71(6) 1979
-> http://link.aip.org/link/doi/10.1063/1.438613
-> Page 2584, Table 1, last column, last line for infinite aspect ratio
+> Tirado and de la Torre. J. Chem. Phys 71(6) 1979  
+> https://doi.org/10.1063/1.438613  
+> Page 2584, Table 1, last column, last line for infinite aspect ratio  
 
 The translational drag coefficient is averaged over all possible configurations:
  

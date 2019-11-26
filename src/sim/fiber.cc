@@ -582,37 +582,34 @@ Clift R, Grace JR, Weber ME. Bubbles, drops, and particles: Courier Corporation;
  */
 
 
-/** 
- Fiber::setDragCoefficientVolume() calculates the mobility for the entire fiber, 
+/**
+ dragCoefficientVolume() calculates the mobility for the entire fiber,
  considering that the cylinder is straight and moving in a infinite fluid.
  fiber:hydrodynamic_radius[1] is a hydrodynamic cutoff that makes the
  drag coefficient proportional to length beyond the cutoff.
  
- The formula for a cylinder is taken from:\n
- <em>
- Tirado and de la Torre. J. Chem. Phys 71(6) 1979 \n
- http://link.aip.org/link/doi/10.1063/1.438613 \n
- </em>
+ The drag is determined by the viscosity and the length and diameter of the
+ filament. The aspect ratio is defined by:
 
- We calculate the translational drag coefficient averaged over all possible configurations:
+    shape = length / diameter;
 
-       aspect = length / diameter;
-       Ct =  0.312 + 0.565/aspect - 0.100/(aspect*aspect);
-       drag_cylinder = 3*M_PI*viscosity*length / ( log(aspect) + Ct );
- 
- The rotational diffusion coefficient is given by:
- Tirado and de la Torre. J. Chem. Phys 73(4) 1980 \n
+The formula for a cylinder were calculated numerically in:
+> Tirado and de la Torre. J. Chem. Phys 71(6) 1979
+> http://doi.org/10.1063/1.438613
+> Page 2584, Table 1, last column, last line for infinite aspect ratio
 
-       Cr = -0.662 + 0.917/aspect - 0.050/(aspect*aspect);
-       drag_rotation = M_PI*viscosity*length / ( log(aspect) + Cr )
- 
- If the length is shorter than the diameter, the formula above fails and may even give negative result.
- Hence we also calculate the drag of a sphere with the same radius as the cylinder:
+The translational drag coefficient is averaged over all possible configurations:
 
-       drag_sphere = 6*PI*visc*R
+    drag_cylinder = 3 * PI * viscosity * length / ( log(shape) + 0.312 );
 
- We use the maximum value between 'drag_sphere' and 'drag_cylinder'.
- */
+If the length is shorter than the diameter, the formula above fails and may
+even give negative result. Hence we also calculate the drag of a sphere with
+the same radius as the cylinder:
+
+    drag_sphere = 6 * PI * viscosity * radius
+
+We use the maximum value between 'drag_sphere' and 'drag_cylinder'.
+*/
 real Fiber::dragCoefficientVolume()
 {
     real len = length();
@@ -655,9 +652,9 @@ real Fiber::dragCoefficientVolume()
 #else
     /*
      Tirado and de la Torre. J. Chem. Phys 71(6) 1979
-     given the averaged translational friction coefficient for a cylinder:
-     (Table 1, last line for infinite aspect ratio)
+     give the averaged translational friction coefficient for a cylinder:
      3*PI*length*viscosity / ( log(length/diameter) + 0.32 )
+     (Page 2584, Table 1, last column, last line for infinite aspect ratio)
      */
     
     // length below which the formula is not valid:
@@ -666,14 +663,12 @@ real Fiber::dragCoefficientVolume()
     real drag_cylinder = pref * len / ( log( 0.5 * lenc / prop->hydrodynamic_radius[0] ) + 0.32 );
 #endif
 
-    real drag;
+    real drag = drag_sphere;
     
-    if ( len < min_len )
-        drag = drag_sphere;
-    else
+    if ( len > min_len )
     {
         // use largest drag coefficient
-        drag = ( drag_cylinder > drag_sphere ? drag_cylinder : drag_sphere );
+        drag = std::max(drag_cylinder, drag_sphere);
     }
     
     //Cytosim::log("Drag coefficient of Fiber in infinite fluid = %.1e\n", drag);
@@ -684,11 +679,9 @@ real Fiber::dragCoefficientVolume()
 
 
 /**
- Fiber::setDragCoefficientSurface() uses a formula calculated by F. Gittes in:\n
- <em>
- Hunt et al. Biophysical Journal (1994) v 67 pp 766-781 \n
- http://dx.doi.org/10.1016/S0006-3495(94)80537-5 \n
- </em>
+ dragCoefficientSurface() uses a formula calculated by F. Gittes in:\n
+ > Hunt et al. Biophysical Journal (1994) v 67 pp 766-781
+ > http://dx.doi.org/10.1016/S0006-3495(94)80537-5
  
  It applies to a cylinder moving parallel to its axis and near an immobile surface:
 
@@ -712,11 +705,9 @@ real Fiber::dragCoefficientVolume()
 
        acosh(x) = ln[ x + sqrt(x^2-1)) ] ~ ln[2x] if x >> 1
 
- Hunt et al. also credit this reference for the formula:\n
- <em>
- The slow motion of a cylinder next to a plane wall.
- Jeffrey, D.J. & Onishi, Y. (1981) Quant. J. Mech. Appl. Math. 34, 129-137.
- </em>
+ Hunt et al. also credit this reference for the formula:
+ > The slow motion of a cylinder next to a plane wall.
+ > Jeffrey, D.J. & Onishi, Y. (1981) Quant. J. Mech. Appl. Math. 34, 129-137.
 */
 real Fiber::dragCoefficientSurface()
 {
