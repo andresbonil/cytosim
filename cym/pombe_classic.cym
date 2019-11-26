@@ -8,7 +8,7 @@ set simul system
     time_step  = 0.01
     kT         = 0.0042
     viscosity  = 0.9
-    display = ( window_size=1024,256 )
+    display = ( window_size=1024,384 )
 }
 
 set space cell
@@ -28,6 +28,8 @@ set fiber microtubule
     shrinking_speed          = -0.15
     catastrophe_rate         = 0.004
     catastrophe_rate_stalled = 0.04
+	% Note: the parameter 'catastoph_length' will be ignored, unless
+	% NEW_LENGTH_DEPENDENT_CATASTROPHE is defined at compile time
     catastrophe_length       = 5
     rescue_rate              = 0
     growing_force  = 1.67

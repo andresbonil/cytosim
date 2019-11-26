@@ -9,13 +9,13 @@ set simul system
     kT         = 0.0042
     viscosity  = 0.9
     precondition = 0
-    display = ( delay=4; )
+    display = ( window_size=1024,384; delay=2; )
 }
 
 set space cell
 {
     shape = capsule
-    display = ( color=0x7777770F, black; visible=3; )
+    display = ( color=0x7777772F, black; visible=3; width=10; )
 }
 
 
