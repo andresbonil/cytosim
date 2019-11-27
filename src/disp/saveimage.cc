@@ -346,7 +346,7 @@ int SaveImage::savePixels(const char * filename,
         if ( res )
         {
             fprintf(err, " error %i while saving %s\n", res, filename);
-            // remove file if an error occured:
+            // remove file if an error occurred:
             remove(filename);
         }
         

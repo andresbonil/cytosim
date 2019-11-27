@@ -40,7 +40,7 @@ void Player::clear()
 
 void Player::previousFrame()
 {
-    if ( thread.hasFrame() && thread.currentFrame() > 1 )
+    if ( thread.currentFrame() > 0 )
         thread.loadFrame(thread.currentFrame()-1);
     else {
         if ( PP.loop )
@@ -62,7 +62,7 @@ void Player::nextFrame()
             if ( PP.exit_at_eof )
                 exit(EXIT_SUCCESS);
             if ( PP.loop )
-                thread.loadFrame(1);
+                thread.loadFrame(0);
             else
             {
                 flashText("end-of-file\n");
@@ -88,7 +88,7 @@ void Player::rewind()
     {
         stop();
         thread.rewind();
-        thread.loadFrame(1);
+        thread.loadFrame(0);
         glApp::postRedisplay();
     }
 }

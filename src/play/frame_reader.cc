@@ -15,7 +15,9 @@
 FrameReader::FrameReader() : inputter(DIM)
 {
     frameIndex = 0;
+    lastLoaded = ~0;
 }
+
 
 void FrameReader::clear()
 {
@@ -23,10 +25,9 @@ void FrameReader::clear()
     clearPositions();
 }
 
+
 void FrameReader::openFile(std::string const& file)
 {
-    clearPositions();
-    
     int error = inputter.open(file.c_str(), "rb");
     
     if ( error )
@@ -52,6 +53,7 @@ void FrameReader::openFile(std::string const& file)
         throw InvalidIO("file `"+file+"' is invalid");
  
     inputter.vectorSize(DIM);
+    clearPositions();
     //std::clog << "FrameReader: has openned " << obj_file << std::endl;
 }
 
@@ -93,51 +95,48 @@ void FrameReader::clearPositions()
     frameIndex = 0;
     framePos.clear();
     framePos.reserve(1024);
-    framePos.resize(2);
-    // store info for frame 1:
-    framePos[0].status = 1;
-    framePos[0].position = 0;
-    framePos[1].status = 1;
-    framePos[1].position = 0;
+    framePos.resize(1);
+    // store info for frame 0:
+    fpos_t pos;
+    if ( 0 == inputter.get_pos(pos) )
+    {
+        framePos[0].status = 1;
+        framePos[0].position = pos;
+    }
 }
 
 
 void FrameReader::savePos(size_t frm, const fpos_t& pos, int confidence)
 {
-    if ( frm <= 0 )
-        return;
-    
-    size_t inx = frm;
-    
-    if ( inx >= framePos.capacity() )
+    if ( frm >= framePos.capacity() )
     {
         constexpr size_t chunk = 1024;
-        size_t sz = ( inx + chunk - 1 ) & ~( chunk -1 );
+        size_t sz = ( frm + chunk - 1 ) & ~( chunk -1 );
         framePos.reserve(sz);
     }
     
-    if ( inx >= framePos.size() )
+    if ( frm >= framePos.size() )
     {
         size_t i = framePos.size();
-        framePos.resize(inx+1);
-        while ( i <= inx )
+        framePos.resize(frm+1);
+        while ( i <= frm )
             framePos[i++].status = 0;
     }
     
-    if ( framePos[inx].status < confidence )
+    if ( framePos[frm].status < confidence )
     {
-        framePos[inx].status = confidence;
-        framePos[inx].position = pos;
+        framePos[frm].status = confidence;
+        framePos[frm].position = pos;
     
         //VLOG("FrameReader: position of frame " << frm << " is " << pos << '\n');
-        VLOG("FrameReader: learned position of frame "<<frm<<" ("<<confidence<<")\n");
+        VLOG("FrameReader: found position of frame "<<frm<<" ("<<confidence<<")\n");
     }
 }
 
 
 /**
- This uses the current knowledge to move to a position
- in the file where we should find frame `frm`.
+ This uses the info stored in `framePos[]` to move to a position
+ in the file where frame `frm` should start.
 */
 size_t FrameReader::seekPos(size_t frm)
 {
@@ -173,6 +172,8 @@ size_t FrameReader::seekPos(size_t frm)
 
 size_t FrameReader::lastKnownFrame() const
 {
+    if ( framePos.empty() )
+        return 0;
     size_t res = framePos.size()-1;
     while ( 0 < res  &&  framePos[res].status < 2 )
         --res;
@@ -191,11 +192,10 @@ enum FrameReaderCode { SUCCESS = 0, END_OF_FILE = 1, NOT_FOUND = 2, BAD_FILE = 4
  @return 0 if no frame was found
 */
 int FrameReader::seekFrame(size_t frm)
-{        
+{
     VLOG("FrameReader: seekFrame("<< frm <<")\n");
     
     size_t inx = seekPos(frm);
-
     
     if ( inx == frm )
         return SUCCESS;
@@ -221,7 +221,7 @@ int FrameReader::seekFrame(size_t frm)
         } while ( line.compare(0, 9, "#Cytosim ") );
         
         //std::clog << "******\n";
-        VLOG("FrameReader: " << line << '\n');
+        VLOG("           : " << line << '\n');
 
         if ( ! inputter.eof() )
         {
@@ -240,7 +240,7 @@ int FrameReader::seekFrame(size_t frm)
 }
 
 //------------------------------------------------------------------------------
-/** 
+/**
  returns 0 for success, an error code, or throws an exception
  */
 int FrameReader::loadFrame(Simul& sim, size_t frm, const bool reload)
@@ -251,13 +251,13 @@ int FrameReader::loadFrame(Simul& sim, size_t frm, const bool reload)
     VLOG("FrameReader: loadFrame(frame="<<frm<<", reload="<<reload<<")\n");
     
     // what we are looking for might already be in the buffer:
-    if ( frm == frameIndex && ! reload )
+    if ( frm == lastLoaded && ! reload )
         return SUCCESS;
     
     // it might be the next one in the buffer:
-    if ( frm == 1+frameIndex )
+    if ( frm > 0  &&  frm-1 == lastLoaded )
         return loadNextFrame(sim);
-
+    
     // otherwise, try to find the start tag from there:
     if ( SUCCESS != seekFrame(frm) )
         return NOT_FOUND;
@@ -270,10 +270,11 @@ int FrameReader::loadFrame(Simul& sim, size_t frm, const bool reload)
     //VLOG("FrameReader: reading frame " << frm << '\n');
     
     // ask cytosim to read the file:
-    if ( 0 == sim.reloadObjects(inputter) )
+    if ( !sim.reloadObjects(inputter) )
     {
         VLOG("FrameReader: loadFrame("<< frm <<") successful\n");
         frameIndex = frm;
+        lastLoaded = frameIndex;
         if ( has_pos )
             savePos(frameIndex, pos, 4);
         // the next frame should start at the current position:
@@ -289,7 +290,7 @@ int FrameReader::loadFrame(Simul& sim, size_t frm, const bool reload)
 }
 
 
-/** 
+/**
  returns 0 for success, an error code, or throws an exception
  */
 int FrameReader::loadNextFrame(Simul& sim)
@@ -300,24 +301,26 @@ int FrameReader::loadNextFrame(Simul& sim)
     fpos_t pos;
     bool has_pos = !inputter.get_pos(pos);
 
-    if ( 0 == sim.reloadObjects(inputter) )
+    if ( !sim.reloadObjects(inputter) )
     {
-        ++frameIndex;
+        if ( lastLoaded == frameIndex )
+            ++frameIndex;
+        lastLoaded = frameIndex;
+
+        VLOG("FrameReader: loadNextFrame() has read frame " << currentFrame() << '\n');
         
         // the position we used was good, to read this frame
         if ( has_pos )
             savePos(frameIndex, pos, 4);
-
-        VLOG("FrameReader: loadNextFrame() after frame " << currentFrame() << '\n');
-        
+       
         // the next frame should start from the current position:
         if ( !inputter.get_pos(pos) )
             savePos(frameIndex+1, pos, 1);
         return SUCCESS;
-    } 
+    }
     else
     {
-        VLOG("FrameReader: loadNextFrame() EOF after frame " << currentFrame() << '\n');
+        VLOG("FrameReader: loadNextFrame() EOF while seeking frame " << currentFrame() << '\n');
         return END_OF_FILE;
     }
 }
@@ -332,32 +335,34 @@ int FrameReader::loadLastFrame(Simul& sim, size_t cnt)
         return BAD_FILE;
     
     /// seek last known position:
-    int frm = lastKnownFrame();
-    if ( frm > 0 )
+    size_t frm = lastKnownFrame();
+    if ( frm > 1 )
         inputter.set_pos(framePos[frm].position);
     else
         inputter.rewind();
     
     /// go from here to last frame:
-    frameIndex = frm;
     int res = NOT_FOUND;
-    while ( SUCCESS == loadNextFrame(sim) )
+    while ( !sim.reloadObjects(inputter) )
+    {
+        frameIndex = frm++;
+        lastLoaded = frameIndex;
         res = SUCCESS;
+    }
     
     if ( res == SUCCESS && cnt > 0 )
     {
-        // otherwise, try to find the start tag from there:
-        if ( SUCCESS != seekFrame(frm-cnt) )
+        frm = frm - 1 - cnt;
+        // go back up by 'cnt' frames:
+        if ( SUCCESS != seekFrame(frm) )
             return NOT_FOUND;
         
-        res = sim.reloadObjects(inputter);
-        
-        if ( res == SUCCESS )
-        {
-            frm = frm - cnt;
-            VLOG("FrameReader: loadFrame("<< frm <<") successful\n");
-            frameIndex = frm;
-        }
+        if ( !sim.reloadObjects(inputter) )
+            return NOT_FOUND;
+
+        frameIndex = frm;
+        lastLoaded = frameIndex;
+        VLOG("FrameReader: loadFrame("<< frm <<") successful\n");
     }
     
     return res;

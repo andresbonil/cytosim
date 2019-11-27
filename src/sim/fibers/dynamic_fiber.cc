@@ -253,7 +253,7 @@ int DynamicFiber::stepPlusEnd()
                     break;
 
                 case 2:
-                    // remove last unit, assuming hydrolysis already occured below
+                    // remove last unit, assuming hydrolysis already occurred below
                     unitP[0] = unitP[1];
                     unitP[1] = unitP[2];
                     unitP[2] = 0;

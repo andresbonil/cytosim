@@ -213,11 +213,11 @@ void sizeFrame(FILE* in)
             printf("pid %lu   frame %5lu    time %8.3f   %7li lines (%+li)\n",
                    frame_pid, frm, frame_time, cnt, cnt-oldcnt);
             oldcnt = cnt;
+            ++frm;
         }
         
         if ( code == FRAME_START )
         {
-            ++frm;
             cnt = 0;
         }
     }
@@ -226,7 +226,7 @@ void sizeFrame(FILE* in)
 
 void extract(FILE* in, FILE* out, Slice sli)
 {
-    size_t frm = 1;
+    size_t frm = 0;
     int code = 0;
     FILE * file = sli.match(0) ? out : nullptr;
 
@@ -302,7 +302,7 @@ void extractLast(FILE* in)
 
 void split(FILE * in)
 {
-    size_t frm = 1;
+    size_t frm = 0;
     int code = 0;
     char name[128] = { 0 };
     snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
@@ -312,6 +312,17 @@ void split(FILE * in)
     {
         code = whatline(in, out);
         
+        if ( code == FRAME_START )
+        {
+            snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
+            out = openfile(name, "w");
+            if ( out )
+            {
+                flockfile(out);
+                fprintf(out, "#Cytosim\n");
+            }
+        }
+
         if ( code == FRAME_END )
         {
             if ( out )
@@ -319,11 +330,8 @@ void split(FILE * in)
                 funlockfile(out);
                 fclose(out);
             }
+            out = 0;
             ++frm;
-            snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
-            out = openfile(name, "w");
-            if ( out )
-                flockfile(out);
         }
     }
 }
