@@ -458,11 +458,7 @@ void Space::read_data(Inputter& in, real len[8], std::string const& expected)
         str = in.get_word(); // stored as a space-terminated string
     else
 #endif
-    {
         str = in.get_characters(16); // stored as 16 characters
-        std::string::size_type e = str.find_last_not_of(" ");
-        str = str.substr(0, e+1);
-    }
     
     // compare with expected shape:
     if ( str.compare(0, expected.size(), expected) )

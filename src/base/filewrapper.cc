@@ -181,7 +181,10 @@ std::string FileWrapper::get_characters(size_t cnt)
         res.append(buf, s);
         cnt -= s;
     }
-    return res;
+
+    // trim trailing zeros:
+    std::string::size_type e = res.find((char)0);
+    return res.substr(0, e);
 }
 
 
