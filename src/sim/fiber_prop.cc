@@ -137,8 +137,8 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         }
     }
 
-    if ( len < min_length ) len = min_length;
-    if ( len > max_length ) len = max_length;
+    len = std::max(len, min_length);
+    len = std::min(len, max_length);
     
 #if ( 1 )
     // specify the vertices directly:
