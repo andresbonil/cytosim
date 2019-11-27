@@ -227,8 +227,8 @@ void test_uniform()
         var += x*x + y*y + z*z + t*t;
     }
     cnt *= 4;
-    avg /= cnt;
-    var = var/cnt - avg * avg;
+    avg /= (real)cnt;
+    var = var/(real)cnt - avg * avg;
     printf("UNIFORM      avg = %.12e   var = %.12e\n", avg, var);
 }
 
@@ -252,8 +252,8 @@ void test_gauss()
             var += vec[u] * vec[u];
         }
     }
-    avg /= cnt;
-    var = var/cnt - avg * avg;
+    avg /= (real)cnt;
+    var = var/(real)cnt - avg * avg;
     printf("GAUSS      avg = %.12e   var = %.12e\n", avg, var);
 
 }
@@ -285,8 +285,8 @@ void test_exponential()
         var += x*x + y*y + z*z + t*t;
     }
     cnt *= 4;
-    avg /= cnt;
-    var = var/cnt - avg * avg;
+    avg /= (real)cnt;
+    var = var/(real)cnt - avg * avg;
     printf("EXPONENTIAL  avg = %.12e   var = %.12e\n", avg, var);
 }
 

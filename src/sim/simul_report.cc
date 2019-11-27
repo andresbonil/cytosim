@@ -1957,23 +1957,25 @@ void Simul::flagClustersSolids() const
     {
         SingleList anchored = singles.collectWrists(obj);
         // find the minimun flag value:
-        ObjectFlag min = 0;
+        ObjectFlag flg = 0;
         for ( Single const* s : anchored )
         {
             if ( s->attached() )
             {
                 ObjectFlag f = s->fiber()->flag();
-                if ( min == 0 || f < min )
-                    min = f;
+                if ( flg == 0 )
+                    flg = f;
+                else
+                    flg = std::min(f, flg);
             }
         }
         // reflag:
-        if ( min > 0 )
+        if ( flg > 0 )
         {
-        for ( Single const* s : anchored )
+            for ( Single const* s : anchored )
             {
                 if ( s->attached() )
-                    reFlag(fibers, s->fiber()->flag(), min);
+                    reFlag(fibers, s->fiber()->flag(), flg);
             }
         }
     }
