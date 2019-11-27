@@ -194,7 +194,7 @@ int FrameReader::seekFrame(size_t frm)
 {        
     VLOG("FrameReader: seekFrame("<< frm <<")\n");
     
-    int inx = seekPos(frm);
+    size_t inx = seekPos(frm);
 
     
     if ( inx == frm )
