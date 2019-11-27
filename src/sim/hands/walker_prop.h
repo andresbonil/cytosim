@@ -50,7 +50,7 @@ private:
     real    var_rate_dt;
     
     /// derived variable
-    real    stepping_rate, stepping_rate_dt;
+    real    walking_rate_dt;
     
 public:
 

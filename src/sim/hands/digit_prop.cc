@@ -31,7 +31,7 @@ void DigitProp::read(Glossary& glos)
 {
     HandProp::read(glos);
     
-    if ( glos.set(step_size, "step_size") )
+    if ( glos.set(step_size, "step_size") && site_shift == 0 )
         site_shift = 0.5 * step_size;
     glos.set(site_shift, "site_shift");
     
