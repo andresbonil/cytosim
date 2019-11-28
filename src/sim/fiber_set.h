@@ -152,9 +152,6 @@ public:
     /// Calculate averaged distance from origin - for fiber ends
     void  infoRadius(unsigned&, real& rad, FiberEnd) const;
 
-    /// Calculate averaged characteristics on all Fiber's Lattices
-    void  infoLattice(real& len, unsigned& cnt, real& sm, real& mn, real& mx, bool density) const;
-
 };
 
 

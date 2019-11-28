@@ -1184,25 +1184,3 @@ void FiberSet::infoRadius(unsigned& cnt, real& rad, FiberEnd end) const
         rad = r / cnt;
 }
 
-
-void FiberSet::infoLattice(real& len, unsigned& cnt, real& sm, real& mn, real& mx, bool density) const
-{
-    len = 0;
-    cnt = 0;
-    sm = 0;
-    mn = INFINITY;
-    mx = -INFINITY;
-    
-#if FIBER_HAS_LATTICE
-    for ( Fiber const* fib=first(); fib; fib=fib->next() )
-    {
-        FiberLattice const& lat = fib->lattice();
-        if ( lat.ready() )
-        {
-            len += fib->length();
-            fib->infoLattice(lat, cnt, sm, mn, mx, density);
-        }
-    }
-#endif
-}
-

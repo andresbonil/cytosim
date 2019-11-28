@@ -260,10 +260,6 @@ void FiberProp::clear()
 
     lattice             = 0;
     lattice_unit        = 0;
-    lattice_cut_fiber   = 0;
-    lattice_flux_speed  = 0;
-    lattice_binding_rate = 0;
-    lattice_unbinding_rate = 0;
 
     confine             = CONFINE_OFF;
     confine_stiffness   = -1;
@@ -273,9 +269,6 @@ void FiberProp::clear()
     steric              = 0;
     steric_radius       = 0;
     steric_range        = 0;
-    
-    field               = "none";
-    field_ptr           = nullptr;
     
     glue                = 0;
     glue_single         = "none";
@@ -338,11 +331,6 @@ void FiberProp::read(Glossary& glos)
     glos.set(lattice_unit,      "lattice", 1);
     glos.set(lattice_unit,      "lattice_unit");
     
-    glos.set(lattice_cut_fiber, "lattice_cut_fiber");
-    glos.set(lattice_flux_speed, "lattice_flux_speed");
-    glos.set(lattice_binding_rate, "lattice_binding_rate");
-    glos.set(lattice_unbinding_rate, "lattice_unbinding_rate");
-    
     glos.set(confine,           "confine", {{"off",       CONFINE_OFF},
                                             {"on",        CONFINE_ON},
                                             {"inside",    CONFINE_INSIDE},
@@ -385,7 +373,6 @@ void FiberProp::read(Glossary& glos)
     glos.set(steric_radius,     "steric_radius");
     glos.set(steric_range,      "steric_range");
     
-    glos.set(field,             "field");
     glos.set(glue,              "glue");
     glos.set(glue_single,       "glue", 1);
     
@@ -448,25 +435,10 @@ void FiberProp::complete(Simul const& sim)
             glue_prop = sim.findProperty<SingleProp>("single", glue_single);
     }
     
-    if ( field != "none" )
-    {
-        Property * fp = sim.properties.find("field", field);
-        field_ptr = static_cast<Field*>(sim.fields.findObject(fp));
-    }
-    
     if ( lattice && sim.ready() )
     {
         if ( lattice_unit <= 0 )
             throw InvalidParameter("fiber:lattice_unit (known as fiber:lattice[1]) must be specified and > 0");
-
-        if ( lattice_flux_speed != 0 || lattice_binding_rate != 0 || lattice_unbinding_rate != 0 )
-        {
-            if ( field.empty() )
-                throw InvalidParameter("fiber:lattice features require fiber:field to be specified");
-
-            if ( !field_ptr )
-                throw InvalidParameter("fiber:field not found");
-        }
     }
 
     if ( rigidity < 0 )
@@ -541,13 +513,8 @@ void FiberProp::write_values(std::ostream& os) const
 #endif
     write_value(os, "binding_key",         binding_key);
     write_value(os, "lattice",             lattice, lattice_unit);
-    write_value(os, "lattice_cut_fiber",   lattice_cut_fiber);
-    write_value(os, "lattice_flux_speed",  lattice_flux_speed);
-    write_value(os, "lattice_binding_rate", lattice_binding_rate);
-    write_value(os, "lattice_unbinding_rate", lattice_unbinding_rate);
     write_value(os, "confine",             confine, confine_stiffness, confine_space);
     write_value(os, "steric",              steric, steric_radius, steric_range);
-    write_value(os, "field",               field);
     write_value(os, "glue",                glue, glue_single);
 #if NEW_COLINEAR_FORCE
     write_value(os, "colinear_force",      colinear_force);

@@ -603,9 +603,12 @@ void Simul::reportFiberLattice(std::ostream& out, bool density) const
     out << SEP << "total" << SEP << "avg" << SEP << "min" << SEP << "max" << SEP << "length";
     
     // report substance on Fiber Lattices
-    unsigned cnt;
-    real len, sm, mn, mx;
-    fibers.infoLattice(len, cnt, sm, mn, mx, density);
+    unsigned cnt = 0;
+    real len = 0, sm = 0, mn = INFINITY, mx = -INFINITY;
+    
+    for ( Fiber const* fib = fibers.first(); fib; fib = fib->next() )
+        fib->infoLattice(len, cnt, sm, mn, mx);
+
     out << LIN << ljust("fiber:lattice", 2);
     out << SEP << sm;
     out << SEP << std::setprecision(4) << sm / cnt;

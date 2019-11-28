@@ -20,19 +20,11 @@ class FiberSegment;
 class LineDisp;
 
 
-/// Flag to associate a Lattice to the Fiber {-1, 0, 1}
+/// Flag to associate a Lattice to the Fiber {0, 1}
 #define FIBER_HAS_LATTICE 0
 
-/**
- The type of Lattice associated with each Fiber is defined here:
- */
-#if FIBER_HAS_LATTICE > 0
-// Lattice composed of integers, appropriate for discrete occupancy
+/// Lattice composed of integers, appropriate for discrete occupancy
 typedef Lattice<uint64_t> FiberLattice;
-#else
-// Lattice composed of floating point values, for continuous values
-typedef Lattice<real> FiberLattice;
-#endif
 
 /// a Mecafil to which many Hand may bind
 /**
@@ -262,42 +254,19 @@ public:
     
     /// const reference to Fiber's Lattice
     FiberLattice const&  lattice() const { return frLattice; }
+
+    /// recalculate occupancy lattice from bound Hands
+    void           resetLattice();
 #else
-    real  unit_;
+    /// does nothing
+    void           resetLattice() {}
 #endif
-
-    /// initialize lattice sites to represent a constant linear density
-    void           setLattice(Lattice<real>&, real density) const;
-
-    /// transfer all lattice substance to the Field
-    void           releaseLattice(Lattice<real>&, Field*) const;
-
-    /// update lattice values as `value <- cst + fac * value`
-    void           evolveLattice(Lattice<real>&, real cst, real fac) const;
-
-    /// transfer from Field to Lattice at rate `on` and back at rate `off`
-    void           equilibrateLattice(Lattice<real>&, Field*, real on, real off) const;
-    
-    /// transfer from Field to Lattice at rate `on`
-    void           bindLattice(Lattice<real>&, Field*, real rate) const;
-    
-    /// transfer from Field to Lattice at rate `on`
-    void           fluxLattice(Lattice<real>&, Field*, real speed) const;
-    
-    /// sever fiber proportionally to the quantity stored in the Lattice
-    void           cutFiberLattice(Lattice<real>&);
-
-    /// write Fiber's Lattice
-    void           writeLattice(FiberLattice const&, Outputter& out) const;
     
     /// record minium, maximum and sum of lattice values
-    void           infoLattice(FiberLattice const&, unsigned&, real& sm, real& mn, real& mx, bool density) const;
+    void           infoLattice(real& len, unsigned&, real& sm, real& mn, real& mx) const;
 
     /// print Lattice data (for debugging purpose)
     void           printLattice(std::ostream&, FiberLattice const&) const;
-    
-    /// recalculate occupancy lattice from bound Hands
-    void           resetLattice();
 
     //--------------------------------------------------------------------------
     

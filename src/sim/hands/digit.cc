@@ -196,9 +196,9 @@ std::ostream& operator << (std::ostream& os, Digit const& obj)
 }
 
 
+#if FIBER_HAS_LATTICE
 void Fiber::resetLattice()
 {
-#if FIBER_HAS_LATTICE
     frLattice.clear();
     
     for ( Hand * ha = handListFront; ha; ha = ha->next() )
@@ -206,6 +206,6 @@ void Fiber::resetLattice()
         if ( ha->lattice() == &frLattice )
             static_cast<Digit*>(ha)->inc();
     }
-#endif
 }
+#endif
 
