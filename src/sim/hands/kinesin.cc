@@ -11,7 +11,7 @@
 Kinesin::Kinesin(KinesinProp const* p, HandMonitor* h)
 : Digit(p,h), prop(p)
 {
-    ABORT_NOW("unfinished class");
+    ABORT_NOW("the kinesin class is unfinished");
 }
 
 
@@ -29,7 +29,7 @@ void Kinesin::stepUnloaded()
 {
     assert_true( attached() );
     
-    nextStep -= prop->stepping_rate_dt;
+    nextStep -= prop->walking_rate_dt;
     
     while ( nextStep <= 0 )
     {
@@ -60,10 +60,10 @@ void Kinesin::stepLoaded(Vector const& force, real force_norm)
     assert_true( attached() );
     
     // calculate displacement, dependent on the load along the desired direction of displacement
-    real rate_step = prop->stepping_rate_dt + dot(force, dirFiber()) * prop->var_rate_dt;
+    real R = prop->walking_rate_dt + dot(force, dirFiber()) * prop->var_rate_dt;
 
-    nextStep -= rate_step;
-    
+    nextStep -= std::max((real)0, R);
+
     while ( nextStep <= 0 )
     {
         assert_true( attached() );

@@ -93,22 +93,19 @@ int main(int argc, char* argv[])
     printf("Reader: enter (h) for help\n");
     while ( true )
     {
-        if ( reader.hasFrame() )
-        {
-            printf("Reader: Frame %li in buffer\n", reader.currentFrame());
-            simul.reportInventory(std::cout);
-        }
-        else
-            printf("Reader: Empty buffer\n");
+        printf("Frame %li, time %f", reader.currentFrame(), simul.time());
+        simul.reportInventory(std::cout);
         
-        printf("Reader: ");
+        printf("\n? ");
         fgets(cmd, sizeof(cmd), stdin);
         
         if ( isdigit(cmd[0]))
         {
             char * end;
             frm = strtoul(cmd, &end, 10);
-            if ( !errno && end > cmd )
+            if ( errno )
+                printf("Reader: error reading: %s\n", cmd);
+            else if ( end > cmd )
             {
                 try {
                     if ( 0 != reader.loadFrame(simul, frm) )
@@ -118,7 +115,6 @@ int main(int argc, char* argv[])
                     printf("Reader: exception in `read` %lu: %s\n", frm, e.msg());
                 }
             }
-            printf("Reader: error reading: %s\n", cmd);
         }
         else
         {

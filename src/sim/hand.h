@@ -138,7 +138,7 @@ public:
     /// check abscissa against fiber edge, and calls handle functions if necessary.
     void           checkFiberRange();
 
-    /// this is called when disassembly occured PLUS_END
+    /// this is called when disassembly occurred PLUS_END
     virtual void   handleDisassemblyM();
     
     /// this is called when the attachment point is below the MINUS_END

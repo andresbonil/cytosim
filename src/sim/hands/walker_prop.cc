@@ -22,6 +22,8 @@ void WalkerProp::clear()
     stall_force       = 0;
     unloaded_speed    = 0;
     unbinding_chance  = 0;
+    walking_rate_dt   = 0;
+    var_rate_dt       = 0;
 }
 
 
@@ -34,9 +36,7 @@ void WalkerProp::read(Glossary& glos)
 #ifdef BACKWARD_COMPATIBILITY
     glos.set(unloaded_speed,   "max_speed");
 #endif
-    glos.set(unbinding_chance, "unbinding_chance");
-    //alternative syntax:
-    glos.set(unbinding_chance, "unbinding", 2);
+    glos.set(unbinding_chance, "unbinding_chance") || glos.set(unbinding_chance, "unbinding", 2);
     
     if ( glos.has_key("dangling_chance") )
         Cytosim::warn << "use `hold_growing_end` instead of `dangling_chance`\n";
@@ -61,9 +61,8 @@ void WalkerProp::complete(Simul const& sim)
     if ( unbinding_chance > 1 )
         throw InvalidParameter("walker:unbinding_chance must be <= 1");
     
-    stepping_rate     = fabs(unloaded_speed) / step_size;
-    stepping_rate_dt  = sim.prop->time_step * stepping_rate;
-    var_rate_dt       = std::copysign(stepping_rate_dt/stall_force, unloaded_speed);
+    walking_rate_dt = sim.prop->time_step * fabs(unloaded_speed) / step_size;
+    var_rate_dt     = std::copysign(walking_rate_dt/stall_force, unloaded_speed);
 }
 
 

@@ -11,7 +11,7 @@ Walker::Walker(WalkerProp const* p, HandMonitor* h)
 : Digit(p,h), nextStep(0), prop(p)
 {
     // works if digit:step_size == lattice:step_size
-    stride = ( prop->unloaded_speed > 0 ? 1 : -1);
+    stride = ( prop->unloaded_speed > 0 ? 1 : -1 );
 }
 
 
@@ -40,7 +40,7 @@ void Walker::stepUnloaded()
 {
     assert_true( attached() );
     
-    nextStep -= prop->stepping_rate_dt;
+    nextStep -= prop->walking_rate_dt;
     
     while ( nextStep <= 0 )
     {
@@ -81,9 +81,9 @@ void Walker::stepLoaded(Vector const& force, real force_norm)
     assert_true( attached() );
     
     // calculate displacement, dependent on the load along the desired direction of displacement
-    real rate_step = prop->stepping_rate_dt + dot(force, dirFiber()) * prop->var_rate_dt;
+    real R = prop->walking_rate_dt + dot(force, dirFiber()) * prop->var_rate_dt;
 
-    nextStep -= rate_step;
+    nextStep -= std::max((real)0, R);
     
     while ( nextStep <= 0 )
     {

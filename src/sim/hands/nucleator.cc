@@ -165,7 +165,7 @@ void Nucleator::stepUnattached(const FiberGrid&, Vector const& pos)
         }
         catch( Exception & e )
         {
-            e << "\nException occured while executing nucleator:code";
+            e << "\nException occurred while executing nucleator:code";
             throw;
         }
     }
@@ -218,7 +218,7 @@ void Nucleator::detach()
 {
     if ( prop->addictive )
         fiber()->setDynamicState(nearestEnd(), STATE_RED);
-        
+    
     Hand::detach();
 }
 

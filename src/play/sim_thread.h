@@ -194,9 +194,6 @@ public:
     
     /// attempt to load last frame from file
     int        loadLastFrame()      { lock(); int r=reader.loadLastFrame(simul); unlock(); return r; }
-        
-    /// true if current frame is valid
-    bool       hasFrame()     const { return reader.hasFrame(); }
 
     /// index of current frame
     size_t     currentFrame() const { return reader.currentFrame(); }

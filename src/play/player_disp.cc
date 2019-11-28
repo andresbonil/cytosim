@@ -82,8 +82,7 @@ std::string Player::buildLabel() const
     }
     else
     {
-        if ( thread.hasFrame() )
-            oss << "\nFrame " << thread.currentFrame();
+        oss << "\nFrame " << thread.currentFrame();
     }
 
     return oss.str();

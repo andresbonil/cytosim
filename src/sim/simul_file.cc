@@ -355,7 +355,7 @@ int Simul::reloadObjects(Inputter& in, ObjectSet* subset)
     // set flag to erase any object that was not updated
     InputLock lock(this);
 
-    // if no error occured, erase objects that have not been updated
+    // if no error occurred, erase objects that have not been updated
     if ( 0 == loadObjects(in, subset) )
         lock.prune();
 

@@ -20,7 +20,7 @@ class Simul;
  - loadFrame() calls Simul::reloadObjects() to read the content of the frame.
  .
  
- Frames are recorded starting at index 1, while 0 indicates no frame info.
+ Frames are recorded starting at index 0.
 */
 class FrameReader
 {
@@ -46,7 +46,10 @@ private:
     
     /// index of frame stored currently
     size_t   frameIndex;
-
+    
+    /// last frame loaded successfully
+    size_t   lastLoaded;
+    
     /// remember position `pos` as the place where frame `frm` should start
     void     savePos(size_t frm, const fpos_t& pos, int status);
    
@@ -90,9 +93,6 @@ public:
     
     /// return index of current frame 
     size_t   currentFrame() const { return frameIndex; }
-
-    /// true if current frame is valid
-    bool     hasFrame() const { return frameIndex > 0; }
     
     /// find the starting point of frame `frm` by brute force !
     int      seekFrame(size_t frm);
