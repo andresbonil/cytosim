@@ -125,7 +125,7 @@ private:
     
     /// set `var` from string `val`
     template <typename T>
-    void set_one(T & var, key_type const& key, std::string const& val) const
+    static void set_one(T & var, key_type const& key, std::string const& val)
     {
         if ( val.empty() )
             throw InvalidSyntax("could not set `"+key+"' from empty string");
@@ -151,7 +151,7 @@ private:
     
     /// set enum of type T using a dictionary of correspondances
     template <typename T>
-    void set_one(T & var, key_type const& key, std::string const& val, dict_type<T> const& dict) const
+    static void set_one(T & var, key_type const& key, std::string const& val, dict_type<T> const& dict)
     {
         for ( auto const& kv : dict )
         {
@@ -454,15 +454,15 @@ public:
 
 /// special function for std::string arguments.
 template <>
-void Glossary::set_one(std::string& var, key_type const&, std::string const&) const;
+void Glossary::set_one(std::string& var, key_type const&, std::string const&);
 
 /// special function for float
 template <>
-void Glossary::set_one(float& var, key_type const&, std::string const&) const;
+void Glossary::set_one(float& var, key_type const&, std::string const&);
 
 /// special function for double
 template <>
-void Glossary::set_one(double& var, key_type const&, std::string const&) const;
+void Glossary::set_one(double& var, key_type const&, std::string const&);
 
 
 /// input from stream
