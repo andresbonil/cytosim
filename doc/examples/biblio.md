@@ -5,19 +5,20 @@
 - [Preconfig: A Versatile Configuration File Generator for Varying Parameters](http://doi.org/10.5334/jors.156)  
 
 
-# Articles from other groups using Cytosim
+# Cytosim used in other groups
 
 *Please, let us know if we are missing citations here*
 
 2019
 
-- [Collective effects of yeast cytoplasmic dynein based microtubule transport](http://dx.doi.org/10.1039/c8sm01434e)
-- [Chromosomes function as a barrier to mitotic spindle bipolarity in polyploid cells](https://www.biorxiv.org/content/10.1101/572099v1.full)  
-- [Prospects for Declarative Mathematical Modeling of Complex Biological Systems](https://arxiv.org/pdf/1804.11044.pdf)
-- [Visualization of myosin II filament dynamics in remodeling acto-myosin networks with interferometric scattering microscopy](https://www.biorxiv.org/content/10.1101/199778v4)
-- [Principles of self-organization and load adaptation by the actin cytoskeleton during clathrin-mediated endocytosis](https://www.biorxiv.org/content/10.1101/678797v1)
-- [Spherical Spindle Shape Promotes Perpendicular Cortical Orientation by Preventing Isometric Cortical Pulling on both Spindle Poles during C. elegans Female Meiosis](https://www.biorxiv.org/content/10.1101/596510v1)
-- [Centrosome-nuclear envelope tethering and microtubule motor-based pulling forces collaborate in centrosome positioning during mitotic entry](https://www.biorxiv.org/content/10.1101/442368v1)
+- [Spherical spindle shape promotes perpendicular cortical orientation by preventing isometric cortical pulling on both spindle poles during C. elegans female meiosis](http://dx.doi.org/10.1242/dev.178863)  
+- [Collective effects of yeast cytoplasmic dynein based microtubule transport](http://dx.doi.org/10.1039/c8sm01434e)  
+- [Chromosomes function as a barrier to mitotic spindle bipolarity in polyploid cells](https://www.biorxiv.org/content/10.1101/572099v1.full)   
+- [Prospects for Declarative Mathematical Modeling of Complex Biological Systems](https://arxiv.org/pdf/1804.11044.pdf)  
+- [Visualization of myosin II filament dynamics in remodeling acto-myosin networks with interferometric scattering microscopy](https://www.biorxiv.org/content/10.1101/199778v4)  
+- [Principles of self-organization and load adaptation by the actin cytoskeleton during clathrin-mediated endocytosis](https://www.biorxiv.org/content/10.1101/678797v1)  
+- [Spherical Spindle Shape Promotes Perpendicular Cortical Orientation by Preventing Isometric Cortical Pulling on both Spindle Poles during C. elegans Female Meiosis](https://www.biorxiv.org/content/10.1101/596510v1)  
+- [Centrosome-nuclear envelope tethering and microtubule motor-based pulling forces collaborate in centrosome positioning during mitotic entry](https://www.biorxiv.org/content/10.1101/442368v1)  
 
 2018
 
@@ -47,3 +48,4 @@
 2012
 
 - [Spatial and Temporal Sensing Limits of Microtubule Polarization in Neuronal Growth Cones by Intracellular Gradients and Forces](http://dx.doi.org/10.1016/j.bpj.2012.10.021)
+Spherical spindleSpherical spindle
