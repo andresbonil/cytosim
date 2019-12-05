@@ -935,6 +935,87 @@ You can find a precompiled BLAS/LAPACK distributions for Linux. Ask you system a
 </details>
 
 
+# Algorithms #################################################
+
+Cytosim uses [Langevin dynamics to simulate the system of filaments](https://iopscience.iop.org/article/10.1088/1367-2630/9/11/427/meta), with an implicit integration scheme.
+
+
+<details>
+<summary>
+The time step in langevin evolution should depend on the fastest modes in the system. As actin fibers are extremely stiff, fast modes might mostly be associated with filament stretching. Does cytosim impose filament length conservation as a constraint rather than an additional potential in order to get around that bottleneck?
+</summary>
+Yess, because this method it more efficient, computationally. In short, the time-step is limited by a condition that looks something like this:
+
+	mobility * time_step * stiffness < 1
+
+so the time_step must be small, in a manner inversely proportional to stiffness.
+And the actin filament stretching stiffness is very high indeed (stretching elasticity of a single 1 μm-long actin filament was reported to be ~35 pN/nm).
+</summary>
+</details>
+
+
+<details>
+<summary>
+**Is the choice of time step inherently dependent on the variable that the user wishes to study?**
+</summary>
+Yes, I would advise anyone to produce a curve such as [Fig. 8](https://iopscience.iop.org/article/10.1088/1367-2630/9/11/427/meta), in which one monitors a well chosen and meaningful output as a function of the time-step.
+This will permite a wise choice of time step!
+</details>
+
+
+<details>
+<summary>
+Even though actin filaments are extremely stiff, local tension loading can occur (on the order of ten piconewtons) from asymmetric myosin/crosslinker binding dynamics. Wouldn't such tensions might be crucial to hold a network stable as tensegrity based structures? 
+</summary>
+Certainly the force along the backbone, and the shape of filaments are very important, but this you get correctly with the constraint of non-extensibility. What we are talking about is wether the amount by which a filament extends under some force…  in principles that could be relevant as well, but I have not encountered a system where that was clearly the case. On the other hand, I think it is undesirable to model a filament that can easily stretch… but that is exactly what using potentials, to keep the filament’s length, encourages you to do, because of the computational costs. The main consideration for us is performance, as constraint allows to effectively remove some high stiffness modes (possibly the highest stiffness modes) that are of little interest to us.
+</details>
+
+
+<details>
+<summary>
+**My simulation is very slow, could it be a convergence issue?**
+</summary>
+Yes, it could be. To test this, you can do a few things:
+- decrease your time step by 1/2 (and compensate with more steps).
+- enable precondionning (set `precondionning=1` in *simul*) 
+- start sim with verbose mode (set `verbose=1` in *simul*)
+It will then print additional information in ‘messages.cmo', like this:
+
+	Meca 2*3400 brick 17 MSS1x 0 MSSBx 4*125 precond 0 count 52 residual 0.00123246
+
+Here the system is 2D, the matrix size is 2*3400. The block size is 17. The matrix types are “MSS1” and “MSSB” but MSS1 is not used. There system is solved without preconditionning, and it converged after 52 iterations to a residual of 0.00123.
+
+Convergence issues would be indicated by a value of ‘count’ that becomes larger. Normally the number of iterations should stay below a few hundreds.
+</details>
+
+<details>
+<summary>
+**Is there a good way to find out how much time is spent in different submodules of the simulator?**
+</summary>
+
+In ‘interface.cc’ within ‘execute_run()’ cytosim prints CPU information when a frame is saved.
+Cytosim alternates ’step()’ and ’solve()’ and you can easily add a bunch of printf() to report more detailed CPU time information.
+You can do this at every time step, for example, by changing ‘execute_run’ in this way:
+
+        hold();
+        //fprintf(stderr, "> step %6i\n", sss);
+
+        clk = clock();
+        simul.step();
+        
+        static double clk = 0;
+        double c_step = double(clock() - clk) / CLOCKS_PER_SEC;
+        clk = clock();
+
+        (simul.*solveFunc)();
+        
+        double c_solve = double(clock() - clk) / CLOCKS_PER_SEC;
+        Cytosim::log("CPU  %6i  step %10.3fs  solve  %10.3fs\n", sss, c_step, c_solve);
+
+        ++sss;
+</details>
+
+
 # Performance #################################################
 
 <details>
@@ -988,7 +1069,7 @@ In your case, do you have more filaments in 3D than in 2D?
 
 <details>
 <summary>
-**Do you know if there is a way to allocate more CPU to Cytosm?**
+**Do you know if there is a way to allocate more CPU to Cytosim?**
 </summary>
 </summary>
 Multithreading is not a solution, if you need to run multiple simulations (many more than the number of cores). That is because most likely you can use all your CPU cores by running multiple simulations in parallel. So while multithreading can make a single program finish earlier, it will overall increase the computation time needed to complete all the simulations.
