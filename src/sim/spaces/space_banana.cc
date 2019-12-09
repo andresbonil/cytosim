@@ -83,7 +83,7 @@ void SpaceBanana::boundaries(Vector& inf, Vector& sup) const
 
 
 /// project on the backbone circular arc in the XY plane:
-Vector SpaceBanana::project0(Vector const& pos) const
+Vector SpaceBanana::backbone(Vector const& pos) const
 {
     Vector cp = pos - bCenter;
     
@@ -107,14 +107,14 @@ Vector SpaceBanana::project0(Vector const& pos) const
 
 bool SpaceBanana::inside(Vector const& pos) const
 {
-    Vector prj = project0(pos);
+    Vector prj = backbone(pos);
     return ( distanceSqr(pos, prj) <= bWidthSqr );
 }
 
 
 Vector SpaceBanana::project(Vector const& pos) const
 {
-    Vector cen = project0(pos);
+    Vector cen = backbone(pos);
     Vector dif = pos - cen;
     real n = dif.normSqr();
     return cen + (bWidth / sqrt(n)) * dif;

@@ -177,15 +177,16 @@ void setGeometry()
     prop.read(opt);
     
     try {
-        if ( spc )
-        {
-            delete(spc);
-            spc = nullptr;
-        }
+        delete(spc);
         spc = prop.newSpace(opt);
-        Outputter out(stdout, false);
-        spc->write(out);
-        out.writeSoftNewline();
+        if ( 1 )
+        {
+            fprintf(stdout, " >>> ");
+            Outputter out(stdout, false);
+            spc->write(out);
+            fprintf(stdout, "\n");
+
+        }
     }
     catch( Exception & e )
     {
@@ -207,22 +208,19 @@ void setGeometry()
 
 void checkVolume()
 {
-    unsigned long cnt = 1<<22;
+    size_t cnt = 1<<22;
     real e1 = spc->estimateVolume(cnt);
     real e2 = spc->estimateVolume(cnt);
     
-    printf("Monte-Carlo estimated volume of `%s`:\n", spc->prop->shape.c_str());
-    printf("    volume = %.6f +/- %.6f\n", e1, fabs(e2-e1));
+    printf("Monte-Carlo estimated volume of `%s` is", spc->prop->shape.c_str());
+    printf("  %.6f +/- %.6f\n", e1, fabs(e2-e1));
     
     real v = spc->volume();
     
     real err = fabs( e1 - v ) / v;
     
     if ( err > 1e-3 )
-    {
-        printf("    given volume = %f\n", v);
-        printf("    difference = %.6f %%\n", 100*err);
-    }
+        printf("    but given volume is %f  (difference %.2f %%)\n", v, 100*err);
 }
 
 //------------------------------------------------------------------------------
@@ -458,9 +456,9 @@ void display(View&, int)
         if ( showPoint(ii) )
         {
             if ( inside[ii] )
-                glColor3f( 0.0, COL, 0.0 );
+                glColor3f(0.0, COL, 0.0);
             else
-                glColor3f( 0.0, 0.0, COL );
+                glColor3f(0.0, 0.0, COL);
             gleVertex( point[ii] );
         }
     }
@@ -476,10 +474,9 @@ void display(View&, int)
             if ( showPoint(ii) )
             {
                 if ( inside[ii] )
-                    glColor3f( 0.0, COL, 0.0 );
+                    glColor3f(0.0, COL, 0.0);
                 else
-                    glColor3f( 0.0, 0.0, COL );
-
+                    glColor3f(0.0, 0.0, COL);
                 gleVertex( point[ii] );
                 gleVertex( project[ii] );
             }
@@ -493,10 +490,10 @@ void display(View&, int)
         glBegin(GL_LINES);
         for ( int ii = 0; ii < nbpts; ++ii )
         {
-            glColor4f( 1.0, 1.0, 1.0, 1.0 );
-            gleVertex( project[ii] );
-            glColor4f( 1.0, 1.0, 1.0, 0.0 );
-            gleVertex( project[ii] + normal[ii] );
+            glColor4f(1.0, 1.0, 1.0, 1.0);
+            gleVertex(project[ii]);
+            glColor4f(1.0, 1.0, 1.0, 0.0);
+            gleVertex(project[ii] + normal[ii]);
         }
         glEnd();
     }
@@ -509,9 +506,9 @@ void display(View&, int)
         {
             if ( showPoint(ii) )
             {
-                glColor3f( COL, 0.0, 0.0 );
-                gleVertex( project[ii] );
-                gleVertex( project2[ii] );
+                glColor3f(COL, 0.0, 0.0);
+                gleVertex(project[ii]);
+                gleVertex(project2[ii]);
             }
         }
         glEnd();
@@ -521,14 +518,14 @@ void display(View&, int)
     {
         glPointSize(2.0);
         glBegin(GL_POINTS);
-        glColor3f( 1.0, COL, COL );
+        glColor3f(1.0, COL, COL);
         for ( int ii = 0; ii < nbpts; ++ii )
-            gleVertex( edge[ii] );
+            gleVertex(edge[ii]);
         glEnd();
         glBegin(GL_POINTS);
-        glColor3f( 0.0, COL, 0.0 );
+        glColor3f( 0.0, COL, 0.0);
         for ( int ii = 0; ii < nbpts; ++ii )
-            gleVertex( project[ii] );
+            gleVertex(project[ii]);
         glEnd();
     }
 }

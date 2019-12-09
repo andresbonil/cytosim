@@ -54,7 +54,7 @@ void SpaceTorus::boundaries(Vector& inf, Vector& sup) const
 
 
 ///project on the backbone circle in the XY plane:
-Vector SpaceTorus::project0(Vector const& pos) const
+Vector SpaceTorus::backbone(Vector const& pos) const
 {
 #if ( DIM > 1 )
     real n = bRadius / pos.normXY();
@@ -67,14 +67,14 @@ Vector SpaceTorus::project0(Vector const& pos) const
 
 bool SpaceTorus::inside(Vector const& pos) const
 {
-    Vector prj = project0(pos);
+    Vector prj = backbone(pos);
     return ( distanceSqr(prj, pos) <= bWidthSqr );
 }
 
 
 Vector SpaceTorus::project(Vector const& pos) const
 {
-    Vector cen = project0(pos);
+    Vector cen = backbone(pos);
     Vector ax = pos - cen;
     real n = ax.normSqr();
     n = bWidth / sqrt(n);

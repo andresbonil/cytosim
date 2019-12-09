@@ -67,11 +67,9 @@ Vector SpaceRing::randomPlace() const
 //------------------------------------------------------------------------------
 bool  SpaceRing::inside(Vector const& w) const
 {
-    if ( fabs(w.XX) > length_ )
-        return false;
-
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= radiusSqr_ );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( fabs(w.XX) <= length_  &&  RT <= radiusSqr_ );
 #else
     return false;
 #endif
@@ -80,12 +78,10 @@ bool  SpaceRing::inside(Vector const& w) const
 bool  SpaceRing::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
-    
-    if ( fabs(w.XX) + rad > length_ )
-        return false;
 
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= square(radius_-rad) );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( fabs(w.XX) + rad <= length_  &&  RT <= square(radius_-rad) );
 #else
     return false;
 #endif

@@ -193,14 +193,14 @@ real Space::max_extension() const
      volume ~ ( number-of-points-inside / number-of-point ) * volume-of-rectangle
  
  */
-real Space::estimateVolume(unsigned long cnt) const
+real Space::estimateVolume(size_t cnt) const
 {
     Vector inf, sup;
     boundaries(inf, sup);
     Vector dif = sup - inf;
     
-    unsigned long in = 0;
-    for ( unsigned long i = 0; i < cnt; ++i )
+    size_t in = 0;
+    for ( size_t i = 0; i < cnt; ++i )
     {
         Vector pos = inf + dif.e_mul(Vector::randP());
         in += inside(pos);

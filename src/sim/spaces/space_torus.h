@@ -30,7 +30,7 @@ private:
     void update() { bWidthSqr = square(bWidth); }
     
     /// project on the backbone
-    Vector project0(Vector const& pos) const;
+    Vector backbone(Vector const& pos) const;
     
 public:
         
