@@ -880,6 +880,7 @@ void Chain::truncateM(unsigned p)
 void Chain::truncateP(unsigned p)
 {
     Mecable::truncateP(p);
+    fnAbscissaP = abscissaPoint(p);
     postUpdate();
 }
 
@@ -1566,6 +1567,7 @@ void Chain::dump(std::ostream& os) const
 
 void Chain::write(Outputter& out) const
 {
+    assert_small( length1() - length() );
     out.writeUInt32(signature());
     out.writeFloat(length());
     out.writeFloat(fnSegmentation);
