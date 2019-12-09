@@ -842,9 +842,19 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
 
         hold();
         //fprintf(stderr, "> step %6i\n", sss);
+
+        static double clk = 0;
+        clk = clock();
         simul.step();
+        
+        double c_step = double(clock() - clk) / CLOCKS_PER_SEC;
+        clk = clock();
+
         (simul.*solveFunc)();
         
+        double c_solve = double(clock() - clk) / CLOCKS_PER_SEC;
+        Cytosim::log("CPU  %6i  step %10.3fs  solve  %10.3fs\n", sss, c_step, c_solve);
+
         ++sss;
     }
 #ifdef BACKWARD_COMPATIBILITY
