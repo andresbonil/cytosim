@@ -86,6 +86,13 @@ You can then check the resulting executables, that should be located in subdirec
 	bin/sim
 	bin/play live
 
+It is also possible to use [cmake](https://cmake.org):
+
+	mkdir build
+	cd build
+	cmake ..
+	make
+
 # Optimizations
 
 To speed up the calculation, follow these steps:

@@ -59,6 +59,13 @@ To compile, enter these commands in a terminal window:
 	cd cytosim
 	make
 
+It is also possible to use [cmake](https://cmake.org):
+
+	mkdir build
+	cd build
+	cmake ..
+	make
+
 For more information, please check [the compile instructions](doc/compile/index.md).
 Once *cytosim* is running on your machine, check the tutorials, the page on [running simulations](doc/main/runs.md), and the examples contained in the folder `cym`. Inspect in particular the short configuration files (e.g. fiber.cym, self.cym). 
 
