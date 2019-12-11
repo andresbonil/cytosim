@@ -147,8 +147,9 @@ public:
             if ( errno ) goto finish;
             if ( *str == ':' )
             {
-                c = 2;
                 ++str;
+                if ( *str == 0 ) return;
+                c = 2;
                 e = strtoul(str, &str, 10);
                 if ( errno ) goto finish;
             }
@@ -163,7 +164,7 @@ public:
         //fprintf(stderr, "slice %lu:%lu:%lu\n", s, i, e);
         return;
     finish:
-        fprintf(stderr, "syntax error (expected START:INCREMENT:END)\n");
+        fprintf(stderr, "syntax error in `%s', expected START:INCREMENT:END\n", arg);
         exit(EXIT_FAILURE);
     }
     
@@ -261,7 +262,7 @@ void extract_pid(FILE* in, unsigned long pid)
         code = whatline(in, out);
         
         if ( code == FRAME_START && pid == frame_pid )
-            out = stdout;
+            out = output;
         else
             out = nullptr;
     }
@@ -381,24 +382,41 @@ bool is_dir(const char path[])
     return false;
 }
 
+
 int main(int argc, char* argv[])
 {
+    int has_file = 0;
     int mode = COUNT;
     char cmd[256] = "";
-    char filename[256] = "objects.cmo";
+    char file_in[256] = "objects.cmo";
+    char fileout[256] = { 0 };
     unsigned long pid = 0;
 
     for ( int i = 1; i < argc ; ++i )
     {
-        if ( 0 == strncmp(argv[i], "help", 4) )
+        char * arg = argv[i];
+        if ( 0 == strncmp(arg, "help", 4) )
         {
             help();
             return EXIT_SUCCESS;
         }
-        if ( is_file(argv[i]) )
-            strncpy(filename, argv[i], sizeof(filename));
-        else if ( is_dir(argv[i]) )
-            snprintf(filename, sizeof(filename), "%s/objects.cmo", argv[i]);
+        char *dot = strrchr(arg, '.');
+        if ( dot && !strcmp(dot, ".cmo" ) )
+        {
+            if ( is_file(arg) )
+            {
+                if ( has_file++ )
+                {
+                    fprintf(stderr, "error: only one input file can be specified\n");
+                    return EXIT_SUCCESS;
+                }
+                strncpy(file_in, arg, sizeof(file_in));
+            }
+            else
+                strncpy(fileout, arg, sizeof(fileout));
+        }
+        else if ( is_dir(arg) )
+            snprintf(file_in, sizeof(file_in), "%s/objects.cmo", arg);
         else
         {
             strncpy(cmd, argv[i], sizeof(cmd));
@@ -434,40 +452,42 @@ int main(int argc, char* argv[])
     
     //----------------------------------------------
     
-    FILE * file = openfile(filename, "r");
-    
-    if ( !file )
-        return EXIT_FAILURE;
-    
-    flockfile(file);
-    switch(mode)
+    FILE * file = openfile(file_in, "r");
+    if ( !file || ferror(file) )
     {
-        case COUNT:
-            countFrame(filename,file);
-            break;
-
-        case SIZE:
-            sizeFrame(file);
-            break;
-
-        case COPY:
-            extract(file, stdout, Slice(cmd));
-            break;
-            
-        case LAST:
-            extractLast(file);
-            break;
-            
-        case EPID:
-            extract_pid(file, pid);
-            break;
-            
-        case SPLIT:
-            split(file);
-            break;
+        fprintf(stderr, "failed to open input file\n");
+        return EXIT_FAILURE;
     }
+    flockfile(file);
+
+    if ( mode == COUNT )
+        countFrame(file_in, file);
+    else if ( mode == SIZE )
+        sizeFrame(file);
+    else
+    {
+        if ( *fileout )
+        {
+            output = fopen(fileout, "wb");
+            if ( ! output || ferror(output) )
+            {
+                fprintf(stderr, "failed to open output file\n");
+                return EXIT_FAILURE;
+            }
+        }
+        if ( mode == COPY )
+            extract(file, output, Slice(cmd));
+        else if ( mode == LAST )
+            extractLast(file);
+        else if ( mode == EPID )
+            extract_pid(file, pid);
+        else if ( mode == SPLIT )
+            split(file);
+        if ( output != stdout )
+            fclose(output);
+    }
+    
     funlockfile(file);
     fclose(file);
-    
     return EXIT_SUCCESS;
 }
