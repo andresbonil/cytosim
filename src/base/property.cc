@@ -107,18 +107,31 @@ bool Property::modified() const
        key = values
        ...
      }
- 
+or
+     set name display
+     {
+       property_number = INTEGER
+       key = values
+       ...
+     }
+
  */
 void Property::write(std::ostream& os, const bool prune) const
 {
-    os << "\nset " << category();
-    os << " " << name_ << '\n';
-    os << "{\n";
+    /* Check for compound category, eg 'fiber:display'  */
+    std::string cat = category();
+    std::string::size_type pos = cat.find(':');
+    if ( pos != std::string::npos )
+        os << "\nset " << name_ << ' ' << cat.substr(pos+1);
+    else
+        os << "\nset " << category() << ' ' << name_;
+    os << "\n{\n";
     if ( number() > 0 )
         write_value(os, "property_number", number_);
     write_values_diff(os, prune);
     os << "}\n";
 }
+
 
 std::ostream& operator << (std::ostream& os, const Property& p)
 {
