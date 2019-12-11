@@ -2,7 +2,7 @@
 #
 # read_config.py is a simple parser for Cytosim configuration files
 #
-# F. Nedelec, 13-15.11.2013 - 31.07.2014, 3.09.2015, 12.08.2018
+# F. Nedelec, 13-15.11.2013 - 31.07.2014, 3.09.2015, 12.08.2018, 11.12.2019
 
 """
     Read cytosim configuration files
@@ -23,6 +23,7 @@ F. Nedelec 11.2013--20.02.2017
 import sys, os, io
 
 read_comments = False
+column_width = 16
 err = sys.stderr
 out = sys.stdout
 
@@ -51,16 +52,12 @@ def format_values(val):
 
 
 class Instruction:
-    cmds = []
+    words = []
     vals = {}
     cnt  = 1
     
     def __init__(self, key):
-        self.cmds = []
-        self.cmds.append(key)
-        self.cmds.append('')
-        self.cmds.append('')
-        self.field = []
+        self.words = [ key ]
     
     def value(self, key, index=0):
         if key in self.vals:
@@ -77,23 +74,27 @@ class Instruction:
     def __repr__(self):
         return self.format_horizontal()
     
-    def format_horizontal(self):
-        res = self.cmds[0] + ' '
+    def format_header(self):
+        res = self.words[0] + ' '
         if self.cnt != 1:
             res += repr(self.cnt) + ' '
-        res += self.cmds[1] + ' ' + self.cmds[2] + " { "
+        if len(self.words) > 1:
+            res += self.words[1] + ' '
+        if len(self.words) > 2:
+            res += self.words[2] + ' '
+        return res
+    
+    def format_horizontal(self):
+        res = self.format_header() + "{ "
         for p in sorted(self.vals):
             res += str(p) + '=' + format_values(self.vals[p]) + "; "
         res += "}"
         return res
     
     def format_vertical(self):
-        res = self.cmds[0] + " "
-        if self.cnt != 1:
-            res += repr(self.cnt) + " "
-        res += self.cmds[1] + " " + self.cmds[2] + "\n{\n"
+        res = self.format_header() + "\n{\n"
         for p in sorted(self.vals):
-            lin = ("    %-20s = " % str(p)) + format_values(self.vals[p])
+            lin = "   " + p.ljust(column_width) + " = " + format_values(self.vals[p])
             #add line-comment if present:
             try:
                 e = self.vals[p][-1]
@@ -112,6 +113,7 @@ class Instruction:
             return self.format_horizontal()
         else:
             return self.format_vertical()
+
 
 
 def get_char(fid):
@@ -196,7 +198,7 @@ def get_block(fid, s, e):
 
 
 def valid_token_char(c):
-    return c.isalnum() or c == '_' or c == '.'
+    return c.isalnum() or c == ':' or c == '_' or c == '.'
 
 
 def get_token(fid):
@@ -221,7 +223,7 @@ def get_token(fid):
                 fid.seek(pos, 0)
                 break
             res += c
-    #print("token "+ res)
+    #print(" TOKEN |"+res+"|")
     return res
 
 
@@ -234,7 +236,7 @@ def uncode(arg):
     return arg
 
 
-def interpret_string(arg):
+def convert(arg):
     """
     Convert a string to a int or float if possible
     """
@@ -261,7 +263,7 @@ def simplify(arg):
     #print('SIMPLIFY   ', type(arg), arg)
     arg = uncode(arg)
     if isinstance(arg, str):
-        return interpret_string(arg)
+        return convert(arg)
     if isinstance(arg, dict):
         s = {}
         for k in arg:
@@ -341,55 +343,43 @@ def parse_config(fid):
     """
     return the list resulting from parsing the specified file
     """
-    lev = 0
+    known_keywords = [ 'set', 'new', 'run', 'call', 'delete', 'change', 'cut', 'mark' ];
     cur = []
     pile = []
     while fid:
         tok = get_token(fid)
+        #print(">>>>> `",tok.strip(), "'")
         if not tok:
             break
-        #print('level', lev, '  token ', tok)
         if tok[0] == '%':
             pass
         elif tok == '\n':
             pass
-        elif tok in [ 'set', 'new', 'run', 'call', 'delete', 'change', 'cut', 'mark' ]:
-            if lev == 3 and cur:
-                pile.append(cur)
-            cur = Instruction(tok)
-            lev = 1
         elif tok == 'repeat':
+            if cur:
+                pile.append(cur)
+                cur = []
             cnt = get_token(fid)
             blok = get_token(fid)
             sfid = io.StringIO(blok[1:-1])
             pile.extend(parse_config(sfid))
-        elif lev == 1 and tok.isdigit():
+        elif tok in known_keywords:
+            if cur:
+                pile.append(cur)
+            cur = Instruction(tok)
+        elif len(cur.words)==1 and tok.isdigit():
             cur.cnt = int(tok)
-        elif lev == 1 and tok[0] == '[':
-            cur.cnt = tok
-        elif lev == 1:
-            cur.cmds[1] = tok
-            #cur.vals = {}
-            lev = 2
-        elif lev == 2 and tok.isdigit():
-            cur.inx = int(tok)
-        elif lev == 2:
-            if tok == ':':
-                cur.field = get_token(fid);
-            else:
-                cur.cmds[2] = tok
-                lev = 3
-        elif lev == 3 and delimiter(tok[0]):
-            if cur.field:
-                cur.vals = {cur.field:tok}
-            else:
-                pam = read_list(file_object(tok[1:-1]))
-                #print("VALUES  : ", pam)
-                cur.vals = simplify(pam)
-                #print("SIMPLIFIED: ", cur.vals)
+        elif tok[0] == '{' or tok[0] == '(':
+            pam = read_list(file_object(tok[1:-1]))
+            #print("VALUES  : ", pam)
+            cur.vals = simplify(pam)
+            #print("SIMPLIFIED: ", cur.vals)
             pile.append(cur)
             cur = []
-            lev = 0
+        elif tok[0].isalpha():
+            cur.words.append(tok)
+        else:
+            print(">>>>>ignored `",tok, "'")
     return pile
 
 
@@ -398,9 +388,9 @@ def parse(arg):
     Returns a dictionnary obtained by parsing the file specified by name `arg`
     """
     if isinstance(arg, str):
-        f = open(arg, 'r')
-        pile = parse_config(f)
-        f.close()
+        with open(arg, 'r') as f:
+            pile = parse_config(f)
+            f.close()
     else:
         pile = parse_config(arg)
     return pile
@@ -426,9 +416,9 @@ def get_command(pile, keys):
         return "Error: get_command(arg, keys) expects `keys` to be of size 3"
     res = []
     for p in pile:
-        if keys[0]=='*' or p.cmds[0]==keys[0]:
-            if keys[1]=='*' or p.cmds[1]==keys[1]:
-                if keys[2]=='*' or p.cmds[2]==keys[2]:
+        if keys[0]=='*' or p.words[0]==keys[0]:
+            if keys[1]=='*' or p.words[1]==keys[1]:
+                if keys[2]=='*' or p.words[2]==keys[2]:
                     res.append(p)
     if len(res) == 1:
         return res[0]
@@ -447,9 +437,9 @@ def get_value(arg, keys):
     else:
         pile = arg
     for p in pile:
-        if keys[0]=='*' or p.cmds[0]==keys[0]:
-            if keys[1]=='*' or p.cmds[1]==keys[1]:
-                if keys[2]=='*' or p.cmds[2]==keys[2]:
+        if keys[0]=='*' or p.words[0]==keys[0]:
+            if keys[1]=='*' or p.words[1]==keys[1]:
+                if keys[2]=='*' or p.words[2]==keys[2]:
                     try:
                         return p.vals[keys[3]]
                     except KeyError:
