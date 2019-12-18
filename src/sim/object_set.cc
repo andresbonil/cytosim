@@ -207,6 +207,7 @@ void ObjectSet::erase()
 
 Object* ObjectSet::findObject(std::string spec, long num, const std::string& title) const
 {
+    //std::clog << "findObject(" << spec << "|" << num << "|" << title << ")\n";
     // check for a string starting with the class name (eg. 'fiber'):
     if ( spec == title )
     {
@@ -255,13 +256,20 @@ Object* ObjectSet::findObject(std::string spec, long num, const std::string& tit
     }
     else
     {
-        // 'microtubule0' would return a random 'microtubule'
-        Property * prop = simul.findProperty(title, spec);
-        if ( prop )
+        // 'microtubule0' would return the last created microtubule
+        Property * p = simul.findProperty(title, spec);
+        if ( p )
         {
-            ObjectList sel = collect(match_property, prop);
-            if ( sel.size() > 0 )
-                return sel.pick_one();
+            //std::clog << "findObject -> highest pick `" << spec << num << "'\n";
+            Inventoried* inv = inventory.last();
+            while ( inv )
+            {
+                num += ( static_cast<Object*>(inv)->property() == p );
+                if ( num > 0 )
+                    break;
+                inv = inventory.previous(inv);
+            }
+            return static_cast<Object*>(inv);
         }
     }
     
@@ -290,7 +298,7 @@ bool splitObjectSpec(std::string& str, long& num)
 
 /*
  There are several ways to designate an object.
- For example, if the class name is 'fiber', one may use:
+ For example, if the class name (title) is 'fiber', one may use:
  - `fiber1`  indicates fiber number 1
  - `fiber2`  indicates fiber number 2, etc.
  - `first`   indicates the oldest fiber remaining
@@ -320,10 +328,21 @@ Object* ObjectSet::findObject(std::string spec, const std::string& title) const
     if ( spec == title )
     {
         ObjectList all = collect();
+        //std::clog << "findObject -> random pick among " << sel.size() << " " << title << "\n";
         if ( all.size() > 0 )
             return all.pick_one();
     }
     
+    // check property name:
+    Property * p = simul.findProperty(title, spec);
+    if ( p )
+    {
+        ObjectList sel = collect(match_property, p);
+        //std::clog << "findObject -> random pick among " << sel.size() << " " << spec << "\n";
+        if ( sel.size() > 0 )
+            return sel.pick_one();
+    }
+
     return nullptr;
 }
 
@@ -333,10 +352,10 @@ Object* ObjectSet::findObject(std::string spec, const std::string& title) const
  but it can be any one of them, since the lists are regularly
  shuffled to randomize the order in the list.
  */
-Object * ObjectSet::findObject(Property const* prop) const
+Object * ObjectSet::findObject(Property const* p) const
 {
     for ( Object* obj=first(); obj; obj=obj->next() )
-        if ( obj->property() == prop )
+        if ( obj->property() == p )
             return obj;
     return nullptr;
 }
@@ -394,9 +413,9 @@ ObjectList ObjectSet::collect(bool (*func)(Object const*, void const*), void con
 }
 
 
-ObjectList ObjectSet::collect(Property * prop) const
+ObjectList ObjectSet::collect(Property * p) const
 {
-    return collect(match_property, prop);
+    return collect(match_property, p);
 }
 
 

@@ -279,7 +279,7 @@ void Solid::release()
 
  <h3> Add Singles to a Solid </h3>
  
- The parameter 'attach' can be used to add Single to the points of a Solid:
+ Extra parameters can be used to add Single to the points of a Solid:
  
      new solid NAME
      {
@@ -287,8 +287,6 @@ void Solid::release()
        sphere0  = ... , SINGLE_SPEC
        etc.
        anchor   = SINGLE_SPEC [, SINGLE_SPEC] ...
-       attach0  = SINGLE_SPEC [, SINGLE_SPEC] ...
-       attach1  = SINGLE_SPEC [, SINGLE_SPEC] ...
        etc.
      }
  
