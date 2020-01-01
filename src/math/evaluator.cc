@@ -16,26 +16,30 @@
  To support more fancy expressions, we could link here `tinyexpr`:
  https://codeplea.com/tinyexpr
 */
-namespace Evaluator
+class Evaluator
 {
+public:
+    
     /// variable names must be a single letter
     typedef std::pair<char, real> variable;
-    
+
     /// list of variables
     typedef std::initializer_list<variable> variable_list;
     
-    // defined below
-    real expression(char const*& str, variable_list const& vars);
-
-    void skip_space(char const*& str)
+    static void skip_space(char const*& str)
     {
         while ( isspace(*str) )
             ++str;
     }
+
+private:
     
-    real value(char const*& str, variable_list const& vars)
+    /// list of variables
+    variable_list variables_;
+    
+    real value_(char const*& str)
     {
-        for ( variable const& v : vars )
+        for ( variable const& v : variables_ )
         {
             if ( *str == v.first || toupper(*str) == v.first )
             {
@@ -47,7 +51,7 @@ namespace Evaluator
         return 0;
     }
     
-    real number(char const*& str)
+    real number_(char const*& str)
     {
         errno = 0;
         char * end = nullptr;
@@ -58,15 +62,15 @@ namespace Evaluator
         return d;
     }
     
-    real factor(char const*& str, variable_list const& vars)
+    real factor_(char const*& str)
     {
         skip_space(str);
         if ( '0' <= *str && *str <= '9' )
-            return number(str);
+            return number_(str);
         else if ( *str == '(' )
         {
             ++str; // '('
-            real result = expression(str, vars);
+            real result = expression_(str);
             if ( *str != ')' )
                 throw InvalidSyntax("Unexpected syntax");
             ++str; // ')'
@@ -75,56 +79,62 @@ namespace Evaluator
         else if ( *str == '-' )
         {
             ++str;
-            return -factor(str, vars);
+            return -factor_(str);
         }
         else
-            return value(str, vars);
+            return value_(str);
     }
     
-    real term(char const*& str, variable_list const& vars)
+    real term_(char const*& str)
     {
-        real result = factor(str, vars);
+        real result = factor_(str);
         while ( 1 )
         {
             skip_space(str);
             char c = *str;
             if ( c == '*' )
-                result *= factor(++str, vars);
+                result *= factor_(++str);
             else if ( c == '/' )
-                result /= factor(++str, vars);
+                result /= factor_(++str);
             else if ( c == '^' )
-                result = pow(result, factor(++str, vars));
+                result = pow(result, factor_(++str));
             else
                 return result;
         }
     }
     
-    real expression(char const*& str, variable_list const& vars)
+    real expression_(char const*& str)
     {
-        real result = term(str, vars);
+        real result = term_(str);
         while ( 1 )
         {
             skip_space(str);
             char c = *str;
             if ( c == '+' )
-                result += term(++str, vars);
+                result += term_(++str);
             else if ( c == '-' )
-                result -= term(++str, vars);
+                result -= term_(++str);
             else
                 return result;
         }
     }
     
-    real evaluate(char const*& str, variable_list const& vars)
+public:
+    
+    Evaluator(variable_list const& v) : variables_(v)
     {
-        //std::clog << "evaluate (" << str << ")\n";
-        return expression(str, vars);
     }
     
-    bool inequality(char const*& str, variable_list const& vars)
+    real value(char const*& str)
+    {
+        //std::clog << "evaluate (" << str << ")\n";
+        return expression_(str);
+    }
+    
+    bool inequality(char const*& str)
     {
         //std::clog << "inequality (" << str << ")\n";
-        real a = expression(str, vars);
+        real a = expression_(str);
         skip_space(str);
         char op = *str++;
         if ( op != '<' && op != '>' )
@@ -132,13 +142,13 @@ namespace Evaluator
         if ( *str == '=' )
         {
             ++str;
-            real b = expression(str, vars);
+            real b = expression_(str);
             if ( op == '<' ) return ( a <= b );
             if ( op == '>' ) return ( a >= b );
         }
-        real b = expression(str, vars);
+        real b = expression_(str);
         if ( op == '<' ) return ( a < b );
         if ( op == '>' ) return ( a > b );
         return false;
     }
-}
+};

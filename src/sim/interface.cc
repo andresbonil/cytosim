@@ -272,11 +272,11 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
         bool condition = true;
         if ( has_condition )
         {
-            Evaluator::variable_list vars = {{'X', iso.mov.x()}, {'Y', iso.mov.y()}, {'Z', iso.mov.z()},
-                                             {'R', iso.mov.norm()}, {'P', RNG.preal()}};
+            Evaluator evaluator{{'X', iso.mov.x()}, {'Y', iso.mov.y()}, {'Z', iso.mov.z()},
+                                {'R', iso.mov.norm()}, {'P', RNG.preal()}};
             try {
                 char const* ptr = condition_str.c_str();
-                condition = Evaluator::inequality(ptr, vars);
+                condition = evaluator.inequality(ptr);
             }
             catch( Exception& e ) {
                 e << "in `"+condition_str+"'";
