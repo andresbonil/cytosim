@@ -813,7 +813,7 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
             simul.prop->clear_trajectory = false;
         }
         if ( has_code )
-            evaluate(code, "in run:code");
+            evaluate(code);
 
         delta = real(nb_steps) / real(nb_frames);
         check = delta;
@@ -832,7 +832,7 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
                 simul.writeObjects(TRAJECTORY, true, binary);
                 reportCPUtime(frame, simul.time());
                 if ( has_code )
-                    evaluate(code, "in run:write:code");
+                    evaluate(code);
                 simul.unrelax();
             }
             if ( sss >= nb_steps )
@@ -868,8 +868,8 @@ void Interface::execute_run(unsigned nb_steps)
     {
         hold();
         //fprintf(stderr, "> step %6i\n", sss);
-        simul.step();
         simul.solve();
+        simul.step();
     }
     
     simul.relax();

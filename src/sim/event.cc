@@ -48,7 +48,7 @@ void Event::step(Simul& sim)
         sim.relax();
         do {
             nextTime += RNG.exponential() / rate;
-            Parser(sim, 1, 1, 1, 1, 1).evaluate(activity, "in event:code");
+            Parser(sim, 1, 1, 1, 1, 1).evaluate(activity);
         } while ( sim.time() > nextTime );
         sim.unrelax();
     }

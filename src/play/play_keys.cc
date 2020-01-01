@@ -965,7 +965,7 @@ void processNormalKey(const unsigned char key, const int x, const int y)
     {
         if ( key == PP.magic_key[k] )
         {
-            thread.execute(PP.magic_code[k], "executing magic_key code");
+            thread.execute(PP.magic_code[k]);
             glApp::postRedisplay();
             return;
         }

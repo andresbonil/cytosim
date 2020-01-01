@@ -31,12 +31,9 @@ private:
     
     /// control switch to enable command 'write' (write files)
     bool      do_write;
- 
-    /// position of stream at the start of current parsing task
-    std::streampos spos;
     
     /// print the lines located between `pos` and current position
-    void show_lines(std::istream&, std::streampos pos);
+    void      show_lines(std::istream&, std::streampos);
 
 public:
     
@@ -45,62 +42,58 @@ public:
     
     //-------------------------------------------------------------------------------
     
-    /// parse command \b set
+    /// parse command `set
     void      parse_set(std::istream&);
     
-    /// parse command \b change
+    /// parse command `change`
     void      parse_change(std::istream&);
     
-    /// parse command \b new
+    /// parse command `new`
     void      parse_new(std::istream&);
     
-    /// parse command \b delete
+    /// parse command `delete`
     void      parse_delete(std::istream&);
     
-    /// parse command \b mark
+    /// parse command `mark`
     void      parse_mark(std::istream&);
 
-    /// parse command \b cut
+    /// parse command `cut`
     void      parse_cut(std::istream&);
 
-    /// parse command \b run
+    /// parse command `run`
     void      parse_run(std::istream&);
     
-    /// parse command \b read
+    /// parse command `read`
     void      parse_read(std::istream&);
     
-    /// parse command \b write
+    /// parse command `write`
     void      parse_report(std::istream&);
     
-    /// parse command \b import
+    /// parse command `import`
     void      parse_import(std::istream&);
     
-    /// parse command \b export
+    /// parse command `export`
     void      parse_export(std::istream&);
     
-    /// parse command \b call
+    /// parse command `call`
     void      parse_call(std::istream&);
     
-    /// parse command \b repeat
+    /// parse command `repeat`
     void      parse_repeat(std::istream&);
 
-    /// parse command \b for
+    /// parse command `for`
     void      parse_for(std::istream&);
     
-    /// parse command \b end
+    /// parse command `end`
     void      parse_end(std::istream&);
-
     
-    /// Parse content of stream
-    void      evaluate(std::istream&);
-
-    /// Parse stream, using `msg` to report errors
-    void      evaluate(std::istream&, std::string const& msg);
-
-    /// Parse code, using `msg` to report errors
-    void      evaluate(std::string const&, std::string const& msg);
-
     //-------------------------------------------------------------------------------
+
+    /// Parse content of stream, recording position if pointer is given
+    void      evaluate(std::istream&, std::streampos&);
+    
+    /// Parse code in string, and report errors
+    void      evaluate(std::string const&);
 
     /// Open and parse the config file with the given name
     int       readConfig(std::string const& name);

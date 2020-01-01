@@ -45,7 +45,7 @@ public:
     /**
      This is defined in the derived class Parser
      */
-    virtual void evaluate(std::string const&, std::string const& msg) = 0;
+    virtual void evaluate(std::string const&) = 0;
     
     //-------------------------------------------------------------------------------
     

@@ -165,7 +165,7 @@ public:
     void       reloadParameters(std::string const& file);
     
     /// execute given code
-    int        execute(std::string const&, std::string const&);
+    void       execute(std::string const&);
     
     /// export simulation Propertes and Objects to file
     void       exportObjects(bool binary);

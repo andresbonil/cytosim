@@ -308,7 +308,7 @@ bool Tokenizer::get_integer(std::string& arg, int& val)
     char * end;
     errno = 0;
     long num = strtol(ptr, &end, 10);
-    if ( !errno && end > ptr && isspace(*end) )
+    if ( !errno && end > ptr && ( *end==0 || isspace(*end) ) )
     {
         val = num;
         // skip any additional space characters:
@@ -331,7 +331,7 @@ bool Tokenizer::get_integer(std::string& arg, unsigned int& val)
     char * end;
     errno = 0;
     unsigned long num = strtoul(ptr, &end, 10);
-    if ( !errno && end > ptr && isspace(*end) )
+    if ( !errno && end > ptr && ( *end==0 || isspace(*end) ) )
     {
         val = num;
         // skip any additional space characters:

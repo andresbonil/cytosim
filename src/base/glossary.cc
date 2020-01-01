@@ -55,7 +55,7 @@ std::string format_value(std::string const& str)
 std::string format_count(size_t c)
 {
     if ( c == 0 )
-        return " (not used)";
+        return " (unused)";
     if ( c == 1 )
         return " (used once)";
     return " (used " + std::to_string(c) + " times) ";

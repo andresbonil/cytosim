@@ -430,20 +430,18 @@ size_t SimThread::readInput(size_t max_nb_lines)
     {
         size_t cnt = 0;
         // some input is available, process line-by-line:
-        Parser parser(simul, 1, 1, 1, 1, 1);
         char str[LINESIZE];
         
         // read one line from standard input (including terminating \n):
         while ( fgets(str, LINESIZE, stdin) )
         {
             //write(STDOUT_FILENO, ">>>> ", 5); write(STDOUT_FILENO, str, strlen(str));
-            std::stringstream iss(str);
             try {
-                parser.evaluate(iss);
+                evaluate(str);
                 glApp::flashText0(str);
             }
             catch ( Exception & e ) {
-                std::cerr << "Error reading stdin: " << e.what() << '\n';
+                std::cerr << "Error in stdin: " << e.what() << '\n';
             }
             if ( ++cnt >= max_nb_lines )
                 break;
@@ -469,32 +467,32 @@ void SimThread::reloadParameters(std::string const& file)
     lock();
     // set a parser that can only change properties:
     if ( Parser(simul, 0, 1, 0, 0, 0).readConfig(file) )
-        std::cerr << "Error : File not found";
+        std::cerr << "Error: File not found";
     //std::cerr << "reloaded " << simul.prop->config_file << std::endl;
     unlock();
 }
 
 
 /**
- This will execute the code specified in `iss`, with full rights to modify Simul.
+ This will execute the given code, with full rights to modify Simul.
  
- A simulation running live will be paused; the code is executed in another Parser,
- and the simulation is allowed to proceed.
+ A simulation running live will be paused; the code executed in another Parser,
+ and the simulation then allowed to proceed.
+ 
+ This can be executed by the parent thread who does not own the data
  */
-int SimThread::execute(std::string const& code, std::string const& msg)
+void SimThread::execute(std::string const& code)
 {
     lock();
     try {
-        std::istringstream iss(code);
-        Parser(simul, 1, 1, 1, 1, 1).evaluate(iss);
+        evaluate(code);
     }
     catch( Exception & e ) {
-        std::cerr << "Error : " << e.what();
-        std::cerr << msg;
+        std::cerr << "Error: " << e.what();
     }
     unlock();
-    return 0;
 }
+
 
 /**
  Save current state in two files
