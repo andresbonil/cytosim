@@ -37,7 +37,7 @@ private:
 
 public:
     
-    /// set the permission of the parser
+    /// construct a Parser with given permissions
     Parser(Simul& s, bool can_set, bool can_change, bool can_new, bool can_run, bool can_write);
     
     //-------------------------------------------------------------------------------
@@ -89,9 +89,12 @@ public:
     
     //-------------------------------------------------------------------------------
 
-    /// Parse content of stream, recording position if pointer is given
-    void      evaluate(std::istream&, std::streampos&);
+    /// Parse next command in stream, return 0 if success
+    int       evaluate_one(std::istream&);
     
+    /// Parse commands in stream
+    void      evaluate(std::istream&);
+
     /// Parse code in string, and report errors
     void      evaluate(std::string const&);
 
