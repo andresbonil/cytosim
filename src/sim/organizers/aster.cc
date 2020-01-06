@@ -299,26 +299,30 @@ ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, unsigned& origin)
     std::string spec;
     if ( opt.set(spec, "solid") )
     {
-        sol = Solid::toSolid(sim.solids.findObject(spec, "solid"));
+        SolidProp * p = static_cast<SolidProp*>(sim.findProperty("solid", spec));
         
-        if ( !sol )
+        if ( p )
         {
-            SolidProp * p = sim.findProperty<SolidProp>("solid", spec);
             sol = new Solid(p);
-            //std::clog << "Aster::makeSolid() created solid " << sol->reference() << "\n";
             res.push_back(sol);
+            res.append(sol->build(opt, sim));
+            //std::clog << "Aster::makeSolid() created solid " << sol->reference() << "\n";
         }
         else
         {
-            // prevent Aster from being moved, so that its position match the Solid
-            opt.define("placement", "off");
+            sol = Solid::toSolid(sim.solids.findObject(spec, "solid"));
+            if ( sol )
+            {
+                // prevent Aster from being moved, so that its position match the Solid
+                opt.define("placement", "off");
+                //std::clog << "Aster created on solid " << sol->reference() << "\n";
+            }
         }
     }
-    else
+    
+    if ( ! sol )
         throw InvalidParameter("aster:solid must be specified");
 
-    res.append(sol->build(opt, sim));
-    
     // check that there is at least one point:
     if ( sol->dragCoefficient() < REAL_EPSILON )
 #ifdef BACKWARD_COMPATIBILITY
