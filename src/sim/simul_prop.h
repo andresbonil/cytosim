@@ -100,9 +100,6 @@ public:
     Vector    flow;
 #endif
 
-    /// special parameter for Spindle simulation (solve=flux)
-    real      flux_speed;
-
     /// Level of Brownian motion in the system = temperature * Boltzman constant
     /**
      <em>kT</em> is the product of the Boltzmann constant k by the absolute temperature in Kelvin:

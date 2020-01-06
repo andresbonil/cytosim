@@ -193,9 +193,6 @@ public:
     /// calculate the motion of objects, but only in the X-direction
     void            solveX();
     
-    /// move every Fiber backward by `shift` (this is a extremely crude model)
-    void            solve_flux();
-    
     /// calculate Forces and Lagrange multipliers on the Mecables, but do not move them
     void            computeForces() const;
     

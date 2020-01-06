@@ -19,7 +19,6 @@ void SimulProp::clear()
 #if NEW_CYTOPLASMIC_FLOW
     flow.reset();
 #endif
-    flux_speed        = 0;
     time              = 0;
     time_step         = 0;
     kT                = 0.0042;
@@ -68,7 +67,6 @@ void SimulProp::read(Glossary& glos)
 #if NEW_CYTOPLASMIC_FLOW
     glos.set(flow,              "flow");
 #endif
-    glos.set(flux_speed,        "flux_speed");
     glos.set(time,              "time");
     glos.set(time_step,         "time_step");
     glos.set(kT, "kT") || glos.set(kT, "thermal_energy");
@@ -165,7 +163,6 @@ void SimulProp::write_values(std::ostream& os) const
 #if NEW_CYTOPLASMIC_FLOW
     write_value(os, "flow", flow);
 #endif
-    write_value(os, "flux_speed", flux_speed);
     std::endl(os);
     write_value(os, "tolerance",       tolerance);
     write_value(os, "acceptable_rate", acceptable_rate);
