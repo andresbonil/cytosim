@@ -32,15 +32,10 @@ private:
     /// control switch to enable command 'write' (write files)
     bool      do_write;
     
+    //--------------------------------------------------------------------------
+
     /// print the lines located between `pos` and current position
     void      show_lines(std::istream&, std::streampos);
-
-public:
-    
-    /// construct a Parser with given permissions
-    Parser(Simul& s, bool can_set, bool can_change, bool can_new, bool can_run, bool can_write);
-    
-    //-------------------------------------------------------------------------------
     
     /// parse command `set
     void      parse_set(std::istream&);
@@ -87,7 +82,12 @@ public:
     /// parse command `end`
     void      parse_end(std::istream&);
     
-    //-------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
+public:
+        
+    /// construct a Parser with given permissions
+    Parser(Simul& s, bool can_set, bool can_change, bool can_new, bool can_run, bool can_write);
 
     /// Parse next command in stream, return 0 if success
     int       evaluate_one(std::istream&);
