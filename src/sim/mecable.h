@@ -324,9 +324,9 @@ public:
     /**
      The function calculates the 'legal' forces with constraints applied.
      It may or may not scale by the object's mobility coefficient, and one may
-     derive the speeds in conjunction with `leftoverDrag()`:
+     derive the speeds in conjunction with `leftoverMobility()`:
      
-         speed = leftoverDrag() * projectForces(forces)
+         speed = leftoverMobility() * projectForces(forces)
      
      Note that:
      - The input `X` and output `Y` must be vectors of size `DIM * nPoints`
@@ -337,7 +337,7 @@ public:
     virtual void    projectForces(const real* X, real* Y) const { zero_real(DIM*nPoints, Y); }
     
     /// Return drag coefficient that was not applied by projectForces()
-    virtual real    leftoverDrag() const { return 1.0; }
+    virtual real    leftoverMobility() const { return 1.0; }
 
     //--------------------------------------------------------------------------
 
