@@ -196,7 +196,7 @@ public:
     /// calculate Forces and Lagrange multipliers on the Mecables, but do not move them
     void            computeForces() const;
     
-    /// dump matrix and vector from Meca
+    /// dump matrix and vector from Meca in a format that can be read in MATLAB
     void            dump() const;
     
     /// dump system matrix in sparse text format
