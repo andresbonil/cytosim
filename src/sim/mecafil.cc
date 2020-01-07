@@ -13,8 +13,8 @@
 Mecafil::Mecafil()
 {
     buildProjection();
-    rfDragPoint = 0;
-    rfRigidity  = 0;
+    rfPointMobility = 0;
+    rfRigidity = 0;
     rfDiff = nullptr;
     rfLag  = nullptr;
     rfLLG  = nullptr;
@@ -87,12 +87,12 @@ void Mecafil::release()
  */
 real Mecafil::addBrownianForces(real const* rnd, real sc, real* rhs) const
 {
-    real b = sqrt( 2 * sc * rfDragPoint );
+    real b = sqrt( 2 * sc / rfPointMobility );
 
     for ( unsigned jj = 0; jj < DIM*nPoints; ++jj )
         rhs[jj] += b * rnd[jj];
     
-    return b / rfDragPoint;
+    return b * rfPointMobility;
 }
 
 

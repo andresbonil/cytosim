@@ -46,7 +46,7 @@ private:
 protected:
     
     /// mobility of the points (all points have the same drag coefficient)
-    real        rfDragPoint;
+    real        rfPointMobility;
     
     /// rigidity scaling factor used in addRigidity()
     real        rfRigidity;
@@ -109,10 +109,10 @@ public:
     real        tension(unsigned p) const { assert_true(p+1<nPoints); return rfLag[p]; }
     
     /// total drag-coefficient of object (force = drag * speed)
-    real        dragCoefficient() const { return  nPoints * rfDragPoint; }
+    real        dragCoefficient() const { return nPoints / rfPointMobility; }
     
     /// drag coefficient of one point
-    real        leftoverMobility() const { return 1.0/rfDragPoint; }
+    real        leftoverMobility() const { return rfPointMobility; }
     
     //--------------------- Projection  / Dynamics
     
