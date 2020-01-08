@@ -29,14 +29,6 @@
 Parser::Parser(Simul& s, bool ds, bool dc, bool dn, bool dr, bool dw)
 : Interface(s), do_set(ds), do_change(dc), do_new(dn), do_run(dr), do_write(dw)
 {
-    //std::clog << " set " << ds << " change " << dc << " new " << dn << " run " << dr << " write " << dw << "\n";
-}
-
-
-void Parser::show_lines(std::istream& is, std::streampos pos)
-{
-    std::cerr << "  in\n";
-    StreamFunc::print_lines(std::cerr, is, pos, is.tellg());
 }
 
 
@@ -126,6 +118,8 @@ void Parser::parse_set(std::istream& is)
             // adjust the name of the 'simul' property:
             if ( simul.prop->name() == "undefined" )
                 simul.prop->rename(name);
+            else if ( simul.prop->name() != name )
+                throw InvalidSyntax("only one `simul' can be defined");
             VLOG(" simul is named `" << name << "'\n");
             opt.read(blok);
             execute_change(name, opt);
@@ -186,7 +180,7 @@ void Parser::parse_set(std::istream& is)
     }
 
     if ( pp && opt.warnings(std::cerr) )
-        show_lines(is, ipos);
+        StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
 }
 
 //------------------------------------------------------------------------------
@@ -295,7 +289,7 @@ void Parser::parse_change(std::istream& is)
             execute_change(name, opt);
  
         if ( opt.warnings(std::cerr, ~0U) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
     else if ( para == "display" )
     {
@@ -444,7 +438,7 @@ void Parser::parse_new(std::istream& is)
                 throw InvalidParameter("display parameters should be specified within `set'");
             
             if ( opt.warnings(std::cerr, ~0U) )
-                show_lines(is, ipos);
+                StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
         }
     }
 }
@@ -498,12 +492,12 @@ void Parser::parse_new(std::istream& is)
  The SPACE must be the name of an existing Space.
  Only 'inside' and 'outside' are valid specifications.
 
- To delete all Couple called NAME that are not bound:
+ To delete all Couples called NAME that are not bound:
  
-     delete all NAME { state = 0, 0; }
- 
- To delete all Couple TYPE that are not crosslinking, use two calls:
- 
+     delete all NAME { state1 = 0; state2 = 0; }
+
+ To delete all Couples called NAME that are not crosslinking, use two calls:
+
      delete all NAME { state1 = 0; }
      delete all NAME { state2 = 0; }
  
@@ -536,7 +530,7 @@ void Parser::parse_delete(std::istream& is)
         Glossary opt(blok);
         execute_delete(name, opt, cnt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -586,7 +580,7 @@ void Parser::parse_mark(std::istream& is)
         Glossary opt(blok);
         execute_mark(name, opt, cnt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -635,7 +629,7 @@ void Parser::parse_cut(std::istream& is)
         Glossary opt(blok);
         execute_cut(name, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -713,7 +707,7 @@ void Parser::parse_run(std::istream& is)
             execute_run(cnt, opt);
 
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -748,7 +742,7 @@ void Parser::parse_read(std::istream& is)
         Glossary opt(blok);
         opt.set(required, "required");
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
     
     if ( readConfig(file) )
@@ -812,7 +806,7 @@ void Parser::parse_import(std::istream& is)
         Glossary opt(blok);
         execute_import(file, what, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -862,7 +856,7 @@ void Parser::parse_export(std::istream& is)
         Glossary opt(blok);
         execute_export(file, what, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -908,7 +902,7 @@ void Parser::parse_report(std::istream& is)
         Glossary opt(blok);
         execute_report(file, what, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -938,7 +932,7 @@ void Parser::parse_call(std::istream& is)
         Glossary opt(blok);
         execute_call(str, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, ipos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -1049,7 +1043,7 @@ void Parser::parse_end(std::istream& is)
  - 1 if file is exhausted, or has error
  - 2 if 'end' was found.
  Thus parsing should be repeated while the return value is 0.
-*/
+ */
 int Parser::evaluate_one(std::istream& is)
 {
     std::string tok = Tokenizer::get_token(is);
@@ -1177,8 +1171,6 @@ void Parser::evaluate(std::istream& is)
     }
     catch( Exception & e )
     {
-        //e << ", " + msg + ":\n";
-        e << ":\n";
         e << StreamFunc::get_lines(is, ipos, is.tellg());
         throw;
     }
@@ -1197,8 +1189,8 @@ int Parser::readConfig(std::string const& filename)
     std::ifstream is(filename.c_str(), std::ifstream::in);
     if ( is.good() )
     {
-        VLOG(" Parsing `" << filename << "' set " << do_set << " change " << do_change);
-        VLOG(" new " << do_new << " run " << do_run << " write " << do_write << " )\n");
+        VLOG("--Parse `" << filename << "'  set " << do_set << "  change " << do_change);
+        VLOG("  new " << do_new << "  run " << do_run << "  write " << do_write << "\n");
         evaluate(is);
         return 0;
     }

@@ -33,9 +33,6 @@ private:
     bool      do_write;
     
     //--------------------------------------------------------------------------
-
-    /// print the lines located between `pos` and current position
-    void      show_lines(std::istream&, std::streampos);
     
     /// parse command `set
     void      parse_set(std::istream&);
