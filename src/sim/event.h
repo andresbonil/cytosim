@@ -40,13 +40,13 @@ public:
 
     /// code to be executed
     std::string activity;
-    
-    /// delay in unit time between firing events
-    real        delay;
 
     /// rate of occurence of firing events
     real        rate;
     
+    /// delay in unit time between firing events (used if `rate` is not set)
+    real        delay;
+
     ///@}
     
     /// time of next event

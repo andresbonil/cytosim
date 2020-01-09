@@ -11,8 +11,8 @@
 void Event::clear()
 {
     activity = "";
-    delay = 0;
     rate = 0;
+    delay = 0;
     nextTime = 0;
 }
 
@@ -35,6 +35,8 @@ Event::Event(real time, Glossary& opt)
         throw InvalidParameter("event:rate must be >= 0");
     if ( delay < 0 )
         throw InvalidParameter("event:delay must be >= 0");
+    if ( rate <= 0 && delay <= 0 )
+        throw InvalidParameter("event:rate or delay must be > 0");
     reset(time);
 }
 
@@ -47,13 +49,13 @@ Event::~Event()
 
 void Event::step(Simul& sim)
 {
-    if ( sim.time() > nextTime )
+    if ( sim.time() >= nextTime )
     {
         sim.relax();
         do {
             reset(nextTime);
             Parser(sim, 1, 1, 1, 1, 1).evaluate(activity);
-        } while ( sim.time() > nextTime );
+        } while ( sim.time() >= nextTime );
         sim.unrelax();
     }
 }
