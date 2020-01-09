@@ -1385,7 +1385,6 @@ void Meca::solve(SimulProp const* prop, const int precond)
     zero_real(dimension(), vSOL);
     LinearSolvers::GMRES(*this, vRHS, vSOL, 64, monitor, allocator, mH, mV, temporary);
     fprintf(stderr, "    GMRES-64 count %4lu  residual %.3e\n", monitor.count(), monitor.residual());
->>>>>>> 388cd1a... restored MATLAB dump
 #endif
 #if ( 0 )
     // enable this to compare with another implementation of biconjugate gradient stabilized
