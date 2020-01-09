@@ -5,7 +5,6 @@
 #include "iowrapper.h"
 #include "glossary.h"
 #include "simul.h"
-#include "parser.h"
 
 
 void Event::clear()
@@ -54,7 +53,7 @@ void Event::step(Simul& sim)
         sim.relax();
         do {
             reset(nextTime);
-            Parser(sim, 1, 1, 1, 1, 1).evaluate(activity);
+            sim.evaluate(activity);
         } while ( sim.time() >= nextTime );
         sim.unrelax();
     }

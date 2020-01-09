@@ -29,6 +29,7 @@ extern Modulo const* modulo;
 #include "fiber.h"
 #include "event.h"
 #include "field.h"
+#include "parser.h"
 
 #include <csignal>
 
@@ -89,25 +90,6 @@ Simul::~Simul()
         delete(pMeca1D);
     if ( prop )
         delete(prop);
-}
-
-//------------------------------------------------------------------------------
-#pragma mark -
-
-Space const* Simul::findSpace(std::string const& str) const
-{
-    if ( str == "first" )
-        return static_cast<Space*>(spaces.inventory.first());
-
-    if ( str == "last" )
-        return static_cast<Space*>(spaces.inventory.last());
-    
-    Property * sp = properties.find("space", str);
-    
-    if ( sp )
-        return spaces.findObject(sp);
-    else
-        return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -191,6 +173,12 @@ void Simul::foldPosition() const
     }
 }
 
+
+void Simul::evaluate(std::string const& code)
+{
+    // the code is executed with all rights, but it should not
+    Parser(*this, 1, 1, 1, 1, 1).evaluate(code);
+}
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -290,6 +278,22 @@ void Simul::mark(ObjectList const& objs, ObjectMark mrk)
 
 //------------------------------------------------------------------------------
 #pragma mark -
+
+Space const* Simul::findSpace(std::string const& str) const
+{
+    if ( str == "first" )
+        return static_cast<Space*>(spaces.inventory.first());
+
+    if ( str == "last" )
+        return static_cast<Space*>(spaces.inventory.last());
+    
+    Property * sp = properties.find("space", str);
+    
+    if ( sp )
+        return spaces.findObject(sp);
+    else
+        return nullptr;
+}
 
 /**
  This is used primarily to parse the configuration file,

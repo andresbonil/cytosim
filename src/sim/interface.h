@@ -31,7 +31,7 @@ protected:
 public:
     
     /// construct and associates with given Simul
-    Interface(Simul& s);
+    Interface(Simul&);
     
     //-------------------------------------------------------------------------------
     

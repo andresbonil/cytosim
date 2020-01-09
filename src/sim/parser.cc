@@ -26,8 +26,8 @@
  - do_write: can write to disc
  .
  */
-Parser::Parser(Simul& s, bool ds, bool dc, bool dn, bool dr, bool dw)
-: Interface(s), do_set(ds), do_change(dc), do_new(dn), do_run(dr), do_write(dw)
+Parser::Parser(Simul& arg, bool s, bool c, bool n, bool r, bool w)
+: Interface(arg), do_set(s), do_change(c), do_new(n), do_run(r), do_write(w)
 {
 }
 
@@ -1003,8 +1003,8 @@ void Parser::parse_for(std::istream& is)
         std::string sub = code;
         // substitute Variable name for this iteration:
         StreamFunc::find_and_replace(sub, var, std::to_string(c));
-        //we use a fresh stream and Parser for each instance:
-        Parser(*this).evaluate(sub);
+        // execute code:
+        evaluate(sub);
         //hold();
     }
 }
@@ -1125,17 +1125,11 @@ int Parser::evaluate_one(std::istream& is)
         parse_for(is);
     else if ( tok == "restart" )
     {
-        static unsigned cnt = 0;
-        unsigned num = 1;
-        Tokenizer::get_integer(is, num);
-        if ( do_run && cnt++ < num )
-        {
-            // reset simulation and rewind config file
-            simul.erase();
-            is.clear();
-            is.seekg(0);
-            return 0;
-        }
+        // reset simulation and rewind config file
+        simul.erase();
+        is.clear();
+        is.seekg(0);
+        return 0;
     }
     else if ( tok == "end" )
         return 2; //parse_end(is);
