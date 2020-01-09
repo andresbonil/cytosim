@@ -69,10 +69,15 @@ new 512 filament
 new 2048 motor
 new 2048 crosslinker
 
+new event
+{
+    rate = 25
+    code = ( delete 1 filament; new filament { length=3; } )
+}
+
 run 10000 system
 {
     nb_frames = 50
-    event = 25, ( delete 1 filament; new filament { length=3; } )
 }
 
 
