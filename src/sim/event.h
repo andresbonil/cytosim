@@ -41,10 +41,10 @@ public:
     /// code to be executed
     std::string activity;
     
-    /// true if event executes at every time step
-    bool        recurrent;
+    /// delay in unit time between firing events
+    real        delay;
 
-    /// rate at which code is executed
+    /// rate of occurence of firing events
     real        rate;
     
     ///@}
@@ -63,7 +63,7 @@ public:
     /// destructor
     virtual ~Event();
     
-    /// initialize counters
+    /// recalculate next firing time
     void reset(real time);
     
     /// a unique character identifying the class

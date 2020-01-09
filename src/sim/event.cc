@@ -11,7 +11,7 @@
 void Event::clear()
 {
     activity = "";
-    recurrent = false;
+    delay = 0;
     rate = 0;
     nextTime = 0;
 }
@@ -19,7 +19,10 @@ void Event::clear()
 
 void Event::reset(real time)
 {
-    nextTime = time + RNG.exponential() / rate;
+    if ( rate > 0 )
+        nextTime = time + RNG.exponential() / rate;
+    else
+        nextTime = time + delay;
 }
 
 
@@ -27,10 +30,11 @@ Event::Event(real time, Glossary& opt)
 {
     clear();
     opt.set(activity, "activity") || opt.set(activity, "code");
-    opt.set(rate, "rate");
-    opt.set(recurrent, "recurrent");
+    opt.set(rate, "rate") || opt.set(delay, "delay");
     if ( rate < 0 )
         throw InvalidParameter("event:rate must be >= 0");
+    if ( delay < 0 )
+        throw InvalidParameter("event:delay must be >= 0");
     reset(time);
 }
 
@@ -43,11 +47,11 @@ Event::~Event()
 
 void Event::step(Simul& sim)
 {
-    if ( recurrent || sim.time() > nextTime )
+    if ( sim.time() > nextTime )
     {
         sim.relax();
         do {
-            nextTime += RNG.exponential() / rate;
+            reset(nextTime);
             Parser(sim, 1, 1, 1, 1, 1).evaluate(activity);
         } while ( sim.time() > nextTime );
         sim.unrelax();

@@ -51,8 +51,10 @@ Object * EventSet::newObject(const ObjectTag tag, unsigned num)
      {
          code = CODE;
          rate = POSITIVE_REAL;
-         recurrent = [0, 1];
+         interval = POSITIVE_REAL;
      }
+ 
+  `rate` (inverse of time) or `interval` (time) must be specified but not both.
  */
 ObjectList EventSet::newObjects(const std::string&, Glossary& opt)
 {
