@@ -41,12 +41,6 @@ public:
      */
     virtual void hold() {}
     
-    /// Parse a text containing cytosim commands
-    /**
-     This is defined in the derived class Parser
-     */
-    virtual void evaluate(std::string const&) = 0;
-    
     //-------------------------------------------------------------------------------
     
     /// create a new Property of category `cat` from values set in Glossary
