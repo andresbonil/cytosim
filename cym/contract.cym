@@ -7,12 +7,7 @@ set simul system
     viscosity = 0.2
 }
 
-set system { display = ( style=2; point_size=5; zoom = 2; ) }
-
-change system
-{
-    viscosity = 1
-}
+set system display { style=2; point_size=5; }
 
 set space cell
 {
@@ -75,10 +70,8 @@ new 250 filament
 new 2000 crosslinker
 new 1000 complex
 
-run system
+run 100000 system
 {   
     nb_frames = 50
-    nb_steps = 100000
 }
-
 
