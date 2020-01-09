@@ -204,10 +204,10 @@ namespace LinearSolvers
         mat.multiply(sol, tt);
         blas::xaxpy(dim, -1.0, rhs, 1, tt, 1);
         real r = blas::nrm2(dim, tt);
-        fprintf(stderr, "GMRES count %4i true residual %10.6f\n", monitor.count(), r);
+        fprintf(stderr, "GMRES count %4u true residual %10.6f\n", monitor.count(), r);
 #endif
 #if ( 0 )
-        fprintf(stderr, "GMRES count %4i residual %10.6f\n", monitor.count(), resid);
+        fprintf(stderr, "GMRES count %4u residual %10.6f\n", monitor.count(), resid);
 #endif
         //allocator.release();
     }

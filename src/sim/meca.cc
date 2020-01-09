@@ -1366,7 +1366,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
 
 #if ( 0 )
     fprintf(stderr, "System size %6i precondition %i", dimension(), precond);
-    fprintf(stderr, "    Solver count %4i  residual %10.6f\n", monitor.count(), monitor.residual());
+    fprintf(stderr, "    Solver count %4u  residual %10.6f\n", monitor.count(), monitor.residual());
 #endif
 #if ( 0 )
     // enable this to compare with GMRES using different restart parameters
@@ -1375,37 +1375,37 @@ void Meca::solve(SimulProp const* prop, const int precond)
         monitor.reset();
         zero_real(dimension(), vSOL);
         LinearSolvers::GMRES(*this, vRHS, vSOL, RS, monitor, allocator, mH, mV, temporary);
-        fprintf(stderr, "    GMRES-%i  count %4i  residual %10.6f\n", RS, monitor.count(), monitor.residual());
+        fprintf(stderr, "    GMRES-%i  count %4u  residual %10.6f\n", RS, monitor.count(), monitor.residual());
     }
 #endif
-#if ( 0 )
+#if ( 1 )
     // enable this to compare BCGS and GMRES
-    fprintf(stderr, "    BCGS     count %4lu  residual %.3e\n", monitor.count(), monitor.residual());
+    fprintf(stderr, "    BCGS     count %4i  residual %.3e\n", monitor.count(), monitor.residual());
     monitor.reset();
     zero_real(dimension(), vSOL);
     LinearSolvers::GMRES(*this, vRHS, vSOL, 64, monitor, allocator, mH, mV, temporary);
-    fprintf(stderr, "    GMRES-64 count %4lu  residual %.3e\n", monitor.count(), monitor.residual());
+    fprintf(stderr, "    GMRES-64 count %4u  residual %.3e\n", monitor.count(), monitor.residual());
 #endif
 #if ( 0 )
     // enable this to compare with another implementation of biconjugate gradient stabilized
     monitor.reset();
     zero_real(dimension(), vSOL);
     LinearSolvers::bicgstab(*this, vRHS, vSOL, monitor, allocator);
-    fprintf(stderr, "    bcgs      count %4i  residual %10.6f\n", monitor.count(), monitor.residual());
+    fprintf(stderr, "    bcgs      count %4u  residual %10.6f\n", monitor.count(), monitor.residual());
 #endif
     
     //------- in case the solver did not converge, we try other methods:
     
     if ( !monitor.converged() )
     {
-        Cytosim::out("Solver failed: precond %i flag %i count %4i residual %.2e\n",
+        Cytosim::out("Solver failed: precond %i flag %i count %4u residual %.2e\n",
             precond, monitor.flag(), monitor.count(), monitor.residual());
         
         // try with different initial seed: vRHS
         monitor.reset();
         copy_real(dimension(), vRHS, vSOL);
         LinearSolvers::GMRES(*this, vRHS, vSOL, 255, monitor, allocator, mH, mV, temporary);
-        Cytosim::out("     seed: count %4i residual %.2e\n", monitor.count(), monitor.residual());
+        Cytosim::out("     seed: count %4u residual %.2e\n", monitor.count(), monitor.residual());
         
         if ( !monitor.converged() )
         {
@@ -1416,14 +1416,14 @@ void Meca::solve(SimulProp const* prop, const int precond)
             {
                 // try with the other method:
                 LinearSolvers::BCGSP(*this, vRHS, vSOL, monitor, allocator);
-                Cytosim::out("    BCGSP: count %4i residual %.2e\n", monitor.count(), monitor.residual());
+                Cytosim::out("    BCGSP: count %4u residual %.2e\n", monitor.count(), monitor.residual());
             }
             else
             {
                 // try with a preconditioner
                 computePreconditionner();
                 LinearSolvers::GMRES(*this, vRHS, vSOL, 127, monitor, allocator, mH, mV, temporary);
-                Cytosim::out("    GMRES: count %4i residual %.2e\n", monitor.count(), monitor.residual());
+                Cytosim::out("    GMRES: count %4u residual %.2e\n", monitor.count(), monitor.residual());
                 if ( !monitor.converged() )
                 {
                     // try with other method:
@@ -1439,7 +1439,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
                 monitor.reset();
                 zero_real(dimension(), vSOL);
                 LinearSolvers::GMRES(*this, vRHS, vSOL, 255, monitor, allocator, mH, mV, temporary);
-                Cytosim::out("    GMRES(256): count %4i residual %.2e\n", monitor.count(), monitor.residual());
+                Cytosim::out("    GMRES(256): count %4u residual %.2e\n", monitor.count(), monitor.residual());
                 
                 if ( !monitor.converged() )
                 {
