@@ -18,6 +18,8 @@
 
 int verbose = 1;
 int prefix = 0;
+size_t cnt = 0;
+
 
 void help(std::ostream& os)
 {
@@ -99,6 +101,7 @@ void report_prefix(Simul const& simul, std::ostream& os, std::string const& what
 
 void report(Simul const& simul, std::ostream& os, std::string const& what, int frm, Glossary& opt)
 {
+    ++cnt;
     try
     {
         if ( prefix )
@@ -245,7 +248,7 @@ int main(int argc, char* argv[])
         ofs.close();
 
     /// check if all specified parameters were used:
-    arg.warnings(std::cerr);
+    arg.warnings(std::cerr, cnt);
     
     return EXIT_SUCCESS;
 }
