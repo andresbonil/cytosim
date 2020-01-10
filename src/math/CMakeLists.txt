@@ -25,10 +25,12 @@ target_include_directories(${MATH_LIB_TARGET} PUBLIC
     "${BASE_SRC_DIR}"
 )
 
-add_library(rasterizerGL "${PROJECT_SOURCE_DIR}/src/math/rasterizer.cc")
-target_compile_definitions(rasterizerGL PRIVATE -DDISPLAY)
-target_include_directories(rasterizerGL PUBLIC
-    "${MATH_SRC_DIR}"
-    "${BASE_SRC_DIR}"
-    "${DISP_SRC_DIR}"
-)
+if(BUILD_CYTOSIM_TESTS)
+    add_library(rasterizerGL "${PROJECT_SOURCE_DIR}/src/math/rasterizer.cc")
+    target_compile_definitions(rasterizerGL PRIVATE -DDISPLAY)
+    target_include_directories(rasterizerGL PUBLIC
+        "${MATH_SRC_DIR}"
+        "${BASE_SRC_DIR}"
+        "${DISP_SRC_DIR}"
+    )
+endif()
