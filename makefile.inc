@@ -339,11 +339,11 @@ ifeq ($(HAS_MKL),2)
     # This are options for the compiler:
     MKLOPT := -m64 -I${MKLROOT}/include
 
-    # sequential static linking (newer GCC):
-    MKLLIB := -Wl,--start-group $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_sequential.a $(MKLDIR)/libmkl_core.a -Wl,--end-group
-
     # sequential static linking (older GCC):
     MKLLIB := $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_sequential.a $(MKLDIR)/libmkl_core.a
+
+    # sequential static linking (newer GCC):
+    MKLLIB := -Wl,--start-group $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_sequential.a $(MKLDIR)/libmkl_core.a -Wl,--end-group
 
     # threaded static linking:
     #MKLLIB := $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_thread.a $(MKLDIR)/libmkl_core.a /opt/intel/lib/libiomp5.a

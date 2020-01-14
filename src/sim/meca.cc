@@ -1378,7 +1378,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
         fprintf(stderr, "    GMRES-%i  count %4u  residual %10.6f\n", RS, monitor.count(), monitor.residual());
     }
 #endif
-#if ( 1 )
+#if ( 0 )
     // enable this to compare BCGS and GMRES
     fprintf(stderr, "    BCGS     count %4i  residual %.3e\n", monitor.count(), monitor.residual());
     monitor.reset();
