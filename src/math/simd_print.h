@@ -14,19 +14,19 @@
 #include <pmmintrin.h>
 
 /// print SIMD vector of 2 doubles
-inline void print(vec2 v, char const* s)
+inline void show(vec2 v, char const* s)
 {
     printf("vec2 %s ( %5.2f %5.2f )\n", s, v[1], v[0]);
 }
 
 /// print two SIMD vector
-inline void print(vec2 v, vec2 w, char const* s)
+inline void show(vec2 v, vec2 w, char const* s)
 {
     printf("vec2 %s ( %5.2f %5.2f )( %5.2f %5.2f )\n", s, v[1], v[0], w[1], w[0]);
 }
 
 /*
-inline void print8(__m128i v, char const* s)
+inline void show8(__m128i v, char const* s)
 {
     uint16_t a = _mm_extract_epi16(v, 0);
     uint16_t b = _mm_extract_epi16(v, 1);
@@ -41,7 +41,7 @@ inline void print8(__m128i v, char const* s)
 */
 
 /// print SIMD vector of 4 floats
-inline void print(vec4f v, char const* s)
+inline void show(vec4f v, char const* s)
 {
     printf("vec4f %s ( %5.2f %5.2f %5.2f %5.2f )\n", s, v[3], v[2], v[1], v[0]);
 }
@@ -53,20 +53,20 @@ inline void print(vec4f v, char const* s)
 #ifdef __AVX__
 
 /// print SIMD vector of 4 doubles
-inline void print(vec4 v, char const* s)
+inline void show(vec4 v, char const* s)
 {
     printf("vec4 %s ( %5.2f %5.2f %5.2f %5.2f )\n", s, v[3], v[2], v[1], v[0]);
 }
 
 /// print two SIMD vector of 4 doubles
-inline void print(vec4 v, vec4 w, char const* s)
+inline void show(vec4 v, vec4 w, char const* s)
 {
     printf("vec4 %s ( %5.2f %5.2f %5.2f %5.2f )( %5.2f %5.2f %5.2f %5.2f )\n",
            s, v[3], v[2], v[1], v[0], w[3], w[2], w[1], w[0]);
 }
 
 /*
-inline void print4(__m128i v, char const* s)
+inline void show4(__m128i v, char const* s)
 {
     uint32_t a = _mm_extract_epi32(v, 0);
     uint32_t b = _mm_extract_epi32(v, 1);
@@ -77,7 +77,7 @@ inline void print4(__m128i v, char const* s)
 */
 
 /// print SIMD vector of 8 floats
-inline void print(vec8f v, char const* x)
+inline void show(vec8f v, char const* x)
 {
     printf("vec8f %s ( %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f %5.2f )\n", x,
            v[7], v[6], v[5], v[4], v[3], v[2], v[1], v[0]);
