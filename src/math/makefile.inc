@@ -47,9 +47,3 @@ cytomathD3.a: $(OBJ_MATH) matsparsesymblkD3.o
 	$(MAKELIB)
 	$(DONE)
 
-
-# build the rasterizer with graphical debugging enabled:
-rasterizerG.o: rasterizer.cc rasterizer.h
-	$(COMPILE) $(INC_BM) -Isrc/disp -DDISPLAY -c $< -o build/$@
-vpath rasterizerG.o build
-

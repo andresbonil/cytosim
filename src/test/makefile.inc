@@ -142,6 +142,12 @@ test_platonic: test_platonic.cc platonic.o $(OBJGLAP) cytomath.a cytobase.a
 	$(DONE)
 vpath test_platonic bin
 
+
+# build the rasterizer with graphical debugging enabled:
+rasterizerG.o: rasterizer.cc rasterizer.h
+	$(COMPILE) -Isrc/base -Isrc/math -Isrc/disp -DDISPLAY -c $< -o build/$@
+vpath rasterizerG.o build
+
 test_rasterizer: test_rasterizer.cc rasterizerG.o cytomath.a $(OBJGLAP) cytobase.a
 	$(TEST_MAKE) $(TEST_GL)
 	$(DONE)
