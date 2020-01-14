@@ -61,6 +61,7 @@
 		BB171C330B3DEBE700CFFC3B /* fiber.h in Headers */ = {isa = PBXBuildFile; fileRef = BB171C310B3DEBE700CFFC3B /* fiber.h */; };
 		BB171C340B3DEBE700CFFC3B /* fiber.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB171C320B3DEBE700CFFC3B /* fiber.cc */; };
 		BB1749A707D798E600BC7BDC /* lattice.h in Headers */ = {isa = PBXBuildFile; fileRef = BB1749A507D798E600BC7BDC /* lattice.h */; };
+		BB18BB8623CDC20400B3605E /* simd_print.h in Headers */ = {isa = PBXBuildFile; fileRef = BB18BB8523CDC20400B3605E /* simd_print.h */; };
 		BB18BBC01DFD7C0C00567023 /* tictoc.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBA5E5810E8EBA620009F6D0 /* tictoc.cc */; };
 		BB18BBC11DFD7C0E00567023 /* tictoc.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBA5E5810E8EBA620009F6D0 /* tictoc.cc */; };
 		BB18BBC21DFD7DD900567023 /* test_simd.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBB9BAC40B4590D500E9FCD3 /* test_simd.cc */; };
@@ -964,6 +965,7 @@
 		BB171C320B3DEBE700CFFC3B /* fiber.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = fiber.cc; path = src/sim/fiber.cc; sourceTree = SOURCE_ROOT; };
 		BB1749A407D798E600BC7BDC /* lattice.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = lattice.cc; path = src/sim/lattice.cc; sourceTree = SOURCE_ROOT; };
 		BB1749A507D798E600BC7BDC /* lattice.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = lattice.h; path = src/sim/lattice.h; sourceTree = SOURCE_ROOT; };
+		BB18BB8523CDC20400B3605E /* simd_print.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simd_print.h; sourceTree = "<group>"; };
 		BB18BBB71DFD78F600567023 /* test_simd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_simd; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB18BBC71DFD7E3400567023 /* test_code */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_code; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB19DAA206964B9900093FA2 /* simul_solve.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = simul_solve.cc; path = src/sim/simul_solve.cc; sourceTree = SOURCE_ROOT; };
@@ -2041,6 +2043,7 @@
 				BB7192360EF1CEEA00CED9E2 /* makefile.inc */,
 				BBFC66B209C0C3D30031048A /* real.h */,
 				BB9D224520C5D30200CBB0B1 /* simd.h */,
+				BB18BB8523CDC20400B3605E /* simd_print.h */,
 				BBE447C4206468560058ADAC /* SFMT */,
 				BB21D1F017D9BDA8005F5A8E /* libs */,
 				BB1F2FC81AAD8FC9004A364D /* grid */,
@@ -2996,6 +2999,7 @@
 				BB0E4BD81002698100A96B34 /* random_vector.h in Headers */,
 				BB89999420CECB5C00498F48 /* matrix44.h in Headers */,
 				BB10378310B8032E00CEC5C6 /* assert_macro.h in Headers */,
+				BB18BB8623CDC20400B3605E /* simd_print.h in Headers */,
 				BB6D309820CA754B009C5C7C /* matrix33.h in Headers */,
 				BB8CB8571523147900505E89 /* bicgstab.h in Headers */,
 				BB9EC397209235CC00EF00E7 /* SFMT-avx2.h in Headers */,

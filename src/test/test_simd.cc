@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include "vecprint.h"
 #include "simd.h"
+#include "simd_print.h"
 
 
 typedef double real;
