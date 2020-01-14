@@ -73,7 +73,7 @@ inline vec2 unpackhi2(vec2 a, vec2 b)        { return _mm_unpackhi_pd(a,b); }
 #define cmp2(a,b,c)       _mm_cmp_pd(a,b,c)
 
 /// returns the sum of the elements, broadcasted
-inline vec2 esum(vec2 v)
+inline vec2 esum2(vec2 v)
 {
     return add2(v, shuffle2(v, v, 0b01));
 }
@@ -222,7 +222,7 @@ inline vec4 cat4(vec2 h, vec4 l) { return _mm256_insertf128_pd(l, h, 1); }
 
 
 /// returns the sum of the elements, broadcasted
-inline vec4 esum(vec4 v)
+inline vec4 esum4(vec4 v)
 {
     vec4 s = add4(v, permute2f128(v, v, 0x01));
     return add4(s, permute4(s, 0b0101));

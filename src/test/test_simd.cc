@@ -56,7 +56,7 @@ real vector2()
         s = add2(s, mul2( load2(x+ii), load2(y+ii) ));
     _mm_empty();
     
-    return esum(s)[0];
+    return esum2(s)[0];
 }
 
 #ifdef __AVX__
@@ -68,7 +68,7 @@ real vector4()
         s = add4(s, mul4( load4(x+ii), load4(y+ii) ));
     _mm_empty();
     
-    return esum(s)[0];
+    return esum4(s)[0];
 }
 
 
@@ -90,7 +90,7 @@ real vectorU()
     vec4 s = add4(add4(v0, v1), add4(v2, v3));
     _mm_empty();
     
-    return esum(s)[0];
+    return esum4(s)[0];
 }
 
 #endif
