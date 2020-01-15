@@ -86,7 +86,7 @@ public:
     void       execute_report(std::string& file, std::string const& what, Glossary&);
     
     /// perform `cnt` simulation steps
-    void       execute_run(unsigned cnt, Glossary&);
+    void       execute_run(unsigned cnt, Glossary&, bool write_permission);
     
     /// perform `cnt` simulation steps, with no option
     void       execute_run(unsigned cnt);

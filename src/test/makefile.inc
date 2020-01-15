@@ -37,7 +37,7 @@ test_code: test_code.cc random.o SFMT.o tictoc.o
 vpath test_code bin
 
 test_matrix: test_matrix.cc matsparsesymblk.o matsparsesym.o matsparsesym1.o matsparsesym2.o matrix.o random.o SFMT.o tictoc.o backtrace.o
-	$(COMPILE) -Isrc/base -Isrc/math $(OBJECTS) $(LINK) -o bin/$@
+	$(COMPILE) -Isrc/base -Isrc/math $(OBJECTS) $(LINK) $(INFO) -o bin/$@
 	$(DONE)
 vpath test_matrix bin
 

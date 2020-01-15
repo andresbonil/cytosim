@@ -65,6 +65,10 @@ void remove_plural(std::string & str)
 
 /** 
  @copydetails Simul::report0
+ This can report multiple data, separated by ';', for example:
+ 
+     report fiber:force;fiber:length
+ 
  */
 void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
 {
@@ -75,6 +79,7 @@ void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
 
     //out << "\n% start   " << prop->time; // historical
     out << "\n% time " << std::fixed << std::setprecision(3) << prop->time;
+    out << "\n% report " << arg;
     try {
         std::string::size_type pos = arg.find(';');
         while ( pos != std::string::npos )

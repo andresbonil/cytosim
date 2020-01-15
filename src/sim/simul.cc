@@ -174,9 +174,13 @@ void Simul::foldPosition() const
 }
 
 
+/// @todo Simul::evaluate should use a Parser with limited rights
 void Simul::evaluate(std::string const& code)
 {
-    // the code is executed with all rights, but it should not
+    /*
+     The code is executed with all rights, but this should not be
+     when this is executed from `play`
+     */
     Parser(*this, 1, 1, 1, 1, 1).evaluate(code);
 }
 

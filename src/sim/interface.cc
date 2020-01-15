@@ -759,7 +759,7 @@ void reportCPUtime(int frame, real simtime)
      }
  
  */
-void Interface::execute_run(unsigned nb_steps, Glossary& opt)
+void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
 {
     unsigned     nb_frames  = 0;
     int          solve      = 1;
@@ -799,7 +799,8 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
     
     VLOG("+RUN START " << nb_steps << '\n');
     
-    bool do_write = ( opt.set(nb_frames, "nb_frames") && nb_frames > 0 );
+    if ( opt.set(nb_frames, "nb_frames") )
+        do_write &= ( nb_frames > 0 );
 
     if ( do_write )
     {

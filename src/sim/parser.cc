@@ -696,13 +696,10 @@ void Parser::parse_run(std::istream& is)
         else if ( opt.has_key("nb_steps") )
             throw InvalidSyntax("the number of steps was specified twice");
         
-        if ( ! do_write )
-            opt.clear("nb_frames");
-        
         if ( opt.empty() )
             execute_run(cnt);
         else
-            execute_run(cnt, opt);
+            execute_run(cnt, opt, do_write);
 
         if ( opt.warnings(std::cerr) )
             StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
