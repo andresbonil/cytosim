@@ -95,6 +95,9 @@ public:
     
     /// copy Lagrange multipliers computed in projectForces()
     void        storeTensions(const real* force);
+    
+    /// debug output
+    void        printTensions(std::ostream&) const;
 
     /// longitudinal force dipole between vertices `p` and `p+1`
     /**
@@ -130,7 +133,7 @@ public:
 
     /// add displacements due to the Brownian motion to rhs[]
     real        addBrownianForces(real const* rnd, real alpha, real* rhs) const;
-    
+
     /// calculate the speeds from the forces, including projection
     void        projectForces(const real* X, real* Y) const;
     

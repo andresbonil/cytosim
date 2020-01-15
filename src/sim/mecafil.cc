@@ -7,7 +7,7 @@
 #include "matrix.h"
 #include "matsparsesym1.h"
 #include "random.h"
-//#include "vecprint.h"
+#include "vecprint.h"
 
 //------------------------------------------------------------------------------
 Mecafil::Mecafil()
@@ -157,6 +157,13 @@ void Mecafil::addProjectionDiff(const real*, real*) const {} //DIM == 1
 
 #endif
 
+
+void Mecafil::printTensions(std::ostream& os) const
+{
+    os << "\n" << reference() << " ";
+    VecPrint::print(os, nbSegments(), rfLag, 2);
+    os << " end " << std::fixed << std::setprecision(2) << netForceEndM() << "   " << netForceEndP();
+}
 
 //-----------------------------------------------------------------------
 #pragma mark -
