@@ -1139,23 +1139,23 @@ void Meca::computeForces()
     
     // calculate forces in vFOR, but without Brownian noise:
     calculateForces(vPTS, vBAS, vFOR);
-    
+    copy_real(dimension(), vFOR, vTMP);
+
     // add rigidity, and calculate the Lagrange Multiplier with this:
     for ( Mecable * mec : objs )
     {
         real * fff = vFOR + DIM * mec->matIndex();
         real * ttt = vTMP + DIM * mec->matIndex();
         
-        copy_real(DIM * mec->nbPoints(), fff, ttt);
-        
         // add bending rigidity:
 #if ( DIM > 1 ) && !RIGIDITY_IN_MATRIX
         real * xxx = vPTS + DIM * mec->matIndex();
         mec->addRigidity(xxx, ttt);
 #endif
-        
+        // calculate Lagrange multipliers for Fibers (irrelevant for other object)
         mec->projectForces(ttt, ttt);
         mec->storeTensions(ttt);
+        // register force (all objects)
         mec->getForces(fff);
     }
 }
