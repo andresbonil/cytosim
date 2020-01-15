@@ -1,4 +1,5 @@
-# Cytosim was created by Francois Nedelec. Copyright 2007-2018 EMBL.
+# Cytosim was created by Francois Nedelec.
+# Copyright 2007-2017 EMBL; 2019-2020 Sainsbury Laboratory, Cambridge University
 
 
 #---------------- MACHINE = {mac, linux, cluster, cygwin, auto}
@@ -89,7 +90,7 @@ ifeq ($(COMPILER),gcc)
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops #-floop-optimize2 -ftree-vectorize -mavx2 -mfma
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops -march=native -ffp-contract=fast
 
-    DEBUG    :=-g3 -ggdb -march=native
+    DEBUG    :=-g3 -ggdb
     COVERAGE :=-fprofile-arcs -ftest-coverage
     
 else ifeq ($(COMPILER),icc)
@@ -211,14 +212,11 @@ ifeq ($(MACHINE),linux)
     FlagsC := -O0 -fprofile-arcs -ftest-coverage
     FlagsF := -O3 -finline-functions $(ALIGN) $(FAST)
 
-    # trying to automatically detect the directory with BLAS & LAPACK:
-    BLASLIB := $(wildcard /usr/lib/libblas.*) $(wildcard /usr/lib/*/libblas.*)
-    BLADIR := $(word 1, $(dir $(BLASLIB)))
-
-    # specify the lib path:
+    # specify the library path:
     LIBDIR := /usr/lib
     LIBDIR := /usr/lib/x86_64-linux-gnu
 
+    ############## BLAS/LAPACK Libraries ###############
     ### For 64bit Centos 5.8 March 2012:
     # Centos  blas: yum install blas-devel
     # Centos  lapack: yum install lapack-devel
@@ -226,12 +224,22 @@ ifeq ($(MACHINE),linux)
     # Ubuntu   blas : apt-get install libblas.dev
     # Ubuntu lapack : apt-get install liblapack.dev
 
+    # trying to automatically detect BLAS library:
+    BLASLIB := $(wildcard /usr/lib/libblas.*) $(wildcard /usr/lib/*/libblas.*)
+    # extracting path for libraries:
+    BLADIR := $(word 1, $(dir $(BLASLIB)))
+    ifndef BLADIR
+       $(error Error: the path for the BLAS/LAPACK library `BLADIR` is undefined)
+    else
+       $(warning Using BLAS library in $(BLADIR))
+    endif
+
     #### For dynamic linking:
     LINK := -L$(BLADIR) -llapack -lblas -lpthread
     #### For static linking specify the objects directly:
     #LINK := -L$(BLADIR) $(BLADIR)/liblapack.so $(BLADIR)/libblas.so -lpthread
 
-    ### Install libraries needed for graphical executables:
+    ########### Install libraries needed for graphics ############
     # Centos freglut: yum install freeglut-devel
     # Centos libXi:   yum install libXi-devel
     # Centos libXmu:  yum install libXmu-devel
@@ -277,7 +285,7 @@ ifeq ($(MACHINE),cygwin)
     ### libXi:   yum install libXi-devel
     ### libXmu:  yum install libXmu-devel
     ###  check for correct library yourlibname.so otherwise give full path
-    GRAFIX := -L/usr/lib -lglut -lGL -lGLU -lX11 -lGLEW
+    GRAFIX := -L/usr/lib -lglut -lGL -lGLU -lXt -lX11 -lGLEW
 
     ifneq ($(HAS_PNG), 0)
 
@@ -306,7 +314,7 @@ ifeq ($(MACHINE),windows)
     FlagsF := -O3 -finline-functions -march=i686 -ffast-math $(ALIGN)
   
     LINK   := -llapack -lblas
-    GRAFIX  := -lglut32 -lglu32 -lopengl32
+    GRAFIX := -lglut32 -lglu32 -lopengl32
     BINEXT :=.exe
 
 endif
@@ -317,8 +325,10 @@ endif
 #------------------ linking with Intel Math Kernel Library ---------------------
 #-------------------------------------------------------------------------------
 
-# The Intel MKL provides LAPACK and BLAS implementations optimized for Intel chips
-
+# The Intel MKL provides BLAS/LAPACK libraries optimized for Intel's CPU
+# and it is free: https://software.intel.com/en-us/mkl
+# For help with the linking, check:
+# https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
 
 ifeq ($(HAS_MKL),1)
 
