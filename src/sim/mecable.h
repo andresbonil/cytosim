@@ -231,10 +231,10 @@ public:
     //--------------------------------------------------------------------------
     
     /// Allocate memory to store given number of vertices
-    virtual size_t   allocateMecable(size_t);
+    virtual size_t  allocateMecable(size_t);
     
     /// free allocated memory
-    void             release();
+    void            release();
     
     /// prepare the Mecable to solve the mechanics in Meca::solve()
     /**

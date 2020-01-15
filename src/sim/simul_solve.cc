@@ -366,9 +366,12 @@ void Simul::computeForces() const
 {
     // we could use here an accessory Meca mec;
     try {
+        // if the simulation is running live, the force are already available
+        //if ( ready() ) fibers.first()->printTensions(std::clog);
         prop->complete(*this);
         setInteractions(sMeca);
         sMeca.computeForces();
+        //if ( ready() ) { fibers.first()->printTensions(std::clog); std::clog<<"\n"; }
     }
     catch ( Exception & e )
     {
