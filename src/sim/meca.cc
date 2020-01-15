@@ -1273,15 +1273,9 @@ void Meca::solve(SimulProp const* prop, const int precond)
 #if NUM_THREADS > 1
     #pragma omp parallel num_threads(NUM_THREADS)
     {
-<<<<<<< HEAD
-        real local_res = INFINITY;
-        Mecable ** mci = objs.begin() + omp_get_thread_num();
-        while ( mci < objs.end() )
-=======
         real local = INFINITY;
         Mecable ** mci = mecables.begin() + omp_get_thread_num();
-        while ( mci < mecables.end() )
->>>>>>> c252b08... Fixed Meca::calculateForces() which provided incorrect Lagrange multipliers
+        while ( mci < objs.end() )
         {
             const index_t inx = DIM * (*mci)->matIndex();
             real n = brownian1(*mci, vRND+inx, prop->kT/time_step, vFOR+inx, time_step, vRHS+inx);

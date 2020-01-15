@@ -1,6 +1,7 @@
 # Credits
 
-A simulation of the cytoskeleton was started in 1995 at Princeton and pursued at [ESPCI](http://www.espci.fr) until 1998. Development continued within the Nedelec group at [EMBL](http://www.embl.org) from 1999 to 2017. Current  development is now conducted by the Nedelec group at [Cambridge University](http://www.cam.ac.uk) and in other groups.  
+A simulation of the cytoskeleton was started in 1995 at Princeton and pursued at [ESPCI](http://www.espci.fr) until 1998. Development continued within the Nedelec group at [EMBL](http://www.embl.org) from 1999 to 2017. Current  development is now conducted by the Nedelec group at the [Sainsbury Laboratory](https://www.slcu.cam.ac.uk), [Cambridge University](http://www.cam.ac.uk) and in other groups.  
+
 
 ## History
 
@@ -27,6 +28,7 @@ A simulation of the cytoskeleton was started in 1995 at Princeton and pursued at
 - Serge Dmitrieff         2013-  
 - Julio Belmonte          2014-  
 - Manuel Lera-Ramirez     2017-
+
 
 ### Contact:
  
