@@ -11,8 +11,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tar)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
+if(NOT DEFINED DIMENSION)
+    set(DIMENSION 2)
+endif()
 
-set(DIMENSION 2)
 add_definitions(-DDIM=${DIMENSION})
 
 option(BUILD_SIM_EXECUTABLE "build the cytosim simulation executable" ON)
@@ -54,10 +56,10 @@ set(DISP_LIB_TARGET "cytodisp")
 
 # Use this to link against the Cytosim Libraries
 set(CYTOSIM_LIBRARIES
-    "${MATH_LIB_TARGET}"
-    "${BASE_LIB_TARGET}"
     "${SIM_LIB_TARGET}"
     "${SPACES_LIB_TARGET}"
+    "${MATH_LIB_TARGET}"
+    "${BASE_LIB_TARGET}"
     "${LAPACK_LIB}"
     "${BLAS_LIB}"
     Threads::Threads
