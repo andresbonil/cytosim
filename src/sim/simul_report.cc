@@ -220,6 +220,8 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
             return reportFiberDynamic(out);
         if ( what == "force" )
             return reportFiberForces(out);
+        if ( what == "confine_force" )
+            return reportFiberConfineForce(out);
         if ( what == "confinement" )
             { reportFiberConfinement(out); return; }
         if ( what == "cluster" )
@@ -1002,6 +1004,40 @@ void Simul::reportFiberBendingEnergy(std::ostream& out) const
             out << SEP << dev;
         }
     }
+}
+
+
+/**
+ Export total magnitude of force exerted by Fiber on the confinement
+ */
+void Simul::reportFiberConfineForce(std::ostream& out) const
+{
+    out << COM << "confinement forces";
+    out << COM << "identity" << SEP << repeatXYZ("pos") << SEP << repeatXYZ("force");
+     
+     // list fibers in the order of the inventory:
+     for ( Fiber const* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
+     {
+         out << COM << "fiber " << fib->reference();
+         Space const* spc = findSpace(fib->prop->confine_space);
+         const real stiff = fib->prop->confine_stiffness;
+
+         for ( size_t p = 0; p < fib->nbPoints(); ++p )
+         {
+             out << LIN << fib->identity();
+             Vector w, pos = fib->posP(p);
+             out << SEP << pos;
+             if ( spc->outside(pos) )
+             {
+                 w = spc->project(pos);
+                 out << SEP << stiff * ( w - pos );
+             }
+             else
+             {
+                 out << SEP << Vector(0,0,0);
+             }
+         }
+     }
 }
 
 
