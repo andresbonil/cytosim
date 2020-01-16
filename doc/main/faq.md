@@ -570,6 +570,17 @@ It is important to do this in a fresh directory, as `sim` will create a new `obj
 You can later merge two object files later if you want to display them continuously in play. Make sure you copy all the files before you start experimenting, but normally this works with the standard unix `cat`.
 </details>
 
+<details>
+<summary>
+**Is there a way run the exact same simulation again, for debugging or other purpose?**
+</summary>
+
+*My HPC team suggested that in order to debug the code, they would need to know if there is a way to make it run with the same seed for the random number generator to make reproducible simulation results. Could you please help me with that?*
+
+There is a parameter `random_seed` in `simul`. By default, it is set to zero, and then cytosim seeds using the timer. The value that is used is then reported in `properties.cmo`.
+So you can rerun the same simulation by copy-pasting that value into config.cym (and using the same machine). However, you can also set `random_seed=1` from the start.
+</details>
+
 
 <details>
 <summary>
@@ -739,7 +750,7 @@ Gives points that are distributed randomly over the filaments, but which are fix
 <summary>
 **In what referential is this data? What are the units?**
 </summary>
-The origin (0,0) is in the centre of the simulation volume. 
+The origin (0,0) is in the centre of the simulation volume. The reference frame can be displayed in 'play' by pressing 'x'. A scale bar appears if you press 'b'. Press these keys again to make the items disapear.
 The position and length are given in micro-metres.
 </details>
 
@@ -929,7 +940,7 @@ You can call the 3D executable `sim3` and then you run this one to get a 3D simu
 
 <details>
 <summary>
-**I need to compile lapack locally for our server, any idea which cmake command should I use?**
+**I need to have Lapack on our server to compile Cytosim, any idea how to install it?**
 </summary>
 You can find a precompiled BLAS/LAPACK distributions for Linux. Ask you system administrator to deploy it. If you really need to compile BLAS/LAPACK, the [reference code is on netlib](http://www.netlib.org/lapack/index.html).
 </details>

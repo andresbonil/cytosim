@@ -33,7 +33,7 @@ Once cytosim is running on your machine, check the tutorials, the page on [runni
 
 #### Troubleshooting
 
-For more information, please check the [guideline to compile](compile/index.md).  
+For more information, please check the [compilation guideline](compile/index.md).  
 
 cytosimATcytosimDOTorg
 
