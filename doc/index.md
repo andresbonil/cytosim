@@ -33,8 +33,7 @@ Once cytosim is running on your machine, check the tutorials, the page on [runni
 
 #### Troubleshooting
 
-For more information, please check [the dedicated pages](compile/index.md).  
-You may need to manually edit the makefiles depending on your platform.
+For more information, please check the [guideline to compile](compile/index.md).  
 
 cytosimATcytosimDOTorg
 

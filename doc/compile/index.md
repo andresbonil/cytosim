@@ -73,25 +73,27 @@ Please, [refer to the dedicated page](cygwin.md).
 
 # Compilation
 
-After installing a compiler and `gnu's make`, 
+After installing a compiler and [gnu's make ](http://www.gnu.org/software/make/)
 you are ready to compile from a terminal, with the following commands in the root directory of cytosim:
 
 	make sim
 	make play
 
 The command `make` without arguments will build `sim` and `play`.  
-You can then check the resulting executables, that should be located in subdirectory `bin`:
+If this does not work, you may need to manually edit `makefile.in` to adjust to your platform.
 
-	bin/sim info
-	bin/sim
-	bin/play live
-
-It is also possible to use [cmake](https://cmake.org):
+It is also possible to use [cmake](https://cmake.org), which should require no adjustment:
 
 	mkdir build
 	cd build
 	cmake ..
-	make
+	make sim play report
+
+You can then check the resulting executables, normally located in subdirectory `bin`:
+
+	bin/sim info
+	bin/sim
+	bin/play live
 
 # Optimizations
 
@@ -105,7 +107,7 @@ Turn off assertions by defining `NDEBUG` in `src/base/assert.h`:
 
 	#define NDEBUG
 
-Recompile Cytosim entirely:
+Recompile Cytosim from scratch:
 
 	make clean
 	make
