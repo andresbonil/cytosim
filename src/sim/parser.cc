@@ -598,7 +598,6 @@ void Parser::parse_mark(std::istream& is)
         plane = VECTOR, REAL
      }
 
- NAME can be '*' to cut all fibers.
  The plane is specified by a normal vector `n` (VECTOR) and a scalar `a` (REAL).
  The plane is defined by <em> n.pos + a = 0 </em>
  */
@@ -606,17 +605,16 @@ void Parser::parse_mark(std::istream& is)
 void Parser::parse_cut(std::istream& is)
 {    
     std::streampos ipos = is.tellg();
-    std::string name = Tokenizer::get_token(is);
+    std::string str = Tokenizer::get_token(is);
  
-    if ( name == "all" )
+    if ( str == "all" )
     {
-        std::string str = Tokenizer::get_symbol(is);
-        if ( str != "fiber" )
+        if ( Tokenizer::get_symbol(is) != "fiber" )
             throw InvalidParameter("only 'fiber' can be cut");
     }
-    else if ( name == "fiber" )
+    else if ( str == "fiber" )
     {
-        name = Tokenizer::get_symbol(is);
+        str = Tokenizer::get_symbol(is);
     }
     
     std::string blok = Tokenizer::get_block(is, '{');
@@ -627,7 +625,7 @@ void Parser::parse_cut(std::istream& is)
     if ( do_run )
     {
         Glossary opt(blok);
-        execute_cut(name, opt);
+        execute_cut(str, opt);
         if ( opt.warnings(std::cerr) )
             StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
@@ -1033,6 +1031,41 @@ void Parser::parse_end(std::istream& is)
      */
 }
 
+
+/**
+ Dump system in binary MATLAB format
+ 
+     dump DIRECTORY_NAME
+ 
+ */
+void Parser::parse_dump(std::istream& is)
+{
+    std::string str = Tokenizer::get_token(is);
+    if ( str.empty() )
+        throw InvalidSyntax("missing directory name after 'dump'");
+
+    if ( do_write && do_run )
+        simul.dump(str.c_str());
+}
+
+
+/**
+ Save system matrix and right-hand-side vector in text format
+ 
+     save DIRECTORY_NAME
+ 
+ */
+void Parser::parse_save(std::istream& is)
+{
+    std::string str = Tokenizer::get_token(is);
+    if ( str.empty() )
+        throw InvalidSyntax("missing directory name after 'save'");
+
+    if ( do_write && do_run )
+        simul.saveSystem(str.c_str());
+}
+
+
 //------------------------------------------------------------------------------
 #pragma mark -
 
@@ -1046,7 +1079,7 @@ void Parser::parse_end(std::istream& is)
  */
 int Parser::evaluate_one(std::istream& is)
 {
-    std::string tok = Tokenizer::get_token(is);
+    std::string tok = Tokenizer::get_token(is, true);
     
     if ( is.fail() )
         return 1;
@@ -1136,15 +1169,9 @@ int Parser::evaluate_one(std::istream& is)
     else if ( tok == ";" )
         return 0;
     else if ( tok == "dump" )
-    {
-        if ( do_write && do_run )
-            simul.dump();
-    }
-    else if ( tok == "dump_system" )
-    {
-        if ( do_write && do_run )
-            simul.dump_system();
-    }
+        parse_dump(is);
+    else if ( tok == "save" )
+        parse_save(is);
     else {
         throw InvalidSyntax("unexpected command `"+tok+"'");
     }

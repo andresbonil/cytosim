@@ -451,6 +451,8 @@ std::string Tokenizer::get_token(std::istream& is, bool eat_line)
     
     if ( c == '\n' )
     {
+        if ( !eat_line )
+            return "";
         is.get();
         return "\n";
     }

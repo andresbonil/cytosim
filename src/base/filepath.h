@@ -27,7 +27,7 @@ namespace FilePath
     inline int  change_dir(std::string const& str) { return change_dir(str.c_str()); }
 
     /// create new directory
-    int make_dir(const char path[]);
+    int make_dir(const char name[]);
     
     /// list content of directory
     std::vector<std::string> list_dir(const char path[]);

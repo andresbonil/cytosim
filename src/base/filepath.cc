@@ -38,9 +38,9 @@ bool FilePath::is_dir(const char path[])
 }
 
 
-int FilePath::make_dir(const char path[])
+int FilePath::make_dir(const char name[])
 {
-    return mkdir(path, S_IRWXU|S_IRWXG|S_IRWXG|S_IXOTH);
+    return mkdir(name, S_IRWXU|S_IRWXG|S_IRWXG|S_IXOTH);
 }
 
 

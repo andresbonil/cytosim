@@ -79,6 +79,12 @@ private:
     /// parse command `end`
     void      parse_end(std::istream&);
     
+    /// parse command `dump`
+    void      parse_dump(std::istream&);
+    
+    /// parse command `save`
+    void      parse_save(std::istream&);
+
     //--------------------------------------------------------------------------
 
 public:

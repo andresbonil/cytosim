@@ -190,10 +190,10 @@ public:
     void            computeForces() const;
     
     /// dump matrix and vector from Meca in a format that can be read in MATLAB
-    void            dump() const;
+    void            dump(const char dirname[]) const;
     
-    /// dump system matrix in sparse text format
-    void            dump_system() const;
+    /// dump system matrix and vector in sparse text format
+    void            saveSystem(const char dirname[]) const;
 
 private:
     

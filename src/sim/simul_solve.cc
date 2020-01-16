@@ -381,25 +381,26 @@ void Simul::computeForces() const
 }
 
 
-void Simul::dump() const
+void Simul::dump(const char dirname[]) const
 {
     std::string cwd = FilePath::get_cwd();
-    const char path[] = "dump";
-    FilePath::make_dir(path);
-    FilePath::change_dir(path);
+    FilePath::make_dir(dirname);
+    FilePath::change_dir(dirname);
     sMeca.dump();
     FilePath::change_dir(cwd);
-    std::clog << "cytosim dumped a system of size " << sMeca.dimension() << "in " << path << std::endl;
+    fprintf(stderr, "Cytosim dumped its matrices in directory `%s'\n", dirname);
 }
 
 
-void Simul::dump_system() const
+void Simul::saveSystem(const char dirname[]) const
 {
+    std::string cwd = FilePath::get_cwd();
+    FilePath::make_dir(dirname);
+    FilePath::change_dir(dirname);
     FILE * f = fopen("matrix.mtx", "w");
     if ( f && ~ferror(f) )
     {
         sMeca.saveMatrix(f, 0);
-        fprintf(stderr, "Cytosim saved its matrix in `matrix.mtx'\n");
         fclose(f);
     }
     f = fopen("rhs.mtx", "w");
@@ -408,6 +409,8 @@ void Simul::dump_system() const
         sMeca.saveRHS(f);
         fclose(f);
     }
+    fprintf(stderr, "Cytosim saved its matrix in `%s'\n", dirname);
+    FilePath::change_dir(cwd);
 }
 
 //==============================================================================
