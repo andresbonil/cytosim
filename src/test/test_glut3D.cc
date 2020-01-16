@@ -4,9 +4,9 @@
  
  Francois Nedelec, Nov. 2003,  nedelec@embl.de
  To compile on mac-osx:
- g++ testglut2.cc -framework GLUT -framework openGL -framework Foundation
+ g++ test_glut3D.cc -framework GLUT -framework openGL -framework Foundation
  On Linux:
- g++ testglut2.cc -L/usr/X11R6/lib -lglut -lGL -lGLU -lXt -lX11 -lXi -lXmu
+ g++ test_glut3D.cc -L/usr/X11R6/lib -lglut -lGL -lGLU -lXt -lX11 -lXi -lXmu
 
  */
 

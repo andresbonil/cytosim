@@ -56,6 +56,9 @@
 		BB0F033114C5FDF2002FA598 /* report.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBA721BB1462C3B900ACF26D /* report.cc */; };
 		BB10378310B8032E00CEC5C6 /* assert_macro.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73586E05B98DA3006956D5 /* assert_macro.h */; };
 		BB1037F810B8121300CEC5C6 /* rasterizer.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73589F05B98DA3006956D5 /* rasterizer.h */; };
+		BB109D3623D0788200805F16 /* line_disp.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB1DCBF21421FE850061547C /* line_disp.cc */; };
+		BB109D3723D0788200805F16 /* point_disp.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBC0E57110CABBBB008139D1 /* point_disp.cc */; };
+		BB109D3823D0788200805F16 /* fiber_disp.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD4BB391007F2D300D00914 /* fiber_disp.cc */; };
 		BB1121841549B72B0031CC48 /* shackle_long.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB1121821549B72B0031CC48 /* shackle_long.cc */; };
 		BB1121851549B72B0031CC48 /* shackle_long.h in Headers */ = {isa = PBXBuildFile; fileRef = BB1121831549B72B0031CC48 /* shackle_long.h */; };
 		BB171C330B3DEBE700CFFC3B /* fiber.h in Headers */ = {isa = PBXBuildFile; fileRef = BB171C310B3DEBE700CFFC3B /* fiber.h */; };
@@ -70,8 +73,7 @@
 		BB19FEF712F352A400ACEA12 /* inventoried.h in Headers */ = {isa = PBXBuildFile; fileRef = BB19FEF312F352A400ACEA12 /* inventoried.h */; };
 		BB19FEF812F352A400ACEA12 /* inventory.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB19FEF412F352A400ACEA12 /* inventory.cc */; };
 		BB19FEF912F352A400ACEA12 /* inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = BB19FEF512F352A400ACEA12 /* inventory.h */; };
-		BB1DCBF41421FE850061547C /* line_disp.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB1DCBF21421FE850061547C /* line_disp.cc */; };
-		BB1DCBF51421FE850061547C /* line_disp.h in Headers */ = {isa = PBXBuildFile; fileRef = BB1DCBF31421FE850061547C /* line_disp.h */; };
+		BB1D4B5A16B86B320087CC48 /* quartic_solver.h in Headers */ = {isa = PBXBuildFile; fileRef = BB1D4B5916B86B320087CC48 /* quartic_solver.h */; };
 		BB1F0BBF0653D5F4003F4957 /* exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73587505B98DA3006956D5 /* exceptions.h */; };
 		BB1F0BC20653D5F5003F4957 /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73587A05B98DA3006956D5 /* messages.h */; };
 		BB1F0BC80653D5F6003F4957 /* iowrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73587D05B98DA3006956D5 /* iowrapper.h */; };
@@ -465,8 +467,6 @@
 		BBBD34DE1AAB444000819326 /* grid.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB73588005B98DA3006956D5 /* grid.cc */; };
 		BBBD34E01AABA5BE00819326 /* grid_base.h in Headers */ = {isa = PBXBuildFile; fileRef = BBBD34DF1AABA5BE00819326 /* grid_base.h */; };
 		BBBD34E21AABA6C300819326 /* grid_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBBD34E11AABA6C300819326 /* grid_base.cc */; };
-		BBC0E57310CABBBB008139D1 /* point_disp.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBC0E57110CABBBB008139D1 /* point_disp.cc */; };
-		BBC0E57410CABBBB008139D1 /* point_disp.h in Headers */ = {isa = PBXBuildFile; fileRef = BBC0E57210CABBBB008139D1 /* point_disp.h */; };
 		BBCA7D081803EAF4000DFD95 /* player.h in Headers */ = {isa = PBXBuildFile; fileRef = BB9CED2A07E21B0F00887531 /* player.h */; };
 		BBCA9EEF06AFCB4600638608 /* libcytobase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB51BC5C05FA559800D4869F /* libcytobase.a */; };
 		BBCAA27F06B0539000638608 /* mecapoint.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBCAA27B06B0539000638608 /* mecapoint.cc */; };
@@ -481,8 +481,6 @@
 		BBD025E11B28DF950002B9FE /* chewer.h in Headers */ = {isa = PBXBuildFile; fileRef = BBD025DD1B28DF950002B9FE /* chewer.h */; };
 		BBD1B1EE18FFD5DA00E5D80A /* project_ellipse.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD1B1EB18FFCE9A00E5D80A /* project_ellipse.cc */; };
 		BBD1B1F018FFD97800E5D80A /* project_ellipse.h in Headers */ = {isa = PBXBuildFile; fileRef = BBD1B1EF18FFD97800E5D80A /* project_ellipse.h */; };
-		BBD4BB3B1007F2D300D00914 /* fiber_disp.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD4BB391007F2D300D00914 /* fiber_disp.cc */; };
-		BBD4BB3C1007F2D400D00914 /* fiber_disp.h in Headers */ = {isa = PBXBuildFile; fileRef = BBD4BB3A1007F2D300D00914 /* fiber_disp.h */; };
 		BBD5DA7A0FF7956C0010D08D /* organizer_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD5DA760FF7956C0010D08D /* organizer_set.cc */; };
 		BBD5DA7B0FF7956C0010D08D /* organizer_set.h in Headers */ = {isa = PBXBuildFile; fileRef = BBD5DA770FF7956C0010D08D /* organizer_set.h */; };
 		BBD6F5C112D9D16400A5F99B /* bundle_prop.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD6F5BD12D9D16400A5F99B /* bundle_prop.cc */; };
@@ -2262,12 +2260,6 @@
 			children = (
 				BB7F683F12D0F1B100F8FC84 /* display_prop.h */,
 				BB7F683E12D0F1B100F8FC84 /* display_prop.cc */,
-				BBC0E57210CABBBB008139D1 /* point_disp.h */,
-				BBC0E57110CABBBB008139D1 /* point_disp.cc */,
-				BBD4BB3A1007F2D300D00914 /* fiber_disp.h */,
-				BBD4BB391007F2D300D00914 /* fiber_disp.cc */,
-				BB1DCBF31421FE850061547C /* line_disp.h */,
-				BB1DCBF21421FE850061547C /* line_disp.cc */,
 			);
 			name = display_prop;
 			sourceTree = "<group>";
@@ -2368,6 +2360,12 @@
 				BB9711621DECDA1300352630 /* view_prop.cc */,
 				BB9711611DECDA1300352630 /* view.h */,
 				BB9711601DECDA1300352630 /* view.cc */,
+				BBC0E57210CABBBB008139D1 /* point_disp.h */,
+				BBC0E57110CABBBB008139D1 /* point_disp.cc */,
+				BBD4BB3A1007F2D300D00914 /* fiber_disp.h */,
+				BBD4BB391007F2D300D00914 /* fiber_disp.cc */,
+				BB1DCBF31421FE850061547C /* line_disp.h */,
+				BB1DCBF21421FE850061547C /* line_disp.cc */,
 			);
 			name = disp;
 			path = src/disp;
@@ -3039,13 +3037,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BBD4BB3C1007F2D400D00914 /* fiber_disp.h in Headers */,
-				BBC0E57410CABBBB008139D1 /* point_disp.h in Headers */,
 				BBF7BB1B10CD44E00089F5B1 /* display2.h in Headers */,
 				BB7662C610E923A200C93DF6 /* frame_reader.h in Headers */,
 				BB56FA7712D0A0BF008B2260 /* play_prop.h in Headers */,
 				BB7F684112D0F1B100F8FC84 /* display_prop.h in Headers */,
-				BB1DCBF51421FE850061547C /* line_disp.h in Headers */,
 				BB0E885716FBC81400451517 /* sim_thread.h in Headers */,
 				BBCA7D081803EAF4000DFD95 /* player.h in Headers */,
 			);
@@ -3526,11 +3521,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB109D3723D0788200805F16 /* point_disp.cc in Sources */,
 				BB9711671DECDB7E00352630 /* glapp.cc in Sources */,
 				BB97116B1DECDB9500352630 /* offscreen.cc in Sources */,
 				BB97116A1DECDB8F00352630 /* saveimage.cc in Sources */,
+				BB109D3823D0788200805F16 /* fiber_disp.cc in Sources */,
 				BB30922C2164BB2B00C6DEE4 /* grid_display.cc in Sources */,
 				BB97116C1DECDBA000352630 /* gle_color.cc in Sources */,
+				BB109D3623D0788200805F16 /* line_disp.cc in Sources */,
 				BB9711691DECDB8500352630 /* view.cc in Sources */,
 				BB97116D1DECDBA300352630 /* gle_color_list.cc in Sources */,
 				BB9711681DECDB8200352630 /* view_prop.cc in Sources */,
@@ -3832,14 +3830,11 @@
 				BBADE817091F4427007BB791 /* display1.cc in Sources */,
 				BBADE819091F4427007BB791 /* display3.cc in Sources */,
 				BB6E174E223E5B3D00AF850D /* operator_new.cc in Sources */,
-				BBD4BB3B1007F2D300D00914 /* fiber_disp.cc in Sources */,
-				BBC0E57310CABBBB008139D1 /* point_disp.cc in Sources */,
 				BBF7BB1A10CD44E00089F5B1 /* display2.cc in Sources */,
 				BB7662C510E923A200C93DF6 /* frame_reader.cc in Sources */,
 				BB56FA7812D0A0BF008B2260 /* play_prop.cc in Sources */,
 				BB8BBD0621537DD50033BC7A /* player.cc in Sources */,
 				BB7F684012D0F1B100F8FC84 /* display_prop.cc in Sources */,
-				BB1DCBF41421FE850061547C /* line_disp.cc in Sources */,
 				BB0E885616FBC81400451517 /* sim_thread.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
