@@ -495,7 +495,7 @@ void Meca::addLink(const Mecapoint & pta,
         const real ww[] = { weight, -weight };
 #if ( 1 )
         Vector off = modulo->offset(pta.pos() - ptb.pos());
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -503,7 +503,7 @@ void Meca::addLink(const Mecapoint & pta,
 #else
         const index_t inx[] = { DIM*ii0, DIM*ii1 };
         Vector off = modulo->offset(position2(inx, ww));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(vBAS+DIM*ii0);
             off.sub_to(vBAS+DIM*ii1);
@@ -563,7 +563,7 @@ void Meca::addLink(const Interpolation & pti,
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2 };
         Vector off = modulo->offset(position3(inx, cc));
 #endif
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -625,7 +625,7 @@ void Meca::addLink(const Mecapoint & pte,
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2 };
         Vector off = modulo->offset(position3(inx, cc));
 #endif
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -693,7 +693,7 @@ void Meca::addLink(const Interpolation & pta,
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2, DIM*ii3 };
         Vector off = modulo->offset(position4(inx, cc));
 #endif
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -757,7 +757,7 @@ void Meca::addLink1(const Interpolation & pti,
     {
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2 };
         Vector off = modulo->offset(position3(inx, cc));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -811,7 +811,7 @@ void Meca::addLink2(const Mecapoint & pte,
     {
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2 };
         Vector off = modulo->offset(position3(inx, cc));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -867,7 +867,7 @@ void Meca::addLink2(const Interpolation & pti,
     {
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2, DIM*ii3 };
         Vector off = modulo->offset(position4(inx, cc));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -925,7 +925,7 @@ void Meca::addLink3(const Mecapoint & pte,
     {
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2, DIM*ii3 };
         Vector off = modulo->offset(position4(inx, cc));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -990,7 +990,7 @@ void Meca::addLink3(const Interpolation & pti,
     {
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2, DIM*ii3, DIM*ii4 };
         Vector off = modulo->offset(position5(inx, cc));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -1055,7 +1055,7 @@ void Meca::addLink4(const Mecapoint & pte,
     {
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2, DIM*ii3, DIM*ii4 };
         Vector off = modulo->offset(position5(inx, cc));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -1129,7 +1129,7 @@ void Meca::addLink4(const Interpolation & pti,
     {
         const index_t inx[] = { DIM*ii0, DIM*ii1, DIM*ii2, DIM*ii3, DIM*ii4, DIM*ii5 };
         Vector off = modulo->offset(position6(inx, cc));
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off.add_to(ww[0], vBAS+DIM*ii0);
             off.add_to(ww[1], vBAS+DIM*ii1);
@@ -1273,7 +1273,7 @@ void Meca::addLongLink(const Mecapoint & pta,
     add_block(ia, ib, T);
 #endif
     
-    if ( modulo && !off.null() )
+    if ( modulo && off.is_not_zero() )
     {
         if ( cooked )
             off = ( weight * dot(off, axi) ) * axi;
@@ -1367,7 +1367,7 @@ void Meca::addLongLink(const Mecapoint & pte,
     add_block(ii2, ii2, W(2,2), T);
 #endif
 
-    if ( modulo && !off.null() )
+    if ( modulo && off.is_not_zero() )
     {
         if ( cooked )
             off = dot(off, axi) * axi;
@@ -1474,7 +1474,7 @@ void Meca::addLongLink(const Interpolation & pta,
     add_block(ii3, ii3, W(3,3), T);
 #endif
 
-    if ( modulo && !off.null() )
+    if ( modulo && off.is_not_zero() )
     {
         if ( cooked )
             off = dot(off, axi) * axi;
@@ -1910,7 +1910,7 @@ void Meca::addSideLink2D(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( ptb.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off *= -weight;
             A.trans_vecmul(off).add_to(vBAS+ii0);
@@ -2119,7 +2119,7 @@ void Meca::addSideSideLink2D(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( ptb.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             Aw.trans_vecmul(off).add_to(vBAS+ii0);
             Bw.trans_vecmul(off).add_to(vBAS+ii1);
@@ -2338,7 +2338,7 @@ void Meca::addSlidingLink(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( ptb.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off = weight * ( off - dot(dir, off) * dir );
             off.sub_to(A, vBAS+ii0);
@@ -2418,7 +2418,7 @@ void Meca::addSlidingLink(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( ptb.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off = weight * ( off - dot(dir, off) * dir );
             off.add_to(cc[0], vBAS+ii0);
@@ -2501,7 +2501,7 @@ void Meca::addSideSlidingLink2D(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( pte.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off = weight * ( off - dot(off, dir) * dir );
             A.trans_vecmul(off).add_to(vBAS+ii0);
@@ -2534,7 +2534,7 @@ void Meca::addSideSlidingLink2D(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( pte.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             for ( int n=0; n<6; ++n )
                 vBAS[ixx[n]] -= TPT[n+6*4] * off.XX + TPT[n+6*5] * off.YY;
@@ -2690,7 +2690,7 @@ void Meca::addSideSlidingLinkS(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( pte.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off = dot(axi, off) * axi;
             off.add_to(ww[0], vBAS+ii0);
@@ -2800,7 +2800,7 @@ void Meca::addSideSlidingLink2D(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( ptb.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             for ( int ii=0; ii<8; ++ii )
             {
@@ -2887,7 +2887,7 @@ void Meca::addSideSlidingLinkS(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( ptb.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off = off - dot(axi, off) * axi;
             off.add_to(ww[0], vBAS+ii0);
@@ -2988,7 +2988,7 @@ void Meca::addSideSlidingLinkS(const Interpolation & pta,
     if ( modulo )
     {
         Vector off = modulo->offset( ptb.pos() - pta.pos() );
-        if ( !off.null() )
+        if ( off.is_not_zero() )
         {
             off = dot(axi, off) * axi;
             off.add_to(ww[0], vBAS+ii0);

@@ -235,12 +235,12 @@ public:
         return ( XX == XX );
     }
     
-    /// true if all components are zero
-    bool null() const
+    /// true if component is not zero
+    bool is_not_zero() const
     {
-        return XX == 0.0;
+        return XX != 0.0;
     }
-    
+
     /// scale to unit norm
     void normalize()
     {

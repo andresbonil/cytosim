@@ -317,12 +317,12 @@ public:
         return ( XX == XX ) && ( YY == YY );
     }
     
-    /// true if all components are zero
-    bool null() const
+    /// true if some component is not zero
+    bool is_not_zero() const
     {
-        return ( XX == 0.0 ) && ( YY == 0.0 );
+        return ( XX || YY );
     }
-    
+
     /// scale to unit norm
     void normalize()
     {
