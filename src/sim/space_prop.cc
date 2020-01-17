@@ -89,7 +89,7 @@ Space * SpaceProp::newSpace() const
     if ( s=="banana" )                         return new SpaceBanana(this);
     if ( s=="torus" )                          return new SpaceTorus(this);
     if ( s=="dice" )                           return new SpaceDice(this);
-    if ( s=="strip" || s=="half_periodic" )    return new SpaceStrip(this);
+    if ( s=="strip" || s=="semi_periodic" )    return new SpaceStrip(this);
     if ( s=="periodic" )                       return new SpacePeriodic(this);
     if ( s=="ellipse" || s=="ellipsoid" )      return new SpaceEllipse(this);
 #if ( DIM >= 3 )
