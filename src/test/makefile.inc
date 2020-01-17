@@ -108,7 +108,7 @@ vpath test_gillespie bin
 
 #----------------------------Targets with Graphics------------------------------
 
-OBJGLAP := $(OBJ_DISPLAY) offscreen.o
+OBJ_GLAP := $(OBJ_DISP) offscreen.o cytobase.a cytomath.a
 
 test_opengl: test_opengl.cc
 	$(CXX) $^ $(GRAFIX) -o bin/$@
@@ -125,17 +125,17 @@ test_glut: test_glut.cc
 	$(DONE)
 vpath test_glut bin
 
-test_glapp: test_glapp.cc $(OBJGLAP) cytobase.a cytomath.a
+test_glapp: test_glapp.cc $(OBJ_GLAP)
 	$(GLTEST_MAKE)
 	$(DONE)
 vpath test_glapp bin
 
-test_sphere: test_sphere.cc $(OBJGLAP) cytomath.a cytobase.a
+test_sphere: test_sphere.cc $(OBJ_GLAP)
 	$(GLTEST_MAKE)
 	$(DONE)
 vpath test_sphere bin
 
-test_platonic: test_platonic.cc platonic.o $(OBJGLAP) cytomath.a cytobase.a
+test_platonic: test_platonic.cc platonic.o $(OBJ_GLAP)
 	$(GLTEST_MAKE)
 	$(DONE)
 vpath test_platonic bin
@@ -146,17 +146,17 @@ rasterizerG.o: rasterizer.cc rasterizer.h
 	$(COMPILE) -Isrc/base -Isrc/math -Isrc/disp -DDISPLAY -c $< -o build/$@
 vpath rasterizerG.o build
 
-test_rasterizer: test_rasterizer.cc rasterizerG.o cytomath.a $(OBJGLAP) cytobase.a
+test_rasterizer: test_rasterizer.cc rasterizerG.o $(OBJ_GLAP)
 	$(GLTEST_MAKE)
 	$(DONE)
 vpath test_rasterizer bin
 
-test_space: test_space.cc cytosim.a cytomath.a $(OBJGLAP) cytobase.a
+test_space: test_space.cc cytosim.a $(OBJ_GLAP)
 	$(GLTEST_MAKE)
 	$(DONE)
 vpath test_space bin
 
-test_grid: test_grid.cc tictoc.o cytomath.a cytobase.a $(OBJGLAP) grid_display.o
+test_grid: test_grid.cc tictoc.o $(OBJ_GLAP) grid_display.o
 	$(GLTEST_MAKE)
 	$(DONE)
 vpath test_grid bin

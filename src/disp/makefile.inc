@@ -3,7 +3,8 @@
 #
 # File src/disp/makefile.inc
 
-OBJ_DISPLAY=gle.o gle_color.o gle_color_list.o view.o view_prop.o glapp.o
+OBJ_DISP := fiber_disp.o line_disp.o point_disp.o \
+            gle.o gle_color.o gle_color_list.o view.o view_prop.o glapp.o
 
 
 #-----------------------LIB & DEF for PNG support-------------------------------
@@ -22,7 +23,7 @@ endif
 #----------------------------targets--------------------------------------------
 
 
-cytodisp.a: $(OBJ_DISPLAY) offscreen.o saveimage.o grid_display.o
+cytodisp.a: $(OBJ_DISP) offscreen.o saveimage.o grid_display.o
 	$(MAKELIB)
 	$(DONE)
 
@@ -35,5 +36,5 @@ offscreen.o: offscreen.cc offscreen.h offscreen_fbo.cc offscreen_glx.cc
 	$(COMPILE) -c $< -o build/$@
 
 
-$(OBJ_DISPLAY) grid_display.o: %.o: %.cc %.h | build
-	$(COMPILE) $(addprefix -Isrc/, math base) -c $< -o build/$@
+$(OBJ_DISP) grid_display.o: %.o: %.cc %.h | build
+	$(COMPILE) -Isrc/math -Isrc/base -Isrc/sim -c $< -o build/$@

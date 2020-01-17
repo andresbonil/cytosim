@@ -7,7 +7,7 @@ OBJ_MATH:=smath.o vector1.o vector2.o vector3.o matrix11.o matrix22.o matrix33.o
 
 #----------------------------rules----------------------------------------------
 
-INC_BM:=$(addprefix -Isrc/, base math)
+INC_BM:=-Isrc/base -Isrc/math
 
 
 $(OBJ_MATH): %.o: %.cc %.h | build
