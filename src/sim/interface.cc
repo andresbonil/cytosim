@@ -148,9 +148,7 @@ void warn_trail(std::istream& is, std::string const& msg)
     std::string str;
     std::streampos pos = is.tellg();
     std::getline(is, str);
-    InvalidSyntax e("unexpected tokens `"+str+"'");
-    e << "in `" << StreamFunc::get_line(is, pos) << "'";
-    throw e;
+    throw InvalidSyntax("unexpected `"+str+"' in `"+StreamFunc::get_line(is, pos)+"'");
 }
 
 /**
