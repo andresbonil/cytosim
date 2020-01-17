@@ -318,14 +318,14 @@ void changeColoring(FiberDisp* p, int)
 void setMask(FiberDisp* p, int val)
 {
     p->mask = val;
-    p->mask_bitfield = RNG.number_of_bits(p->mask);
+    p->mask_bitfield = RNG.distributed_bits(p->mask);
     flashText("fiber:mask_bitfield=0x%X (%i bits)", p->mask_bitfield, p->mask);
 }
 
 void changeMask(FiberDisp* p, int val)
 {
     p->mask = ( p->mask + val ) % 11;
-    p->mask_bitfield = RNG.number_of_bits(p->mask);
+    p->mask_bitfield = RNG.distributed_bits(p->mask);
     flashText("fiber:mask_bitfield=0x%X (%i bits)", p->mask_bitfield, p->mask);
 }
 

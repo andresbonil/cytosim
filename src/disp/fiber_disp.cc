@@ -136,7 +136,7 @@ void FiberDisp::read(Glossary& glos)
     glos.set(exclude_axis,     "exclude_axis");
     
     if ( glos.set(mask, "mask") )
-        mask_bitfield = RNG.number_of_bits(mask);
+        mask_bitfield = RNG.distributed_bits(mask);
     glos.set(mask_bitfield, "mask", 1);
 
     glos.set(tension_scale,    "tension_scale");

@@ -369,7 +369,7 @@ uint32_t Random::pint_slow(const uint32_t n)
  returns a random integer with exactly `b` bits equal to `1`,
  but randomly positionned.
  */
-uint32_t Random::number_of_bits(int b)
+uint32_t Random::distributed_bits(int b)
 {
     uint32_t n = 0;
     if ( b < 16 )
