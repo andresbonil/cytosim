@@ -68,7 +68,7 @@ OBJ_CYTOSIMD3:=$(OBJ_CYTOSIM:%.o=%D3.o)
 
 # objects containing graphical code under the DISPLAY keyword:
 OBJ_GRAFIX:=$(OBJ_SPACE) field.o fiber_grid.o point_grid.o
-OBJ_CYTOSIMG:=$(filter-out $(OBJ_GRAFIX),$(OBJ_CYTOSIM)) $(OBJ_NEEDG:%.o=%G.o)
+OBJ_CYTOSIMG:=$(filter-out $(OBJ_GRAFIX),$(OBJ_CYTOSIM)) $(OBJ_GRAFIX:%.o=%G.o)
 
 #----------------------------targets--------------------------------------------
 
