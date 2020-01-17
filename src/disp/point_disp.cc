@@ -324,9 +324,8 @@ void PointDisp::savePixelmap(GLubyte* bitmap, unsigned dim, unsigned id) const
 #endif
 
 
-void PointDisp::drawPixelmap(Vector const& pos, unsigned ii) const
+void PointDisp::drawPixelmap(unsigned ii) const
 {
-    gle::gleRasterPos(pos);
     //translate to center the bitmap:
     glBitmap(0,0,0,0,mOffs,mOffs,nullptr);
 #if POINTDISP_USES_PIXEL_BUFFERS
@@ -434,19 +433,25 @@ void PointDisp::makePixelmaps(GLfloat uFactor, unsigned sampling)
     glPopAttrib();
 }
 
-#else
+#endif
+
 
 /// draw inactive state
 void PointDisp::drawI(Vector const& pos) const
 {
     if ( perceptible )
     {
+#if POINTDISP_USES_PIXELMAPS
+        gle::gleRasterPos(pos);
+        drawPixelmap(0);
+#else
         glPushMatrix();
         gle::gleTranslate(pos);
         gle::gleScale(realSize);
         color2.load();
         gle::gleDisc();
         glPopMatrix();
+#endif
     }
 }
 
@@ -455,12 +460,17 @@ void PointDisp::drawF(Vector const& pos) const
 {
     if ( perceptible )
     {
+#if POINTDISP_USES_PIXELMAPS
+        gle::gleRasterPos(pos);
+        drawPixelmap(1);
+#else
         glPushMatrix();
         gle::gleTranslate(pos);
         gle::gleScale(realSize);
         color2.load();
         strokeA();
         glPopMatrix();
+#endif
     }
 }
 
@@ -469,16 +479,19 @@ void PointDisp::drawA(Vector const& pos) const
 {
     if ( perceptible )
     {
+#if POINTDISP_USES_PIXELMAPS
+        gle::gleRasterPos(pos);
+        drawPixelmap(2);
+#else
         glPushMatrix();
         gle::gleTranslate(pos);
         gle::gleScale(realSize);
         color.load();
         strokeA();
         glPopMatrix();
+#endif
     }
 }
-
-#endif
 
 
 void PointDisp::prepare(GLfloat uf, GLfloat sf, bool make_maps)

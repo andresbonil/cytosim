@@ -65,7 +65,7 @@ class PointDisp : public Property
     void makePixelmaps(GLfloat, unsigned supersampling);
     
     /// draw pixel map
-    void drawPixelmap(Vector const& pos, unsigned ii) const;
+    void drawPixelmap(unsigned ii) const;
     
     /// save pixelmap to file
     void savePixelmap(GLubyte*, unsigned dim, GLuint) const;
@@ -169,19 +169,6 @@ public:
     
     /// recalculate bitmaps
     void      prepare(GLfloat uf, GLfloat sf, bool make_maps);
-
-#if POINTDISP_USES_PIXELMAPS
-    
-    /// draw inactive state
-    void      drawI(Vector const& pos) const { if ( perceptible ) drawPixelmap(pos, 0); }
-
-    /// draw active unbound state
-    void      drawF(Vector const& pos) const { if ( perceptible ) drawPixelmap(pos, 1); }
-    
-    /// draw active bound state
-    void      drawA(Vector const& pos) const { if ( perceptible ) drawPixelmap(pos, 2); }
-
-#else
     
     /// draw inactive state
     void      drawI(Vector const& pos) const;
@@ -191,8 +178,6 @@ public:
     
     /// draw active state
     void      drawA(Vector const& pos) const;
-
-#endif
 
 };
 
