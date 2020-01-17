@@ -4,7 +4,6 @@
 
 #include "gle_color.h"
 #include "property.h"
-#include "vector.h"
 #include "gle.h"
 
 
@@ -171,13 +170,64 @@ public:
     void      prepare(GLfloat uf, GLfloat sf, bool make_maps);
     
     /// draw inactive state
-    void      drawI(Vector const& pos) const;
+    template < typename VECTOR >
+    void drawI(VECTOR const& pos) const
+    {
+        if ( perceptible )
+        {
+    #if POINTDISP_USES_PIXELMAPS
+            gle::gleRasterPos(pos);
+            drawPixelmap(0);
+    #else
+            glPushMatrix();
+            gle::gleTranslate(pos);
+            gle::gleScale(realSize);
+            color2.load();
+            gle::gleDisc();
+            glPopMatrix();
+    #endif
+        }
+    }
 
-    /// draw active state
-    void      drawF(Vector const& pos) const;
-    
-    /// draw active state
-    void      drawA(Vector const& pos) const;
+    /// draw active state, unattached
+    template < typename VECTOR >
+    void drawF(VECTOR const& pos) const
+    {
+        if ( perceptible )
+        {
+    #if POINTDISP_USES_PIXELMAPS
+            gle::gleRasterPos(pos);
+            drawPixelmap(1);
+    #else
+            glPushMatrix();
+            gle::gleTranslate(pos);
+            gle::gleScale(realSize);
+            color2.load();
+            strokeA();
+            glPopMatrix();
+    #endif
+        }
+    }
+
+    /// draw active state, attached
+    template < typename VECTOR >
+    void drawA(VECTOR const& pos) const
+    {
+        if ( perceptible )
+        {
+    #if POINTDISP_USES_PIXELMAPS
+            gle::gleRasterPos(pos);
+            drawPixelmap(2);
+    #else
+            glPushMatrix();
+            gle::gleTranslate(pos);
+            gle::gleScale(realSize);
+            color.load();
+            strokeA();
+            glPopMatrix();
+    #endif
+        }
+    }
 
 };
 

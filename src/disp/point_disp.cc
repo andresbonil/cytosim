@@ -436,64 +436,6 @@ void PointDisp::makePixelmaps(GLfloat uFactor, unsigned sampling)
 #endif
 
 
-/// draw inactive state
-void PointDisp::drawI(Vector const& pos) const
-{
-    if ( perceptible )
-    {
-#if POINTDISP_USES_PIXELMAPS
-        gle::gleRasterPos(pos);
-        drawPixelmap(0);
-#else
-        glPushMatrix();
-        gle::gleTranslate(pos);
-        gle::gleScale(realSize);
-        color2.load();
-        gle::gleDisc();
-        glPopMatrix();
-#endif
-    }
-}
-
-/// draw active state, unattached
-void PointDisp::drawF(Vector const& pos) const
-{
-    if ( perceptible )
-    {
-#if POINTDISP_USES_PIXELMAPS
-        gle::gleRasterPos(pos);
-        drawPixelmap(1);
-#else
-        glPushMatrix();
-        gle::gleTranslate(pos);
-        gle::gleScale(realSize);
-        color2.load();
-        strokeA();
-        glPopMatrix();
-#endif
-    }
-}
-
-/// draw active state, attached
-void PointDisp::drawA(Vector const& pos) const
-{
-    if ( perceptible )
-    {
-#if POINTDISP_USES_PIXELMAPS
-        gle::gleRasterPos(pos);
-        drawPixelmap(2);
-#else
-        glPushMatrix();
-        gle::gleTranslate(pos);
-        gle::gleScale(realSize);
-        color.load();
-        strokeA();
-        glPopMatrix();
-#endif
-    }
-}
-
-
 void PointDisp::prepare(GLfloat uf, GLfloat sf, bool make_maps)
 {
     realSize    = size * sf;
