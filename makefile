@@ -33,7 +33,7 @@ MAKELIB = $(LIBTOOL) lib/$@ $(addprefix build/, $(notdir $^))
 OBJECTS = $(filter %.cc, $^) $(addprefix build/, $(notdir $(filter %.o, $^))) $(addprefix lib/, $(notdir $(filter %.a, $^)))
 
 # macro to notify that a task was completed:
-DONE = printf ">>>>>>> made %s\n" $@;
+DONE = printf "> > > > > > > made %s\n" $@;
 
 
 SRCDIR1 := $(addprefix src/, math base sim disp play)

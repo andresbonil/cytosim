@@ -9,8 +9,8 @@ OBJ_PLAY1D := $(OBJ_PLAY:.o=D1.o)
 OBJ_PLAY2D := $(OBJ_PLAY:.o=D2.o)
 OBJ_PLAY3D := $(OBJ_PLAY:.o=D3.o)
 
-PLAY_INC = $(addprefix -Isrc/, math base sim disp play sim/organizers sim/singles)
-PLAY_DEP = $(addprefix -Isrc/, math base sim disp play) $(LINK) $(GRAFIX) $(IMAGES)
+PLAY_INC = $(addprefix -Isrc/, math base sim disp sim/organizers sim/singles)
+PLAY_DEP = $(addprefix -Isrc/, math base sim disp) $(LINK) $(GRAFIX) $(IMAGES)
 
 ################################ objects with DIM defined in source code:
 
