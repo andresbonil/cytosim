@@ -11,18 +11,10 @@
 ///properties needed to define a view
 class ViewProp : public Property
 {
-protected:
-
-    /// text displayed near top right corner of window
-    mutable std::string message;
-    
-    /// text displayed near bottom left corner of window
-    mutable std::string full_label;
+public:
     
     /// number of OpenGL clipping planes
     static constexpr int NB_CLIP_PLANES = 4;
-
-public:
     
     /// zoom factor = ratio between visible area and `view_size`
     GLfloat          zoom;

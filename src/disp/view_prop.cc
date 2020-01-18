@@ -28,8 +28,6 @@ void ViewProp::clear()
     label        = "Cytosim";
     memo         = "Please, visit www.cytosim.org";
     draw_memo    = 0;
-    message      = "";
-    full_label   = "Cytosim";
 
     track_fibers = 0;
     

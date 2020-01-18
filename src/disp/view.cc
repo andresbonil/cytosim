@@ -151,12 +151,12 @@ void View::drawInteractiveFeatures() const
         drawText(memo, GLUT_BITMAP_8_BY_13, 0x000000CC, 4);
     }
 
-    if ( message.size() )
+    if ( top_message.size() )
     {
         //glEnable(GL_COLOR_LOGIC_OP);
         //glLogicOp(GL_INVERT);
         front_color.load();
-        drawText(message, nullptr, 0x0, 3);
+        drawText(top_message, nullptr, 0x0, 3);
         //glDisable(GL_COLOR_LOGIC_OP);
     }
     

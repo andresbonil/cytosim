@@ -34,6 +34,12 @@ private:
     
     /// used to check that getMatrices() was called
     bool       hasMatrices;
+    
+    /// text displayed near top right corner of window
+    std::string top_message;
+    
+    /// text displayed near bottom left corner of window
+    std::string full_label;
 
     /// display callback
     void (*displayCallback)(View&, int);
@@ -114,7 +120,7 @@ public:
     void       setLabel(std::string const& msg) { full_label = label + " " + msg; }
     
     /// set text displayed near top of window
-    void       setMessage(std::string const& msg) { message = msg; }
+    void       setMessage(std::string const& msg) { top_message = msg; }
 
     /// set OpenGL Fog, with mode (GL_EXP or GL_LINEAR), intensity and color
     void       enableFog(GLint mode, GLfloat param, gle_color);
