@@ -18,8 +18,8 @@ Player player;
 
 SimThread& thread = player.thread;
 Simul&      simul = thread.sim();
-PlayProp&      PP = player.PP;
-DisplayProp&   DP = player.DP;
+PlayerProp&  prop = player.prop;
+DisplayProp& disp = player.disp;
 
 /// enable to create a player for command-line-only offscreen rendering
 //#define HEADLESS_PLAYER
@@ -231,8 +231,8 @@ int main(int argc, char* argv[])
         if ( !arg.empty() )
         {
             view.read(arg);
-            DP.read(arg);
-            PP.read(arg);
+            disp.read(arg);
+            prop.read(arg);
         }
     }
     catch( Exception & e )
@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
         const int W = view.width() * magnify;
         const int H = view.height() * magnify;
         
-        //std::cerr << W << "x" << H << << " downsample " << PP.downsample << '\n';
+        //std::cerr << W << "x" << H << << " downsample " << prop.downsample << '\n';
         
         if ( !OffScreen::openContext() )
         {
@@ -311,7 +311,7 @@ int main(int argc, char* argv[])
         }
         
         gle::initialize();
-        player.setStyle(DP.style);
+        player.setStyle(disp.style);
         view.initGL();
 
         if ( mode == OFFSCREEN_IMAGE )
@@ -335,10 +335,10 @@ int main(int argc, char* argv[])
         }
         else if ( mode == OFFSCREEN_MOVIE )
         {
-            // save every PP.period
-            unsigned s = PP.period;
+            // save every prop.period
+            unsigned s = prop.period;
             do {
-                if ( ++s >= PP.period )
+                if ( ++s >= prop.period )
                 {
                     displayOffscreen(view, magnify);
                     if ( multi )
@@ -375,9 +375,9 @@ int main(int argc, char* argv[])
 
     if ( mode == ONSCREEN_MOVIE )
     {
-        PP.exit_at_eof = true;
-        PP.save_images = true;
-        PP.play = 1;
+        prop.exit_at_eof = true;
+        prop.save_images = true;
+        prop.play = 1;
     }
     
     //-------- initialize graphical user interface and graphics
@@ -385,7 +385,7 @@ int main(int argc, char* argv[])
     try
     {
         gle::initialize();
-        player.setStyle(DP.style);
+        player.setStyle(disp.style);
         buildMenus();
         glutAttachMenu(GLUT_RIGHT_BUTTON);
         glutMenuStatusFunc(menuCallback);
@@ -404,7 +404,7 @@ int main(int argc, char* argv[])
     {
         try
         {
-            thread.period(PP.period);
+            thread.period(prop.period);
             
             if ( has_frame )
                 thread.extend();

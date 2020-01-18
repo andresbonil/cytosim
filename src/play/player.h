@@ -10,7 +10,7 @@
 #include "display.h"
 #include "sim_thread.h"
 #include "display_prop.h"
-#include "play_prop.h"
+#include "player_prop.h"
 
 class FiberDisp;
 class View;
@@ -21,10 +21,10 @@ class Player
 public:
 
     /// the display parameters
-    DisplayProp  DP;
+    DisplayProp  disp;
     
     /// the parameters for play
-    PlayProp     PP;
+    PlayerProp   prop;
     
     /// container for object's display properties
     PropertyList dproperties;

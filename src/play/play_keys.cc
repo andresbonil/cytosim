@@ -123,15 +123,15 @@ void changePointDispSize(PropertyList const& plist, int inc,
         if ( dow ) p->width = grained(p->width, inc);
     }
     
-    if ( DP.style == 2 || plist.size() > 1 )
+    if ( disp.style == 2 || plist.size() > 1 )
     {
         if ( dow ) {
-            DP.link_width = grained(DP.link_width, inc);
-            flashText("simul:link_width %.2f", DP.link_width);
+            disp.link_width = grained(disp.link_width, inc);
+            flashText("simul:link_width %.2f", disp.link_width);
         }
         if ( dos ) {
-            DP.point_size = grained(DP.point_size, inc*2);
-            flashText("simul:point_size %.2f", DP.point_size);
+            disp.point_size = grained(disp.point_size, inc*2);
+            flashText("simul:point_size %.2f", disp.point_size);
         }
     }
     else if ( plist.size() == 1 )
@@ -190,7 +190,7 @@ void shufflePointDispVisible(const PropertyList& plist)
 
 void changeSingleSelect()
 {
-    unsigned int & select = DP.single_select;
+    unsigned int & select = disp.single_select;
     switch( select )
     {
         case 3:   select = 0;    flashText("single:select=0: hidden");      break;
@@ -203,7 +203,7 @@ void changeSingleSelect()
 
 void changeCoupleSelect()
 {
-    unsigned int & select = DP.couple_select;
+    unsigned int & select = disp.couple_select;
     switch( select )
     {
         case 7:   select = 0;    flashText("couple:select=0: hidden");        break;
@@ -216,7 +216,7 @@ void changeCoupleSelect()
 
 void changeCoupleSelect2()
 {
-    unsigned int & select = DP.couple_select;
+    unsigned int & select = disp.couple_select;
     if ( select & 8 )
     {
         select = 16+4;
@@ -294,7 +294,7 @@ void changeScale(FiberDisp* p, int d)
         changeScale(p->force_scale, d);
         flashText("fiber:force_scale = %.3f", p->force_scale);
     }
-    else if ( DP.style == 2 )
+    else if ( disp.style == 2 )
         flipExplode(p);
 }
 
@@ -626,21 +626,21 @@ void processKey(unsigned char key)
             // save current image, without decorations
             player.displayCytosim();
             glFinish();
-            player.saveView("image", PP.image_index++);
+            player.saveView("image", prop.image_index++);
             // with over sampling and downsampling to get super-resolution:
-            //player.saveViewMagnified(3, "image", PP.image_index++, 3);
+            //player.saveViewMagnified(3, "image", prop.image_index++, 3);
             return;
             
         case 'Y':
             // start player to save all images in file
-            if ( PP.save_images == 0 )
+            if ( prop.save_images == 0 )
             {
                 if ( player.startPlayback() )
-                    PP.save_images = 1;
+                    prop.save_images = 1;
             }
             else
             {
-                PP.save_images = 0;
+                prop.save_images = 0;
             }
             break;
 
@@ -691,17 +691,17 @@ void processKey(unsigned char key)
             else
             {
                 player.extendLive();
-                PP.period = 1;
-                thread.period(PP.period);
+                prop.period = 1;
+                thread.period(prop.period);
                 flashText("period = 1");
             }
             break;
             
         case 'A':
-            PP.period = 2 * PP.period;
-            if ( PP.period > 1024 ) PP.period = 1;
-            thread.period(PP.period);
-            flashText("period = %i", PP.period);
+            prop.period = 2 * prop.period;
+            if ( prop.period > 1024 ) prop.period = 1;
+            thread.period(prop.period);
+            flashText("period = %i", prop.period);
             break;
             
         case 's':
@@ -718,8 +718,8 @@ void processKey(unsigned char key)
             break;
             
         case 'S':
-            PP.period = 1;
-            thread.period(PP.period);
+            prop.period = 1;
+            thread.period(prop.period);
             flashText("period = 1");
             break;
             
@@ -736,7 +736,7 @@ void processKey(unsigned char key)
             
         case '<':
         case ',':
-            if ( PP.play == 1 )
+            if ( prop.play == 1 )
                 player.stop();
             else
                 player.previousFrame();
@@ -744,24 +744,24 @@ void processKey(unsigned char key)
             
         case '>':
         case '.':
-            if ( PP.play == -1 )
+            if ( prop.play == -1 )
                 player.stop();
             else
                 player.nextFrame();
             break;
             
         case 'i':
-            PP.toggleReport(0);
+            prop.toggleReport(0);
             break;
             
         case 'I':
-            PP.toggleReport(1);
+            prop.toggleReport(1);
             break;
             
         case 'o':
-            if ( PP.delay < 1 << 13 )
-                PP.delay *= 2;
-            flashText("Delay %i ms", PP.delay);
+            if ( prop.delay < 1 << 13 )
+                prop.delay *= 2;
+            flashText("Delay %i ms", prop.delay);
             return;
             
         case 'O':
@@ -902,8 +902,8 @@ void processKey(unsigned char key)
         case '6':
             if ( altKeyDown )
             {
-                DP.draw_links = !DP.draw_links;
-                flashText("draw_links = %i", DP.draw_links);
+                disp.draw_links = !disp.draw_links;
+                flashText("draw_links = %i", disp.draw_links);
             }
             else
                 changeSingleSelect();
@@ -961,11 +961,11 @@ void processKey(unsigned char key)
 void processNormalKey(const unsigned char key, const int x, const int y)
 {
     // check for user-defined `magic_key`
-    for ( int k = 0; k < PlayProp::NB_MAGIC_KEYS; ++k )
+    for ( int k = 0; k < PlayerProp::NB_MAGIC_KEYS; ++k )
     {
-        if ( key == PP.magic_key[k] )
+        if ( key == prop.magic_key[k] )
         {
-            thread.execute(PP.magic_code[k]);
+            thread.execute(prop.magic_code[k]);
             glApp::postRedisplay();
             return;
         }

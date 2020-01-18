@@ -65,41 +65,41 @@ void processMouseDrag(int, int, Vector3& ori3, const Vector3& pos3, int mode)
 
 void timerCallback(const int value)
 {
-    unsigned millisec = PP.delay;
+    unsigned millisec = prop.delay;
     
     //thread.debug("timerCallback");
     if ( player.goLive && thread.alive() )
     {
-        if ( PP.save_images && 0 == thread.trylock() )
+        if ( prop.save_images && 0 == thread.trylock() )
         {
             player.displayScene(glApp::views[1], 1.0);
             glFinish();
-            player.saveView("image", PP.image_index++);
+            player.saveView("image", prop.image_index++);
             thread.unlock();
         }
         
         thread.signal();
     }
-    else if ( PP.play )
+    else if ( prop.play )
     {
-        if ( PP.save_images )
+        if ( prop.save_images )
         {
             player.displayScene(glApp::views[1], 1.0);
             glFinish();
             player.saveView("movie", thread.currentFrame());
         }
 
-        if ( PP.play == 1 )
+        if ( prop.play == 1 )
         {
-            // skip PP.period frames, and at least one
-            for ( unsigned s = 1; s < PP.period; ++s )
+            // skip prop.period frames, and at least one
+            for ( unsigned s = 1; s < prop.period; ++s )
                 player.nextFrame();
             player.nextFrame();
         }
-        else if ( PP.play == -1 )
+        else if ( prop.play == -1 )
             player.previousFrame();
         
-        if ( !PP.save_images )
+        if ( !prop.save_images )
             glApp::postRedisplay();
     }
     else

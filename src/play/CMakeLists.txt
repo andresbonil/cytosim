@@ -6,7 +6,7 @@ set(SOURCES_PLAY
     "${PROJECT_SOURCE_DIR}/src/play/display2.cc"
     "${PROJECT_SOURCE_DIR}/src/play/display3.cc"
     "${PROJECT_SOURCE_DIR}/src/play/sim_thread.cc"
-    "${PROJECT_SOURCE_DIR}/src/play/play_prop.cc"
+    "${PROJECT_SOURCE_DIR}/src/play/player_prop.cc"
     "${PROJECT_SOURCE_DIR}/src/play/player.cc"
     "${PROJECT_SOURCE_DIR}/src/play/play.cc"
 )

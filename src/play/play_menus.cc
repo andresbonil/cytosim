@@ -82,10 +82,10 @@ void processMenuCouple(int item)
     switch (item)
     {
         case 0:  return;
-        case 1:  DP.couple_select = 0;  break;
-        case 2:  DP.couple_select = 1;  break;
-        case 3:  DP.couple_select = 2;  break;
-        case 4:  DP.couple_select = 4;  break;
+        case 1:  disp.couple_select = 0;  break;
+        case 2:  disp.couple_select = 1;  break;
+        case 3:  disp.couple_select = 2;  break;
+        case 4:  disp.couple_select = 4;  break;
         default:
             std::cerr << "CYTOSIM ERROR: unknown menu code" << item << std::endl;
             return;
@@ -116,7 +116,7 @@ void processMenuDisplay(int item)
     {
         case 0:   return;
         case 1:   view.reset();                            break;
-        case 3:   DP.tile = !DP.tile;                      break;
+        case 3:   disp.tile = !disp.tile;                      break;
         case 4:   glApp::toggleFullScreen();               break;
         case 6:   view.track_fibers = !view.track_fibers;  break;
         
@@ -165,7 +165,7 @@ int buildMenuDisplay()
     
     View & view = glApp::currentView();
     glutAddMenuEntry("Toggle fullscreen mode (f)", 4);
-    glutAddMenuEntry(DP.tile?"Non-tiled Display":"Tiled Display", 3);
+    glutAddMenuEntry(disp.tile?"Non-tiled Display":"Tiled Display", 3);
     glutAddMenuEntry(view.track_fibers?"stop tracking":"Track Fibers", 6);
     
     return menuID;
@@ -219,10 +219,10 @@ void processMenuCoupleSelect(int item)
     switch (item)
     {
         case 0:  return;
-        case 1:  DP.couple_select  = 0;   break;
-        case 2:  DP.couple_select ^= 1;   break;
-        case 3:  DP.couple_select ^= 2;   break;
-        case 4:  DP.couple_select ^= 4;   break;
+        case 1:  disp.couple_select  = 0;   break;
+        case 2:  disp.couple_select ^= 1;   break;
+        case 3:  disp.couple_select ^= 2;   break;
+        case 4:  disp.couple_select ^= 4;   break;
         default:
             std::cerr << "CYTOSIM ERROR: unknown menu code" << item << std::endl;
             return;
@@ -239,9 +239,9 @@ int buildMenuCoupleSelect()
         glApp::clearMenu(menuID);
     
     glutAddMenuEntry("Hide All", 1);
-    glutAddMenuEntry(DP.couple_select&1?"Hide Free":"Show Free",     2);
-    glutAddMenuEntry(DP.couple_select&2?"Hide Bound":"Show Bound",   3);
-    glutAddMenuEntry(DP.couple_select&4?"Hide Links":"Show Links", 4);
+    glutAddMenuEntry(disp.couple_select&1?"Hide Free":"Show Free",     2);
+    glutAddMenuEntry(disp.couple_select&2?"Hide Bound":"Show Bound",   3);
+    glutAddMenuEntry(disp.couple_select&4?"Hide Links":"Show Links", 4);
     return menuID;
 }
 
@@ -251,9 +251,9 @@ void processMenuSingleSelect(int item)
     switch (item)
     {
         case 0:  return;
-        case 1:  DP.single_select  = 0;   break;
-        case 2:  DP.single_select ^= 1;   break;
-        case 3:  DP.single_select ^= 2;   break;
+        case 1:  disp.single_select  = 0;   break;
+        case 2:  disp.single_select ^= 1;   break;
+        case 3:  disp.single_select ^= 2;   break;
         
         default:
             std::cerr << "CYTOSIM ERROR: unknown menu code" << item << std::endl;
@@ -271,8 +271,8 @@ int buildMenuSingleSelect()
         glApp::clearMenu(menuID);
     
     glutAddMenuEntry("Hide All",     1);
-    glutAddMenuEntry(DP.single_select&1?"Hide Free":"Show Free",     2);
-    glutAddMenuEntry(DP.single_select&2?"Hide Bound":"Show Bounds", 3);
+    glutAddMenuEntry(disp.single_select&1?"Hide Free":"Show Free",     2);
+    glutAddMenuEntry(disp.single_select&2?"Hide Bound":"Show Bounds", 3);
     return menuID;
 }
 
@@ -357,8 +357,8 @@ void processMenuReplay(int item)
         case 4:  processKey('z');  break;
         case 5:  player.previousFrame();  break;
         case 6:  player.nextFrame();      break;
-        case 7:  PP.loop = 0;      break;
-        case 8:  PP.loop = 1;      break;
+        case 7:  prop.loop = 0;      break;
+        case 8:  prop.loop = 1;      break;
         default:
             std::cerr << "CYTOSIM ERROR: unknown menu code" << item << std::endl;
             return;
@@ -380,7 +380,7 @@ int buildMenuReplay()
         glutAddMenuEntry("(z) First Frame",       4);
         glutAddMenuEntry("(<) Previous Frame",    5);
         glutAddMenuEntry("(>) Next Frame",        6);
-        if ( PP.loop )
+        if ( prop.loop )
             glutAddMenuEntry("Do not loop", 7);
         else
             glutAddMenuEntry("Loop movie", 8);
@@ -395,15 +395,15 @@ void processMenuExport(int item)
     switch (item)
     {
         case 0:   return;
-        case 1:   player.saveView("image", PP.image_index++);                return;
-        case 2:   player.saveViewMagnified(3, "image", PP.image_index++, 3); return;
-        case 3:   player.saveViewMagnified(6, "image", PP.image_index++, 3); return;
-        case 4:   player.saveViewMagnified(9, "image", PP.image_index++, 3); return;
-        case 5:   player.saveViewMagnified(4, "poster", PP.poster_index++);  return;
-        case 6:   player.saveViewMagnified(8, "poster", PP.poster_index++);  return;
+        case 1:   player.saveView("image", prop.image_index++);                return;
+        case 2:   player.saveViewMagnified(3, "image", prop.image_index++, 3); return;
+        case 3:   player.saveViewMagnified(6, "image", prop.image_index++, 3); return;
+        case 4:   player.saveViewMagnified(9, "image", prop.image_index++, 3); return;
+        case 5:   player.saveViewMagnified(4, "poster", prop.poster_index++);  return;
+        case 6:   player.saveViewMagnified(8, "poster", prop.poster_index++);  return;
 
-        case 9:   PP.save_images = 1; player.startPlayback();     return;
-        case 10:  PP.image_index = 0;                             return;
+        case 9:   prop.save_images = 1; player.startPlayback();     return;
+        case 10:  prop.image_index = 0;                             return;
         
         case 20:  player.writePlayParameters(std::cout, true);    return;
         case 21:  player.writeDisplayParameters(std::cout, true); return;

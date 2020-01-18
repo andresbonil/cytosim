@@ -222,7 +222,7 @@ void timerFunction(int win)
 {
     angle += angle_inc;
     glutPostWindowRedisplay(win);
-    //register another timer call back in PP.delay milli-sec:
+    //register another timer call back in prop.delay milli-sec:
     glutTimerFunc(delay, timerFunction, win);
 }
 

@@ -35,11 +35,11 @@ void Player::setStyle(const int style)
     switch ( style )
     {
         default:
-        case 1: mDisplay = new Display1(&DP);  break;
-        case 2: mDisplay = new Display2(&DP);  break;
-        case 3: mDisplay = new Display3(&DP);  break;
+        case 1: mDisplay = new Display1(&disp);  break;
+        case 2: mDisplay = new Display2(&disp);  break;
+        case 3: mDisplay = new Display3(&disp);  break;
     }
-    DP.style = style;
+    disp.style = style;
 
     //initialize Views associated with opened GLUT windows:
     for ( size_t n = 1; n < glApp::views.size(); ++n )
@@ -77,8 +77,8 @@ std::string Player::buildLabel() const
     {
         oss << "\nLive";
         //display ratio number-of-time-step / frame
-        if ( PP.period > 1 )
-            oss << " " << PP.period;
+        if ( prop.period > 1 )
+            oss << " " << prop.period;
     }
     else if ( thread.currentFrame() > 0 )
     {
@@ -218,19 +218,19 @@ void Player::prepareDisplay(View& view, int mag)
     //----------------- texts:
     
     view.setLabel(buildLabel());
-    view.setMessage(buildReport(PP.report));
+    view.setMessage(buildReport(prop.report));
     
     //----------------- set pixel size and unit-size:
     /*
-     if DP.point_value is set, line-width and point-size were specified in 'real' units,
+     if disp.point_value is set, line-width and point-size were specified in 'real' units,
      and otherwise, they were specified in pixels.
      */
 
     GLfloat pix = view.pixelSize();
     //std::clog << " pixel size = " << pix << '\n';
 
-    if ( DP.point_value > 0 )
-        mDisplay->setPixelFactors(pix/mag, mag*DP.point_value/pix);
+    if ( disp.point_value > 0 )
+        mDisplay->setPixelFactors(pix/mag, mag*disp.point_value/pix);
     else
         mDisplay->setPixelFactors(pix/mag, mag);
 
@@ -254,13 +254,13 @@ void Player::displayCytosim()
 
     try {
         // draw:
-        if ( modulo && DP.tile )
-            mDisplay->displayTiled(simul, DP.tile);
+        if ( modulo && disp.tile )
+            mDisplay->displayTiled(simul, disp.tile);
         else
             mDisplay->display(simul);
 
 #if DRAW_MECA_LINKS
-        if ( DP.draw_links )
+        if ( disp.draw_links )
         {
             glPushAttrib(GL_LIGHTING_BIT);
             glDisable(GL_LIGHTING);
@@ -286,7 +286,7 @@ void Player::readDisplayString(View& view, std::string const& str)
     try
     {
         Glossary glos(str);
-        DP.read(glos);
+        disp.read(glos);
         const int W = view.width(), H = view.height();
         view.read(glos);
         // window size cannot be changed:
@@ -322,28 +322,28 @@ void Player::displayScene(View& view, int mag)
 
 /**
  Export image from the current OpenGL back buffer,
- in the format specified by 'PlayProp::image_format',
- in the folder specified in `PlayProp::image_dir`.
+ in the format specified by 'PlayerProp::image_format',
+ in the folder specified in `PlayerProp::image_dir`.
  The name of the file is formed by concatenating 'root' and 'indx'.
  */
 int Player::saveView(const char* root, unsigned indx, int verbose) const
 {
     char cwd[1024] = { 0 };
     char name[1024];
-    char const* format = PP.image_format.c_str();
+    char const* format = prop.image_format.c_str();
     snprintf(name, sizeof(name), "%s%04i.%s", root, indx, format);
-    if ( PP.image_dir.length() )
+    if ( prop.image_dir.length() )
     {
         if ( getcwd(cwd, sizeof(cwd)) )
-            chdir(PP.image_dir.c_str());
+            chdir(prop.image_dir.c_str());
     }
     GLint vp[4];
     glGetIntegerv(GL_VIEWPORT, vp);
-    int err = SaveImage::saveImage(name, format, vp, PP.downsample);
+    int err = SaveImage::saveImage(name, format, vp, prop.downsample);
     if ( err == 0 && verbose > 0 )
     {
-        int W = vp[2] / PP.downsample;
-        int H = vp[3] / PP.downsample;
+        int W = vp[2] / prop.downsample;
+        int H = vp[3] / prop.downsample;
         if ( verbose > 1 )
             printf("\r saved %ix%i snapshot %s    ", W, H, name);
         else
@@ -410,12 +410,12 @@ int Player::saveViewMagnified(const int mag, const char* root, unsigned indx, co
 {
     char cwd[1024] = { 0 };
     char name[1024];
-    char const* format = PP.image_format.c_str();
+    char const* format = prop.image_format.c_str();
     snprintf(name, sizeof(name), "%s%04i.%s", root, indx, format);
-    if ( PP.image_dir.length() )
+    if ( prop.image_dir.length() )
     {
         if ( getcwd(cwd, sizeof(cwd)) )
-            chdir(PP.image_dir.c_str());
+            chdir(prop.image_dir.c_str());
     }
     int err = saveViewMagnified(mag, name, format, downsample);
     if ( cwd[0] )

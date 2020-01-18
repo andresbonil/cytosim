@@ -166,8 +166,8 @@
 		BB55C2230A261FC8003333C9 /* simul.h in Headers */ = {isa = PBXBuildFile; fileRef = BB7358FC05B98DA3006956D5 /* simul.h */; };
 		BB55C2250A261FC9003333C9 /* hand.h in Headers */ = {isa = PBXBuildFile; fileRef = BB7358E205B98DA3006956D5 /* hand.h */; };
 		BB560C301813DC8800CB1BF5 /* vecprint.h in Headers */ = {isa = PBXBuildFile; fileRef = BB560C2F1813DC8800CB1BF5 /* vecprint.h */; };
-		BB56FA7712D0A0BF008B2260 /* play_prop.h in Headers */ = {isa = PBXBuildFile; fileRef = BB56FA7512D0A0BF008B2260 /* play_prop.h */; };
-		BB56FA7812D0A0BF008B2260 /* play_prop.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB56FA7612D0A0BF008B2260 /* play_prop.cc */; };
+		BB56FA7712D0A0BF008B2260 /* player_prop.h in Headers */ = {isa = PBXBuildFile; fileRef = BB56FA7512D0A0BF008B2260 /* player_prop.h */; };
+		BB56FA7812D0A0BF008B2260 /* player_prop.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB56FA7612D0A0BF008B2260 /* player_prop.cc */; };
 		BB5A0CB021C38BF7000DBC0E /* interpolation4.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD89B2F214FEABB00DB4ECA /* interpolation4.cc */; };
 		BB5CDDCA06AC4C4B008296B1 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB7C2B8D05FA4AC9002C69A9 /* OpenGL.framework */; };
 		BB5D4A9612BC035600A1312F /* common.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB5D4A9512BC035600A1312F /* common.cc */; };
@@ -1043,8 +1043,8 @@
 		BB55BF390A25FB22003333C9 /* platonic.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = platonic.h; path = src/math/platonic.h; sourceTree = SOURCE_ROOT; };
 		BB560C2F1813DC8800CB1BF5 /* vecprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vecprint.h; path = src/math/vecprint.h; sourceTree = SOURCE_ROOT; };
 		BB568CCA0BFCEAA300CB5335 /* cym */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; path = cym; sourceTree = SOURCE_ROOT; };
-		BB56FA7512D0A0BF008B2260 /* play_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = play_prop.h; sourceTree = "<group>"; };
-		BB56FA7612D0A0BF008B2260 /* play_prop.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = play_prop.cc; sourceTree = "<group>"; };
+		BB56FA7512D0A0BF008B2260 /* player_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = player_prop.h; sourceTree = "<group>"; };
+		BB56FA7612D0A0BF008B2260 /* player_prop.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = player_prop.cc; sourceTree = "<group>"; };
 		BB5921D2112612EF00E0DDA0 /* simul_custom.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = simul_custom.cc; path = src/sim/simul_custom.cc; sourceTree = SOURCE_ROOT; };
 		BB5D4A9512BC035600A1312F /* common.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cc; path = src/sim/common.cc; sourceTree = SOURCE_ROOT; };
 		BB5D4C9F12BCBE2900A1312F /* parser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parser.cc; sourceTree = "<group>"; };
@@ -2100,8 +2100,8 @@
 				BB9CED2A07E21B0F00887531 /* player.h */,
 				BB7358C805B98DA3006956D5 /* player.cc */,
 				BB7358C405B98DA3006956D5 /* player_disp.cc */,
-				BB56FA7512D0A0BF008B2260 /* play_prop.h */,
-				BB56FA7612D0A0BF008B2260 /* play_prop.cc */,
+				BB56FA7512D0A0BF008B2260 /* player_prop.h */,
+				BB56FA7612D0A0BF008B2260 /* player_prop.cc */,
 				BB7358CB05B98DA3006956D5 /* play_menus.cc */,
 				BB81B868219EE37D009CA402 /* play_mouse.cc */,
 				BB81B86A219EE55F009CA402 /* play_keys.cc */,
@@ -2233,15 +2233,6 @@
 			name = bundle;
 			sourceTree = "<group>";
 		};
-		BB872F44153D9E5300DE7058 /* display_prop */ = {
-			isa = PBXGroup;
-			children = (
-				BB7F683F12D0F1B100F8FC84 /* display_prop.h */,
-				BB7F683E12D0F1B100F8FC84 /* display_prop.cc */,
-			);
-			name = display_prop;
-			sourceTree = "<group>";
-		};
 		BB88388610B48E6900A4028F /* Space */ = {
 			isa = PBXGroup;
 			children = (
@@ -2328,22 +2319,22 @@
 			isa = PBXGroup;
 			children = (
 				BB9711581DECDA1300352630 /* makefile.inc */,
-				BB3092282164BAC300C6DEE4 /* grid_display.h */,
-				BB3092292164BAC300C6DEE4 /* grid_display.cc */,
-				BB9711641DECDA2C00352630 /* GLE */,
-				BB9711651DECDA3600352630 /* GL */,
-				BB97114D1DECDA1300352630 /* glapp.h */,
-				BB97114C1DECDA1300352630 /* glapp.cc */,
-				BB9711631DECDA1300352630 /* view_prop.h */,
-				BB9711621DECDA1300352630 /* view_prop.cc */,
-				BB9711611DECDA1300352630 /* view.h */,
-				BB9711601DECDA1300352630 /* view.cc */,
 				BBC0E57210CABBBB008139D1 /* point_disp.h */,
 				BBC0E57110CABBBB008139D1 /* point_disp.cc */,
 				BBD4BB3A1007F2D300D00914 /* fiber_disp.h */,
 				BBD4BB391007F2D300D00914 /* fiber_disp.cc */,
 				BB1DCBF31421FE850061547C /* line_disp.h */,
 				BB1DCBF21421FE850061547C /* line_disp.cc */,
+				BB9711651DECDA3600352630 /* GL */,
+				BB9711641DECDA2C00352630 /* GLE */,
+				BB97114D1DECDA1300352630 /* glapp.h */,
+				BB97114C1DECDA1300352630 /* glapp.cc */,
+				BB9711611DECDA1300352630 /* view.h */,
+				BB9711601DECDA1300352630 /* view.cc */,
+				BB9711631DECDA1300352630 /* view_prop.h */,
+				BB9711621DECDA1300352630 /* view_prop.cc */,
+				BB3092282164BAC300C6DEE4 /* grid_display.h */,
+				BB3092292164BAC300C6DEE4 /* grid_display.cc */,
 			);
 			name = disp;
 			path = src/disp;
@@ -2473,9 +2464,10 @@
 		BBADE80A091F4406007BB791 /* display */ = {
 			isa = PBXGroup;
 			children = (
-				BB872F44153D9E5300DE7058 /* display_prop */,
 				BBADE80E091F4427007BB791 /* display.h */,
 				BBADE80D091F4427007BB791 /* display.cc */,
+				BB7F683F12D0F1B100F8FC84 /* display_prop.h */,
+				BB7F683E12D0F1B100F8FC84 /* display_prop.cc */,
 				BBADE810091F4427007BB791 /* display1.h */,
 				BBADE80F091F4427007BB791 /* display1.cc */,
 				BBF7BB1910CD44E00089F5B1 /* display2.h */,
@@ -3018,7 +3010,7 @@
 			files = (
 				BBF7BB1B10CD44E00089F5B1 /* display2.h in Headers */,
 				BB7662C610E923A200C93DF6 /* frame_reader.h in Headers */,
-				BB56FA7712D0A0BF008B2260 /* play_prop.h in Headers */,
+				BB56FA7712D0A0BF008B2260 /* player_prop.h in Headers */,
 				BB7F684112D0F1B100F8FC84 /* display_prop.h in Headers */,
 				BB0E885716FBC81400451517 /* sim_thread.h in Headers */,
 				BBCA7D081803EAF4000DFD95 /* player.h in Headers */,
@@ -3808,7 +3800,7 @@
 				BB6E174E223E5B3D00AF850D /* operator_new.cc in Sources */,
 				BBF7BB1A10CD44E00089F5B1 /* display2.cc in Sources */,
 				BB7662C510E923A200C93DF6 /* frame_reader.cc in Sources */,
-				BB56FA7812D0A0BF008B2260 /* play_prop.cc in Sources */,
+				BB56FA7812D0A0BF008B2260 /* player_prop.cc in Sources */,
 				BB8BBD0621537DD50033BC7A /* player.cc in Sources */,
 				BB7F684012D0F1B100F8FC84 /* display_prop.cc in Sources */,
 				BB0E885616FBC81400451517 /* sim_thread.cc in Sources */,

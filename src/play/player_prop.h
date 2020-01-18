@@ -1,12 +1,13 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
-#ifndef PLAY_PROP_H
-#define PLAY_PROP_H
+
+#ifndef PLAYER_PROP_H
+#define PLAYER_PROP_H
 
 #include "property.h"
 
 
-/// Parameters for Play
-class PlayProp : public Property
+/// Parameters for the Player
+class PlayerProp : public Property
 {
     
 public:
@@ -97,10 +98,10 @@ public:
 public:
 
     /// constructor
-    PlayProp(const std::string& n) : Property(n)  { clear(); }
+    PlayerProp(const std::string& n) : Property(n)  { clear(); }
     
     /// destructor
-    ~PlayProp() { }
+    ~PlayerProp() { }
     
     /// identifies the property
     std::string category() const { return "simul:display"; }
@@ -112,7 +113,7 @@ public:
     void read(Glossary&);
     
     /// return a carbon copy of object
-    Property* clone() const { return new PlayProp(*this); }
+    Property* clone() const { return new PlayerProp(*this); }
 
     /// write all values
     void write_values(std::ostream&) const;
