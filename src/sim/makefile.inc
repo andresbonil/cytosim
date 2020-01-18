@@ -49,8 +49,7 @@ OBJ_ORGANIZERS := organizer.o organizer_set.o \
 
 OBJ_SIM := modulo.o movable.o mecable.o object.o object_set.o\
            sphere_prop.o sphere.o sphere_set.o\
-           bead_prop.o bead.o bead_set.o\
-           solid_prop.o solid.o solid_set.o\
+           solid_prop.o solid.o solid_set.o bead.o bead_set.o\
            field.o field_prop.o field_set.o\
            event.o event_set.o\
            mecapoint.o interpolation.o interpolation4.o\
@@ -72,9 +71,9 @@ OBJ_CYTOSIMG:=$(filter-out $(OBJ_GRAFIX),$(OBJ_CYTOSIM)) $(OBJ_GRAFIX:%.o=%G.o)
 
 #----------------------------targets--------------------------------------------
 
-INC_BM=$(addprefix -Isrc/, base math)
-INC_SIM=$(addprefix -Isrc/, base math sim sim/fibers sim/hands sim/singles sim/couples sim/organizers sim/spaces)
+INC_BM:=-Isrc/base -Isrc/math
 INC_BMD=$(addprefix -Isrc/, base math sim sim/spaces disp)
+INC_SIM=$(addprefix -Isrc/, base math sim sim/fibers sim/hands sim/singles sim/couples sim/organizers sim/spaces)
 
 #--- normal build:
 

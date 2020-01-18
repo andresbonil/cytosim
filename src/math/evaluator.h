@@ -1,6 +1,6 @@
 // Cytosim was created by Francois Nedelec. Copyright 2019 Cambridge University.
 //
-//  evaluator.cc
+//  evaluator.h
 //
 //  Created by Francois Nedelec on 08/02/2019.
 //  Copyright 2019 Cambridge University. All rights reserved.

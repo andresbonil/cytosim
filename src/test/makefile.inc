@@ -51,7 +51,7 @@ test_quaternion: test_quaternion.cc cytomath.a SFMT.o cytobase.a
 	$(DONE)
 vpath test_quaternion bin
 
-test_random: test_random.cc random.o SFMT.o exceptions.o filewrapper.o messages.o smath.o backtrace.o tictoc.o
+test_random: test_random.cc random.o SFMT.o exceptions.o filewrapper.o messages.o backtrace.o tictoc.o
 	$(COMPILE) -Isrc/base -Isrc/math $(OBJECTS) $(LINK) -o bin/$@
 	$(DONE)
 vpath test_random bin

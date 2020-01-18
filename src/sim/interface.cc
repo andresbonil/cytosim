@@ -13,7 +13,7 @@
 #include "sim.h"
 #include <fstream>
 
-#include "../math/evaluator.cc"
+#include "evaluator.h"
 
 // Use the second definition to get some verbose reports:
 #define VLOG(ARG) ((void) 0)
