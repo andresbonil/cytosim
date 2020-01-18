@@ -3,7 +3,6 @@ set(TEST_INCLUDES
     "${MATH_SRC_DIR}"
     "${SIM_SRC_DIR}"
     "${DISP_SRC_DIR}"
-    "${PLAY_SRC_DIR}"
 )
 
 set(TEST_LIBS

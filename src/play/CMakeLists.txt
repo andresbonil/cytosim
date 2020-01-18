@@ -31,6 +31,5 @@ if(BUILD_PLAY_EXECUTABLE)
         "${BASE_SRC_DIR}"
         "${SIM_SRC_DIR}"
         "${DISP_SRC_DIR}"
-        "${PLAY_SRC_DIR}"
     )
 endif(BUILD_PLAY_EXECUTABLE)

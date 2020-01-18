@@ -1,5 +1,4 @@
 set(MATH_SOURCES
-    "${PROJECT_SOURCE_DIR}/src/math/smath.cc"
     "${PROJECT_SOURCE_DIR}/src/math/vector1.cc"
     "${PROJECT_SOURCE_DIR}/src/math/vector2.cc"
     "${PROJECT_SOURCE_DIR}/src/math/vector3.cc"
@@ -7,7 +6,6 @@ set(MATH_SOURCES
     "${PROJECT_SOURCE_DIR}/src/math/matrix22.cc"
     "${PROJECT_SOURCE_DIR}/src/math/matrix33.cc"
     "${PROJECT_SOURCE_DIR}/src/math/rasterizer.cc"
-    "${PROJECT_SOURCE_DIR}/src/math/grid.cc"
     "${PROJECT_SOURCE_DIR}/src/math/matsparsesym1.cc"
     "${PROJECT_SOURCE_DIR}/src/math/matsparsesymblk.cc"
     "${PROJECT_SOURCE_DIR}/src/math/polygon.cc"

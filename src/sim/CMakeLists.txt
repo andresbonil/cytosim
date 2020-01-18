@@ -13,12 +13,11 @@ set(SOURCES_SIM
     "${PROJECT_SOURCE_DIR}/src/sim/sphere.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/sphere_set.cc"
     
-	"${PROJECT_SOURCE_DIR}/src/sim/bead.cc"
-    "${PROJECT_SOURCE_DIR}/src/sim/bead_set.cc"
-    
 	"${PROJECT_SOURCE_DIR}/src/sim/solid_prop.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/solid.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/solid_set.cc"
+    "${PROJECT_SOURCE_DIR}/src/sim/bead.cc"
+    "${PROJECT_SOURCE_DIR}/src/sim/bead_set.cc"
 	
     "${PROJECT_SOURCE_DIR}/src/sim/field.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/field_prop.cc"
