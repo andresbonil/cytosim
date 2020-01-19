@@ -124,7 +124,7 @@ void ClassicFiber::step()
          */
         if ( prop->catastrophe_length > 0 )
         {
-            PRINT_ONCE("Using ad-hoc length-dependent catastrophe rate\n");
+            LOG_ONCE("Using ad-hoc length-dependent catastrophe rate\n");
             cata *= length() / prop->catastrophe_length;
         }
 #endif

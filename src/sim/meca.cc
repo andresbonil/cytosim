@@ -1311,7 +1311,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
      */
     if ( prop->flow.norm() > REAL_EPSILON )
     {
-        PRINT_ONCE("NEW_CYTOPLASMIC_FLOW code enabled\n");
+        LOG_ONCE("NEW_CYTOPLASMIC_FLOW code enabled\n");
         Vector flow_dt = prop->flow * time_step;
         for ( int p = 0; p < dimension(); ++p )
             flow_dt.add_to(vRHS+DIM*p);

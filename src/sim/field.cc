@@ -454,7 +454,7 @@ void Field::step(FiberSet& fibers)
     // this is deprecated in favor of fiber:lattice_cut_fiber
     if ( prop->cut_fibers )
     {
-        PRINT_ONCE("!!!! Field severs fibers\n");
+        LOG_ONCE("!!!! Field severs fibers\n");
         const real spread = 0.5 / prop->time_step;
         const real fac = spread * prop->time_step / cellVolume();
         
@@ -471,7 +471,7 @@ void Field::step(FiberSet& fibers)
     
     if ( prop->chew_fibers )
     {
-        PRINT_ONCE("!!!! Field chews PLUS_END\n");
+        LOG_ONCE("!!!! Field chews PLUS_END\n");
         const real fac = -prop->time_step / cellVolume();
         for ( Fiber * fib = fibers.first(); fib ; fib = fib->next() )
             fib->growP(fac*cell(fib->posEndP()));
@@ -566,12 +566,12 @@ void Field::step(FiberSet& fibers)
 
 void Field::draw() const
 {
-    PRINT_ONCE("no field:draw()\n");
+    LOG_ONCE("no field:draw()\n");
 }
 
 void Field::draw(bool all, Vector3 const& dir, const real pos) const
 {
-    PRINT_ONCE("no field:draw()\n");
+    LOG_ONCE("no field:draw()\n");
 }
 
 #endif

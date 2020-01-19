@@ -67,7 +67,7 @@ real Simul::estimateStericRange() const
     }
     
     if ( ran < REAL_EPSILON )
-        PRINT_ONCE("Warning: could not estimate simul:steric_max_range automatically!\n");
+        LOG_ONCE("Warning: could not estimate simul:steric_max_range automatically!\n");
     
     return ran;
 }
@@ -376,7 +376,7 @@ void Simul::computeForces() const
     catch ( Exception & e )
     {
         std::clog << "cytosim could not compute the forces:\n";
-        std::clog << "   " << e.what() << std::endl;
+        std::clog << "   " << e.what() << '\n';
     }
 }
 

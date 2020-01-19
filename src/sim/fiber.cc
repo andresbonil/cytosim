@@ -34,7 +34,7 @@ void Fiber::step()
     unsigned p = hasKink(0);
     if ( p )
     {
-        PRINT_ONCE("SEVER_KINKED_FIBERS\n");
+        LOG_ONCE("SEVER_KINKED_FIBERS\n");
         objset()->add(severPoint(p));
     }
 #endif
@@ -42,7 +42,7 @@ void Fiber::step()
     // Delete kinked filaments
     if ( hasKink(0) )
     {
-        PRINT_ONCE("DELETE_KINKED_FIBERS\n");
+        LOG_ONCE("DELETE_KINKED_FIBERS\n");
         delete(this);
         return;
     }

@@ -44,7 +44,7 @@ void FieldSet::step()
     {
         if ( f->hasField() )
         {
-            PRINT_ONCE("!!!! Field is active\n");
+            LOG_ONCE("!!!! Field is active\n");
             f->step(simul.fibers);
         }
     }

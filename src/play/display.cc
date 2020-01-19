@@ -292,7 +292,7 @@ void Display::prepareLineDisp(const Fiber * fib)
     // hide fibers which are not growing
     if ( fib->dynamicStateP() == STATE_WHITE )
     {
-        PRINT_ONCE("non-growing fibers made invisible\n");
+        LOG_ONCE("non-growing fibers made invisible\n");
         self->visible = -1;
         self->color = disp->hide_color;
         self->end_color[0] = self->color.transparency(1.0);

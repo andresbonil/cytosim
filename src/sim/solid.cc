@@ -31,7 +31,7 @@ void Solid::step()
 void Solid::setInteractions(Meca & meca) const
 {
 #if NEW_RADIAL_FLOW
-    PRINT_ONCE("NEW_RADIAL_FLOW enabled: Solids converge to the same point\n");
+    LOG_ONCE("NEW_RADIAL_FLOW enabled: Solids converge to the same point\n");
     /// Special code for Maria Burdyniuk
     real now = simul().time();
     if ( prop->flow_time[0] > now )
