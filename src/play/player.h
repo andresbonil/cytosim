@@ -20,6 +20,9 @@ class Player
 {
 public:
 
+    /// Simulation object
+    Simul        simul;
+    
     /// the display parameters
     DisplayProp  disp;
     
@@ -34,9 +37,6 @@ public:
     
     /// a flag for live simulation
     bool         goLive;
-
-    /// an alias to `thread` Simul
-    Simul    &   simul;
     
     /// the Display object
     Display  *   mDisplay;

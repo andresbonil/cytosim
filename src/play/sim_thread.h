@@ -18,12 +18,9 @@ class SimThread : private Parser
     friend void child_cleanup(void*);
     
 private:
-    
-    /// Simulation object
-    Simul           simul;
 
     /// reader used to access frames in a trajectory file
-    FrameReader     reader;
+    FrameReader     reader_;
 
     
     /// callback invoked when the thread is halted
@@ -87,7 +84,7 @@ public:
     void          gubed(const char *) const;
 
     /// create a SimThread with given holding function callback
-    SimThread(void (*callback)(void));
+    SimThread(Simul&, void (*callback)(void));
     
     /// destructor
     ~SimThread();
@@ -127,9 +124,6 @@ public:
     void       signal()  { debug("signal"); pthread_cond_signal(&mCondition); }
     
 #endif
-    
-    /// Simul reference
-    Simul&     sim() { return simul; }
     
     /// set how many 'hold()' are necessary to halt the thread
     void       period(unsigned int c) { mPeriod = c; }
@@ -175,28 +169,28 @@ public:
 
     
     /// open trajectory file for input
-    void       openFile(std::string const& name) { reader.openFile(name); }
+    void       openFile(std::string const& name) { reader_.openFile(name); }
     
     /// true if ready to read from file
-    bool       goodFile()     const { return reader.good(); }
+    bool       goodFile()     const { return reader_.good(); }
     
     /// status of file
-    int        eof()          const { return reader.eof(); }
+    int        eof()          const { return reader_.eof(); }
     
     /// rewind file
-    void       rewind()             { lock(); reader.rewind(); unlock(); }
+    void       rewind()             { lock(); reader_.rewind(); unlock(); }
     
     /// attempt to load specified frame from file (0 = first frame; -1 = last frame)
-    int        loadFrame(size_t f)  { lock(); int r=reader.loadFrame(simul, f); unlock(); return r; }
+    int        loadFrame(size_t f)  { lock(); int r=reader_.loadFrame(simul, f); unlock(); return r; }
 
     /// load next frame in file
-    int        loadNextFrame()      { lock(); int r=reader.loadNextFrame(simul); unlock(); return r; }
+    int        loadNextFrame()      { lock(); int r=reader_.loadNextFrame(simul); unlock(); return r; }
     
     /// attempt to load last frame from file
-    int        loadLastFrame()      { lock(); int r=reader.loadLastFrame(simul); unlock(); return r; }
+    int        loadLastFrame()      { lock(); int r=reader_.loadLastFrame(simul); unlock(); return r; }
 
     /// index of current frame
-    size_t     currentFrame() const { return reader.currentFrame(); }
+    size_t     currentFrame() const { return reader_.currentFrame(); }
 
     
     /// return the Single that is manipulated by the User

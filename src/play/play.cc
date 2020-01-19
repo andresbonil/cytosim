@@ -17,7 +17,7 @@
 Player player;
 
 SimThread& thread = player.thread;
-Simul&      simul = thread.sim();
+Simul&      simul = player.simul;
 PlayerProp&  prop = player.prop;
 DisplayProp& disp = player.disp;
 

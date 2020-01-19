@@ -16,8 +16,8 @@
  This uses a Parser that cannot write to disc.
  The function callback is called when Parser::hold() is reached.
  */
-SimThread::SimThread(void (*callback)(void))
-: Parser(simul, 1, 1, 1, 1, 0), hold_callback(callback)
+SimThread::SimThread(Simul& sim, void (*callback)(void))
+: Parser(sim, 1, 1, 1, 1, 0), hold_callback(callback)
 {
     hasChild = false;
     mFlag   = 0;
@@ -503,10 +503,10 @@ void SimThread::exportObjects(bool binary)
     try {
         char str[64] = { '\0' };
         
-        snprintf(str, sizeof(str), "properties%04li.cmo", reader.currentFrame());
+        snprintf(str, sizeof(str), "properties%04li.cmo", reader_.currentFrame());
         simul.writeProperties(str, true);
         
-        snprintf(str, sizeof(str), "objects%04li.cmo", reader.currentFrame());
+        snprintf(str, sizeof(str), "objects%04li.cmo", reader_.currentFrame());
         simul.writeObjects(str, false, binary);
     }
     catch( Exception & e ) {
