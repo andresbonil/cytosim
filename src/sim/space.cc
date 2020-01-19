@@ -236,12 +236,12 @@ Vector Space::bounce(Vector pos) const
     do {
         p = project(pos);
         pos = 2*p - pos;
-        q = project(pos);
-        pos = 2*q - pos;
         if ( inside(pos) )
             return pos;
-        else if ( distanceSqr(p, q) < REAL_EPSILON )
-            return p;
+        q = project(pos);
+        pos = 2*q - pos;
+        if ( inside(pos) || distanceSqr(p, q) < REAL_EPSILON )
+            return pos;
     } while ( ++cnt < 8 );
     
     static size_t msg = 0;
