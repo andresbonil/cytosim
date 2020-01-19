@@ -35,7 +35,7 @@ public:
     //--------------------------------------------------------------------------
     
     /// position on the side of fiber used for sideInteractions
-    Vector  posSide() const;
+    Vector  sidePos() const;
     
     /// force = stiffness * ( posFoot() - posHand() )
     Vector  force() const;

@@ -137,19 +137,19 @@ public:
     //--------------------------------------------------------------------------
     
     /// the position of the anchoring point
-    virtual Vector  posFoot()             const  { return sPos; }
+    virtual Vector  posFoot()     const { return sPos; }
     
     /// position on the side of fiber used for sideInteractions
-    virtual Vector  posSide()             const  { return sHand->pos(); }
+    virtual Vector  sidePos()     const { return sHand->pos(); }
     
     /// the Mecable to which this is anchored, or zero
-    virtual Mecable const* base()         const  { return nullptr; }
+    virtual Mecable const* base() const { return nullptr; }
     
     /// true if Single creates an interaction
-    virtual bool    hasForce() const             { return false; }
+    virtual bool    hasForce()    const { return false; }
 
     /// force = stiffness * ( position_anchor - position_hand ), or zero for a diffusible Single
-    virtual Vector  force()               const  { return Vector(0,0,0); }
+    virtual Vector  force()       const { return Vector(0,0,0); }
 
     /// Monte-Carlo step if the Hand is not attached
     virtual void    stepF(Simul&);

@@ -145,7 +145,7 @@ public:
     real           cosAngle()             const { return dot(cHand1->dirFiber(), cHand2->dirFiber()); }
    
     /// position on the side of fiber1 used for sideInteractions
-    virtual Vector posSide()              const { return cHand1->pos(); }
+    virtual Vector sidePos()              const { return cHand1->pos(); }
     
     /// the position of the complex if it is unattached
     Vector         posFree()              const { return cPos; }

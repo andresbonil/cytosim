@@ -33,7 +33,7 @@ public:
     //--------------------------------------------------------------------------
     
     /// position on the side of fiber1 used for sideInteractions
-    Vector  posSide() const;
+    Vector  sidePos() const;
 
     /// force between hands
     Vector  force() const;

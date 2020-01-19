@@ -59,7 +59,7 @@ Vector WristLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
 Vector WristLong::force() const
 {
     assert_true( sHand->attached() );
-    Vector d = posFoot() - WristLong::posSide();
+    Vector d = posFoot() - WristLong::sidePos();
     
     if ( modulo )
         modulo->fold(d);
@@ -71,7 +71,11 @@ Vector WristLong::force() const
 //------------------------------------------------------------------------------
 #if ( 1 )
 
-Vector WristLong::posSide() const
+/*
+Note that, since `mArm` is calculated by setInteraction(),
+the result of sidePos() will be incorrect if 'solve=0'
+*/
+Vector WristLong::sidePos() const
 {
 #if ( DIM > 1 )
     return sHand->pos() + cross(mArm, sHand->dirFiber());
@@ -107,7 +111,11 @@ void WristLong::setInteractions(Meca & meca) const
 
 #else
 
-Vector WristLong::posSide() const
+/*
+Note that, since `mArm` is calculated by setInteraction(),
+the result of sidePos() will be incorrect if 'solve=0'
+*/
+Vector WristLong::sidePos() const
 {
     return sHand->pos() + mArm;
 }
