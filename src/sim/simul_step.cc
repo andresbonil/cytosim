@@ -162,8 +162,8 @@ void Simul::step()
 #endif
     
     // step Hand-containing objects, giving them a possibility to attach Fibers:
-    couples.step(fibers, fiberGrid);
-    singles.step(fibers, fiberGrid);
+    couples.step();
+    singles.step();
     
     //printf("     ::attach   %16llu\n", (__rdtsc()-rdtsc)>>3);
 }

@@ -29,7 +29,7 @@ public:
     virtual      ~Crosslink();
     
     /// simulation step for a free Couple: diffusion
-    virtual void  stepFF(FiberGrid const&);
+    virtual void  stepFF(Simul&);
     
     /// add interactions to a Meca
     void          setInteractions(Meca &) const;

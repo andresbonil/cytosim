@@ -66,7 +66,7 @@ public:
     
     
     /// Monte-Carlo step for a free Single
-    void    stepF(const FiberGrid&);
+    void    stepF(Simul&);
     
     /// Monte-Carlo step for a bound Single
     void    stepA();

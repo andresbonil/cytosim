@@ -134,7 +134,7 @@ void Couple::setInteractions(Meca & meca) const
  - attachment
  .
  */
-void Couple::stepFF(const FiberGrid& grid)
+void Couple::stepFF(Simul& sim)
 {
     diffuse();
     
@@ -163,12 +163,12 @@ void Couple::stepFF(const FiberGrid& grid)
      */
     if ( RNG.flip() )
     {
-        cHand1->stepUnattached(grid, cPos);
+        cHand1->stepUnattached(sim, cPos);
     }
     else
     {
         if ( !prop->trans_activated )
-            cHand2->stepUnattached(grid, cPos);
+            cHand2->stepUnattached(sim, cPos);
     }
 }
 
@@ -179,10 +179,10 @@ void Couple::stepFF(const FiberGrid& grid)
  - attached activity of cHand1
  .
  */
-void Couple::stepAF(const FiberGrid& grid)
+void Couple::stepAF(Simul& sim)
 {
     //we use cHand1->pos() first, because stepUnloaded() may detach cHand1
-    cHand2->stepUnattached(grid, cHand1->pos());
+    cHand2->stepUnattached(sim, cHand1->pos());
     cHand1->stepUnloaded();
 }
 
@@ -193,10 +193,10 @@ void Couple::stepAF(const FiberGrid& grid)
  - attached activity of cHand2
  .
  */
-void Couple::stepFA(const FiberGrid& grid)
+void Couple::stepFA(Simul& sim)
 {
     //we use cHand2->pos() first, because stepUnloaded() may detach cHand2
-    cHand1->stepUnattached(grid, cHand2->pos());
+    cHand1->stepUnattached(sim, cHand2->pos());
     cHand2->stepUnloaded();
 }
 

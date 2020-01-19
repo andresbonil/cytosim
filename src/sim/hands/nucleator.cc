@@ -150,7 +150,7 @@ void Nucleator::makeFiber(Simul& sim, Vector pos, std::string const& fiber_type,
 /**
  Does not attach nearby Fiber, but can nucleate
  */
-void Nucleator::stepUnattached(const FiberGrid&, Vector const& pos)
+void Nucleator::stepUnattached(Simul& sim, Vector const& pos)
 {
     assert_false( attached() );
     
@@ -161,7 +161,7 @@ void Nucleator::stepUnattached(const FiberGrid&, Vector const& pos)
         gspTime = RNG.exponential();
         try {
             Glossary opt(prop->fiber_spec);
-            makeFiber(*haMonitor->simul(), pos, prop->fiber_type, opt);
+            makeFiber(sim, pos, prop->fiber_type, opt);
         }
         catch( Exception & e )
         {

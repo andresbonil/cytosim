@@ -85,13 +85,13 @@ void CoupleSet::prepare(PropertyList const& properties)
 }
 
 
-void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
+void CoupleSet::step()
 {
     // use alternative attachment strategy:
     if ( uni )
     {
         uniCollect();
-        uniAttach(fibers);
+        uniAttach(simul.fibers);
     }
 
     /*
@@ -141,15 +141,15 @@ void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     if ( faOdd )
     {
         nxt = obj->next();
-        obj->stepFA(fgrid);
+        obj->stepFA(simul);
         obj = nxt;
     }
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepFA(fgrid);
+        obj->stepFA(simul);
         obj = nxt->next();
-        nxt->stepFA(fgrid);
+        nxt->stepFA(simul);
     }
 
     obj = afHead;
@@ -157,15 +157,15 @@ void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     if ( afOdd )
     {
         nxt = obj->next();
-        obj->stepAF(fgrid);
+        obj->stepAF(simul);
         obj = nxt;
     }
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepAF(fgrid);
+        obj->stepAF(simul);
         obj = nxt->next();
-        nxt->stepAF(fgrid);
+        nxt->stepAF(simul);
     }
     
     //std::clog << "CoupleSet::step : FF " << ffList.size() << " head " << ffHead << std::endl;
@@ -175,15 +175,15 @@ void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     if ( ffOdd )
     {
         nxt = obj->next();
-        obj->stepFF(fgrid);
+        obj->stepFF(simul);
         obj = nxt;
     }
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepFF(fgrid);
+        obj->stepFF(simul);
         obj = nxt->next();
-        nxt->stepFF(fgrid);
+        nxt->stepFF(simul);
     }
 }
 

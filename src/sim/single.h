@@ -55,8 +55,6 @@ private:
     Vector    otherPosition(Hand const*) const { return posFoot(); }
     /// = identity() of the Object on which a Wrist is attached, or Single::identity()
     ObjectID  nucleatorID()              const { return base()?base()->identity():Object::identity(); }
-    /// Simul pointer
-    Simul*    simul()                    const { return &Object::simul(); }
     /// specialization of HandMonitor
     real      interactionLength()        const { return prop->length; }
     /// stiffness of the interaction
@@ -154,7 +152,7 @@ public:
     virtual Vector  force()               const  { return Vector(0,0,0); }
 
     /// Monte-Carlo step if the Hand is not attached
-    virtual void    stepF(const FiberGrid&);
+    virtual void    stepF(Simul&);
     
     /// Monte-Carlo step if the Hand is attached
     virtual void    stepA();

@@ -127,7 +127,7 @@ public:
     virtual void   detach();
 
     /// simulate when the Hand is not attached
-    virtual void   stepUnattached(FiberGrid const&, Vector const& pos);
+    virtual void   stepUnattached(Simul&, Vector const& pos);
 
     /// simulate when the Hand is attached but not under load
     virtual void   stepUnloaded();

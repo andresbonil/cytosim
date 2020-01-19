@@ -28,11 +28,11 @@ void SingleSet::prepare(PropertyList const& properties)
 }
 
 
-void SingleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
+void SingleSet::step()
 {
     // use alternate attachment strategy:
     if ( uni )
-        uniAttach(fibers);
+        uniAttach(simul.fibers);
 
     /*
      ATTENTION: we have multiple lists, and Objects are automatically transfered
@@ -62,10 +62,10 @@ void SingleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepF(fgrid);
+        obj->stepF(simul);
         if ( ! nxt ) break;
         obj = nxt->next();
-        nxt->stepF(fgrid);
+        nxt->stepF(simul);
     }
 }
 

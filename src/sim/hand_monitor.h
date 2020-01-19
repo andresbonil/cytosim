@@ -56,9 +56,6 @@ public:
 
     /// identity() of containing object
     virtual ObjectID nucleatorID() const { return 0; }
-    
-    /// returns pointer to container Simul object
-    virtual Simul* simul() const { return nullptr; };
 
 };
 

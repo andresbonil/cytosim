@@ -36,7 +36,7 @@ void Duo::deactivate()
 
 //------------------------------------------------------------------------------
 
-void Duo::stepFF(const FiberGrid& grid)
+void Duo::stepFF(Simul& sim)
 {
     diffuse();
     
@@ -73,9 +73,9 @@ void Duo::stepFF(const FiberGrid& grid)
         }
     
         // hands may bind:
-        cHand1->stepUnattached(grid, cPos);
+        cHand1->stepUnattached(sim, cPos);
         if ( !prop->trans_activated )
-            cHand2->stepUnattached(grid, cPos);
+            cHand2->stepUnattached(sim, cPos);
     }
 }
 
@@ -97,13 +97,13 @@ void Duo::deactivation()
  - attached activity of cHand1
  .
  */
-void Duo::stepAF(const FiberGrid& grid)
+void Duo::stepAF(Simul& sim)
 {
     if ( mActive && prop->vulnerable )
         deactivation();
     
     //we use cHand1->pos() first, because stepUnloaded() may detach cHand1
-    cHand2->stepUnattached(grid, cHand1->pos());
+    cHand2->stepUnattached(sim, cHand1->pos());
     cHand1->stepUnloaded();
 }
 
@@ -114,13 +114,13 @@ void Duo::stepAF(const FiberGrid& grid)
  - attached activity of cHand2
  .
  */
-void Duo::stepFA(const FiberGrid& grid)
+void Duo::stepFA(Simul& sim)
 {
     if ( mActive && prop->vulnerable )
         deactivation();
     
     //we use cHand2->pos() first, because stepUnloaded() may detach cHand2
-    cHand1->stepUnattached(grid, cHand2->pos());
+    cHand1->stepUnattached(sim, cHand2->pos());
     cHand2->stepUnloaded();
 }
 

@@ -154,7 +154,7 @@ public:
     void          prepare(PropertyList const& properties);
     
     /// Monte-Carlo step
-    void          step(FiberSet const& fibers, FiberGrid const&);
+    void          step();
     
     /// cleanup at end of simulation period
     void          relax() { uniRelax(); }
