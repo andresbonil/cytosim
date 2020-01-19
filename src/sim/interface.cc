@@ -759,10 +759,10 @@ void reportCPUtime(int frame, real simtime)
  */
 void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
 {
-    unsigned     nb_frames  = 0;
-    int          solve      = 1;
-    bool         prune      = true;
-    bool         binary     = true;
+    size_t nb_frames = 0;
+    int    solve     = 1;
+    bool   prune     = true;
+    bool   binary    = true;
     
 #ifdef BACKWARD_COMPATIBILITY
     // check if 'event' is specified within the 'run' command,
@@ -788,17 +788,17 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
         case 3: solveFunc = &Simul::solveX;     break;
     }
 
-    opt.set(prune,  "prune");
-    opt.set(binary, "binary");
+    opt.set(prune,     "prune");
+    opt.set(binary,    "binary");
+    opt.set(nb_frames, "nb_frames");
     
-    unsigned int  frame = 1;
-    real          delta = nb_steps;
-    unsigned long check = nb_steps;
+    do_write &= ( nb_frames > 0 );
+
+    size_t frame = 1;
+    real   delta = (real)nb_steps;
+    size_t check = nb_steps;
     
     VLOG("+RUN START " << nb_steps << '\n');
-    
-    if ( opt.set(nb_frames, "nb_frames") )
-        do_write &= ( nb_frames > 0 );
 
     if ( do_write )
     {
