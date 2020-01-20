@@ -93,10 +93,7 @@ public:
     
 #if ( 0 )
     /// apply a force directed towards the edge of this Space
-    virtual void   setInteraction(Vector const&, Interpolation const&, Meca &, real stiff) const;
-
-    /// apply a force directed towards the edge of this Space
-    virtual void   setInteraction(Interpolation const&, Meca &, real stiff, Confinement conf) const;
+    void   setInteraction(Vector const&, Interpolation const&, Meca &, real stiff) const;
 #endif
     
     /// true if all points of the sphere (`center`, `radius`) are inside this Space

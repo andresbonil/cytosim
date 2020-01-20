@@ -381,34 +381,6 @@ void Space::setInteraction(Vector const& pos, Interpolation const& pi, Meca & me
     setInteraction(pos, pi.exact2(), meca, pi.coef1()*stiff);
 }
 
-
-/**
- This will add a force component if:
- - ( conf == inside ) && ! Space::inside(pos)
- - ( conf == outside ) &&  Space::inside(pos)
- - ( conf == surface )
- .
- */
-void Space::setInteraction(Interpolation const& pi, Meca & meca, real stiff, Confinement conf) const
-{
-    if ( conf == CONFINE_ON )
-    {
-        setInteraction(pi.pos(), pi, meca, stiff);
-    }
-    else if ( conf == CONFINE_INSIDE )
-    {
-        Vector pos = pi.pos();
-        if ( ! inside(pos) )
-            setInteraction(pos, pi, meca, stiff);
-    }
-    else if ( conf == CONFINE_OUTSIDE )
-    {
-        Vector pos = pi.pos();
-        if ( inside(pos) )
-            setInteraction(pos, pi, meca, stiff);
-    }
-}
-
 #endif
 
 //------------------------------------------------------------------------------
