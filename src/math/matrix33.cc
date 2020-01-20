@@ -162,14 +162,8 @@ Matrix33 Matrix33::randomRotationToVector(const Vector3& vec)
     Matrix33 res;
     Vector3 X, Y, Z = normalize(vec);
     Z.orthonormal(X, Y);
-#if ( 0 )
-    real a = M_PI * RNG.sreal();
-    real c = cos(a), s = sin(a);
-    res.setColumns(Z, X*c+Y*s, Y*c-X*s);
-#else
     const Vector2 V = Vector2::randU();
     res.setColumns(Z, X*V.XX+Y*V.YY, Y*V.XX-X*V.YY);
-#endif
     return res;
 }
 

@@ -827,68 +827,6 @@ void MatrixSparseSymmetric1::vecMulAddIso2D_SSEU(const real* X, real* Y, index_t
     vec2 s3 = setzero2();
     
     index_t n = start;
-#if ( 0 )
-    // unrolling by 8 may exceed the number of registers in the CPU
-#pragma nounroll
-    if ( end >= n + 8 )
-    {
-        vec2 s4 = setzero2();
-        vec2 s5 = setzero2();
-        vec2 s6 = setzero2();
-        vec2 s7 = setzero2();
-        index_t end = n + 8 * ( ( stop - n ) / 8 );
-        // process 8 by 8:
-        for ( ; n < end; n += 8 )
-        {
-            const index_t i0 = ija_[n  ];
-            const index_t i1 = ija_[n+1];
-            const index_t i2 = ija_[n+2];
-            const index_t i3 = ija_[n+3];
-            const index_t i4 = ija_[n+4];
-            const index_t i5 = ija_[n+5];
-            const index_t i6 = ija_[n+6];
-            const index_t i7 = ija_[n+7];
-            vec2 y0 = load2(Y+i0);
-            vec2 y1 = load2(Y+i1);
-            vec2 y2 = load2(Y+i2);
-            vec2 y3 = load2(Y+i3);
-            vec2 y4 = load2(Y+i4);
-            vec2 y5 = load2(Y+i5);
-            vec2 y6 = load2(Y+i6);
-            vec2 y7 = load2(Y+i7);
-            vec2 a0 = loaddup2(sa_+n);
-            vec2 a1 = loaddup2(sa_+n+1);
-            vec2 a2 = loaddup2(sa_+n+2);
-            vec2 a3 = loaddup2(sa_+n+3);
-            vec2 a4 = loaddup2(sa_+n+4);
-            vec2 a5 = loaddup2(sa_+n+5);
-            vec2 a6 = loaddup2(sa_+n+6);
-            vec2 a7 = loaddup2(sa_+n+7);
-            s0 = fmadd2(load2(X+i0), a0, s0);
-            s1 = fmadd2(load2(X+i1), a1, s1);
-            s2 = fmadd2(load2(X+i2), a2, s2);
-            s3 = fmadd2(load2(X+i3), a3, s3);
-            s4 = fmadd2(load2(X+i4), a4, s4);
-            s5 = fmadd2(load2(X+i5), a5, s5);
-            s6 = fmadd2(load2(X+i6), a6, s6);
-            s7 = fmadd2(load2(X+i7), a7, s7);
-            store2(Y+i0, fmadd2(xx, a0, y0));
-            store2(Y+i1, fmadd2(xx, a1, y1));
-            store2(Y+i2, fmadd2(xx, a2, y2));
-            store2(Y+i3, fmadd2(xx, a3, y3));
-            store2(Y+i4, fmadd2(xx, a4, y4));
-            store2(Y+i5, fmadd2(xx, a5, y5));
-            store2(Y+i6, fmadd2(xx, a6, y6));
-            store2(Y+i7, fmadd2(xx, a7, y7));
-        }
-        // collapse into lower summation registers:
-        s0 = add2(s0, s4);
-        s1 = add2(s1, s5);
-        s2 = add2(s2, s6);
-        s3 = add2(s3, s7);
-    }
-#endif
-    
     index_t end = n + 4 * ( ( stop - n ) / 4 );
     // process 4 by 4:
 #pragma nounroll

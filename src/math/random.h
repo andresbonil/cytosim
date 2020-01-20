@@ -129,42 +129,11 @@ public:
     /// unsigned integer in [0, 2^64-1]
     uint64_t plong() { return URAND64(); }
 
-#if ( 0 )
     /// unsigned integer in [0,n-1] for n < 2^32
     uint32_t pint(const uint32_t& n)  { return uint32_t(URAND32()*TWO_POWER_MINUS_32*n); }
 
     /// unsigned integer in [0,n-1] for n < 2^64
     uint64_t plong(const uint64_t& n) { return uint32_t(URAND64()*TWO_POWER_MINUS_64*n); }
-#else
-    /// unsigned integer in [0,n-1] for n < 2^32, Daniel Lemire's method
-    uint32_t pint(const uint32_t& n)  { return (uint32_t)(((uint64_t)URAND32() * (uint64_t)n) >> 32); }
-
-    /// unsigned integer in [0,n-1] for n < 2^32, Daniel Lemire's fair method
-    uint32_t pint_fair(const uint32_t& range)
-    {
-        uint64_t multiresult = (uint64_t)URAND32() * (uint64_t)range;
-        uint32_t leftover = (uint32_t) multiresult;
-        if ( leftover < range )
-        {
-            uint32_t threshold = -range % range;
-            while ( leftover < threshold )
-            {
-                multiresult = (uint64_t)URAND32() * (uint64_t)range;
-                leftover = (uint32_t) multiresult;
-            }
-        }
-        return (uint32_t)(multiresult >> 32);
-    }
-    
-    /// unsigned integer in [0,n-1] for n < 2^64, Daniel Lemire's method
-    uint64_t plong(const uint64_t& p) {
-#ifdef __SIZEOF_INT128__ // then we know we have 128-bit integers
-        return (uint64_t)(((__uint128_t)URAND64() * (__uint128_t)p) >> 64);
-#else
-        return URAND64() % p; // fallback
-#endif
-    }
-#endif
  
     /// integer in [0,n] for n < 2^32, (slow) bitwise algorithm
     uint32_t  pint_slow(uint32_t n);

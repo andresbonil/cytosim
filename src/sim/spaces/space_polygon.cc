@@ -277,7 +277,7 @@ void SpacePolygon::setInteractions(Meca & meca, FiberSet const& fibers) const
             for ( int i = 0; i < n_pik; ++i )
             {
                 real dis;
-                real abs = loc.projectPoint(pik[i], abs, dis);
+                real abs = loc.projectPoint(pik[i], dis);
                 if ( 0 <= abs  &&  abs < ls )
                 {
                     if ( !inside(loc.pos(abs)) || !inside(loc.pos1()) || !inside(loc.pos2()) )

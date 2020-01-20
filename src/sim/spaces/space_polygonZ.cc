@@ -162,7 +162,7 @@ void SpacePolygonZ::setInteraction(Vector const& pos, Mecapoint const& pe, Meca 
 void SpacePolygonZ::setInteraction(Vector const& pos, Mecapoint const& pe, real rad, Meca & meca, real stiff) const
 {
     //setInteraction(pos, pe, meca, stiff);
-    std::cerr << "unfinished SpacePolygonZ::setInteractions(with radius)\n";
+    std::cerr << "unfinished SpacePolygonZ::setInteraction(with radius)\n";
 }
 
 

@@ -84,26 +84,18 @@ inline void free_real(void * ptr)
 /// copy `size` real scalars from `src` to `dst`
 inline void copy_real(size_t size, real const* src, real * dst)
 {
-#if ( 0 )
-    memcpy(dst, src, size*sizeof(real));
-#else
     //#pragma vector unaligned
     for ( size_t u = 0; u < size; ++u )
         dst[u] = src[u];
-#endif
 }
 
 
 /// set `size` values of the array `ptr` to 0 (zero).
 inline void zero_real(size_t size, real * ptr)
 {
-#if ( 1 )
-    memset(ptr, 0, size*sizeof(real));
-#else
     #pragma vector unaligned
     for ( size_t u = 0; u < size; ++u )
         ptr[u] = 0.0;
-#endif
 }
 
 

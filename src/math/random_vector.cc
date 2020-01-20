@@ -38,32 +38,6 @@ const Vector2 Vector2::randP(real n)  { return Vector2(n*RNG.preal(), n*RNG.prea
 const Vector2 Vector2::randG(real n)  { return Vector2(n*RNG.gauss(), n*RNG.gauss()); }
 void  Vector2::addRand(real n)        { XX += n*RNG.sreal(); YY += n*RNG.sreal(); }
 
-#if ( 0 )
-
-const Vector2 Vector2::randU()
-{
-    real d, x, y;
-    do {
-        x = RNG.sreal();
-        y = RNG.sreal();
-        d = x*x + y*y;
-    } while ( d > 1.0  ||  d < 0.01 );
-    d = sqrt( d );
-    return Vector2(x, y) / d;
-}
-
-const Vector2 Vector2::randU(const real n)
-{
-    real d, x, y;
-    do {
-        x = RNG.sreal();
-        y = RNG.sreal();
-        d = x*x + y*y;
-    } while ( d > 1.0  ||  d < 0.01 );
-    return Vector2(x, y) * (n/sqrt(d));
-}
-
-#else
 
 const Vector2 Vector2::randU()
 {
@@ -92,8 +66,6 @@ const Vector2 Vector2::randU(const real n)
     else
         return Vector2(n, 0);
 }
-
-#endif
 
 
 const Vector2 Vector2::randB()
