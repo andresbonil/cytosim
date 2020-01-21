@@ -23,7 +23,7 @@ void SimulProp::clear()
     time_step         = 0;
     kT                = 0.0042;
     tolerance         = 0.05;
-    acceptable_rate   = 0.5;
+    acceptable_prob   = 0.5;
     precondition      = 1;
     random_seed       = 0;
     steric            = 0;
@@ -72,7 +72,7 @@ void SimulProp::read(Glossary& glos)
     glos.set(kT, "kT") || glos.set(kT, "thermal_energy");
 
     glos.set(tolerance,         "tolerance");
-    glos.set(acceptable_rate,   "acceptable_rate");
+    glos.set(acceptable_prob,   "acceptable_prob");
     glos.set(precondition,      "precondition");
     
     glos.set(steric,                   "steric", {{"off", 0}, {"on", 1}});
@@ -165,7 +165,7 @@ void SimulProp::write_values(std::ostream& os) const
 #endif
     std::endl(os);
     write_value(os, "tolerance",       tolerance);
-    write_value(os, "acceptable_rate", acceptable_rate);
+    write_value(os, "acceptable_prob", acceptable_prob);
     write_value(os, "precondition",    precondition);
     write_value(os, "random_seed",     random_seed);
     std::endl(os);

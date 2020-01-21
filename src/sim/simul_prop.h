@@ -150,17 +150,17 @@ public:
     /** 
      A warning message is issued for a rate K if:
      
-         K * time_step > acceptable_rate
+         K * time_step > acceptable_prob
      
      In most implementations, a stochastic event (binding/unbinding) may only occur once
      during a time_step, and this becomes inaccurate if ( K * time_step is not small compared to 1 ).
      
-     A user may control the `rate overflow' by adjusting `acceptable_rate` and monitoring the
+     A user may control the `rate overflow' by adjusting `acceptable_prob` and monitoring the
      warning messages.
      
      <em>default value = 0.5</em>
      */
-    real      acceptable_rate;
+    real      acceptable_prob;
     
     
     /// A flag to enable preconditionning when solving the system of equations
