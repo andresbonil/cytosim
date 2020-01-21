@@ -189,8 +189,8 @@ public:
 
 public:
     
-    /// binding_rate_prob = probability to bind in one `time_step`;
-    real   binding_rate_prob;
+    /// binding_prob = probability to bind in one `time_step`;
+    real   binding_prob;
     
     /// binding_range_sqr = square(binding_range);
     real   binding_range_sqr;

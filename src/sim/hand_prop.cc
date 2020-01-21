@@ -223,7 +223,7 @@ void HandProp::complete(Simul const& sim)
         throw InvalidParameter("simul:time_step is not defined");
     
     binding_range_sqr = square(binding_range);
-    binding_rate_prob = -std::expm1(-binding_rate * sim.prop->time_step);
+    binding_prob = -std::expm1(-binding_rate * sim.prop->time_step);
     unbinding_rate_dt = unbinding_rate * sim.prop->time_step;
     
     binding_rate_dt_8 = 8 * binding_rate * sim.prop->time_step;
@@ -245,7 +245,11 @@ void HandProp::complete(Simul const& sim)
 
     if ( sim.ready() )
     {
+#if TRICKY_HAND_ATTACHMENT
         if ( binding_rate_dt_8 > sim.prop->acceptable_rate )
+#else
+        if ( binding_prob > sim.prop->acceptable_rate )
+#endif
             Cytosim::warn << name() << ":binding_rate is too high: decrease time_step\n";
     
         if ( unbinding_rate_dt > sim.prop->acceptable_rate )
@@ -347,9 +351,9 @@ real HandProp::bindingSectionRate() const
 real HandProp::bindingSectionProb() const
 {
 #if ( DIM == 2 )
-    return 2 * binding_range * binding_rate_prob;
+    return 2 * binding_range * binding_prob;
 #elif ( DIM == 3 )
-    return M_PI * binding_range * binding_range * binding_rate_prob;
+    return M_PI * binding_range * binding_range * binding_prob;
 #else
     return 0;
 #endif

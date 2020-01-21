@@ -52,7 +52,7 @@ void FiberGrid::tryToAttach(Vector const& place, Hand& ha) const
     // test all segments:
     for ( FiberSegment const& seg : allSegments )
     {
-        if ( RNG.test(ha.prop->binding_rate_prob) )
+        if ( RNG.test(ha.prop->binding_prob) )
         {
             real dis = INFINITY;
             // Compute the distance from the hand to the rod, and abscissa of projection:
