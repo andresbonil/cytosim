@@ -36,11 +36,11 @@ namespace Tokenizer
     /// split string using the given separator.
     std::vector<std::string> split(std::string&, char sep, bool get_empty_fields);
     
-    /// read integer from `str` if possible, truncating `str`
-    bool get_integer(std::string&, int&);
+    /// read integer from string if possible, truncating the string in that case
+    bool split_integer(long&, std::string&);
     
-    /// read unsigned integer from `str` if possible, truncating `str`
-    bool get_integer(std::string&, unsigned&);
+    /// read unsigned integer from string if possible, truncating the string in that case
+    bool split_integer(unsigned long&, std::string&);
 
     
     /// read multiple forms of integer numbers

@@ -300,9 +300,9 @@ std::vector<std::string> Tokenizer::split(std::string& str, char sep, bool get_e
 
 /**
  Split string `arg` into an integer, a space, and the remaining string.
- Any space after the integer is discarded. `arg` is truncated.
+ Any space after the integer is discarded. `arg` is truncated in the process.
  */
-bool Tokenizer::get_integer(std::string& arg, int& val)
+bool Tokenizer::split_integer(long& val, std::string& arg)
 {
     char const* ptr = arg.c_str();
     char * end;
@@ -323,9 +323,9 @@ bool Tokenizer::get_integer(std::string& arg, int& val)
 
 /**
  Split string `arg` into an integer, a space, and the remaining string.
- Any space after the integer is discarded. `arg` is truncated.
+ Any space after the integer is discarded. `arg` is truncated in the process.
  */
-bool Tokenizer::get_integer(std::string& arg, unsigned int& val)
+bool Tokenizer::split_integer(unsigned long& val, std::string& arg)
 {
     char const* ptr = arg.c_str();
     char * end;

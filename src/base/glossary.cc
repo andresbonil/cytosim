@@ -438,7 +438,7 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
 
 
 /// define one value for the key at specified index: `key[inx]=val`.
-void Glossary::define(key_type const& key, unsigned inx, const std::string& str)
+void Glossary::define(key_type const& key, size_t inx, const std::string& str)
 {
     std::string val = Tokenizer::trim(str);
     map_type::iterator w = mTerms.find(key);
@@ -687,7 +687,7 @@ std::istream& operator >> (std::istream& is, Glossary& glos)
  - 0 otherwise
  .
  */
-int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsigned threshold, std::string const& msg)
+int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, size_t threshold, std::string const& msg)
 {
     int used = 0, exhausted = 1, overused = 0;
     const rec_type& rec = pair.second;

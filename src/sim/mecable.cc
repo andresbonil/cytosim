@@ -377,7 +377,7 @@ unsigned Mecable::point_index(std::string const& str, unsigned X)
     if ( str.size() > 5  &&  str.compare(0,5,"point") == 0 )
     {
         errno = 0;
-        unsigned i = (unsigned)strtoul(str.c_str()+5, nullptr, 10);
+        unsigned long i = strtoul(str.c_str()+5, nullptr, 10);
         if ( errno ) throw InvalidParameter("a point index must be specified, eg. `point1`");
         if ( i < 1 ) throw InvalidParameter("a point index must must be >= 1");
         if ( i > X ) throw InvalidParameter("point index is out of range");

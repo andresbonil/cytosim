@@ -417,15 +417,15 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
             while ( opt.set(str, var, inx++) )
             {
                 // get a number and the name of a class:
-                unsigned num = 1;
-                Tokenizer::get_integer(str, num);
+                size_t num = 1;
+                Tokenizer::split_integer(num, str);
                 SingleProp * sip = sim.findProperty<SingleProp>("single", str);
                 
                 /* add Wrists anchored on the local coordinate system:
                  we use unit vectors here since the Triad is build with 'rad' */
                 // we use unit vectors here since the Triad is build with 'rad'
                 Vector pos = pts[inx-3];
-                for ( unsigned i = 0; i < num; ++i )
+                for ( size_t i = 0; i < num; ++i )
                 {
                     vec = normalize(pos+pos.randOrthoB(dev/rad));
                     res.push_back(new Wrist(sip, this, ref, vec));
@@ -440,13 +440,13 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
             while ( opt.set(str, var, inx++) )
             {
                 // get a number and the name of a class:
-                unsigned num = 1;
-                Tokenizer::get_integer(str, num);
+                size_t num = 1;
+                Tokenizer::split_integer(num, str);
                 SingleProp * sip = sim.findProperty<SingleProp>("single", str);
                 
                 /* add Wrists anchored on the local coordinate system:
                  we use unit vectors here since the Triad is build with 'rad' */
-                for ( unsigned i = 0; i < num; ++i )
+                for ( size_t i = 0; i < num; ++i )
                     res.push_back(new Wrist(sip, this, ref, Vector::randU()));
             }
         }
