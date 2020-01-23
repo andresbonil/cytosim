@@ -73,15 +73,15 @@ Property* FiberSet::newProperty(const std::string& cat, const std::string& nom, 
  Split string `arg` into an integer, a space, and the remaining string.
  Any space after the integer is discarded. `arg` is truncated.
  */
-bool splitNumber(std::string& arg, unsigned& num)
+bool splitNumber(std::string& arg, size_t& num)
 {
     char const* ptr = arg.c_str();
     char * end;
     errno = 0;
-    unsigned long var = strtoul(ptr, &end, 10);
+    size_t var = strtoul(ptr, &end, 10);
     if ( !errno && end > ptr && isspace(*end) )
     {
-        num = (unsigned)var;
+        num = var;
         while ( isspace(*end) )
             ++end;
         arg.erase(0, (size_t)(end-ptr));
@@ -155,7 +155,7 @@ ObjectList FiberSet::newObjects(const std::string& name, Glossary& opt)
     //can add Singles or Couples to the Fiber:
     while ( opt.set(spe, var) )
     {
-        unsigned cnt = 1;
+        size_t cnt = 1;
         splitNumber(spe, cnt);
         
         // search for Single and Couple:
@@ -167,9 +167,9 @@ ObjectList FiberSet::newObjects(const std::string& name, Glossary& opt)
         if ( !sip && !cop )
             throw InvalidParameter("could not find fiber:attach single/couple `"+spe+"'");
         
-        for ( unsigned n = 0; n < cnt; ++n )
+        for ( size_t n = 0; n < cnt; ++n )
         {
-            FiberSite fs(fib, fib->someAbscissa(var, opt, n/std::max(1U, cnt-1)));
+            FiberSite fs(fib, fib->someAbscissa(opt, var, n/std::max(1UL, cnt-1)));
             Object * cs = nullptr;
             Hand * h = nullptr;
             if ( sip )
@@ -498,7 +498,7 @@ FiberSite FiberSet::someSite(std::string const& key, Glossary& opt) const
                 throw InvalidParameter("Could not find fiber specified for attachment");
             }
             
-            return FiberSite(fib, fib->someAbscissa(key, opt, 1.0));
+            return FiberSite(fib, fib->someAbscissa(opt, key, 1.0));
         }
     }
     throw InvalidParameter("unrecognized site specification");

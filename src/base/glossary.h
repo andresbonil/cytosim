@@ -81,9 +81,6 @@ public:
     /// type for a dictionary of terms given to set(T&, ...)
     template < typename T >
     using dict_type = std::initializer_list<std::pair<Glossary::key_type, T> >;
-    
-    /// add right-hand-side entry to pair.second
-    static void  add_value(pair_type&, std::string&, bool);
 
 private:
     
@@ -91,12 +88,16 @@ private:
     map_type     mTerms;
     
     //-------------------------------------------------------------------------------
-    
+    #pragma mark -
+
     /// write a value, adding enclosing parenthesis if it contains space characters
     static std::string format_value(const std::string&);
     
     /// write the number of time parameter was used
     static std::string format_count(size_t);
+    
+    /// report unused values and values used more than `threshold` times
+    static int   warnings(std::ostream&, pair_type const&, size_t threshold, std::string const& msg);
 
     /// read key and assignement operator
     static int   read_key(pair_type&, std::istream&);
@@ -104,11 +105,13 @@ private:
     /// read one right-hand-side entry of an assignement
     static int   read_value(pair_type&, std::istream&);
     
+    /// add right-hand-side entry to pair.second
+    static void  add_value(pair_type&, std::string&, bool);
+
     /// register a new pair into the dictionnary
     void         add_entry(pair_type&, int no_overwrite);
     
     //-------------------------------------------------------------------------------
-    #pragma mark -
     
     /// returns first non-space character in null-terminated C-string
     static char const* not_space(const char s[])
@@ -123,9 +126,42 @@ private:
         return nullptr;
     }
     
+    /// true if `str` is composed of alpha characters and '_'
+    static int is_alpha(std::string const& str)
+    {
+        if ( str.empty() )
+            return 0;
+        for ( char c : str )
+        {
+            if ( ! isalpha(c) &&  c != '_' )
+                return 0;
+        }
+        return 1;
+    }
+    
+    /// check if string could be a number
+    static int is_number(std::string const& str)
+    {
+        char const* ptr = str.c_str();
+        char * end;
+        
+        errno = 0;
+        long i = strtol(ptr, &end, 10);
+        
+        if ( !errno && end > ptr && !not_space(end) )
+            return 2 + ( i >= 0 );
+        
+        errno = 0;
+        double d = strtod(ptr, &end);
+        if ( !errno && end > ptr && !not_space(end) )
+            return 4 + ( d >= 0 );
+        
+        return 0;
+    }
+    
     /// set `var` from string `val`
     template <typename T>
-    static void set_one(T & var, key_type const& key, std::string const& val)
+    static void set_value(T & var, key_type const& key, std::string const& val)
     {
         if ( val.empty() )
             throw InvalidSyntax("could not set `"+key+"' from empty string");
@@ -133,7 +169,7 @@ private:
         std::istringstream iss(val);
         
         iss >> var;
-
+        
         if ( iss.fail() )
             throw InvalidSyntax("could not set `"+key+"' from `"+val+"'");
         
@@ -151,7 +187,7 @@ private:
     
     /// set enum of type T using a dictionary of correspondances
     template <typename T>
-    static void set_one(T & var, key_type const& key, std::string const& val, dict_type<T> const& dict)
+    static void set_value(T & var, key_type const& key, std::string const& val, dict_type<T> const& dict)
     {
         for ( auto const& kv : dict )
         {
@@ -163,8 +199,7 @@ private:
                 return;
             }
         }
- 
-        InvalidParameter e("could not set `"+key+"' from `"+val+"':\n");
+        InvalidParameter e("could not set `"+key+"' from `"+val+"'");
         e << "Known values are:\n";
         for ( auto const& kv : dict )
             e << PREF << kv.first << " = " << kv.second << '\n';
@@ -235,22 +270,19 @@ public:
     /// returns true if `key[inx]==val`, or false otherwise. Counter is incremented in case of match
     bool         value_is(key_type const& key, unsigned inx, std::string const& val) const;
     
-    /// report unused values and values used more than `threshold` times
-    static int   warnings(std::ostream&, pair_type const&, unsigned threshold, std::string const& msg);
-    
     /// report unused values and values used multiple times
     int          warnings(std::ostream&, unsigned threshold=1, std::string const& msg="") const;
     
     //-------------------------------------------------------------------------------
     #pragma mark -
     
-    /// this adds a new key with value 'val': 'key=val'
+    /// this adds a new key with value 'val': 'key = val'
     void define(key_type const& key, std::string const& val);
     
-    /// define one value for the key at specified index: `key[inx]=val`.
-    void define(key_type const& key, unsigned inx, std::string const& val);
+    /// define one value for the key at specified index: `key[inx] = val`.
+    void define(key_type const& key, size_t inx, std::string const& val);
     
-    /// define one value from class T, for the key: `key[inx]=to_string(val)`.
+    /// define one value from class T, for the key: `key[inx] = to_string(val)`.
     template <typename T>
     void define(key_type const& key, unsigned inx, const T& val)
     {
@@ -297,7 +329,7 @@ public:
 
             if ( val.defined_ )
             {
-                set_one(var, key, val.value_);
+                set_value(var, key, val.value_);
                 ++val.count_;
                 return 1;
             }
@@ -318,7 +350,7 @@ public:
             
             if ( val.defined_ )
             {
-                set_one(var, key, val.value_);
+                set_value(var, key, val.value_);
                 return 1;
             }
         }
@@ -343,7 +375,7 @@ public:
             
             if ( val.defined_ )
             {
-                set_one(ptr[inx], key, val.value_);
+                set_value(ptr[inx], key, val.value_);
                 ++rec->at(inx).count_;
                 ++set;
             }
@@ -365,7 +397,7 @@ public:
             
             if ( val.defined_ )
             {
-                set_one(var, key,  val.value_, dict);
+                set_value(var, key, val.value_, dict);
                 ++val.count_;
                 return 1;
             }
@@ -381,18 +413,6 @@ public:
         return set(var, key, 0, dict);
     }
 
-    /// true if `str` is composed of alpha characters and '_'
-    static int is_alpha(std::string const& str)
-    {
-        if ( str.empty() )
-            return 0;
-        for ( char c : str )
-        {
-            if ( ! isalpha(c) &&  c != '_' )
-                return 0;
-        }
-        return 1;
-    }
     
     /// true if value of `key[inx]` is composed of alpha characters and '_'
     int is_alpha(key_type const& key, unsigned inx) const
@@ -403,26 +423,7 @@ public:
         return is_alpha(rec->at(inx).value_);
     }
     
-    /// check if string could be a number
-    static int is_number(std::string const& str)
-    {
-        char const* ptr = str.c_str();
-        char * end;
-        
-        errno = 0;
-        long i = strtol(ptr, &end, 10);
-        
-        if ( !errno && end > ptr && !not_space(end) )
-            return 2 + ( i >= 0 );
-        
-        errno = 0;
-        double d = strtod(ptr, &end);
-        if ( !errno && end > ptr && !not_space(end) )
-            return 4 + ( d >= 0 );
-        
-        return 0;
-    }
-
+    
     /// check if value of `key[inx]` could be a number
     /**
      @returns a bitwise field:
@@ -454,15 +455,15 @@ public:
 
 /// special function for std::string arguments.
 template <>
-void Glossary::set_one(std::string& var, key_type const&, std::string const&);
+void Glossary::set_value(std::string& var, key_type const&, std::string const&);
 
 /// special function for float
 template <>
-void Glossary::set_one(float& var, key_type const&, std::string const&);
+void Glossary::set_value(float& var, key_type const&, std::string const&);
 
 /// special function for double
 template <>
-void Glossary::set_one(double& var, key_type const&, std::string const&);
+void Glossary::set_value(double& var, key_type const&, std::string const&);
 
 
 /// input from stream

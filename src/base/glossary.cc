@@ -747,7 +747,7 @@ int Glossary::warnings(std::ostream& os, unsigned threshold, std::string const& 
  This copies the string, removing spaces
 */
 template <>
-void Glossary::set_one(std::string& var, key_type const& key, std::string const& val)
+void Glossary::set_value(std::string& var, key_type const& key, std::string const& val)
 {
     //var = Tokenizer::trim(val);
     var = val;
@@ -760,7 +760,7 @@ void Glossary::set_one(std::string& var, key_type const& key, std::string const&
  also accepting 'inf', '+inf' and '-inf' for INFINITY values
  */
 template <>
-void Glossary::set_one(float& var, key_type const& key, std::string const& val)
+void Glossary::set_value(float& var, key_type const& key, std::string const& val)
 {
 /*
     // Infinite values are normally handled by std::strtof()
@@ -789,7 +789,7 @@ void Glossary::set_one(float& var, key_type const& key, std::string const& val)
  also accepting 'inf', '+inf' and '-inf' for INFINITY values
  */
 template <>
-void Glossary::set_one(double& var, key_type const& key, std::string const& val)
+void Glossary::set_value(double& var, key_type const& key, std::string const& val)
 {
 /*
     // Infinite values are normally handled by std::strtod()

@@ -240,7 +240,7 @@ public:
     real         abscissaFrom(real dis, FiberEnd ref) const;
     
     /// return abscissa specified in opt[key]
-    real         someAbscissa(std::string const& key, Glossary& opt, real alpha) const;
+    real         someAbscissa(Glossary& opt, std::string const& key, real alpha) const;
 
     //---------------------
 

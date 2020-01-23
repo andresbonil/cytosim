@@ -1277,7 +1277,7 @@ real Chain::abscissaFrom(const real dis, const FiberEnd ref) const
      }
 
 */
-real Chain::someAbscissa(std::string const& key, Glossary& opt, real alpha) const
+real Chain::someAbscissa(Glossary& opt, std::string const& key, real alpha) const
 {
     const real len = length();
     real abs = len;
