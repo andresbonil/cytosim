@@ -91,15 +91,15 @@ vpath simd  bin
 
 #--- builds with specific dimension:
 
-bin1/sim: sim.cc cytosimD1.a cytomathD1.a cytobase.a
+bin1/sim: sim.cc cytosimD1.a cytomathD1.a cytobase.a | bin1
 	$(COMPILE) $(INC_BM) $(INFO) -DDIM=1 $(OBJECTS) $(LINK) -o bin1/sim
 	$(DONE)
 
-bin2/sim: sim.cc cytosimD2.a cytomathD2.a cytobase.a
+bin2/sim: sim.cc cytosimD2.a cytomathD2.a cytobase.a | bin2
 	$(COMPILE) $(INC_BM) $(INFO) -DDIM=2 $(OBJECTS) $(LINK) -o bin2/sim
 	$(DONE)
 
-bin3/sim: sim.cc cytosimD3.a cytomathD3.a cytobase.a
+bin3/sim: sim.cc cytosimD3.a cytomathD3.a cytobase.a | bin3
 	$(COMPILE) $(INC_BM) $(INFO) -DDIM=3 $(OBJECTS) $(LINK) -o bin3/sim
 	$(DONE)
 
@@ -110,15 +110,15 @@ cytosim.a: $(OBJ_CYTOSIM) | lib
 	$(MAKELIB)
 	$(DONE)
 
-cytosimD1.a: $(OBJ_CYTOSIMD1)
+cytosimD1.a: $(OBJ_CYTOSIMD1) | lib
 	$(MAKELIB)
 	$(DONE)
 
-cytosimD2.a: $(OBJ_CYTOSIMD2)
+cytosimD2.a: $(OBJ_CYTOSIMD2) | lib
 	$(MAKELIB)
 	$(DONE)
 
-cytosimD3.a: $(OBJ_CYTOSIMD3)
+cytosimD3.a: $(OBJ_CYTOSIMD3) | lib
 	$(MAKELIB)
 	$(DONE)
 
@@ -128,15 +128,15 @@ cytosimG.a: $(OBJ_CYTOSIMG) | lib
 	$(MAKELIB)
 	$(DONE)
 
-cytosimGD1.a: $(OBJ_CYTOSIMG:%.o=%D1.o)
+cytosimGD1.a: $(OBJ_CYTOSIMG:%.o=%D1.o) | lib
 	$(MAKELIB)
 	$(DONE)
 
-cytosimGD2.a: $(OBJ_CYTOSIMG:%.o=%D2.o)
+cytosimGD2.a: $(OBJ_CYTOSIMG:%.o=%D2.o) | lib
 	$(MAKELIB)
 	$(DONE)
 
-cytosimGD3.a: $(OBJ_CYTOSIMG:%.o=%D3.o)
+cytosimGD3.a: $(OBJ_CYTOSIMG:%.o=%D3.o) | lib
 	$(MAKELIB)
 	$(DONE)
 
