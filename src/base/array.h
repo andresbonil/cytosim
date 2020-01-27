@@ -152,7 +152,7 @@ public:
     }
 
     /// true if this Array holds no value
-    bool  empty() const
+    bool empty() const
     {
         return ( nbo_ == 0 );
     }

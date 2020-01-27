@@ -66,7 +66,7 @@ real SpaceStrip::volume() const
     return 2.0 * length_[0];
 }
 
-bool  SpaceStrip::inside(Vector const& point) const
+bool SpaceStrip::inside(Vector const& point) const
 {
     if ( point[0] >  length_[0] ) return false;
     if ( point[0] < -length_[0] ) return false;
@@ -91,7 +91,7 @@ real SpaceStrip::volume() const
     return 4.0 * length_[0] * length_[1];
 }
 
-bool  SpaceStrip::inside(Vector const& point) const
+bool SpaceStrip::inside(Vector const& point) const
 {
     if ( point[1] >  length_[1] ) return false;
     if ( point[1] < -length_[1] ) return false;
@@ -115,7 +115,7 @@ real SpaceStrip::volume() const
     return 8.0 * length_[0] * length_[1] * length_[2];
 }
 
-bool  SpaceStrip::inside(Vector const& point) const
+bool SpaceStrip::inside(Vector const& point) const
 {
     if ( point[2] >  length_[2] ) return false;
     if ( point[2] < -length_[2] ) return false;

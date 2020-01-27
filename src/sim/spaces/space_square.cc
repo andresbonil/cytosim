@@ -46,12 +46,12 @@ real SpaceSquare::volume() const
     return 2 * length_[0];
 }
 
-bool  SpaceSquare::inside(Vector const& w) const
+bool SpaceSquare::inside(Vector const& w) const
 {
     return fabs(w.XX) <= length_[0];
 }
 
-bool  SpaceSquare::allInside(Vector const& w, const real rad ) const
+bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
@@ -78,13 +78,13 @@ real SpaceSquare::volume() const
 }
 
 
-bool  SpaceSquare::inside(Vector const& w) const
+bool SpaceSquare::inside(Vector const& w) const
 {
     return fabs(w.XX) <= length_[0] and
            fabs(w.YY) <= length_[1];
 }
 
-bool  SpaceSquare::allInside(Vector const& w, const real rad ) const
+bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
@@ -105,14 +105,14 @@ real SpaceSquare::volume() const
     return 8 * length_[0] * length_[1] * length_[2];
 }
 
-bool  SpaceSquare::inside(Vector const& w) const
+bool SpaceSquare::inside(Vector const& w) const
 {
     return fabs(w.XX) <= length_[0] and
            fabs(w.YY) <= length_[1] and
            fabs(w.ZZ) <= length_[2];
 }
 
-bool  SpaceSquare::allInside(Vector const& w, const real rad ) const
+bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     

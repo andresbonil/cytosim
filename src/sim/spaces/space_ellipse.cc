@@ -85,7 +85,7 @@ real SpaceEllipse::volume() const
     return 2 * length_[0];
 }
 
-bool  SpaceEllipse::inside(Vector const& w) const
+bool SpaceEllipse::inside(Vector const& w) const
 {
     return fabs(w.XX) < length_[0];
 }
@@ -97,7 +97,7 @@ real SpaceEllipse::volume() const
     return M_PI * length_[0] * length_[1];
 }
 
-bool  SpaceEllipse::inside(Vector const& w) const
+bool SpaceEllipse::inside(Vector const& w) const
 {
     return square(w.XX/length_[0]) + square(w.YY/length_[1]) <= 1;
 }

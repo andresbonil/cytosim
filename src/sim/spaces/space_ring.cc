@@ -65,7 +65,7 @@ Vector SpaceRing::randomPlace() const
 
 
 //------------------------------------------------------------------------------
-bool  SpaceRing::inside(Vector const& w) const
+bool SpaceRing::inside(Vector const& w) const
 {
 #if ( DIM > 2 )
     const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
@@ -75,7 +75,7 @@ bool  SpaceRing::inside(Vector const& w) const
 #endif
 }
 
-bool  SpaceRing::allInside(Vector const& w, const real rad ) const
+bool SpaceRing::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
 

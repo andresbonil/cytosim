@@ -79,7 +79,7 @@ new cell
 new noyau
 {
     sphere       = envelope
-    bundles      = 4, bunch, (fibers=2, filament, (length=0.5))
+    bundles      = 4, bunch, (fibers=2, filament, (length=0.5; plus_end=grow;))
     radius       = 1.1
     position     = 3.5 0 0
 }

@@ -53,7 +53,7 @@ real SpacePeriodic::volume() const
     return 2.0 * length_[0];
 }
 
-bool  SpacePeriodic::inside(Vector const& point) const
+bool SpacePeriodic::inside(Vector const& point) const
 {
     return true;
 }
@@ -77,7 +77,7 @@ real SpacePeriodic::volume() const
     return 4.0 * length_[0] * length_[1];
 }
 
-bool  SpacePeriodic::inside(Vector const& point) const
+bool SpacePeriodic::inside(Vector const& point) const
 {
     return true;
 }
@@ -99,7 +99,7 @@ real SpacePeriodic::volume() const
     return 8.0 * length_[0] * length_[1] * length_[2];
 }
 
-bool  SpacePeriodic::inside(Vector const& point) const
+bool SpacePeriodic::inside(Vector const& point) const
 {
     return true;
 }

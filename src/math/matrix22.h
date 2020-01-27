@@ -729,11 +729,10 @@ public:
     /// set a symmetric matrix: alpha * [ dir (x) transpose(dir) ]
     static Matrix22 outerProduct(Vector2 const& dir, real alpha)
     {
-        real wX = dir.XX * alpha;
-        real wY = dir.YY * alpha;
-        real xy = dir.XX * wY;
-        return Matrix22(dir.XX * wX, xy,
-                        xy, dir.YY * wY);
+        real XX = dir.XX * dir.XX;
+        real XY = dir.XX * dir.YY;
+        real YY = dir.YY * dir.YY;
+        return Matrix22(XX, XY, XY, YY) * alpha;
     }
     
     /// return outer product: [ dir (x) transpose(vec) ]
