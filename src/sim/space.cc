@@ -449,8 +449,11 @@ void Space::read_data(Inputter& in, real len[8], std::string const& expected)
 #endif
         n = in.readUInt16();
     
-    for ( size_t d = 0; d < n; ++d )
+    size_t d = 0;
+    for ( ; d < std::min(8UL,n); ++d )
         len[d] = in.readFloat();
+    for ( ; d < n; ++d )
+        in.readFloat();
 }
 
 //------------------------------------------------------------------------------
