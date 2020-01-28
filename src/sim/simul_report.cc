@@ -709,7 +709,7 @@ void Simul::reportFiberEnds(std::ostream& out) const
  */
 void Simul::reportFiberPoints(std::ostream& out) const
 {
-    out << COM << "identity" << SEP << repeatXYZ("pos");
+    out << COM << "identity" << SEP << repeatXYZ("pos") << SEP << "curvature";
 
     // list fibers in the order of the inventory:
     for ( Fiber const* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
@@ -720,6 +720,7 @@ void Simul::reportFiberPoints(std::ostream& out) const
         {
             out << LIN << fib->identity();
             out << SEP << fib->posP(p);
+            out << SEP << fib->curvature(p);
         }
     }
 }
