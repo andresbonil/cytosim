@@ -58,14 +58,6 @@ void test_int()
         printf("\n");
     }
     printf("\n");
-    
-    for (int j=0; j<8; ++j)
-    {
-        for (int k=0; k<32; ++k)
-            printf(" %2u", RNG.pint_fair(100));
-        printf("\n");
-    }
-    printf("\n");
 
     for (int j=0; j<8; ++j)
     {
