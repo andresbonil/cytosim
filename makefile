@@ -84,27 +84,19 @@ SFMT.o: SFMT.c SFMT.h
 	$(CXX) -x c -DNDEBUG -DSFMT_MEXP=19937 -c $< -o build/$@
 
 
-.PHONY: all bin1 bin2 bin3 alldim doc
+.PHONY: all dim1 dim2 dim3 alldim allsim doc
 
 all: sim play tools tests
 
-alldim: bin1 bin2 bin3
+dim1: bin1/sim bin1/report bin1/play
+
+dim2: bin2/sim bin2/report bin2/play
+
+dim3: bin3/sim bin3/report bin3/play
+
+alldim: dim1 dim2 dim3
 
 allsim: bin1/sim bin2/sim bin3/sim
-
-allplay: bin1/play bin2/play bin3/play
-
-bin1:
-	if ! test -d bin1; then mkdir bin1; fi
-	make bin1/sim bin1/report bin1/play
-
-bin2:
-	if ! test -d bin2; then mkdir bin2; fi
-	make bin2/sim bin2/report bin2/play
-
-bin3:
-	if ! test -d bin3; then mkdir bin3; fi
-	make bin3/sim bin3/report bin3/play
 
 doc:
 	if test -d doc/code/doxygen; then rm -rf doc/code/doxygen; fi
@@ -135,6 +127,15 @@ pack: sterile tarsrc
 
 bin:
 	if ! test -d bin; then mkdir bin; fi
+	
+bin1:
+	if ! test -d bin1; then mkdir bin1; fi
+	
+bin2:
+	if ! test -d bin2; then mkdir bin2; fi
+	
+bin3:
+	if ! test -d bin3; then mkdir bin3; fi
 
 build:
 	if ! test -d build; then mkdir build; fi
