@@ -442,9 +442,6 @@ public:
     /// print state of Singles
     void      reportSingle(std::ostream&) const;
     
-    /// print position of Singles
-    void      reportSingleState(std::ostream&) const;
-    
     /// print position of Singles of a certain kind
     void      reportSingleState(std::ostream&, std::string const&) const;
 
@@ -452,7 +449,7 @@ public:
     void      reportSinglePosition(std::ostream&, std::string const&) const;
    
     /// print position of Singles
-    void      reportAttachedSinglePosition(std::ostream&, std::string const&) const;
+    void      reportAttachedSingle(std::ostream&, std::string const&) const;
 
     /// print state of Couples 
     void      reportSpherePosition(std::ostream&) const;

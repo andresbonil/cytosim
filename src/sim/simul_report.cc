@@ -278,16 +278,11 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
         if ( what.empty() )
             return reportSingle(out);
         if ( what == "state" || what == "force" )
-        {
-            if ( which.empty() )
-                return reportSingleState(out);
-            else
-                return reportSingleState(out, which);
-        }
+            return reportSingleState(out, which);
         if ( what == "position" )
             return reportSinglePosition(out, which);
         if ( what == "attached" )
-            return reportAttachedSinglePosition(out, which);
+            return reportAttachedSingle(out, which);
         throw InvalidSyntax("I only know single: state, force, position, NAME");
     }
     if ( who == "couple" )
@@ -1378,76 +1373,55 @@ void Simul::reportField(std::ostream& out) const
 //------------------------------------------------------------------------------
 #pragma mark - Single
 
-void writeF(std::ostream& out, Single * obj)
+void write(std::ostream& out, Single const* obj, Simul const* simul)
 {
-    assert_true( !obj->attached() );
     out << LIN << obj->prop->number();
     out << SEP << obj->identity();
     out << SEP << obj->position();
-    out << SEP << Vector(0,0,0);
-    out << SEP << "0";
-    out << SEP << "nan";
-    out << SEP << "0";
+    Fiber const* fib = obj->fiber();
+    if ( fib )
+    {
+        out << SEP << obj->force();
+        out << SEP << fib->identity();
+        out << SEP << obj->abscissa();
+        Organizer * o = simul->organizers.findOrganizer(fib);
+        if ( o )
+            out << SEP << static_cast<Object*>(o)->identity();
+        else
+            out << SEP << "0";
+    }
+    else
+    {
+        out << SEP << Vector(0,0,0);
+        out << SEP << "0";
+        out << SEP << "nan";
+        out << SEP << "0";
+    }
 }
 
-void writeA(std::ostream& out, Single * obj, Simul const* simul)
+
+/**
+ Export details of Singles, possiby selecting for a certain kind
+ */
+void Simul::reportSingleState(std::ostream& out, std::string const& which) const
 {
-    assert_true( obj->attached() );
-    out << LIN << obj->prop->number();
-    out << SEP << obj->identity();
-    out << SEP << obj->position();
-    out << SEP << obj->force();
-    Fiber const* fib = obj->fiber();
-    out << SEP << fib->identity();
-    out << SEP << obj->abscissa();
-    Organizer * o = simul->organizers.findOrganizer(fib);
-    if ( o )
-        out << SEP << static_cast<Object*>(o)->identity();
-    else
-        out << SEP << "0";
+    Property * selected = nullptr;
+    
+    if ( which.size() )
+        selected = properties.find_or_die("single", which);
+
+    out << COM << "class" << SEP << "identity";
+    out << SEP << repeatXYZ("pos") << SEP << repeatXYZ("force");
+    out << SEP << "fiber" << SEP << "abscissa" << SEP << "aster";
+    
+    for ( Single const* obj = singles.firstID(); obj; obj = singles.nextID(obj) )
+        if ( !selected || obj->prop == selected )
+            write(out, obj, this);
 }
 
 
 /**
  Export details of Singles
- */
-void Simul::reportSingleState(std::ostream& out) const
-{
-    out << COM << "class" << SEP << "identity";
-    out << SEP << repeatXYZ("pos") << SEP << repeatXYZ("force");
-    out << SEP << "fiber" << SEP << "abscissa" << SEP << "aster";
-    
-    for ( Single * obj=singles.firstF(); obj ; obj=obj->next() )
-        writeF(out, obj);
-    
-    for ( Single * obj=singles.firstA(); obj ; obj=obj->next() )
-        writeA(out, obj, this);
-}
-
-
-/**
- Export details of Singles of a certain kind
- */
-void Simul::reportSingleState(std::ostream& out, std::string const& which) const
-{
-    Property * selected = properties.find_or_die("single", which);
-    
-    out << COM << "class" << SEP << "identity";
-    out << SEP << repeatXYZ("pos") << SEP << repeatXYZ("force");
-    out << SEP << "fiber" << SEP << "abscissa" << SEP << "aster";
-    
-    for ( Single * obj=singles.firstF(); obj ; obj=obj->next() )
-        if ( obj->prop == selected )
-            writeF(out, obj);
-    
-    for ( Single * obj=singles.firstA(); obj ; obj=obj->next() )
-        if ( obj->prop == selected )
-            writeA(out, obj, this);
-}
-
-
-/**
- Export details of attached Singles
  */
 void Simul::reportSinglePosition(std::ostream& out, std::string const& which) const
 {
@@ -1456,7 +1430,8 @@ void Simul::reportSinglePosition(std::ostream& out, std::string const& which) co
     if ( which.size() )
         selected = properties.find_or_die("single", which);
 
-    out << COM << "class" << SEP << "identity" << SEP << repeatXYZ("pos") << SEP << "fiber_id";
+    out << COM << "class" << SEP << "identity" << SEP << repeatXYZ("pos_hand");
+    out << SEP << repeatXYZ("pos") << SEP << "fiber" << SEP << "abscissa";
 
     for ( Single const* obj = singles.firstID(); obj; obj = singles.nextID(obj) )
     {
@@ -1464,11 +1439,17 @@ void Simul::reportSinglePosition(std::ostream& out, std::string const& which) co
         {
             out << LIN << obj->prop->number();
             out << SEP << obj->identity();
+            out << SEP << obj->posHand();
             out << SEP << obj->posFoot();
             if ( obj->attached() )
+            {
                 out << SEP << obj->fiber()->identity();
+                out << SEP << obj->abscissa();
+            }
             else
-                out << SEP << 0;
+            {
+                out << SEP << 0 << SEP << 0;
+            }
         }
     }
 }
@@ -1476,27 +1457,21 @@ void Simul::reportSinglePosition(std::ostream& out, std::string const& which) co
 /**
  Export details of attached Singles
  */
-void Simul::reportAttachedSinglePosition(std::ostream& out, std::string const& which) const
+void Simul::reportAttachedSingle(std::ostream& out, std::string const& which) const
 {
     Property * selected = nullptr;
     
     if ( which.size() )
         selected = properties.find_or_die("single", which);
 
-    out << COM << "class" << SEP << "identity" << SEP << repeatXYZ("hand");
-    out << SEP << repeatXYZ("foot") << SEP << "fiber" << SEP << "abscissa";
+    out << COM << "class" << SEP << "identity";
+    out << SEP << repeatXYZ("pos") << SEP << repeatXYZ("force");
+    out << SEP << "fiber" << SEP << "abscissa" << SEP << "aster";
 
-    for ( Single * obj=singles.firstA(); obj ; obj=obj->next() )
+    for ( Single const* obj = singles.firstID(); obj; obj = singles.nextID(obj) )
     {
-        if ( !selected || obj->prop == selected )
-        {
-            out << LIN << obj->prop->number();
-            out << SEP << obj->identity();
-            out << SEP << obj->posHand();
-            out << SEP << obj->posFoot();
-            out << SEP << obj->fiber()->identity();
-            out << SEP << obj->abscissa();
-        }
+        if ( obj->attached()  && ( !selected || obj->prop == selected ))
+            write(out, obj, this);
     }
 }
 
