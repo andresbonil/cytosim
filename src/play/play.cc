@@ -128,8 +128,8 @@ enum { ONSCREEN, OFFSCREEN_IMAGE, OFFSCREEN_MOVIE, ONSCREEN_MOVIE };
 
 int main(int argc, char* argv[])
 {
-    int  mode = ONSCREEN;
-    int  magnify = 1;
+    int mode = ONSCREEN;
+    int magnify = 1;
     Glossary arg;
     
     Cytosim::all_silent();
@@ -139,7 +139,9 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     
     // check for major options:
-    
+    if ( arg.use_key("-") )
+        Cytosim::warn.silent();
+
     if ( arg.use_key("help") )
     {
         splash(std::cout);

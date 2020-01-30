@@ -878,7 +878,7 @@ void Parser::parse_export(std::istream& is)
      report parameters parameters.cmo { append=0 }
      report fiber:length fibers_length.txt
  
- Note that this command is disabled for `play`.
+ Note that writing to a file is normally disabled for `play`.
  */
 
 void Parser::parse_report(std::istream& is)
