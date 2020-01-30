@@ -12,7 +12,7 @@ set system display { size=512; }
 set space cell
 {
     shape = sphere
-	display = ( color=orange, orange; width=12; )
+    display = ( color=orange, orange; width=12; visible=3; )
 }
 
 new cell

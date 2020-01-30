@@ -80,5 +80,6 @@ new event
 
 run 100000 system
 {
+    nb_frames = 100
 }
 
