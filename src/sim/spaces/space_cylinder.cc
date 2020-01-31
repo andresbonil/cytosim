@@ -141,7 +141,7 @@ void SpaceCylinder::setInteraction(Vector const& pos, Mecapoint const& pe, Meca 
 {
     bool cap = ( fabs(pos.XX) > len );
     bool cyl = false;
-    real p = std::copysign(len, pos.XX);
+    real X = std::copysign(len, pos.XX);
     
 #if ( DIM > 2 )
     
@@ -155,7 +155,7 @@ void SpaceCylinder::setInteraction(Vector const& pos, Mecapoint const& pe, Meca 
     else if ( ! cap )
     {
         // inside cylinder in YZ plane and also inside in X:
-        if ( fabs( pos.XX - p ) > rad - sqrt(dis) )
+        if ( dis > square( rad - fabs(pos.XX-X) ) )
             cyl = true;
         else
             cap = true;
@@ -167,7 +167,7 @@ void SpaceCylinder::setInteraction(Vector const& pos, Mecapoint const& pe, Meca 
     {
         const index_t inx = DIM * pe.matIndex();
         meca.mC(inx, inx) -= stiff;
-        meca.base(inx)    += stiff * p;
+        meca.base(inx)    += stiff * X;
     }
   
     if ( cyl )

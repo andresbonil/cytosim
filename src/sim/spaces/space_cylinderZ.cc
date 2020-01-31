@@ -144,17 +144,17 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe,
 #if ( DIM >= 3 )
     bool cap = false;
     bool cyl = false;
-    real zzz;
+    real Z;
 
     // inside cylinder radius_
     if ( 2 * pos.ZZ - B > T )
     {
-        zzz = T;
+        Z = T;
         cap = ( pos.ZZ > T );
     }
     else
     {
-        zzz = B;
+        Z = B;
         cap = ( pos.ZZ < B );
     }
     
@@ -168,8 +168,7 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe,
     else if ( ! cap )
     {
         // inside cylinder in XY plane and also inside in Z:
-        if ( fabs(pos.ZZ-zzz) > rad - sqrt(dis) )
-        //if ( dis > rad*rad + square(pos.ZZ-p) - 2 * rad * fabs(pos.ZZ-p) )
+        if ( dis > square( rad - fabs(pos.XX-Z) ) )
             cyl = true;
         else
             cap = true;
@@ -179,7 +178,7 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe,
     {
         const index_t inx = 2 + DIM * pe.matIndex();
         meca.mC(inx, inx) -= stiff;
-        meca.base(inx)    += stiff * zzz;
+        meca.base(inx)    += stiff * Z;
     }
     
     if ( cyl )
