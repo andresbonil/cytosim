@@ -100,22 +100,22 @@ public:
     Vector    flow;
 #endif
 
-    /// Level of Brownian motion in the system = temperature * Boltzman constant
+    /// Energy of Brownian motion in the system = Temperature * Boltzman constant
     /**
-     <em>kT</em> is the product of the Boltzmann constant k by the absolute temperature in Kelvin:
-     - k = 1.3806 x 10^-23 Joule/Kelvin = 1.3806 x 10^-5 pN.um / Kelvin
+     <em>kT</em> is the product of the [Boltzmann constant](http://en.wikipedia.org/wiki/Boltzmann_constant) `k`
+     by the [Thermodynamic temperature](http://en.wikipedia.org/wiki/Thermodynamic_temperature) in Kelvin:
+     - k = 1.38065 x 10^-23 Joule/Kelvin = 13.8065 x 10^-6 pN.um / Kelvin
      - Kelvin = Celsius + 273.15
      .
      
-     Celsius   | Kelvin   | kT             |
+     Celsius   | Kelvin   |  kT            |
      ----------|----------|-----------------
-     ~10 C     |  283     |  0.0039  pN.um
-     ~24 C     |  297     |  0.0041  pN.um
-     ~31 C     |  303     |  0.0042  pN.um
-     ~39 C     |  312     |  0.0043  pN.um
+     ~10 C     |  283 K   |  0.0039  pN.um
+     ~24 C     |  297 K   |  0.0041  pN.um
+     ~31 C     |  303 K   |  0.0042  pN.um
+     ~39 C     |  312 K   |  0.0043  pN.um
 
      <em>default value = 0.0042</em>
-     http://en.wikipedia.org/wiki/Boltzmann_constant
      */
     real      kT;
     
