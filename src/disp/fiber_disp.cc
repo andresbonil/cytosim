@@ -78,16 +78,20 @@ void FiberDisp::read(Glossary& glos)
     glos.set(coloring,         "coloring");
     
     std::string key = glos.has_key("line") ? "line" : "lines";
-    glos.set(line_width,       "line_width") || glos.set(line_width, key) || glos.set(line_width, "width");
-    glos.set(line_style,       "line_style", {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}})
+    glos.set(line_width, "line_width")
+    || glos.set(line_width, key) || glos.set(line_width, "width");
+    glos.set(line_style, "line_style", {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}})
     || glos.set(line_style, key, 1, {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}});
-    glos.set(line_caps,        "line_caps") || glos.set(line_caps, key, 2);
+    glos.set(line_caps,  "line_caps")
+    || glos.set(line_caps, key, 2);
     
     key = glos.has_key("point") ? "point" : "points";
-    glos.set(point_size,       "point_size") || glos.set(point_size, key) || glos.set(point_size, "size");
-    glos.set(point_style,      "point_style", {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}})
+    glos.set(point_size, "point_size")
+    || glos.set(point_size, key) || glos.set(point_size, "size");
+    glos.set(point_style, "point_style", {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}})
     || glos.set(point_style, key, 1, {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}});
-    glos.set(point_interval,   "point_interval") || glos.set(point_interval, key, 2);
+    glos.set(point_interval, "point_interval")
+    || glos.set(point_interval, key, 2);
 
     if ( point_interval <= 0 )
         point_interval = 1;
@@ -114,18 +118,23 @@ void FiberDisp::read(Glossary& glos)
     glos.set(tension_scale,    "tension");
 #endif
     
-    glos.set(lattice_style,    "lattice") || glos.set(lattice_style, "show_lattice");
-    glos.set(lattice_scale,    "lattice_scale") || glos.set(lattice_scale, "lattice", 1);
+    glos.set(lattice_style,    "lattice")
+    || glos.set(lattice_style, "lattice_style");
+    glos.set(lattice_scale,    "lattice_scale")
+    || glos.set(lattice_scale, "lattice", 1);
     glos.set(lattice_rescale,  "lattice", 2);
 
-    glos.set(label_style,      "label_style") || glos.set(label_style, "labels") || glos.set(label_style, "label");
+    glos.set(label_style,      "label_style")
+    || glos.set(label_style, "labels") || glos.set(label_style, "label");
 
     key = glos.has_key("speckle") ? "speckle" : "speckles";
-    glos.set(speckle_size,     "speckle_size") || glos.set(speckle_size, key);
+    glos.set(speckle_size,     "speckle_size")
+    || glos.set(speckle_size, key);
     glos.set(speckle_style,    "speckle_style")
     || glos.set(speckle_style, key, 1, {{"off", 0}, {"random", 1}, {"regular", 2}});
     
-    glos.set(speckle_interval, "speckle_interval") || glos.set(speckle_interval, key, 2)
+    glos.set(speckle_interval, "speckle_interval")
+    || glos.set(speckle_interval, key, 2)
     || glos.set(speckle_interval, "interval");
 
     if ( speckle_interval <= 0 )

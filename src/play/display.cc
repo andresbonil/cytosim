@@ -1436,61 +1436,62 @@ void Display::drawMicrotubule(Fiber const& fib,
 void Display::drawFiber(Fiber const& fib)
 {
     FiberDisp const*const disp = fib.prop->disp;
+    int line_style = disp->line_style;
+    
+#if FIBER_HAS_LATTICE
+    FiberLattice const* lat = fib.lattice();
+    if ( lat && lat->ready() )
+    {
+        // if the Lattice is displayed, do not draw backbone:
+        switch ( disp->lattice_style )
+        {
+            case 1:
+                drawFiberLattice1(fib, disp->line_width);
+                line_style = 0;
+                break;
+            case 2:
+                drawFiberLattice2(fib, disp->line_width);
+                line_style = 0;
+                break;
+            case 3:
+                drawFiberLatticeEdges(fib, disp->line_width);
+                line_style = 0;
+                break;
+        }
+    }
+#endif
     
 #if ( DIM == 3 )
-    if ( fib.disp->color.transparent() )
+    // full transparent style in 3D
+    if ( line_style && fib.disp->color.transparent() )
     {
         for ( unsigned i = 0; i < fib.lastPoint(); ++i )
-        zObjects.push_back(zObject(&fib, i));
+            zObjects.push_back(zObject(&fib, i));
+        line_style = 0;
     }
-    else
 #endif
+    
+    if ( line_style )
     {
-        int line_style = disp->line_style;
-#if FIBER_HAS_LATTICE
-        FiberLattice const& lat = fib.lattice();
-        if ( lat.ready() )
-        {
-            // if the Lattice is displayed, do not draw backbone:
-            switch ( disp->lattice_style )
-            {
-                case 1:
-                    drawFiberLattice1(fib, lat, disp->line_width);
-                    line_style = 0;
-                    break;
-                case 2:
-                    drawFiberLattice2(fib, lat, disp->line_width);
-                    line_style = 0;
-                    break;
-                case 3:
-                    drawFiberLatticeEdges(fib, lat, disp->line_width);
-                    line_style = 0;
-                    break;
-            }
-        }
-#endif
-        if ( line_style )
-        {
-            gle_color col1 = fib.disp->color;
-            gle_color col2 = fib.disp->color.darken(0.625);
-            gle_color colE = fib.disp->end_color[0];
-            
-            // adjust colors for front and back surfaces:
-            col1.load_load();
-            if ( fib.prop->disp->coloring )
-                col1.load_back();
-            else
-                fib.prop->disp->back_color.load_back();
-            
-            if ( disp->line_style != 1 || disp->style == 0 )
-                drawFiberLines(fib);
-            else if ( disp->style == 1 )
-                drawFilament(fib, col1, col2, colE);
-            else if ( disp->style == 2 )
-                drawActin(fib, col1, col2, colE);
-            else if ( disp->style == 3 )
-                drawMicrotubule(fib, col1, col2, colE);
-        }
+        gle_color col1 = fib.disp->color;
+        gle_color col2 = fib.disp->color.darken(0.625);
+        gle_color colE = fib.disp->end_color[0];
+        
+        // adjust colors for front and back surfaces:
+        col1.load_load();
+        if ( fib.prop->disp->coloring )
+            col1.load_back();
+        else
+            fib.prop->disp->back_color.load_back();
+        
+        if ( disp->line_style != 1 || disp->style == 0 )
+            drawFiberLines(fib);
+        else if ( disp->style == 1 )
+            drawFilament(fib, col1, col2, colE);
+        else if ( disp->style == 2 )
+            drawActin(fib, col1, col2, colE);
+        else if ( disp->style == 3 )
+            drawMicrotubule(fib, col1, col2, colE);
     }
     
     if ( disp->end_length[0] > 0 )
