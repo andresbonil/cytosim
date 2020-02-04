@@ -46,61 +46,61 @@ Many examples can be found in the directory [***cym/***](../../cym).
 	
 	set simul system
 	{
-		time_step = 0.01
-		viscosity = 0.05
-		display = ( style=2; )
+	    time_step = 0.01
+	    viscosity = 0.05
+	    display = ( style=2; )
 	}
 	
 	set space cell
 	{
-		shape = circle
+	    shape = circle
 	}
 	
 	new cell
 	{   
-		radius = 10
+	    radius = 10
 	}
 
 	set fiber microtubule
 	{
-		rigidity = 20
-		segmentation = 0.5
-		confine = inside, 100
-		display = ( line_width=1; color=white; )
+	    rigidity = 20
+	    segmentation = 0.5
+	    confine = inside, 100
+	    display = ( line_width=1; color=white; )
 	}
 	
 	set hand kinesin
 	{
-		binding = 10, 0.01   % rate, range
-		unbinding = 0.1, 3   % rate, force
-		
-		activity = move
-		unloaded_speed = 0.8
-		stall_force = 5
+	    binding = 10, 0.01   % rate, range
+	    unbinding = 0.1, 3   % rate, force
+	    
+	    activity = move
+	    unloaded_speed = 0.8
+	    stall_force = 5
 	
-		bind_also_end = 1
-		hold_growing_end = 1
+	    bind_also_end = 1
+	    hold_growing_end = 1
 	
-		display = ( size=7; width=7; )
+	    display = ( size=7; width=7; )
 	}
 	
 	set couple complex
 	{
-		hand1 = kinesin
-		hand2 = kinesin
-		stiffness = 100
-		diffusion = 10
+	    hand1 = kinesin
+	    hand2 = kinesin
+	    stiffness = 100
+	    diffusion = 10
 	}
 	
 	new 100 microtubule
 	{
-		length = 9
+	    length = 9
 	}
 	
 	new 2000 complex
 	
 	run 5000 system
 	{
-		nb_frames = 50
+	    nb_frames = 50
 	}
 	
