@@ -279,7 +279,7 @@ SingleProp * SimThread::makeHandleProperty(real range)
 
     SingleProp * sip = new SingleProp("user_single");
     sip->hand = "user_hand";
-    sip->stiffness = 256;
+    sip->stiffness = 1000;
     sip->complete(simul);
     simul.properties.deposit(sip);
     
