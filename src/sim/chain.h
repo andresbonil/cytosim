@@ -300,7 +300,7 @@ public:
     Vector       dir(real ab) const { return dirM(ab-fnAbscissaM); }
 
     /// normalized tangent vector to the fiber at given abscissa from given reference
-    Vector       dir(real ab, FiberEnd ref) const { return posM(abscissaFrom(ab, ref)); }
+    Vector       dir(real ab, FiberEnd ref) const { return dirM(abscissaFrom(ab, ref)); }
     
     /// normalized tangent vector to the fiber at given end
     Vector       dirEnd(FiberEnd end) const;
