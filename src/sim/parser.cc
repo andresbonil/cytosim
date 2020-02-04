@@ -87,8 +87,9 @@ void Parser::parse_set(std::istream& is)
     
     if ( simul.isPropertyClass(cat) && !spec )
     {
-        /* in this form, 'set' defines a new Property
+        /* in this form:
          set CLASS NAME { PARAMETER = VALUE }
+         define a new Property
          */
         name = Tokenizer::get_symbol(is);
         blok = Tokenizer::get_block(is, '{');
@@ -170,7 +171,7 @@ void Parser::parse_set(std::istream& is)
             else
                 opt.define(para, blok);
 
-            execute_change(name, opt);
+            pp = execute_change(name, opt);
         }
         else if ( para == "display" )
         {
