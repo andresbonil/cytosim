@@ -29,9 +29,6 @@ void FiberDisp::clear()
     end_size[0]      = 6;
     end_size[1]      = 6;
     
-    end_length[0]    = 0;
-    end_length[1]    = 0;
-    
     end_color[0]     = 0xFFFFFFFF;  // white
     end_color[1]     = 0x00FF00FF;  // green
     end_color[2]     = 0xFFFF00FF;  // yellow
@@ -108,11 +105,9 @@ void FiberDisp::read(Glossary& glos)
     
     glos.set(end_style,  2,    "end_style");
     glos.set(end_size,   2,    "end_size");
-    glos.set(end_length, 2,    "end_length");
     glos.set(end_color,  5,    "end_color");
     
 #ifdef BACKWARD_COMPATIBILITY
-    glos.set(end_length, 2,    "end_section");
     glos.set(lattice_style,    "draw_lattice");
     glos.set(lattice_scale,    "lattice_max");
     glos.set(tension_scale,    "tension");
@@ -175,7 +170,6 @@ void FiberDisp::write_values(std::ostream& os) const
     write_value(os, "lines",        line_width, line_style, line_caps);
     write_value(os, "plus_end",     end_size[0], end_style[0]);
     write_value(os, "minus_end",    end_size[1], end_style[1]);
-    write_value(os, "end_length",   end_length, 2);
     write_value(os, "end_color",    end_color, 5);
  
     write_value(os, "lattice",      lattice_style, lattice_scale, lattice_rescale);

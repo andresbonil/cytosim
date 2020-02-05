@@ -198,12 +198,6 @@ public:
     /// draw one segment of a Fiber (used to display transparent fibers)
     virtual void drawFiberLinesT(Fiber const&, unsigned) const;
 
-    /// draw Fiber linear features over length `len` near the MINUS_END
-    virtual void drawFiberLinesM(Fiber const&, real len, real width) const;
-    
-    /// draw Fiber linear features over length `len` near the PLUS_END
-    virtual void drawFiberLinesP(Fiber const&, real len, real width) const;
-
     /// actin-like rendering using a sphere to represent each monomer
     void         drawFilament(Fiber const& fib, gle_color const&, gle_color const&, gle_color const&) const;
 

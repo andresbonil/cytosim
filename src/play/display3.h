@@ -67,12 +67,6 @@ public:
     /// draw one segment of a Fiber
     void drawFiberLinesT(Fiber const&, unsigned) const;
 
-    /// draw Fiber linear features over length `len` near the MINUS_END
-    void drawFiberLinesM(Fiber const&, real len, real width) const;
-    
-    /// draw Fiber linear features over length `len` near the PLUS_END
-    void drawFiberLinesP(Fiber const&, real len, real width) const;
-
     /// display lattice subtance using color
     void drawFiberLattice1(Fiber const&, FiberLattice const&, real width) const;
     

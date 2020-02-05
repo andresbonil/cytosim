@@ -861,48 +861,6 @@ void Display::drawFiberLinesT(Fiber const& fib, unsigned i) const
 }
 
 
-void Display::drawFiberLinesM(Fiber const& fib, real len, real width) const
-{
-    if ( len > 0 )
-    {
-        lineWidth(width);
-        glBegin(GL_LINE_STRIP);
-        unsigned ii = 0;
-        real a = 0;
-        while ( a < len  &&  ii < fib.nbPoints() )
-        {
-            gle::gleVertex(fib.posP(ii));
-            a += fib.segmentation();
-            ++ii;
-        }
-        if ( ii < fib.nbPoints() )
-            gle::gleVertex(fib.posM(len));
-        glEnd();
-    }
-}
-
-
-void Display::drawFiberLinesP(Fiber const& fib, real len, real width) const
-{
-    if ( len > 0 )
-    {
-        lineWidth(width);
-        glBegin(GL_LINE_STRIP);
-        int ii = fib.lastPoint();
-        real a = 0;
-        while ( a < len  &&  ii >= 0 )
-        {
-            gle::gleVertex(fib.posP(ii));
-            a += fib.segmentation();
-            --ii;
-        }
-        if ( ii >= 0 )
-            gle::gleVertex(fib.posM(fib.length()-len));
-        glEnd();
-    }
-}
-
-
 void Display::drawFiberSpeckles(Fiber const& fib) const
 {
     FiberDisp const*const disp = fib.prop->disp;
@@ -1492,20 +1450,6 @@ void Display::drawFiber(Fiber const& fib)
             drawActin(fib, col1, col2, colE);
         else if ( disp->style == 3 )
             drawMicrotubule(fib, col1, col2, colE);
-    }
-    
-    if ( disp->end_length[0] > 0 )
-    {
-        fib.disp->end_color[0].load_load();
-        disp->back_color.load_back();
-        drawFiberLinesP(fib, disp->end_length[0], disp->end_size[0]);
-    }
-
-    if ( disp->end_length[1] > 0 )
-    {
-        fib.disp->end_color[1].load_load();
-        disp->back_color.load_back();
-        drawFiberLinesM(fib, disp->end_length[1], disp->end_size[1]);
     }
 
     if ( disp->point_style > 0 )

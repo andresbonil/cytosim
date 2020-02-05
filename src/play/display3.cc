@@ -426,53 +426,6 @@ void Display3::drawFiberLinesT(Fiber const& fib, unsigned i) const
 }
 
 
-void Display3::drawFiberLinesM(Fiber const& fib, real len, real width) const
-{
-    if ( len > 0 )
-    {
-        real rad = width * sFactor;
-        unsigned inx = fib.clampedIndexM(len);
-        real cut = fib.segmentation() * inx;
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(-1.0, -1.0);
-        if ( 0 < inx )
-        {
-            drawJoinedFiberLines(fib, 1, 0, rad, 0, inx, set_color_not, 1.0);
-            drawFiberSegment(fib, 0, 0, rad, cut, len);
-        }
-        else
-        {
-            drawFiberSegment(fib, 1, 0, rad, 0, len);
-        }
-        glDisable(GL_POLYGON_OFFSET_FILL);
-    }
-}
-
-
-void Display3::drawFiberLinesP(Fiber const& fib, real len, real width) const
-{
-    if ( 0 < len )
-    {
-        real rad = width * sFactor;
-        real abs = fib.length() - len;
-        unsigned inx = 1 + fib.clampedIndexM(abs);
-        real cut = fib.segmentation() * inx;
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(-1.0, -1.0);
-        if ( inx < fib.lastSegment() )
-        {
-            drawFiberSegment(fib, 0, 0, rad, abs, cut);
-            drawJoinedFiberLines(fib, 0, 1, rad, inx, fib.lastSegment(), set_color_not, 1.0);
-        }
-        else
-        {
-            drawFiberSegment(fib, 0, 1, rad, abs, fib.length());
-        }
-        glDisable(GL_POLYGON_OFFSET_FILL);
-    }
-}
-
-
 //------------------------------------------------------------------------------
 #pragma mark -
 
