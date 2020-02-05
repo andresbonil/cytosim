@@ -290,7 +290,6 @@ void FiberProp::clear()
     
     used_polymer        = 0;
     free_polymer        = 1;
-    time_step           = 0;
     
 #if OLD_SQUEEZE_FORCE
     squeeze             = 0;
@@ -394,8 +393,6 @@ void FiberProp::read(Glossary& glos)
 
 void FiberProp::complete(Simul const& sim)
 {
-    time_step = sim.prop->time_step;
-    
     if ( viscosity < 0 )
         viscosity = sim.prop->viscosity;
     

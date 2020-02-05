@@ -284,9 +284,6 @@ protected:
     
     /// maximum speed of shrinkage
     real    max_chewing_speed_dt;
-
-    /// local copy of SimulProp::time_step
-    real    time_step;
     
     /// fraction of unpolymerized monomers in [0, 1]
     real    free_polymer;

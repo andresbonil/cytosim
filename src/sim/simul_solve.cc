@@ -232,7 +232,7 @@ void Simul::setInteractions(Meca & meca) const
     for ( Bead   * b=  beads.first(); b ; b=b->next() )
         meca.add(b);
     
-    meca.prepare(prop);
+    meca.prepare();
     
     // add interactions for all objects:
     
