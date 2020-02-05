@@ -29,7 +29,11 @@ class Vector2;
  allowing easy conversion operators to and from C-array.
  Although this is not guaranteed by the C-standard, this is usually the case.
  */
+#if VECTOR3_USES_AVX
+class alignas(32) Vector3
+#else
 class Vector3
+#endif
 {
     
 public:

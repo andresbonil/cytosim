@@ -26,7 +26,11 @@
  allowing easy conversion operators to and from C-array.
  Although this is not guaranteed by the C-standard, this is usually the case.
  */
+#if VECTOR4_USES_AVX
+class alignas(32) Vector4
+#else
 class Vector4
+#endif
 {
     
 public:

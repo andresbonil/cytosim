@@ -52,10 +52,10 @@ inline size_t chunk_real(size_t s)
     return ( s + chunk - 1 ) & ~( chunk - 1 );
 }
 
-/// check memory alignement of a pointer
+/// check memory alignement of a pointer for AVX load/store
 inline void check_alignment(void * ptr)
 {
-    uintptr_t a = ((uintptr_t)ptr & 63);
+    uintptr_t a = ((uintptr_t)ptr & 31);
     if ( a )
         fprintf(stderr, "missaligned pointer %p (%lu)\n", ptr, a);
 }
