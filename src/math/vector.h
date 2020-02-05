@@ -35,12 +35,6 @@ typedef Vector3 Vector;
 typedef Vector3 Torque;
 const   Torque  nullTorque(0,0,0);
 
-#else
-
-typedef Vector4 Vector;
-typedef Vector4 Torque;
-const   Torque  nullTorque(0,0,0,0);
-
 #endif
 
 #endif
