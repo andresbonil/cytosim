@@ -54,7 +54,6 @@ set actin display
     line = 7, 1;
     point = 7, 0;
     color = 0xFF000077, 0xFF000077;
-    end_length = 0.011;
     end_color = red, orange;
     end_size = 7;
     line_caps = 2;
