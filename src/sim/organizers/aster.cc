@@ -233,8 +233,13 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
     {
         for ( size_t n = 0; n < asLinks.size(); ++n )
             res.append(makeFiber(sim, n, type, fiber_opt));
+        fiber_opt.warnings(std::cerr, 1, " in aster:nucleate[1]");
     }
-    
+    else
+    {
+        if ( prop->fiber_rate <= 0 )
+            throw InvalidParameter("you should specify aster::fiber_spec");
+    }
     return res;
 }
 
