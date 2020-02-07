@@ -14,6 +14,7 @@ set(BASE_SOURCES
     "${PROJECT_SOURCE_DIR}/src/base/property_list.cc"
     "${PROJECT_SOURCE_DIR}/src/base/backtrace.cc"
     "${PROJECT_SOURCE_DIR}/src/base/ansi_colors.cc"
+    "${PROJECT_SOURCE_DIR}/src/base/operator_new.cc"
 )
 
 add_library(${BASE_LIB_TARGET} STATIC ${BASE_SOURCES})
