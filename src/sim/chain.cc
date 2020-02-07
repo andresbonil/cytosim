@@ -52,11 +52,11 @@ real Chain::contourLength(const real* pts, unsigned n_pts)
 
 Chain::Chain()
 {
-    fnNormal.set(0, 0, 1);
     fnCut          = 0;
     fnSegmentation = 0;
     fnAbscissaM    = 0;
     fnAbscissaP    = 0;
+    fnNormal.set(0, 0, 1);
     fnBirthTime    = 0;
     needUpdate     = false;
 }
