@@ -15,6 +15,7 @@ set(SPACES_SOURCES
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_strip.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_periodic.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_cylinderP.cc"
+	
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_polygonZ.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_disc.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_ring.cc"
