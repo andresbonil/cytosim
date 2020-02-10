@@ -841,6 +841,24 @@ Rotation Movable::readRotation(std::istream& is, Vector const& pos, Space const*
             quat.setMatrix3(rot);
             return rot;
         }
+        else if ( tok == "X" )
+        {
+            real ang = 0.5 * M_PI;
+            is >> ang;
+            return Rotation::rotationAroundX(ang);
+        }
+        else if ( tok == "Y" )
+        {
+            real ang = 0.5 * M_PI;
+            is >> ang;
+            return Rotation::rotationAroundY(ang);
+        }
+        else if ( tok == "Z" )
+        {
+            real ang = 0.5 * M_PI;
+            is >> ang;
+            return Rotation::rotationAroundZ(ang);
+        }
 #endif
         
         is.clear();
@@ -852,8 +870,8 @@ Rotation Movable::readRotation(std::istream& is, Vector const& pos, Space const*
     
     /*
      A single Vector does not uniquely define a rotation in 3D:
-     return a random rotation that is picked uniformly among
-     the all possible rotations transforming (1,0,0) in vec.
+     hence we return a random rotation that is picked uniformly
+     among all possible rotations transforming (1,0,0) in vec.
      */
     return Rotation::randomRotationToVector(vec);
 }
