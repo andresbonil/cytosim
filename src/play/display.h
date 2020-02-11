@@ -214,13 +214,13 @@ public:
     virtual void drawFiberSpeckles(Fiber const&) const;
    
     /// display lattice subtance using color
-    virtual void drawFiberLattice1(Fiber const&, FiberLattice const&, real width) const;
+    virtual void drawFiberLattice1(Fiber const&, real width) const;
     
     /// display lattice subtance using color
-    virtual void drawFiberLattice2(Fiber const&, FiberLattice const&, real width) const;
+    virtual void drawFiberLattice2(Fiber const&, real width) const;
    
     /// display lattice cell edges
-    virtual void drawFiberLatticeEdges(Fiber const&, FiberLattice const&, real size) const;
+    virtual void drawFiberLatticeEdges(Fiber const&, real size) const;
 
     /// display Labels for a Fiber
     void         drawFiberLabels(Fiber const&, void* font) const;
