@@ -1078,14 +1078,14 @@ void Display::drawFiberLattice2(Fiber const& fib, FiberLattice const& lat, real 
 /**
  Indicate the edges between sites with small dots
  */
-void Display::drawFiberLatticeEdges(Fiber const& fib, FiberLattice const& lat, real) const
+void Display::drawFiberLatticeEdges(Fiber const& fib, FiberLattice const& lat, real size) const
 {
     const real uni = lat.unit();
     const auto inf = lat.indexM();
     const auto sup = lat.indexP();
 
     fib.disp->color.load();
-    pointSize(fib.prop->disp->speckle_size);
+    pointSize(size);
     glBegin(GL_POINTS);
     for ( auto h = inf+1; h <= sup; ++h )
         gle::gleVertex(fib.pos(uni*h));
