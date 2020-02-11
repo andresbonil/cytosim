@@ -60,7 +60,7 @@ public:
         bool           defined_;
         
         /// the number of times this value has been read
-        mutable unsigned count_;
+        mutable size_t   count_;
         
         /// constructor
         val_type()     { defined_=false; count_=0; }
@@ -199,6 +199,7 @@ private:
                 return;
             }
         }
+        
         InvalidParameter e("could not set `"+key+"' from `"+val+"'");
         e << "Known values are:\n";
         for ( auto const& kv : dict )
@@ -256,7 +257,7 @@ public:
     size_t       nb_values(key_type const&) const;
     
     /// return true if key is present and a value was set for given index
-    bool         has_value(key_type const&, unsigned) const;
+    bool         has_value(key_type const&, size_t inx) const;
     
     /// gives a pointer to the values corresponding to a key, or null if the key is not present
     rec_type *   values(key_type const&);
@@ -265,13 +266,13 @@ public:
     rec_type const* values(key_type const&) const;
     
     /// return copy of value corresponding to `key[inx]`, or empty string if this value is not present
-    std::string  value(key_type const&, unsigned inx) const;
+    std::string  value(key_type const&, size_t inx) const;
     
     /// returns true if `key[inx]==val`, or false otherwise. Counter is incremented in case of match
-    bool         value_is(key_type const& key, unsigned inx, std::string const& val) const;
+    bool         value_is(key_type const& key, size_t inx, std::string const& val) const;
     
     /// report unused values and values used multiple times
-    int          warnings(std::ostream&, unsigned threshold=1, std::string const& msg="") const;
+    int          warnings(std::ostream&, size_t threshold=1, std::string const& msg="") const;
     
     //-------------------------------------------------------------------------------
     #pragma mark -
@@ -284,7 +285,7 @@ public:
     
     /// define one value from class T, for the key: `key[inx] = to_string(val)`.
     template <typename T>
-    void define(key_type const& key, unsigned inx, const T& val)
+    void define(key_type const& key, size_t inx, const T& val)
     {
         std::ostringstream oss;
         oss << val;
@@ -319,7 +320,7 @@ public:
     
     /// set `var` from `key[inx]`. The counter associated to the value is incremented.
     template <typename T>
-    int set(T & var, key_type const& key, unsigned inx = 0) const
+    int set(T & var, key_type const& key, size_t inx = 0) const
     {
         rec_type const* rec = values(key);
         
@@ -340,7 +341,7 @@ public:
 
     /// set `var` from `key[inx]`, without recording that the parameter was read.
     template <typename T>
-    int peek(T & var, key_type const& key, unsigned inx = 0) const
+    int peek(T & var, key_type const& key, size_t inx = 0) const
     {
         rec_type const* rec = values(key);
         
@@ -361,7 +362,7 @@ public:
     
     /// set `cnt` values in the array `ptr[]`, starting at `key[0]`
     template <typename T>
-    int set(T * ptr, unsigned cnt, key_type const& key) const
+    int set(T * ptr, size_t cnt, key_type const& key) const
     {
         rec_type const* rec = values(key);
         
@@ -369,7 +370,7 @@ public:
             return 0;
         
         int set = 0;
-        for ( unsigned inx = 0; inx < rec->size() && inx < cnt; ++inx )
+        for ( size_t inx = 0; inx < rec->size() && inx < cnt; ++inx )
         {
             val_type const& val = rec->at(inx);
             
@@ -387,7 +388,7 @@ public:
 
     /// set `var` from `key[inx]`, using the dictionary `dict`
     template <typename T>
-    int set(T & var, key_type const& key, unsigned inx, dict_type<T> const& dict) const
+    int set(T & var, key_type const& key, size_t inx, dict_type<T> const& dict) const
     {
         rec_type const* rec = values(key);
         
@@ -415,7 +416,7 @@ public:
 
     
     /// true if value of `key[inx]` is composed of alpha characters and '_'
-    int is_alpha(key_type const& key, unsigned inx) const
+    int is_alpha(key_type const& key, size_t inx) const
     {
         rec_type const* rec = values(key);
         if ( !rec || inx >= rec->size() )
@@ -434,7 +435,7 @@ public:
      .
      eg. value 3 is a positive integer
      */
-    int is_number(key_type const& key, unsigned inx) const
+    int is_number(key_type const& key, size_t inx) const
     {
         rec_type const* rec = values(key);
         if ( !rec || inx >= rec->size() )
@@ -442,7 +443,7 @@ public:
         return is_number(rec->at(inx).value_);
     }
     
-    int is_positive_integer(key_type const& key, unsigned inx) const
+    int is_positive_integer(key_type const& key, size_t inx) const
     {
         return is_number(key, inx) == 3;
     }
