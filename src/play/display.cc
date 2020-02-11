@@ -985,7 +985,7 @@ void set_lattice_color(Fiber const& fib, FiberLattice const& lat, real val, real
  */
 void Display::drawFiberLattice1(Fiber const& fib, real width) const
 {
-    FiberLattice const& lat = fib.lattice();
+    FiberLattice const& lat = *fib.drawableLattice();
     const real uni = lat.unit();
     const auto inf = lat.indexM();
     const auto sup = lat.indexP();
@@ -1035,7 +1035,7 @@ void Display::drawFiberLattice1(Fiber const& fib, real width) const
  */
 void Display::drawFiberLattice2(Fiber const& fib, real width) const
 {
-    FiberLattice const& lat = fib.lattice();
+    FiberLattice const& lat = *fib.drawableLattice();
     const real uni = lat.unit();
     const auto inf = lat.indexM();
     const auto sup = lat.indexP();
@@ -1082,7 +1082,7 @@ void Display::drawFiberLattice2(Fiber const& fib, real width) const
  */
 void Display::drawFiberLatticeEdges(Fiber const& fib, real size) const
 {
-    FiberLattice const& lat = fib.lattice();
+    FiberLattice const& lat = *fib.drawableLattice();
     const real uni = lat.unit();
     const auto inf = lat.indexM();
     const auto sup = lat.indexP();

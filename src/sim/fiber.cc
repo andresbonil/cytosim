@@ -1126,6 +1126,16 @@ void Fiber::infoLattice(real& len, unsigned& cnt, real& sm, real& mn, real& mx) 
 #endif
 }
 
+
+FiberLattice const* Fiber::drawableLattice() const
+{
+#if FIBER_HAS_LATTICE
+    return &digitLattice;
+#else
+    return nullptr;
+#endif
+}
+
 //------------------------------------------------------------------------------
 #pragma mark - Glue
 

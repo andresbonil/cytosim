@@ -268,6 +268,9 @@ public:
     /// print Lattice data (for debugging purpose)
     void           printLattice(std::ostream&, FiberLattice const&) const;
 
+    /// lattice to be displayed
+    FiberLattice const* drawableLattice() const;
+
     //--------------------------------------------------------------------------
     
     /// set the box glue for pure pushing
