@@ -26,7 +26,7 @@ void Walker::attach(FiberSite const& s)
     stride = std::copysign(n, prop->unloaded_speed);
 #else
     // here digit::step_size must be equal to fiber:step_size
-    if ( lattice()->unit() != prop->step_size  )
+    if ( lattice() && lattice()->unit() != prop->step_size  )
         throw InvalidParameter("digit:step_size must be equal to fiber:lattice_unit");
 #endif
 }
