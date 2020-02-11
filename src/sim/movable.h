@@ -48,9 +48,12 @@ public:
     /// read an orientation, and return a normalized vector
     static Vector readDirection(std::istream&, Vector const&, Space const*);
 
-    /// read a rotation specified in stream, at position `pos`
-    static Rotation readRotation(std::istream&, Vector const&, Space const*);
+    /// read a rotation specified in stream
+    static Rotation readRotation(std::istream&);
     
+    /// read a rotation specified in stream, at position `pos`
+    static Rotation readOrientation(std::istream&, Vector const&, Space const*);
+
 public:
     
     /// constructor
