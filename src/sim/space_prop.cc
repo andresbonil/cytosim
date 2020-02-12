@@ -157,6 +157,11 @@ void SpaceProp::clear()
     shape         = "";
     display       = "";
     display_fresh = false;
+    
+    viscosity     = INFINITY;
+    viscosity_rot = INFINITY;
+    mobility_dt   = 0;
+    mobility_rot_dt = 0;
 }
 
 
@@ -183,6 +188,10 @@ void SpaceProp::read(Glossary& glos)
     
     if ( glos.set(display, "display") )
         display_fresh = true;
+        
+    glos.set(viscosity,     "viscosity");
+    glos.set(viscosity_rot, "viscosity", 1);
+        
 }
 
 //------------------------------------------------------------------------------
@@ -191,6 +200,16 @@ void SpaceProp::complete(Simul const& sim)
 {
     if ( shape.empty() )
         throw InvalidParameter("space:shape must be defined");
+        
+    if ( viscosity > 0 )
+        mobility_dt = sim.prop->time_step / viscosity;
+    else if ( sim.ready() )
+        throw InvalidParameter("space:viscosity must be > 0");
+    
+    if ( viscosity_rot > 0 )
+        mobility_rot_dt = sim.prop->time_step / viscosity_rot;
+    else if ( sim.ready() )
+        throw InvalidParameter("space:viscosity[1] (rotational viscosity) must be > 0");
 }
 
 //------------------------------------------------------------------------------
