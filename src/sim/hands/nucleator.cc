@@ -86,7 +86,7 @@ void Nucleator::makeFiber(Simul& sim, Vector pos, std::string const& fiber_type,
                 if ( opt.set(str, "orientation") )
                 {
                     std::istringstream iss(str);
-                    rot = Movable::readRotation(iss, pos, fib->prop->confine_space_ptr);
+                    rot = Movable::readOrientation(iss, pos, fib->prop->confine_space_ptr);
                 }
                 else {
                     rot = Rotation::randomRotation();
@@ -101,7 +101,7 @@ void Nucleator::makeFiber(Simul& sim, Vector pos, std::string const& fiber_type,
             if ( opt.set(str, "orientation") )
             {
                 std::istringstream iss(str);
-                rot = Movable::readRotation(iss, pos, fib->prop->confine_space_ptr);
+                rot = Movable::readOrientation(iss, pos, fib->prop->confine_space_ptr);
             }
             else {
                 rot = Rotation::randomRotation();

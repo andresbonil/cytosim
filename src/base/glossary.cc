@@ -211,11 +211,11 @@ size_t Glossary::nb_values(key_type const& k) const
 }
 
 
-bool Glossary::has_value(key_type const& key, unsigned indx) const
+bool Glossary::has_value(key_type const& key, size_t inx) const
 {
     map_type::const_iterator w = mTerms.find(key);
     if ( w != mTerms.end() )
-        return indx < w->second.size();
+        return inx < w->second.size();
     return false;
 }
 
@@ -234,7 +234,7 @@ Glossary::rec_type const* Glossary::values(key_type const& key) const
 }
 
 
-std::string Glossary::value(key_type const& key, unsigned inx) const
+std::string Glossary::value(key_type const& key, size_t inx) const
 {
     map_type::const_iterator w = mTerms.find(key);
     if ( w != mTerms.end() )
@@ -250,10 +250,10 @@ std::string Glossary::value(key_type const& key, unsigned inx) const
 
 
 /**
- This is equivalement to value(key, indx) == val, except
+ This is equivalement to value(key, inx) == val, except
  that the counter is incremented only if there is a match
  */
-bool Glossary::value_is(key_type const& key, unsigned inx, std::string const& val) const
+bool Glossary::value_is(key_type const& key, size_t inx, std::string const& val) const
 {
     map_type::const_iterator w = mTerms.find(key);
     if ( w != mTerms.end() )
@@ -733,7 +733,7 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, size_t
 /**
  @returns total number of warnings associated with entire set of terms
  */
-int Glossary::warnings(std::ostream& os, unsigned threshold, std::string const& msg) const
+int Glossary::warnings(std::ostream& os, size_t threshold, std::string const& msg) const
 {
     int res = 0;
     for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )

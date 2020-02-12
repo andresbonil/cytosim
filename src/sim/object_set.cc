@@ -244,33 +244,39 @@ Object* ObjectSet::findObject(std::string spec, long num, const std::string& tit
         return static_cast<Object*>(inv);
     }
     
-    if ( num > 0 )
+    // finally search for a property name:
+    Property * pp = simul.findProperty(title, spec);
+
+    if ( pp )
     {
-        // finally get object by identity:
-        Object * obj = findID(num);
-        if ( obj )
+        Inventoried* inv = nullptr;
+        if ( num > 0 )
         {
-            if ( spec == obj->property()->name() || spec == obj->property()->category() )
-                return obj;
-        }
-    }
-    else
-    {
-        // 'microtubule0' would return the last created microtubule
-        Property * p = simul.findProperty(title, spec);
-        if ( p )
-        {
-            //std::clog << "findObject -> highest pick `" << spec << num << "'\n";
-            Inventoried* inv = inventory.last();
+            // 'microtubule1' would return the first created microtubule
+            // std::clog << "findObject -> highest pick `" << spec << num << "'\n";
+            inv = inventory.first();
             while ( inv )
             {
-                num += ( static_cast<Object*>(inv)->property() == p );
+                num -= ( static_cast<Object*>(inv)->property() == pp );
+                if ( num <= 0 )
+                    break;
+                inv = inventory.next(inv);
+            }
+        }
+        else
+        {
+            // 'microtubule0' would return the last created microtubule
+            //std::clog << "findObject -> highest pick `" << spec << num << "'\n";
+            inv = inventory.last();
+            while ( inv )
+            {
+                num += ( static_cast<Object*>(inv)->property() == pp );
                 if ( num > 0 )
                     break;
                 inv = inventory.previous(inv);
             }
-            return static_cast<Object*>(inv);
         }
+        return static_cast<Object*>(inv);
     }
     
     return nullptr;

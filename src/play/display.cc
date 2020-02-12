@@ -983,8 +983,9 @@ void set_lattice_color(Fiber const& fib, FiberLattice const& lat, real val, real
  This style uses one vertex for each site, positionned at the center of the range
  OpenGL will interpolate the colors, and each site will be covered by a gradient.
  */
-void Display::drawFiberLattice1(Fiber const& fib, FiberLattice const& lat, real width) const
+void Display::drawFiberLattice1(Fiber const& fib, real width) const
 {
+    FiberLattice const& lat = *fib.drawableLattice();
     const real uni = lat.unit();
     const auto inf = lat.indexM();
     const auto sup = lat.indexP();
@@ -1032,8 +1033,9 @@ void Display::drawFiberLattice1(Fiber const& fib, FiberLattice const& lat, real 
  This style, uses two vertices for each site, positionned at the extremity of the range,
  and each site is entirely covered by the color corresponding to the value.
  */
-void Display::drawFiberLattice2(Fiber const& fib, FiberLattice const& lat, real width) const
+void Display::drawFiberLattice2(Fiber const& fib, real width) const
 {
+    FiberLattice const& lat = *fib.drawableLattice();
     const real uni = lat.unit();
     const auto inf = lat.indexM();
     const auto sup = lat.indexP();
@@ -1078,14 +1080,15 @@ void Display::drawFiberLattice2(Fiber const& fib, FiberLattice const& lat, real 
 /**
  Indicate the edges between sites with small dots
  */
-void Display::drawFiberLatticeEdges(Fiber const& fib, FiberLattice const& lat, real) const
+void Display::drawFiberLatticeEdges(Fiber const& fib, real size) const
 {
+    FiberLattice const& lat = *fib.drawableLattice();
     const real uni = lat.unit();
     const auto inf = lat.indexM();
     const auto sup = lat.indexP();
 
     fib.disp->color.load();
-    pointSize(fib.prop->disp->speckle_size);
+    pointSize(size);
     glBegin(GL_POINTS);
     for ( auto h = inf+1; h <= sup; ++h )
         gle::gleVertex(fib.pos(uni*h));
@@ -1397,8 +1400,7 @@ void Display::drawFiber(Fiber const& fib)
     int line_style = disp->line_style;
     
 #if FIBER_HAS_LATTICE
-    FiberLattice const* lat = fib.lattice();
-    if ( lat && lat->ready() )
+    if ( fib.lattice().ready() )
     {
         // if the Lattice is displayed, do not draw backbone:
         switch ( disp->lattice_style )

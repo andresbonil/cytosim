@@ -181,7 +181,7 @@ Isometry Interface::read_placement(Glossary& opt)
     if ( opt.set(str, "orientation") )
     {
         std::istringstream iss(str);
-        iso.rot = Movable::readRotation(iss, iso.mov, spc);
+        iso.rot = Movable::readOrientation(iss, iso.mov, spc);
         if ( has_trail(iss) ) warn_trail(iss, "orientation = "+str);
     }
     else if ( opt.set(str, "direction") )
@@ -198,7 +198,7 @@ Isometry Interface::read_placement(Glossary& opt)
     if ( opt.set(str, "orientation", 1) )
     {
         std::istringstream iss(str);
-        Rotation rot = Movable::readRotation(iss, iso.mov, spc);
+        Rotation rot = Movable::readOrientation(iss, iso.mov, spc);
         if ( has_trail(iss) ) warn_trail(iss, "orientation = "+str);
         iso.rotate(rot);
     }
