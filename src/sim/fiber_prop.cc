@@ -434,8 +434,12 @@ void FiberProp::complete(Simul const& sim)
     
     if ( lattice && sim.ready() )
     {
+#if FIBER_HAS_LATTICE
         if ( lattice_unit <= 0 )
             throw InvalidParameter("fiber:lattice_unit (known as fiber:lattice[1]) must be specified and > 0");
+#else
+        throw InvalidParameter("cytosim cannot run with fiber:lattice");
+#endif
     }
 
     if ( rigidity < 0 )
