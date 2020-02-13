@@ -57,28 +57,6 @@ Couple::~Couple()
     prop = nullptr;
 }
 
-
-//------------------------------------------------------------------------------
-
-void Couple::setProperty(CoupleProp * p)
-{
-    if ( !p )
-        throw Exception("Null Couple::prop");
-    prop = p;
-    
-    if ( cHand1 && cHand1->prop != prop->hand1_prop )
-    {
-        delete(cHand1);
-        cHand1 = prop->hand1_prop->newHand(this);
-    }
-    
-    if ( cHand2 && cHand2->prop != prop->hand2_prop )
-    {
-        delete(cHand2);
-        cHand2 = prop->hand2_prop->newHand(this);
-    }
-}
-
 //------------------------------------------------------------------------------
 #pragma mark -
 
