@@ -814,9 +814,10 @@ Rotation Movable::readRotation(std::istream& is)
                 is >> dir;
             else
                 is.seekg(isp);
-            return Rotation::rotationAroundAxis(normalize(dir), cos(ang), sin(ang));
+        }
+        return Rotation::rotationAroundAxis(normalize(dir), cos(ang), sin(ang));
 #else
-            return Rotation::rotation(cos(ang), sin(ang));
+        return Rotation::rotation(cos(ang), sin(ang));
 #endif
     }
 #if ( DIM >= 3 )
