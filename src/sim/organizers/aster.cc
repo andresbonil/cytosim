@@ -54,7 +54,7 @@ void Aster::step()
      Y <- Y + ( mB + mC + mK ) * X
 
  */
-void Aster::setInteractions(Meca & meca) const
+void Aster::setInteractions(Meca& meca) const
 {
     assert_true( linked() );
 
@@ -71,16 +71,16 @@ void Aster::setInteractions(Meca & meca) const
         {
             AsterLink const& link = asLinks[n];
             
-            if ( link.ord == 0 )
+            if ( link.rank == 0 )
                 continue;
             
-            unsigned off = sol->matIndex() + link.ref;
-            unsigned pts[] = { off, off+1, off+2, off+3 };
+            const unsigned off = sol->matIndex() + link.prime;
+            const unsigned pts[] = { off, off+1, off+2, off+3 };
 
 #ifdef BACKWARD_COMPATIBILITY
             if ( link.alt > 0 )
             {
-                meca.addLink(Mecapoint(sol, link.ref), fib->exactEnd(prop->focus), prop->stiffness[0]);
+                meca.addLink(Mecapoint(sol, link.prime), fib->exactEnd(prop->focus), prop->stiffness[0]);
                 if ( fib->length() > link.len )
                 {
                     meca.addLink(Mecapoint(sol, link.alt), fib->interpolate(link.len, prop->focus), prop->stiffness[1]);
@@ -90,13 +90,13 @@ void Aster::setInteractions(Meca & meca) const
                     FiberEnd tip = ( prop->focus == PLUS_END ? MINUS_END : PLUS_END );
                     // link the opposite end to an interpolation of the two solid-points:
                     real c = fib->length() / link.len;
-                    meca.addLink(fib->exactEnd(tip), Interpolation(sol, link.ref, link.alt, c), prop->stiffness[1]);
+                    meca.addLink(fib->exactEnd(tip), Interpolation(sol, link.prime, link.alt, c), prop->stiffness[1]);
                 }
                 continue;
             }
 #endif
-            if ( link.ord == 1 )
-                meca.addLink(fib->exactEnd(prop->focus), Mecapoint(sol, link.ref), prop->stiffness[0]);
+            if ( link.rank == 1 )
+                meca.addLink(fib->exactEnd(prop->focus), Mecapoint(sol, link.prime), prop->stiffness[0]);
             else
                 meca.ADDLINK(fib->exactEnd(prop->focus), pts, link.coef1, prop->stiffness[0]);
             
@@ -183,62 +183,77 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
     assert_true(nbOrganized()==0);
     
     // get number of fibers:
-    unsigned nbf = 0;
-    std::string type, spec;
+    size_t nbf = 0;
+    std::string type;
     
     opt.set(asRadius, "radius");
-    opt.set(nbf,      "fibers");
-    opt.set(type,     "fibers", 1);
-    opt.set(spec,     "fibers", 2);
-    
-    Glossary fiber_opt(spec);
-    
-#ifdef BACKWARD_COMPATIBILITY
-    if ( type.empty() && opt.set(nbf, "nb_fibers") )
-    {
-        type = prop->fiber_type;
-        fiber_opt = opt;
-        spec = "unknown";
-    }
-#endif
-    nbOrganized(1+nbf);
-
     if ( asRadius <= 0 )
         throw InvalidParameter("aster:radius must be specified and > 0");
-
-    unsigned origin = 0;
-    ObjectList res = makeSolid(sim, opt, origin);
     
+    nbOrganized(1);
+    size_t origin = 0;
+    ObjectList res = makeSolid(sim, opt, origin);
     if ( !solid() )
         throw InvalidParameter("could not make aster:solid");
-    
-    // fibers anchor points can be specified directly:
-    unsigned cnt = 0;
-    Vector pos1, pos2;
-    std::string var = "fiber1";
-    while ( opt.set(pos1, var) && opt.set(pos2, var, 1) )
-    {
-        //std::clog << "direct fiber anchor " << pos1 << " and " << pos2 << "\n";
-        placeAnchor(pos1, pos2, origin);
-        ++cnt;
-        var = "fiber" + std::to_string(cnt+1);
-    }
-
-    if ( cnt < nbf )
-        placeAnchors(opt, origin, nbf-cnt);
-    
     //solid()->write(std::clog);
-    
-    if ( !spec.empty() )
+
+    if ( opt.is_positive_integer("fibers", 0) )
+        opt.set(nbf, "fibers");
+    else
+        opt.set(type, "fibers");
+
+    // fiber's anchor points can be specified directly:
+    std::string var = "fiber1";
+    if ( opt.has_key(var) )
     {
-        for ( size_t n = 0; n < asLinks.size(); ++n )
-            res.append(makeFiber(sim, n, type, fiber_opt));
-        fiber_opt.warnings(std::cerr, 1, " in aster:nucleate[1]");
+        size_t cnt = 0;
+        Vector pos1, pos2;
+        while ( opt.set(pos1, var) && opt.set(pos2, var, 1) )
+        {
+            //std::clog << "direct fiber anchor " << pos1 << " and " << pos2 << "\n";
+            placeAnchor(pos1, pos2, origin);
+            nbOrganized(2+cnt);
+            std::string str;
+            if ( opt.set(str, var, 2) )
+            {
+                Glossary fopt(str);
+                res.append(makeFiber(sim, cnt, type, fopt));
+                fopt.warnings(std::cerr, 1, " in aster:nucleate[1]");
+            }
+            ++cnt;
+            var = "fiber" + std::to_string(cnt+1);
+        }
     }
     else
     {
-        if ( prop->fiber_rate <= 0 )
-            throw InvalidParameter("you should specify aster::fiber_spec");
+        std::string str;
+        opt.set(type, "fibers", 1);
+        opt.set(str, "fibers", 2);
+    
+        Glossary fopt(str);
+    
+#ifdef BACKWARD_COMPATIBILITY
+        if ( type.empty() && opt.set(nbf, "nb_fibers") )
+        {
+            type = prop->fiber_type;
+            fopt = opt;
+            str = "unknown";
+        }
+#endif
+        nbOrganized(1+nbf);
+        placeAnchors(opt, origin, nbf);
+        
+        if ( str.empty() )
+        {
+            if ( prop->fiber_rate <= 0 )
+                throw InvalidParameter("you should specify aster::fiber_spec");
+        }
+        else
+        {
+            for ( size_t n = 0; n < nbf; ++n )
+                res.append(makeFiber(sim, n, type, fopt));
+            fopt.warnings(std::cerr, nbf, " in aster:nucleate[1]");
+        }
     }
     return res;
 }
@@ -284,18 +299,18 @@ ObjectList Aster::makeFiber(Simul& sim, size_t inx, std::string const& fiber_typ
  Anchor a Fiber between positions A and B, specified in a local reference frame
  associated with the Aster. Dimensions will be scaled by 'asRadius' eventually.
  */
-void Aster::placeAnchor(Vector const& A, Vector const& B, unsigned ref)
+void Aster::placeAnchor(Vector const& A, Vector const& B, size_t ref)
 {
     AsterLink & link = asLinks.new_val();
     //std::clog << "Aster::placeAnchor(" << asLinks.size() << ")\n";
     link.set(A, B);
     link.len *= asRadius;
-    link.ref = ref;
+    link.prime = ref;
     //link.print(std::clog);
 }
 
 
-ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, unsigned& origin)
+ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, size_t& origin)
 {
     ObjectList res(2);
     Solid * sol = nullptr;
@@ -327,7 +342,7 @@ ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, unsigned& origin)
     
     if ( ! sol )
         throw InvalidParameter("aster:solid must be specified");
-
+    
     // check that there is at least one point:
     if ( sol->dragCoefficient() < REAL_EPSILON )
 #ifdef BACKWARD_COMPATIBILITY
@@ -356,11 +371,14 @@ ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, unsigned& origin)
  - `angular` where all fibers are restricted within an specified solid angle,
  .
  */
-void Aster::placeAnchors(Glossary & opt, unsigned origin, unsigned nbf)
+void Aster::placeAnchors(Glossary & opt, size_t origin, size_t nbf)
 {
     real dis = 0;
-    if ( opt.set(dis, "radius", 1) && dis > asRadius )
+    opt.set(dis, "radius", 1) ;
+    if ( dis > asRadius )
         throw InvalidParameter("aster:radius[1] must be smaller than aster:radius[0]");
+    if ( dis < 0 )
+        throw InvalidParameter("aster:radius[1] must be specified and >= 0");
 
     const real alpha = dis / asRadius;
     
@@ -385,16 +403,16 @@ void Aster::placeAnchors(Glossary & opt, unsigned origin, unsigned nbf)
             std::clog << "with aster:seed_diameter = " << sep << '\n';
         }
         //std::clog << "toss(" << nbf << ") placed " << cnt << "\n";
-        real d = dis * 0.5;
+        dis *= 0.5;
         for ( size_t n = 0; n < cnt; ++n )
         {
             // orient anchors by default along the X-axis:
             real y = pts[n].YY;
 #if ( DIM == 2 )
-            placeAnchor(Vector2(-d,y), Vector2(+d,y), origin);
+            placeAnchor(Vector2(-dis,y), Vector2(dis,y), origin);
 #elif ( DIM == 3 )
             real x = pts[n].XX;
-            placeAnchor(Vector3(-d,x,y), Vector3(+d,x,y), origin);
+            placeAnchor(Vector3(-dis,x,y), Vector3(dis,x,y), origin);
 #endif
         }
     }
@@ -411,7 +429,7 @@ void Aster::placeAnchors(Glossary & opt, unsigned origin, unsigned nbf)
             throw InvalidParameter("aster::angle must be > 0");
 #if ( DIM == 1 )
         // No effect of angle in 1D, same as default
-        for ( unsigned n = 0; n < nbf; ++n )
+        for ( size_t n = 0; n < nbf; ++n )
         {
             Vector D(n%2?1:-1);
             placeAnchor(Vector(0.0), D, origin);
@@ -420,7 +438,7 @@ void Aster::placeAnchors(Glossary & opt, unsigned origin, unsigned nbf)
         real delta = 2 * angle / real(nbf);
         // points are evenly distributed from -aster_angle to aster_angle
         real ang = -angle;
-        for ( unsigned n = 0; n < nbf; ++n )
+        for ( size_t n = 0; n < nbf; ++n )
         {
             Vector P(cos(ang), sin(ang));
             placeAnchor(alpha*P, P, origin);
@@ -451,14 +469,14 @@ void Aster::placeAnchors(Glossary & opt, unsigned origin, unsigned nbf)
          For type 'regular' we put fibers regularly on the surface,
          */
 #if ( DIM == 1 )
-        for ( unsigned n = 0; n < nbf; ++n )
+        for ( size_t n = 0; n < nbf; ++n )
         {
             Vector D(n%2?1:-1);
             placeAnchor(Vector(0.0), D, origin);
         }
 #elif ( DIM == 2 )
         real ang = 0, delta = 2 * M_PI / real(nbf);
-        for ( unsigned n = 0; n < nbf; ++n )
+        for ( size_t n = 0; n < nbf; ++n )
         {
             Vector P(cos(ang), sin(ang));
             placeAnchor(alpha*P, P, origin);
@@ -468,7 +486,7 @@ void Aster::placeAnchors(Glossary & opt, unsigned origin, unsigned nbf)
         //we use PointsOnSphere to distribute points 'equally' on the sphere
         PointsOnSphere sphere(nbf);
         Vector P;
-        for ( unsigned n = 0; n < nbf; ++n )
+        for ( size_t n = 0; n < nbf; ++n )
         {
             sphere.copyPoint(P, n);
             placeAnchor(alpha*P, P, origin);
@@ -481,9 +499,7 @@ void Aster::placeAnchors(Glossary & opt, unsigned origin, unsigned nbf)
          For type 'astral' we put fibers randomly on the surface,
          with a constrain based on the scalar product: position*direction > 0
          */
-        if ( dis <= 0 )
-            throw InvalidParameter("aster:radius[1] must be specified and >= 0");
-        for ( unsigned n = 0; n < nbf; ++n )
+        for ( size_t n = 0; n < nbf; ++n )
         {
             Vector P = Vector::randB();
             Vector D = Vector::randU();
@@ -556,10 +572,10 @@ void Aster::read(Inputter& in, Simul& sim, ObjectTag tag)
     
 #ifdef BACKWARD_COMPATIBILITY
     // usual number of fiber links:
-    unsigned nbf = nbOrganized() - 1;
+    size_t nbf = nbOrganized() - 1;
     if ( in.formatID() > 50 )
 #else
-    unsigned
+    size_t
 #endif
         nbf = in.readUInt16();
     asLinks.resize(nbf);
@@ -574,7 +590,7 @@ void Aster::read(Inputter& in, Simul& sim, ObjectTag tag)
             unsigned b = in.readUInt16();
             if ( b >= sol->nbPoints() )
                 throw InvalidIO("invalid AsterLink index");
-            asLinks[i].ref = a;
+            asLinks[i].prime = a;
             asLinks[i].coef1[0] = 1.0;
             asLinks[i].alt = b;
             asLinks[i].len = (sol->posPoint(a)-sol->posPoint(b)).norm();
@@ -583,13 +599,13 @@ void Aster::read(Inputter& in, Simul& sim, ObjectTag tag)
 #endif
         asLinks[i].read(in);
         asLinks[i].len *= asRadius;
-        if ( asLinks[i].ref + asLinks[i].ord >= sol->nbPoints() )
+        if ( asLinks[i].prime + asLinks[i].rank >= sol->nbPoints() )
             throw InvalidIO("invalid AsterLink index");
     }
     
     if ( nbf > 0 )
     {
-        unsigned ref = asLinks[0].ref;
+        const size_t ref = asLinks[0].prime;
         asRadius = ( sol->posPoint(ref) - sol->posPoint(ref) ).norm();
     }
 }
@@ -602,16 +618,16 @@ Vector Aster::posLink1(size_t inx) const
 {
     Solid const* sol = solid();
     real const* coef = asLinks[inx].coef1;
-    const unsigned ref = asLinks[inx].ref;
+    const unsigned ref = asLinks[inx].prime;
     
 #ifdef BACKWARD_COMPATIBILITY
     if ( asLinks[inx].alt > 0 )
         return sol->posPoint(ref);
 #endif
 
-    int top = std::min(DIM+1u, sol->nbPoints());
+    unsigned top = std::min(DIM+1U, sol->nbPoints());
     Vector res = coef[0] * sol->posPoint(ref);
-    for ( int i = 1; i < top; ++i )
+    for ( unsigned i = 1; i < top; ++i )
         res += coef[i] * sol->posPoint(i+ref);
     
     return res;
@@ -621,16 +637,16 @@ Vector Aster::posLink2(size_t inx) const
 {
     Solid const* sol = solid();
     real const* coef = asLinks[inx].coef2;
-    const unsigned ref = asLinks[inx].ref;
+    const unsigned ref = asLinks[inx].prime;
     
 #ifdef BACKWARD_COMPATIBILITY
     if ( asLinks[inx].alt > 0 )
         return sol->posPoint(asLinks[inx].alt);
 #endif
 
-    int top = std::min(DIM+1u, sol->nbPoints());
+    unsigned top = std::min(DIM+1U, sol->nbPoints());
     Vector res = coef[0] * sol->posPoint(ref);
-    for ( int i = 1; i < top; ++i )
+    for ( unsigned i = 1; i < top; ++i )
         res += coef[i] * sol->posPoint(i+ref);
     
     return res;
@@ -663,7 +679,7 @@ bool Aster::getLink(size_t inx, Vector& pos1, Vector& pos2) const
 {
     size_t n = inx / 2;
     
-    if ( n < asLinks.size() && asLinks[n].ord > 0 )
+    if ( n < asLinks.size() && asLinks[n].rank > 0 )
     {
         Fiber const* fib = fiber(n);
         
