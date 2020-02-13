@@ -132,7 +132,7 @@ Aster * OrganizerSet::findAster(const ObjectID n) const
 Organizer * OrganizerSet::findOrganizer(const Mecable * m) const
 {
     for ( Organizer * o=first(); o; o=o->next() )
-        for ( unsigned i = 0; i < o->nbOrganized(); ++i )
+        for ( size_t i = 0; i < o->nbOrganized(); ++i )
             if ( m == o->organized(i) )
                 return o;
 

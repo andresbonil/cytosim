@@ -373,7 +373,7 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
 }
 
 //------------------------------------------------------------------------------
-#pragma mark - Fiber
+#pragma mark - Fiber Aggregated Properties
 
 /**
  Export average length and standard-deviation for each class of fiber
@@ -621,7 +621,7 @@ void Simul::reportFiberLattice(std::ostream& out, bool density) const
 
 
 //------------------------------------------------------------------------------
-#pragma mark - Fiber positions
+#pragma mark - Fiber Individual Properties
 
 /**
  Export length, position and directions at center of fibers
@@ -630,7 +630,7 @@ void Simul::reportFiber(std::ostream& out, FiberProp const* selected) const
 {
     out << COM << "class" << SEP << "identity" << SEP << "length";
     out << SEP << repeatXYZ("pos") << SEP << repeatXYZ("dir");
-    out << SEP << "endToEnd" << SEP << "cosinus";
+    out << SEP << "endToEnd" << SEP << "cosinus" << SEP << "aster";
 
     // list fibers in the order of the inventory:
     for ( Fiber const* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
@@ -644,6 +644,11 @@ void Simul::reportFiber(std::ostream& out, FiberProp const* selected) const
             out << SEP << fib->dirEnd(CENTER);
             out << SEP << (fib->posEndM()-fib->posEndP()).norm();
             out << SEP << dot(fib->dirEndM(), fib->dirEndP());
+            Organizer * o = organizers.findOrganizer(fib);
+            if ( o )
+                out << SEP << o->identity();
+            else
+                out << SEP << "0";
         }
         
     }
@@ -1386,7 +1391,7 @@ void write(std::ostream& out, Single const* obj, Simul const* simul)
         out << SEP << obj->abscissa();
         Organizer * o = simul->organizers.findOrganizer(fib);
         if ( o )
-            out << SEP << static_cast<Object*>(o)->identity();
+            out << SEP << o->identity();
         else
             out << SEP << "0";
     }
