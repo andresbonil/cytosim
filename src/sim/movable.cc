@@ -815,6 +815,7 @@ Rotation Movable::readRotation(std::istream& is)
             else
                 is.seekg(isp);
             return Rotation::rotationAroundAxis(normalize(dir), cos(ang), sin(ang));
+        }
 #else
             return Rotation::rotation(cos(ang), sin(ang));
 #endif
