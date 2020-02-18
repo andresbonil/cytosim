@@ -43,17 +43,10 @@ Couple::~Couple()
     if ( linked() )
         objset()->remove(this);
     
-    if ( cHand1 )
-    {
-        delete(cHand1);
-        cHand1 = nullptr;
-    }
-    if ( cHand2 )
-    {
-        delete(cHand2);
-        cHand2 = nullptr;
-    }
-    
+    delete(cHand1);
+    cHand1 = nullptr;
+    delete(cHand2);
+    cHand2 = nullptr;
     prop = nullptr;
 }
 

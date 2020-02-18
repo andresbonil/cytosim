@@ -85,11 +85,8 @@ singles(*this), couples(*this), organizers(*this), events(*this)
 Simul::~Simul()
 {
     erase();
-    
-    if ( pMeca1D )
-        delete(pMeca1D);
-    if ( prop )
-        delete(prop);
+    delete(pMeca1D);
+    delete(prop);
 }
 
 //------------------------------------------------------------------------------

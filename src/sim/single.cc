@@ -34,12 +34,8 @@ Single::~Single()
     if ( linked() )
         objset()->remove(this);
     
-    if ( sHand )
-    {
-        delete(sHand);
-        sHand = nullptr;
-    }
-    
+    delete(sHand);
+    sHand = nullptr;
     prop = nullptr;
 }
 

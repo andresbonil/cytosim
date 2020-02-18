@@ -97,11 +97,8 @@ Fiber::~Fiber()
 {
     detachHands();
 
-    if ( frGlue )
-    {
-        delete(frGlue);
-        frGlue = nullptr;
-    }
+    delete(frGlue);
+    frGlue = nullptr;
     
     if ( disp )
     {
