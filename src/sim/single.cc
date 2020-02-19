@@ -17,9 +17,6 @@ extern Modulo const* modulo;
 Single::Single(SingleProp const* p, Vector const& w)
 : sPos(w), sHand(nullptr), prop(p)
 {
-    if ( !p )
-        throw Exception("Null Single::prop");
-    
     assert_true(prop->hand_prop);
     sHand = prop->hand_prop->newHand(this);
     assert_true(sHand);
