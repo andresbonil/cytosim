@@ -1,0 +1,61 @@
+% A test for ClassicFiber's 'catastrophe_outside'
+% F. Nedelec, Cambridge, 24.02.2020
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.1
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 10
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 0.5
+    confine = inside, 100
+
+    activity = classic
+    growing_speed = 0.1
+    shrinking_speed = -0.3
+    catastrophe_rate = 0.01
+    catastrophe_outside = 100, cell  % amplification_factor_outside
+    rebirth_rate = 10
+    persistent = 1
+
+    display = { line_width=3; }
+}
+
+set solid core
+{
+    display = ( style=3; color=red; )
+}
+
+set aster centrosome
+{
+    stiffness = 1000, 500
+}
+
+new centrosome
+{
+    solid = core
+    radius = 0.5
+    point1 = center, 0.5
+    fibers = 32, microtubule, ( length = 1; plus_end = grow; )
+}
+
+
+run system
+{
+    nb_steps = 100000
+    nb_frames = 10
+}

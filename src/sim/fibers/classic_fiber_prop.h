@@ -10,7 +10,7 @@
 #define NEW_LENGTH_DEPENDENT_CATASTROPHE 0
 
 /// Enables support for an option that induces catastrophe if the PLUS_END is outside
-#define NEW_CATASTROPHE_OUTSIDE 0
+#define NEW_CATASTROPHE_OUTSIDE 1
 
 
 /// additional Property for ClassicFiber
@@ -101,8 +101,14 @@ public:
 
 #if NEW_CATASTROPHE_OUTSIDE
     
-    /// Flag to trigger immediate catastrophe if the PLUS_END is outside
-    bool    catastrophe_outside;
+    /// catastrophe rate scaling factor applied if the PLUS_END is outside
+    /**
+     A value < 1 inhibits catastrophe at the edge; A value > 1 accelerates catastrophes
+     */
+    real    catastrophe_outside;
+
+    /// space used for `catastrophe_outside'
+    std::string catastrophe_space;
 
 #endif
     
@@ -136,6 +142,11 @@ private:
     real    catastrophe_rate_stalled_dt[2];
     real    catastrophe_coef[2];
     real    rescue_prob[2], rebirth_prob[2];
+        
+#if NEW_CATASTROPHE_OUTSIDE
+    /// pointer to actual Space used for `catastrophe_outside`
+    Space const* catastrophe_space_ptr;
+#endif
 
 public:
     

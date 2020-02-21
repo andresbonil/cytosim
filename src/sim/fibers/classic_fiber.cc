@@ -4,6 +4,7 @@
 #include "assert_macro.h"
 #include "classic_fiber.h"
 #include "classic_fiber_prop.h"
+#include "messages.h"
 #include "exceptions.h"
 #include "iowrapper.h"
 #include "simul.h"
@@ -117,6 +118,15 @@ void ClassicFiber::step()
         else
             cata = prop->catastrophe_rate_dt[0];
         
+#if NEW_CATASTROPHE_OUTSIDE
+        // Catastrophe rate is multiplied if the PLUS_END is outside
+        if ( prop->catastrophe_space_ptr->outside(posEndP()) )
+        {
+            LOG_ONCE("Fiber's plus-end catastrophe rate is different outside the Space\n");
+            cata *= prop->catastrophe_outside;
+        }
+#endif
+
 #if NEW_LENGTH_DEPENDENT_CATASTROPHE
         /*
          Ad-hoc length dependence, used to simulate S. pombe with catastrophe_length=5
@@ -127,14 +137,6 @@ void ClassicFiber::step()
             LOG_ONCE("Using ad-hoc length-dependent catastrophe rate\n");
             cata *= length() / prop->catastrophe_length;
         }
-#endif
-        
-#if NEW_CATASTROPHE_OUTSIDE
-        /*
-         Catastrophe will be triggered immediately if the PLUS_END is outside
-         */
-        if ( prop->catastrophe_outside && prop->confine_space_ptr->outside(posEndP()) )
-            mStateP = STATE_RED;
 #endif
         
         if ( RNG.test(cata) )

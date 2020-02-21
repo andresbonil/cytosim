@@ -38,7 +38,8 @@ void ClassicFiberProp::clear()
     catastrophe_length  = 0;
 #endif
 #if NEW_CATASTROPHE_OUTSIDE
-    catastrophe_outside = false;
+    catastrophe_outside = 0;
+    catastrophe_space_ptr = nullptr;
 #endif
 }
 
@@ -57,10 +58,11 @@ void ClassicFiberProp::read(Glossary& glos)
     glos.set(rebirth_rate,             2, "rebirth_rate");
 
 #if NEW_LENGTH_DEPENDENT_CATASTROPHE
-    glos.set(catastrophe_length,       "catastrophe_length");
+    glos.set(catastrophe_length,    "catastrophe_length");
 #endif
 #if NEW_CATASTROPHE_OUTSIDE
-    glos.set(catastrophe_outside,      "catastrophe_outside");
+    glos.set(catastrophe_outside,   "catastrophe_outside");
+    glos.set(catastrophe_space,     "catastrophe_outside", 1);
 #endif
 
 
@@ -155,6 +157,15 @@ void ClassicFiberProp::complete(Simul const& sim)
             throw InvalidParameter("fiber:rebirth_rate should be >= 0");
         rebirth_prob[i] = -std::expm1( -rebirth_rate[i] * sim.prop->time_step );
     }
+    
+#if NEW_CATASTROPHE_OUTSIDE
+    catastrophe_space_ptr = sim.findSpace(catastrophe_space);
+    
+    if ( catastrophe_space_ptr )
+        catastrophe_space = catastrophe_space_ptr->property()->name();
+    else
+        throw InvalidParameter("A space must be defined as catastrophe_outside[1]");
+#endif
 }
 
 
