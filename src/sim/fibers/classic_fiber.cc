@@ -134,12 +134,7 @@ void ClassicFiber::step()
          Catastrophe will be triggered immediately if the PLUS_END is outside
          */
         if ( prop->catastrophe_outside && prop->confine_space_ptr->outside(posEndP()) )
-        {
             mStateP = STATE_RED;
-            
-            if ( RNG.test(prop->rescue_prob[0]) )
-                mStateP = STATE_GREEN;
-        }
 #endif
         
         if ( RNG.test(cata) )
@@ -148,6 +143,9 @@ void ClassicFiber::step()
     else if ( mStateP == STATE_RED )
     {
         mGrowthP = prop->shrinking_speed_dt[0];
+        
+        if ( RNG.test(prop->rescue_prob[0]) )
+            mStateP = STATE_GREEN;
     }
     
     real inc = mGrowthP + mGrowthM;
