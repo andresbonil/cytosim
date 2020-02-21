@@ -18,13 +18,14 @@ exe = "diff"
 diff="diff --side-by-side -W200 -p --suppress-common-lines"
 
 
+
 def spacer(info):
     """print a line of width size, with 'info' in the middle"""
-    import os
     rows, cols = os.popen('stty size', 'r').read().split()
     sys.stdout.write(chr(27)+"[36;2m"); sys.stdout.flush()
     print(info.center(int(cols), '-'))
     sys.stdout.write(chr(27)+"[0m"); sys.stdout.flush()
+
 
 
 def compareFiles(fileL, fileR):
@@ -89,8 +90,17 @@ def process_dir(roots, dirnameL, files):
 
 def main(args):
     global exe
+    if len(args) < 2:
+        print("Error: you must specify root directories!")
+        sys.exit()
     rootL=args[0].rstrip('/')
     rootR=args[1].rstrip('/')
+    if not os.path.isdir(rootL):
+        print("Error: `%s' is not a directory" % rootL)
+        sys.exit()
+    if not os.path.isdir(rootR):
+        print("Error: `%s' is not a directory" % rootR)
+        sys.exit()
 
     #parse command-line arguments:    
     for arg in args[2:]:
@@ -100,8 +110,6 @@ def main(args):
             print("unknown argument '%s'" % arg)
             sys.exit()
 
-    if rootL == '' or rootR == '':
-        print('Error: you must specify root directories!')
 
     for path, dirs, files in os.walk(rootL, topdown=False):
         process_dir([rootL, rootR], path, files)
@@ -111,5 +119,6 @@ if __name__ == "__main__":
         print(__doc__)
     else:
         main(sys.argv[1:])
+
 
 
