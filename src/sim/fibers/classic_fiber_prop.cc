@@ -38,7 +38,7 @@ void ClassicFiberProp::clear()
     catastrophe_length  = 0;
 #endif
 #if NEW_CATASTROPHE_OUTSIDE
-    catastrophe_outside = 0;
+    catastrophe_outside = 1;
     catastrophe_space_ptr = nullptr;
 #endif
 }
@@ -65,7 +65,6 @@ void ClassicFiberProp::read(Glossary& glos)
     glos.set(catastrophe_space,     "catastrophe_outside", 1);
 #endif
 
-
 #ifdef BACKWARD_COMPATIBILITY
     
     if ( glos.set(growing_force[0], "dynamic_force") )
@@ -82,7 +81,7 @@ void ClassicFiberProp::read(Glossary& glos)
             catastrophe_rate[1] = 0;
         }
         if ( glos.peek(x, "growing_speed", 1) && x != 0 )
-            throw InvalidParameter("fiber:growing_speed[1] was renamed growing_off_speed[0]\n");
+            throw InvalidParameter("fiber:growing_speed[1] was renamed growing_off_speed[0]");
     }
 
     int f = 0;
@@ -162,7 +161,7 @@ void ClassicFiberProp::complete(Simul const& sim)
     catastrophe_space_ptr = sim.findSpace(catastrophe_space);
     
     if ( catastrophe_space_ptr )
-        catastrophe_space = catastrophe_space_ptr->property()->name();
+        catastrophe_space = catastrophe_space_ptr->name();
     else
         throw InvalidParameter("A space must be defined as catastrophe_outside[1]");
 #endif

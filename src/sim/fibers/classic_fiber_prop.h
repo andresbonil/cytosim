@@ -142,12 +142,12 @@ private:
     real    catastrophe_rate_stalled_dt[2];
     real    catastrophe_coef[2];
     real    rescue_prob[2], rebirth_prob[2];
-        
+    
 #if NEW_CATASTROPHE_OUTSIDE
     /// pointer to actual Space used for `catastrophe_outside`
     Space const* catastrophe_space_ptr;
 #endif
-
+    
 public:
     
     /// constructor

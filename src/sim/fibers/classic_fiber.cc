@@ -4,9 +4,9 @@
 #include "assert_macro.h"
 #include "classic_fiber.h"
 #include "classic_fiber_prop.h"
-#include "messages.h"
 #include "exceptions.h"
 #include "iowrapper.h"
+#include "messages.h"
 #include "simul.h"
 #include "space.h"
 
@@ -53,13 +53,16 @@ void ClassicFiber::setDynamicStateP(state_t s)
  The catastrophe rate depends on the growth rate of the corresponding tip,
  which is itself reduced by antagonistic force. 
  The correspondance is : 1/rate = a + b * growthSpeed.
- For no force on the growing tip: rate = catastrophe_rate[0]*time_step
- For very large forces          : rate = catastrophe_rate_stalled[0]*time_step
+ 
+ For no force on the growing tip: rate = catastrophe_rate * time_step
+ For very large forces          : rate = catastrophe_rate_stalled * time_step
+ 
  cf. `Dynamic instability of MTs is regulated by force`
  M.Janson, M. de Dood, M. Dogterom. JCB 2003, Figure 2 C.
  */
 void ClassicFiber::step()
 {
+    constexpr int P = 0, M = 1;
     const real len = length();
 
     if ( mStateM == STATE_GREEN )
@@ -68,30 +71,30 @@ void ClassicFiber::step()
         real force = projectedForceEndM();
         
         // growth is reduced if free monomers are scarce:
-        real spd = prop->growing_speed_dt[1] * prop->free_polymer;
+        real spd = prop->growing_speed_dt[M] * prop->free_polymer;
         
         // antagonistic force (< 0) decreases assembly rate exponentially
-        if ( force < 0  &&  prop->growing_force[1] < INFINITY )
-            mGrowthM = spd * exp(force/prop->growing_force[1]) + prop->growing_off_speed_dt[1];
+        if ( force < 0  &&  prop->growing_force[M] < INFINITY )
+            mGrowthM = spd * exp(force/prop->growing_force[M]) + prop->growing_off_speed_dt[M];
         else
-            mGrowthM = spd + prop->growing_off_speed_dt[1];
+            mGrowthM = spd + prop->growing_off_speed_dt[M];
         
         
         // catastrophe may be constant, or it may depend on the growth rate
         real cata;
-        if ( prop->catastrophe_coef[1] > 0 )
-            cata = prop->catastrophe_rate_stalled_dt[1] / ( 1.0 + prop->catastrophe_coef[1] * mGrowthM );
+        if ( prop->catastrophe_coef[M] > 0 )
+            cata = prop->catastrophe_rate_stalled_dt[M] / ( 1.0 + prop->catastrophe_coef[M] * mGrowthM );
         else
-            cata = prop->catastrophe_rate_dt[1];
+            cata = prop->catastrophe_rate_dt[M];
 
         if ( RNG.test(cata) )
             mStateM = STATE_RED;
     }
     else if ( mStateM == STATE_RED )
     {
-        mGrowthM = prop->shrinking_speed_dt[1];
+        mGrowthM = prop->shrinking_speed_dt[M];
         
-        if ( RNG.test(prop->rescue_prob[1]) )
+        if ( RNG.test(prop->rescue_prob[M]) )
             mStateM = STATE_GREEN;
     }
     
@@ -102,21 +105,21 @@ void ClassicFiber::step()
         real force = projectedForceEndP();
         
         // growth is reduced if free monomers are scarce:
-        real spd = prop->growing_speed_dt[0] * prop->free_polymer;
+        real spd = prop->growing_speed_dt[P] * prop->free_polymer;
         
         // antagonistic force (< 0) decreases assembly rate exponentially
-        if ( force < 0  &&  prop->growing_force[0] < INFINITY )
-            mGrowthP = spd * exp(force/prop->growing_force[0]) + prop->growing_off_speed_dt[0];
+        if ( force < 0  &&  prop->growing_force[P] < INFINITY )
+            mGrowthP = spd * exp(force/prop->growing_force[P]) + prop->growing_off_speed_dt[P];
         else
-            mGrowthP = spd + prop->growing_off_speed_dt[0];
+            mGrowthP = spd + prop->growing_off_speed_dt[P];
         
         
         // catastrophe may be constant, or it may depend on the growth rate
         real cata;
-        if ( prop->catastrophe_coef[0] > 0 )
-            cata = prop->catastrophe_rate_stalled_dt[0] / ( 1.0 + prop->catastrophe_coef[0] * mGrowthP );
+        if ( prop->catastrophe_coef[P] > 0 )
+            cata = prop->catastrophe_rate_stalled_dt[P] / ( 1.0 + prop->catastrophe_coef[P] * mGrowthP );
         else
-            cata = prop->catastrophe_rate_dt[0];
+            cata = prop->catastrophe_rate_dt[P];
         
 #if NEW_CATASTROPHE_OUTSIDE
         // Catastrophe rate is multiplied if the PLUS_END is outside
@@ -144,9 +147,9 @@ void ClassicFiber::step()
     }
     else if ( mStateP == STATE_RED )
     {
-        mGrowthP = prop->shrinking_speed_dt[0];
+        mGrowthP = prop->shrinking_speed_dt[P];
         
-        if ( RNG.test(prop->rescue_prob[0]) )
+        if ( RNG.test(prop->rescue_prob[P]) )
             mStateP = STATE_GREEN;
     }
     
@@ -161,10 +164,10 @@ void ClassicFiber::step()
         }
    
         // we may regrow:
-        if ( mStateM == STATE_RED && RNG.test(prop->rebirth_prob[1]) )
+        if ( mStateM == STATE_RED && RNG.test(prop->rebirth_prob[M]) )
             mStateM = STATE_GREEN;
     
-        if ( mStateP == STATE_RED && RNG.test(prop->rebirth_prob[0]) )
+        if ( mStateP == STATE_RED && RNG.test(prop->rebirth_prob[P]) )
             mStateP = STATE_GREEN;
     }
     else if ( len + inc < prop->max_length )
