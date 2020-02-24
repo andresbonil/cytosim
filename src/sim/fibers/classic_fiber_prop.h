@@ -10,7 +10,7 @@
 #define NEW_LENGTH_DEPENDENT_CATASTROPHE 0
 
 /// Enables support for an option that induces catastrophe if the PLUS_END is outside
-#define NEW_CATASTROPHE_OUTSIDE 1
+#define NEW_CATASTROPHE_OUTSIDE 0
 
 
 /// additional Property for ClassicFiber
