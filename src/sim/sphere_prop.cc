@@ -77,7 +77,7 @@ void SphereProp::complete(Simul const& sim)
     confine_space_ptr = sim.findSpace(confine_space);
 
     if ( confine_space_ptr )
-        confine_space = confine_space_ptr->property()->name();
+        confine_space = confine_space_ptr->name();
 
     if ( sim.ready() && confine != CONFINE_OFF )
     {
