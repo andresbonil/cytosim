@@ -425,7 +425,7 @@ FiberSite FiberSet::randomSite(FiberProp * arg) const
             abs += fib->length();
 
     if ( abs == 0 )
-        throw InvalidParameter("randomSite() called with no fibers!");
+        throw InvalidParameter("found no fibers of requested class");
 
     abs *= RNG.preal();
     
@@ -546,6 +546,28 @@ void FiberSet::flipAllFibers()
     for ( Fiber* fib=first(); fib; fib=fib->next() )
         fib->flipPolarity();
 }
+
+
+/**
+ After reading from file, the fiber structure need to be updated,
+ as well as the Hands bound to them.
+ */
+void FiberSet::prune(ObjectFlag f)
+{
+    for (Fiber* fib=first(), *n; fib; fib=n)
+    {
+        n = fib->next();
+        if ( fib->flag() == f )
+            delete(fib);
+        else
+        {
+            fib->updateFiber();
+            fib->resetLattice();
+            fib->flag(0);
+        }
+    }
+}
+
 
 //------------------------------------------------------------------------------
 #pragma mark -

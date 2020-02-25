@@ -44,7 +44,7 @@ ObjectList Nucleus::build(Glossary& opt, Simul& sim)
     std::string str, spec;
     assert_true(prop);
     ObjectList res;
-    unsigned cnt = 0;
+    size_t cnt = 0;
     
     real rad = -1;
     if ( !opt.set(rad, "radius" ) || rad <= 0 )
@@ -68,7 +68,7 @@ ObjectList Nucleus::build(Glossary& opt, Simul& sim)
         opt.set(spec, "fibers", 2);
 
         // create points and clamps and add fiber attached to them
-        for ( unsigned ii = 0; ii < cnt; ++ii )
+        for ( size_t ii = 0; ii < cnt; ++ii )
         {
             Glossary fiber_opt(spec);
             ObjectList objs = sim.fibers.newObjects(str, fiber_opt);
@@ -77,7 +77,7 @@ ObjectList Nucleus::build(Glossary& opt, Simul& sim)
                 Fiber * fib = Fiber::toFiber(objs[0]);
                 Vector pos = c + Vector::randU(rad);
                 Vector dir = Vector::randU();
-                fib->setStraight(pos, dir, fib->length(), MINUS_END);
+                fib->setStraight(pos, dir, fib->length());
                 sph->addPoint(pos);
                 res.append(objs);
                 grasp(fib);
@@ -96,7 +96,7 @@ ObjectList Nucleus::build(Glossary& opt, Simul& sim)
         Rotation rot;
         // add bundles
         const real len = 0.5 * bp->overlap;
-        for ( unsigned ii = 0; ii < cnt; ++ii  )
+        for ( size_t ii = 0; ii < cnt; ++ii  )
         {
             Glossary bundle_opt(spec);
             rot = Rotation::randomRotation();

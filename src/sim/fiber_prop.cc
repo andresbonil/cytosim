@@ -179,17 +179,17 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         free_real(tmp);
     }
     else
-    {        
-        FiberEnd ref = CENTER;
-
-        opt.set(ref, "reference", {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
-        
+    {
         real pl = 0; // persistence length
-        // initialize points:
+        // place fiber horizontally with center at the origin:
         if ( opt.set(pl, "equilibrate") && pl > 0 )
             fib->setEquilibrated(len, pl);
         else
-            fib->setStraight(Vector(0,0,0), Vector(1,0,0), len, ref);
+            fib->setStraight(Vector(-0.5*len,0,0), Vector(1,0,0), len);
+        
+        FiberEnd ref = CENTER;
+        if ( opt.set(ref, "reference", {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}}) )
+            fib->moveEnd(ref);
     }
     
     // possible dynamic states of the ends
@@ -234,7 +234,7 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         Cytosim::warn << "Fiber may not grow as both ends are in state `white`\n";
 #endif
     
-    fib->update();
+    fib->updateFiber();
 
     return fib;
 }
@@ -455,7 +455,7 @@ void FiberProp::complete(Simul const& sim)
         if ( fib->property() == this  &&  fib->segmentation() != segmentation )
         {
             fib->segmentation(segmentation);
-            fib->update();
+            fib->updateFiber();
         }
     }
 #endif
@@ -478,7 +478,7 @@ void FiberProp::complete(Simul const& sim)
 #if ( 0 )
     //print some information on the 'stiffness' of the matrix
     Fiber fib(this);
-    fib.setStraight(Vector(0,0,0), Vector(1,0,0), 10, CENTER);
+    fib.setStraight(Vector(-5,0,0), Vector(1,0,0), 10);
     
     fib.setDragCoefficient();
     real mob_dt = sim.prop->time_step * fib.nbPoints() / fib.dragCoefficient();

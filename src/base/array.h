@@ -338,14 +338,14 @@ public:
                 val_[nbo_++] = array.val_[ii];
     }
 
-    /// Return index of `obj`, or -1 if not found in the list (linear search)
-    int index(const VAL obj) const
+    /// Return index of `obj`, or ~0 if not found in the list (linear search)
+    size_t index(const VAL obj) const
     {
         assert_true( val_ || nbo_==0 );
         for ( size_t ii = 0; ii < nbo_; ++ii )
             if ( val_[ii] == obj )
                 return ii;
-        return -1;
+        return ~0;
     }
     
     /// Replace `old_value` by `new_value`, or return false if `old_value` is not found

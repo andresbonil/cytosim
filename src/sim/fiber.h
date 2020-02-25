@@ -167,7 +167,7 @@ public:
     virtual void   step();
     
     /// called if a Fiber tip has elongated or shortened
-    void           update();
+    void           updateFiber();
     
     //--------------------------------------------------------------------------
 

@@ -690,14 +690,16 @@ Vector Movable::readDirection0(std::istream& is, Vector const& pos, Space const*
         throw InvalidParameter("Unknown direction `"+tok+"'");
     }
     
-    // accept a Vector:
-    Vector vec(0,0,0);
-    if ( is >> vec )
     {
-        real n = vec.norm();
-        if ( n < REAL_EPSILON )
-            throw InvalidParameter("direction vector appears singular");
-        return vec / n;
+        // accept a Vector:
+        Vector vec(0,0,0);
+        if ( is >> vec )
+        {
+            real n = vec.norm();
+            if ( n < REAL_EPSILON )
+                throw InvalidParameter("direction vector appears singular");
+            return vec / n;
+        }
     }
     throw InvalidParameter("expected a vector specifying a `direction`");
 }

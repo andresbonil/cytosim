@@ -102,6 +102,9 @@ public:
     /// reverse the polarity of all fibers
     void flipAllFibers();
     
+    /// delete marked object after import
+    void prune(ObjectFlag);
+
     //--------------------------------------------------------------------------
     
     /// total length of Fiber 

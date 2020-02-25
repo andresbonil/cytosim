@@ -79,7 +79,7 @@ void Chain::setStraight(Vector const& pos, Vector const& dir)
 }
 
 
-void Chain::setStraight(Vector const& pos, Vector const& dir, real len, const FiberEnd ref)
+void Chain::setStraight(Vector const& pos, Vector const& dir, real len)
 {
     assert_true( fnSegmentation > REAL_EPSILON );
 
@@ -91,25 +91,30 @@ void Chain::setStraight(Vector const& pos, Vector const& dir, real len, const Fi
     setNbPoints(np);
     setSegmentation(len/(np-1));
     fnAbscissaP = fnAbscissaM + len;
+    setStraight(pos, dir);
+    updateFiber();
+}
 
+
+void Chain::moveEnd(const FiberEnd ref)
+{
     switch( ref )
     {
         case MINUS_END:
-            setStraight(pos, dir);
+            translate(posMiddle()-posEndM());
             break;
             
         case PLUS_END:
-            setStraight(pos+dir*len, -dir);
+            translate(posMiddle()-posEndM());
+            flipPolarity();
             break;
             
         case CENTER:
-            setStraight(pos-0.5*dir*len, dir);
             break;
             
         default:
-            ABORT_NOW("invalid argument `ref`");
+            ABORT_NOW("invalid argument to Chain::moveEnd()");
     }
-    postUpdate();
 }
 
 
@@ -170,7 +175,7 @@ void Chain::setShape(const real pts[], unsigned n_pts, unsigned np)
     }
     b.load(pts+DIM*n_pts-DIM);
     setPoint(np, b);
-    postUpdate();
+    updateFiber();
     reshape();
 }
 
@@ -212,7 +217,7 @@ void Chain::setEquilibrated(real len, real persistence_length)
         Rotation rot = Rotation::rotationToVector(vec).transposed();
         rotate(rot);
     }
-    postUpdate();
+    updateFiber();
 }
 
 
@@ -923,7 +928,7 @@ void Chain::join(Chain const* fib)
     fnAbscissaP = fnAbscissaM + cut * fnCut;
     getPoints(tmp);
     free_real(tmp);
-    postUpdate();
+    updateFiber();
 }
 
 //------------------------------------------------------------------------------

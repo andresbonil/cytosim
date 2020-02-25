@@ -63,7 +63,7 @@ void Fiber::step()
     {
         needUpdate = false;
         adjustSegmentation();
-        update();
+        updateFiber();
     }
 }
 
@@ -1051,7 +1051,7 @@ real Fiber::freshAssembly(const FiberEnd end) const
  this updates the segmentation of the fiber if needed, the position of the Hands,
  and the boundaries of the Lattice if present.
  */
-void Fiber::update()
+void Fiber::updateFiber()
 {
 #if ( 0 )
     Cytosim::log << reference() << " update [ "  << std::setw(9) << std::left << abscissaM();
@@ -1354,8 +1354,6 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
             fnBirthTime = in.readFloat();
 #endif
 
-        update();
-
         if ( length() + REAL_EPSILON < prop->min_length )
         {
             Cytosim::log << "Warning: fiber length < fiber:min_length";
@@ -1397,7 +1395,6 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     else if ( tag == 'm' )
     {
         Chain::read(in, sim, tag);
-        update();
     }
 #endif
     else
