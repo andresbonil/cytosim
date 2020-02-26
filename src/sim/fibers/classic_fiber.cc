@@ -149,7 +149,18 @@ void ClassicFiber::step()
     {
         mGrowthP = prop->shrinking_speed_dt[P];
         
-        if ( RNG.test(prop->rescue_prob[P]) )
+#if NEW_RESCUE_INSIDE
+        real rescue = prop->rescue_prob[P];
+        
+        // Catastrophe rate is multiplied if the PLUS_END is outside
+        if ( prop->rescue_space_ptr->inside(posEndP()) )
+        {
+            LOG_ONCE("Fiber's plus-end rescue rate is different inside the Space\n");
+            rescue = prop->rescue_inside[P];
+        }
+#endif
+        
+        if ( RNG.test(rescue) )
             mStateP = STATE_GREEN;
     }
     

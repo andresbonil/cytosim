@@ -41,6 +41,12 @@ void ClassicFiberProp::clear()
     catastrophe_outside = 1;
     catastrophe_space_ptr = nullptr;
 #endif
+
+#if NEW_RESCUE_INSIDE
+    rescue_inside[0] = 0;
+    rescue_inside[1] = 0;
+    rescue_space_ptr = nullptr;
+#endif
 }
 
 
@@ -64,7 +70,10 @@ void ClassicFiberProp::read(Glossary& glos)
     glos.set(catastrophe_outside,   "catastrophe_outside");
     glos.set(catastrophe_space,     "catastrophe_outside", 1);
 #endif
-
+#if NEW_RESCUE_INSIDE
+    glos.set(rescue_inside,         2, "rescue_inside");
+    glos.set(rescue_space,          "rescue_inside", 2);
+#endif
 #ifdef BACKWARD_COMPATIBILITY
     
     if ( glos.set(growing_force[0], "dynamic_force") )
@@ -165,6 +174,20 @@ void ClassicFiberProp::complete(Simul const& sim)
     else if ( sim.ready() )
         throw InvalidParameter("A space must be defined as catastrophe_outside[1]");
 #endif
+
+#if NEW_RESCUE_INSIDE
+    if (rescue_inside[0]>0||rescue_inside[1]>0)
+    {
+        rescue_space_ptr = sim.findSpace(rescue_space);
+        
+        if ( rescue_space_ptr )
+            rescue_space = rescue_space_ptr->name();
+        else
+            throw InvalidParameter("A space must be defined as rescue_inside[2]");
+    }
+#endif
+    
+    
 }
 
 
@@ -185,6 +208,9 @@ void ClassicFiberProp::write_values(std::ostream& os) const
 #endif
 #if NEW_CATASTROPHE_OUTSIDE
     write_value(os, "catastrophe_outside",      catastrophe_outside);
+#endif
+#if NEW_RESCUE_INSIDE
+    write_value(os, "rescue_inside",      rescue_inside);
 #endif
 }
 

@@ -12,6 +12,8 @@
 /// Enables support for an option that induces catastrophe if the PLUS_END is outside
 #define NEW_CATASTROPHE_OUTSIDE 0
 
+/// Enables support for an option that induces rescue if the PLUS_END is inside
+#define NEW_RESCUE_INSIDE 1
 
 /// additional Property for ClassicFiber
 /**
@@ -111,6 +113,17 @@ public:
     std::string catastrophe_space;
 
 #endif
+
+#if NEW_RESCUE_INSIDE
+    
+    /// Rescue rate applied if the PLUS_END is inside. Scaling did not make much sense since you probably want to have the normal rescue rate at zero.
+
+    real    rescue_inside[2];
+
+    /// space used for `catastrophe_outside'
+    std::string rescue_space;
+    
+#endif
     
 #if NEW_LENGTH_DEPENDENT_CATASTROPHE
     
@@ -148,6 +161,10 @@ private:
     Space const* catastrophe_space_ptr;
 #endif
     
+#if NEW_RESCUE_INSIDE
+    /// pointer to actual Space used for `catastrophe_outside`
+    Space const* rescue_space_ptr;
+#endif
 public:
     
     /// constructor
