@@ -1,0 +1,63 @@
+% A test for ClassicFiber's 'rescue_inside'
+% F. Nedelec, Cambridge, 26.02.2020
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.1
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 10
+}
+
+set space rescue
+{
+    shape = sphere
+}
+
+new rescue
+{
+    radius = 5
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 0.5
+    confine = inside, 100
+
+    activity = classic
+    growing_speed = 0.1
+    shrinking_speed = -0.3
+    catastrophe_rate = 0.02
+    rescue_inside = 0.002, 0 , rescue
+    rebirth_rate = 10
+    persistent = 1
+
+    display = { line_width=3; }
+}
+
+
+new fiber microtubule
+{
+    position = 0 0 0
+    orientation = 0 1
+    plus_end = 1
+    length = 1
+}
+
+run system
+{
+    solve = 0
+    nb_steps = 100000
+    nb_frames = 100
+}
+

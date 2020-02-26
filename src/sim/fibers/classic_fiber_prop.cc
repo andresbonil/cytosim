@@ -178,11 +178,13 @@ void ClassicFiberProp::complete(Simul const& sim)
 #if NEW_RESCUE_INSIDE
     if (rescue_inside[0]>0||rescue_inside[1]>0)
     {
+        // This will always fail when calling play or report, that's why I call sim_ready, similarly to when FiberProp::confine_space_ptr is read.
+        
         rescue_space_ptr = sim.findSpace(rescue_space);
         
         if ( rescue_space_ptr )
             rescue_space = rescue_space_ptr->name();
-        else
+        else if (sim.ready())
             throw InvalidParameter("A space must be defined as rescue_inside[2]");
     }
 #endif
@@ -210,7 +212,7 @@ void ClassicFiberProp::write_values(std::ostream& os) const
     write_value(os, "catastrophe_outside",      catastrophe_outside);
 #endif
 #if NEW_RESCUE_INSIDE
-    write_value(os, "rescue_inside",      rescue_inside);
+    write_value(os, "rescue_inside",      rescue_inside[0],rescue_inside[1],rescue_space);
 #endif
 }
 
