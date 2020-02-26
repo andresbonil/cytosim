@@ -100,7 +100,7 @@ public:
     void newFiberSitesM(Array<FiberSite>&, real spread) const;
     
     /// reverse the polarity of all fibers
-    void flipAllFibers();
+    void flipFiberPolarity();
     
     /// delete marked object after import
     void prune(ObjectFlag);

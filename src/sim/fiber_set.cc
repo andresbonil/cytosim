@@ -541,7 +541,7 @@ void FiberSet::newFiberSitesM(Array<FiberSite>& res, const real spread) const
 }
 
 
-void FiberSet::flipAllFibers()
+void FiberSet::flipFiberPolarity()
 {
     for ( Fiber* fib=first(); fib; fib=fib->next() )
     {
