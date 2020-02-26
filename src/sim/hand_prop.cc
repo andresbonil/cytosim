@@ -24,7 +24,11 @@
 #include "mighty_prop.h"
 #include "actor_prop.h"
 
-#if NEW_HANDS
+
+/// Switch to enable Myosin, Kinesin and Dynein
+#define NEW_HAND_TYPES 1
+
+#if NEW_HAND_TYPES
 #include "kinesin_prop.h"
 #include "dynein_prop.h"
 #include "myosin_prop.h"
@@ -115,7 +119,7 @@ HandProp * HandProp::newProperty(const std::string& nom, Glossary& glos)
             return new ActorProp(nom);
         if ( a == "bind" )
             return new HandProp(nom);
-#if NEW_HANDS
+#if NEW_HAND_TYPES
         if ( a == "kinesin" )
             return new KinesinProp(nom);
         if ( a == "dynein" )
