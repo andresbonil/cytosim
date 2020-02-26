@@ -491,7 +491,7 @@ void MatrixSparseSymmetricBlock::Column::sort(Element*& tmp, size_t tmp_size)
 }
 
 
-size_t newElements(Element*& ptr, size_t size)
+size_t newElements(MatrixSparseSymmetricBlock::Element*& ptr, size_t size)
 {
     constexpr size_t chunk = 16;
     size_t all = ( size + chunk - 1 ) & ~( chunk - 1 );
@@ -499,9 +499,9 @@ size_t newElements(Element*& ptr, size_t size)
     void* tmp = nullptr;
     if ( size > 0 )
     {
-        if ( posix_memalign(&tmp, 32, all*sizeof(Element)) )
+        if ( posix_memalign(&tmp, 32, all*sizeof(MatrixSparseSymmetricBlock::Element)) )
             throw std::bad_alloc();
-        ptr = new(tmp) Element[all];
+        ptr = new(tmp) MatrixSparseSymmetricBlock::Element[all];
     }
     else
         ptr = nullptr;
