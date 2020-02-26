@@ -150,11 +150,8 @@ real Fiber::projectPoint(Vector const& w, real & dis) const
 //------------------------------------------------------------------------------
 #pragma mark - Modifying
 
-void Fiber::flipPolarity()
+void Fiber::flipHandsPolarity()
 {
-    // flip all the points:
-    Chain::flipPolarity();
-    
     /* update abscissa of Hands to keep them in place:
      new_abs - minus = plus - old_abs
      new_abs = plus + minus - old_abs

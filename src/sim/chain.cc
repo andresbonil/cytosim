@@ -106,7 +106,7 @@ void Chain::moveEnd(const FiberEnd ref)
             
         case PLUS_END:
             translate(posMiddle()-posEndM());
-            flipPolarity();
+            flipChainPolarity();
             break;
             
         case CENTER:
@@ -592,10 +592,10 @@ void Chain::getPoints(real const* ptr)
 
 
 /**
- Flip all the points. This does not change fnAscissa,
+ Flip all the points without changing fnAbscissaM or fnAbscissaP,
  and the abscissa of center thus stays as it is.
 */
-void Chain::flipPolarity()
+void Chain::flipChainPolarity()
 {
     unsigned ii = 0;
     unsigned jj = lastPoint();

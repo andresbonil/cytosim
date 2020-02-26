@@ -132,7 +132,7 @@ public:
     
 
     /// invert polarity and adjust abscissa of Hands to keep them at the same place
-    void           flipPolarity();
+    void           flipHandsPolarity();
     
     /// remove the portion of size `len` that includes the MINUS_END
     void           cutM(real len);
