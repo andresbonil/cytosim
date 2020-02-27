@@ -23,6 +23,7 @@
 #include "space_cylinderZ.h"
 #include "space_cylinderP.h"
 #include "space_ring.h"
+#include "space_sphereCrown.h"
 
 /**
  @defgroup SpaceGroup Space and Geometry
@@ -105,7 +106,7 @@ Space * SpaceProp::newSpace() const
     if ( s=="cylinderP" )                      return new SpacePeriodic(this);
 #endif
     if ( s=="ring" )                           return new SpaceRing(this);
-    
+    if ( s=="sphereCrown" )                    return new SpaceSphereCrown(this);
 #if ( 0 )
     std::cerr << "Warning: substituting unbounded Space for unknown `"+s+"'\n";
     return new Space(this);
