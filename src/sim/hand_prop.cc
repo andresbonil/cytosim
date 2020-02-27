@@ -230,8 +230,6 @@ void HandProp::complete(Simul const& sim)
     binding_prob = -std::expm1(-binding_rate * sim.prop->time_step);
     unbinding_rate_dt = unbinding_rate * sim.prop->time_step;
     
-    binding_rate_dt_8 = 8 * binding_rate * sim.prop->time_step;
-    
     if ( binding_range < 0 )
         throw InvalidParameter(name()+":binding_range must be >= 0");
     
