@@ -33,7 +33,7 @@ void SpaceSphereCrown::boundaries(Vector& inf, Vector& sup) const
 real SpaceSphereCrown::volume() const
 {
 #if ( DIM == 1 )
-    return 2 * (outer_radius - inner_radius);
+    return 2 * (outer_radius_ - inner_radius_);
 #elif ( DIM == 2 )
     return M_PI * (square(outer_radius_)-square(inner_radius_));
 #else
