@@ -1,0 +1,65 @@
+
+% A test for the space SpaceSphereCrown
+% M. Lera-Ramirez, Paris, 27.02.2020
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 10
+}
+
+set space crown
+{
+    shape = sphereCrown
+}
+
+new crown
+{
+    inner_radius = 2
+    outer_radius = 4
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 0.5
+
+    activity = grow
+    growing_speed = 1,1
+    confine = inside, 100
+    display = { line_width=3; }
+}
+
+
+new fiber microtubule
+{
+    position = 3 0 0
+    orientation = 1
+    plus_end = 1
+    length = 1
+}
+
+set hand dummy
+{
+    
+}
+
+set single floating
+{
+    hand = dummy
+    diffusion = 10
+    
+}
+
+new 100 floating
+{
+    position = 3 0 0
+}
+run system
+{
+    solve = 1
+    nb_steps = 2000
+    nb_frames = 100
+}
+
