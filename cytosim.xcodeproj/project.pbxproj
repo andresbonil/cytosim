@@ -36,6 +36,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		325C0E242406DA310059EF39 /* space_sphereCrown.h in Headers */ = {isa = PBXBuildFile; fileRef = 325C0E232406DA310059EF39 /* space_sphereCrown.h */; };
+		325C0E262406DA400059EF39 /* space_sphereCrown.cc in Sources */ = {isa = PBXBuildFile; fileRef = 325C0E252406DA400059EF39 /* space_sphereCrown.cc */; };
+		325C0E282407C2E70059EF39 /* space_squareOffset.h in Headers */ = {isa = PBXBuildFile; fileRef = 325C0E272407C2E70059EF39 /* space_squareOffset.h */; };
+		325C0E2A2407C2F60059EF39 /* space_squareOffset.cc in Sources */ = {isa = PBXBuildFile; fileRef = 325C0E292407C2F60059EF39 /* space_squareOffset.cc */; };
 		BB003F3020EDEDA4007C9593 /* vector4.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB003F2F20EDEDA4007C9593 /* vector4.cc */; };
 		BB04E2751E1A4E7B000BDBC9 /* tictoc.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBA5E5810E8EBA620009F6D0 /* tictoc.cc */; };
 		BB04E2761E1A4E89000BDBC9 /* random.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB73589C05B98DA3006956D5 /* random.cc */; };
@@ -885,6 +889,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		325C0E232406DA310059EF39 /* space_sphereCrown.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = space_sphereCrown.h; sourceTree = "<group>"; };
+		325C0E252406DA400059EF39 /* space_sphereCrown.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = space_sphereCrown.cc; sourceTree = "<group>"; };
+		325C0E272407C2E70059EF39 /* space_squareOffset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = space_squareOffset.h; sourceTree = "<group>"; };
+		325C0E292407C2F60059EF39 /* space_squareOffset.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = space_squareOffset.cc; sourceTree = "<group>"; };
 		BB003F2F20EDEDA4007C9593 /* vector4.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vector4.cc; path = src/math/vector4.cc; sourceTree = SOURCE_ROOT; };
 		BB01791906B1C05100240785 /* meca_inter.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = meca_inter.cc; path = src/sim/meca_inter.cc; sourceTree = SOURCE_ROOT; };
 		BB06D6BB152F0A5300AD8355 /* crosslink_long.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = crosslink_long.cc; path = couples/crosslink_long.cc; sourceTree = "<group>"; };
@@ -2212,6 +2220,10 @@
 				BB8838D710B48EF900A4028F /* space_strip.cc */,
 				BB8838DC10B48EF900A4028F /* space_torus.h */,
 				BB8838DB10B48EF900A4028F /* space_torus.cc */,
+				325C0E232406DA310059EF39 /* space_sphereCrown.h */,
+				325C0E252406DA400059EF39 /* space_sphereCrown.cc */,
+				325C0E272407C2E70059EF39 /* space_squareOffset.h */,
+				325C0E292407C2F60059EF39 /* space_squareOffset.cc */,
 			);
 			name = spaces;
 			path = src/sim/spaces;
@@ -2885,6 +2897,7 @@
 				BB9EC399209235CC00EF00E7 /* SFMT.h in Headers */,
 				BB9EC394209235CC00EF00E7 /* SFMT-params.h in Headers */,
 				BB71917E0EF1CD9900CED9E2 /* cblas.h in Headers */,
+				325C0E242406DA310059EF39 /* space_sphereCrown.h in Headers */,
 				BBDF9AA4228BFBD3005018BD /* dpttrf.h in Headers */,
 				BB71917F0EF1CD9900CED9E2 /* random.h in Headers */,
 				BB7191800EF1CD9900CED9E2 /* matsparse.h in Headers */,
@@ -2907,6 +2920,7 @@
 				BB18BB8623CDC20400B3605E /* simd_print.h in Headers */,
 				BB6D309820CA754B009C5C7C /* matrix33.h in Headers */,
 				BB8CB8571523147900505E89 /* bicgstab.h in Headers */,
+				325C0E282407C2E70059EF39 /* space_squareOffset.h in Headers */,
 				BB9EC397209235CC00EF00E7 /* SFMT-avx2.h in Headers */,
 				BB4737BD2024B39300FE6CEC /* accumulator.h in Headers */,
 				BB749D671793645D00B43298 /* polygon.h in Headers */,
@@ -3649,7 +3663,9 @@
 				BB7DC19C2200DCE400DB779E /* test_glos.cc in Sources */,
 				BB7191B90EF1CD9900CED9E2 /* vector1.cc in Sources */,
 				BB7191BA0EF1CD9900CED9E2 /* vector2.cc in Sources */,
+				325C0E262406DA400059EF39 /* space_sphereCrown.cc in Sources */,
 				BB7191BB0EF1CD9900CED9E2 /* vector3.cc in Sources */,
+				325C0E2A2407C2F60059EF39 /* space_squareOffset.cc in Sources */,
 				BB089A0A2228A26D00C070E7 /* matrix11.cc in Sources */,
 				BB0E4BD91002698100A96B34 /* random_vector.cc in Sources */,
 				BB749D661793645D00B43298 /* polygon.cc in Sources */,

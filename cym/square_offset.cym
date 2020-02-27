@@ -1,0 +1,90 @@
+% A test for the space squareOffset
+% M. Lera-Ramirez, Paris, 27.02.2020
+
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 10
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+radius = 10
+}
+
+set space offset
+{
+    shape = squareOffset
+}
+
+new offset
+{
+    length = 4,4
+    offset = 6,6
+}
+
+set fiber microtubule
+{
+    rigidity = 30
+    segmentation = 0.5
+    confine = outside, 100, offset
+    activity = grow
+    growing_speed = 1,1
+    display = { line_width=3; }
+}
+
+new microtubule
+{
+    length = 1
+    position = 0 0
+    orientation = 1 1
+}
+
+set fiber microtubule2
+{
+    rigidity = 30
+    segmentation = 0.5
+    confine = inside, 100, offset
+    activity = grow
+    growing_speed = 1,1
+    display = { line_width=3; }
+}
+
+new microtubule2
+{
+    length = 1
+    position = inside, offset
+    orientation = 1 1
+}
+
+set hand dummy
+{
+    
+}
+
+set single floating
+{
+    hand = dummy
+    diffusion = 10
+    confine = inside, 100, offset
+}
+
+new 100 floating
+{
+    position = inside, offset
+}
+
+
+run system
+{
+    solve = 1
+    nb_steps = 2000
+    nb_frames = 100
+}
+
