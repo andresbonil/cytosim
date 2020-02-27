@@ -20,8 +20,6 @@ void SpaceSquareOffset::resize(Glossary& opt)
     for ( int d = 0; d < DIM; ++d )
     {
         opt.set(off[d], "offset", d);
-        if ( off[d] < 0 )
-            throw InvalidParameter("squareOffset:offset must be >= 0");
     }
     offset = Vector(off);
 }
