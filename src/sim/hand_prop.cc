@@ -247,11 +247,7 @@ void HandProp::complete(Simul const& sim)
 
     if ( sim.ready() )
     {
-#if TRICKY_HAND_ATTACHMENT
-        if ( binding_rate_dt_8 > sim.prop->acceptable_prob )
-#else
         if ( binding_prob > sim.prop->acceptable_prob )
-#endif
             Cytosim::warn << name() << ":binding_rate is too high: decrease time_step\n";
     
         if ( unbinding_rate_dt > sim.prop->acceptable_prob )
