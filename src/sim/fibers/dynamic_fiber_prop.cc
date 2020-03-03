@@ -9,6 +9,7 @@
 #include "exceptions.h"
 #include "glossary.h"
 #include "messages.h"
+#include "simul.h"
 
 
 Fiber* DynamicFiberProp::newFiber() const

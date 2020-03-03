@@ -9,6 +9,7 @@
 #include "crosslink_prop.h"
 #include "crosslink_long.h"
 #include "crosslink.h"
+#include "simul.h"
 
 
 /**

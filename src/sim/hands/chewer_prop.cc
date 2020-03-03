@@ -8,6 +8,7 @@
 #include "simul_prop.h"
 #include "chewer_prop.h"
 #include "chewer.h"
+#include "simul.h"
 
 
 Hand * ChewerProp::newHand(HandMonitor* m) const

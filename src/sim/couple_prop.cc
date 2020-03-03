@@ -8,6 +8,7 @@
 #include "glossary.h"
 #include "property_list.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include <cmath>
 
 

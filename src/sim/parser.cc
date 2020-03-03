@@ -8,6 +8,7 @@
 #include "filepath.h"
 #include "stream_func.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include <fstream>
 
 

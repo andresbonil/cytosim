@@ -11,6 +11,7 @@
 #include "wrist_long.h"
 #include "picket.h"
 #include "picket_long.h"
+#include "simul.h"
 
 /**
  @defgroup SingleGroup Single and related

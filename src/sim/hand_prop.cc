@@ -9,6 +9,7 @@
 #include "sim.h"
 #include "property_list.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include "hand.h"
 #include "hand_monitor.h"
 
