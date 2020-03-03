@@ -545,7 +545,7 @@ std::string Tokenizer::get_block_text(std::istream& is, char c_in, const char c_
  
  @returns content of the block without delimiters
  */
-std::string Tokenizer::get_block(std::istream& is, char c_in)
+std::string Tokenizer::get_block(std::istream& is, char c_in, bool or_die)
 {
     assert_true(c_in);
     
@@ -558,6 +558,9 @@ std::string Tokenizer::get_block(std::istream& is, char c_in)
         VLOG("BLOCK |" << res << "|\n");
         return res;
     }
+
+    if ( or_die )
+        throw InvalidSyntax("syntax error (expected `{...}')");
 
     return "";
 }

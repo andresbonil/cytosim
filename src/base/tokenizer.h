@@ -71,7 +71,7 @@ namespace Tokenizer
     std::string get_block_text(std::istream&, char c_in, char c_out);
     
     /// skip spaces and read a block delimited by `c_in`, or return empty string if `c_in` is not found
-    std::string get_block(std::istream&, char c_in);
+    std::string get_block(std::istream&, char c_in, bool or_die=false);
     
     /// read a delimited set of characters, return block with delimiters included
     std::string get_block(std::istream&);

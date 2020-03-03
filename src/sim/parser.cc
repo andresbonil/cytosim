@@ -93,10 +93,7 @@ void Parser::parse_set(std::istream& is)
          define a new Property
          */
         name = Tokenizer::get_symbol(is);
-        blok = Tokenizer::get_block(is, '{');
-        
-        if ( blok.empty() )
-            throw InvalidSyntax("syntax error (expected `{...}')");
+        blok = Tokenizer::get_block(is, '{', true);
 
         if ( do_set )
         {
@@ -160,10 +157,7 @@ void Parser::parse_set(std::istream& is)
         }
         
         // set NAME { PARAMETER = VALUE }
-        blok = Tokenizer::get_block(is, '{');
-        
-        if ( blok.empty() )
-            throw InvalidSyntax("syntax error (expected `{...}')");
+        blok = Tokenizer::get_block(is, '{', true);
         
         if ( do_change )
         {
@@ -272,10 +266,7 @@ void Parser::parse_change(std::istream& is)
     }
 
     //change NAME { VALUE }
-    std::string blok = Tokenizer::get_block(is, '{');
-    
-    if ( blok.empty() )
-        throw InvalidSyntax("syntax error (expected `{...}')");
+    std::string blok = Tokenizer::get_block(is, '{', true);
     
     Glossary opt;
     if ( do_change )
@@ -364,6 +355,7 @@ void Parser::parse_new(std::istream& is)
 
     // Syntax sugar: () specify only position
     std::string blok = Tokenizer::get_block(is, '(');
+    
     if ( blok.empty() )
     {
         blok = Tokenizer::get_block(is, '{');
@@ -619,10 +611,7 @@ void Parser::parse_cut(std::istream& is)
         str = Tokenizer::get_symbol(is);
     }
     
-    std::string blok = Tokenizer::get_block(is, '{');
-
-    if ( blok.empty() )
-        throw InvalidSyntax("syntax error (expected `{...}')");
+    std::string blok = Tokenizer::get_block(is, '{', true);
     
     if ( do_run )
     {
@@ -844,7 +833,6 @@ void Parser::parse_export(std::istream& is)
     
     if ( file.empty() )
         throw InvalidSyntax("missing/invalid file name (use `export all FILENAME')");
-    
 
     std::string blok = Tokenizer::get_block(is, '{');
     
