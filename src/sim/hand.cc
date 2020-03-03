@@ -162,7 +162,7 @@ bool Hand::attachmentAllowed(FiberSite& sit) const
             break;
         case BOTH_ENDS:
         {
-            FiberEnd e = nearestEnd();
+            FiberEnd e = sit.nearestEnd();
         
             if ( sit.abscissaFrom(e) > prop->bind_end_range )
                 return false;
@@ -175,9 +175,9 @@ bool Hand::attachmentAllowed(FiberSite& sit) const
                 end = RNG.choice(MINUS_END, PLUS_END);
             else
                 end = e;
-        }
+        } break;
         default:
-            throw Exception("Illegal value of hand:bind_only_end");
+            throw Exception("illegal value of hand:bind_only_end");
     }
 
 #if NEW_BIND_ONLY_FREE_END
