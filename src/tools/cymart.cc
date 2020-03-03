@@ -279,7 +279,7 @@ void drawMicrotubule(Fiber const& fib)
 }
 
 
-void displayLink(Couple const* cop)
+void drawLink(Couple const* cop)
 {
     int   dat[3] = { 7, (int)cop->identity(), (int)cop->prop->number() };
     float vec[6] = { 0 };
@@ -382,7 +382,7 @@ int main(int argc, char* argv[])
                 Fiber * f1 = cop->fiber1();
                 Fiber * f2 = cop->fiber2();
                 if ( f1 && f2 && ( selected==0 || ( f1->prop==selected && f2->prop==selected )))
-                    displayLink(cop);
+                    drawLink(cop);
             }
             fclose(file);
             ++frame;

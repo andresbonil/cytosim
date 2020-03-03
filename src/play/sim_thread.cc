@@ -441,7 +441,7 @@ size_t SimThread::readInput(size_t max_nb_lines)
                 glApp::flashText0(str);
             }
             catch ( Exception & e ) {
-                std::cerr << "Error in stdin: " << e.what() << '\n';
+                std::cerr << "Error: " << e.brief() << " in: " << str;
             }
             if ( ++cnt >= max_nb_lines )
                 break;

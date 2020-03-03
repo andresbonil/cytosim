@@ -96,7 +96,7 @@ void Parser::parse_set(std::istream& is)
         blok = Tokenizer::get_block(is, '{');
         
         if ( blok.empty() )
-            throw InvalidSyntax("syntax error");
+            throw InvalidSyntax("syntax error (expected `{...}')");
 
         if ( do_set )
         {
@@ -163,7 +163,7 @@ void Parser::parse_set(std::istream& is)
         blok = Tokenizer::get_block(is, '{');
         
         if ( blok.empty() )
-            throw InvalidSyntax("syntax error");
+            throw InvalidSyntax("syntax error (expected `{...}')");
         
         if ( do_change )
         {
@@ -275,7 +275,7 @@ void Parser::parse_change(std::istream& is)
     std::string blok = Tokenizer::get_block(is, '{');
     
     if ( blok.empty() )
-        throw InvalidSyntax("syntax error");
+        throw InvalidSyntax("syntax error (expected `{...}')");
     
     Glossary opt;
     if ( do_change )
@@ -622,7 +622,7 @@ void Parser::parse_cut(std::istream& is)
     std::string blok = Tokenizer::get_block(is, '{');
 
     if ( blok.empty() )
-        throw InvalidSyntax("missing block after `cut'");
+        throw InvalidSyntax("syntax error (expected `{...}')");
     
     if ( do_run )
     {
