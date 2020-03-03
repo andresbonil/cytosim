@@ -2,9 +2,9 @@
 
 #include "field_prop.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "messages.h"
 #include "glossary.h"
+#include "simul.h"
 #include "dim.h"
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ void FieldProp::read(Glossary& glos)
 //------------------------------------------------------------------------------
 void FieldProp::complete(Simul const& sim)
 {
-    time_step = sim.prop->time_step;
+    time_step = sim.time_step();
     
     confine_space_ptr = sim.findSpace(confine_space);
     

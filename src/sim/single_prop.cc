@@ -151,9 +151,9 @@ void SingleProp::complete(Simul const& sim)
      Since `sreal()` is uniformly distributed, its variance is 1/3,
      and we need `diffusion_dt^2 = 6 D dt`
      */
-    diffusion_dt = sqrt( 6.0 * diffusion * sim.prop->time_step );
+    diffusion_dt = sqrt( 6.0 * diffusion * sim.time_step() );
 #if NEW_MOBILE_SINGLE
-    speed_dt = speed * sim.prop->time_step;
+    speed_dt = speed * sim.time_step();
 #endif
     
     if ( stiffness < 0 )

@@ -3,9 +3,9 @@
 #include "treadmilling_fiber_prop.h"
 #include "treadmilling_fiber.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "exceptions.h"
 #include "glossary.h"
+#include "simul.h"
 
 
 Fiber* TreadmillingFiberProp::newFiber() const
@@ -48,11 +48,11 @@ void TreadmillingFiberProp::complete(Simul const& sim)
         if ( growing_speed[i] < 0 )
             throw InvalidParameter("fiber:growing_speed should be >= 0");
         
-        growing_speed_dt[i]   = growing_speed[i] * sim.prop->time_step;
+        growing_speed_dt[i]   = growing_speed[i] * sim.time_step();
         
         if ( shrinking_speed[i] > 0 )
             throw InvalidParameter("fiber:shrinking_speed should be <= 0");
-        shrinking_speed_dt[i] = shrinking_speed[i] * sim.prop->time_step;
+        shrinking_speed_dt[i] = shrinking_speed[i] * sim.time_step();
     }
 }
 

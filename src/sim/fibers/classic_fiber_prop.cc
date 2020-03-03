@@ -6,9 +6,9 @@
 #include "classic_fiber_prop.h"
 #include "classic_fiber.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "exceptions.h"
 #include "glossary.h"
+#include "simul.h"
 
 
 Fiber* ClassicFiberProp::newFiber() const
@@ -104,29 +104,29 @@ void ClassicFiberProp::complete(Simul const& sim)
     {
         if ( growing_speed[i] < 0 )
             throw InvalidParameter("fiber:growing_speed should be >= 0");
-        growing_speed_dt[i] = growing_speed[i] * sim.prop->time_step;
+        growing_speed_dt[i] = growing_speed[i] * sim.time_step();
 
         if ( growing_off_speed[i] > 0 )
             throw InvalidParameter("growing_off_speed should be <= 0");
 
         if ( growing_speed[i] + growing_off_speed[i] < 0 )
             throw InvalidParameter("fiber:growing_speed+growing_off_speed should be >= 0");
-        growing_off_speed_dt[i] = growing_off_speed[i] * sim.prop->time_step;
+        growing_off_speed_dt[i] = growing_off_speed[i] * sim.time_step();
 
         if ( growing_force[i] <= 0 )
             throw InvalidParameter("fiber:growing_force should be > 0");
 
         if ( shrinking_speed[i] > 0 )
             throw InvalidParameter("fiber:shrinking_speed should be <= 0");
-        shrinking_speed_dt[i]  = shrinking_speed[i] * sim.prop->time_step;
+        shrinking_speed_dt[i]  = shrinking_speed[i] * sim.time_step();
 
         if ( catastrophe_rate[i] < 0 )
             throw InvalidParameter("fiber:catastrophe_rate should be >= 0");
-        catastrophe_rate_dt[i] = catastrophe_rate[i] * sim.prop->time_step;
+        catastrophe_rate_dt[i] = catastrophe_rate[i] * sim.time_step();
 
         if ( catastrophe_rate_stalled[i] < 0 )
             throw InvalidParameter("fiber:catastrophe_rate_stalled should be >= 0");
-        catastrophe_rate_stalled_dt[i] = catastrophe_rate_stalled[i] * sim.prop->time_step;
+        catastrophe_rate_stalled_dt[i] = catastrophe_rate_stalled[i] * sim.time_step();
 
         catastrophe_coef[i] = 0;
         
@@ -142,7 +142,7 @@ void ClassicFiberProp::complete(Simul const& sim)
                 catastrophe_coef[i] = 0;
             else
                 catastrophe_coef[i] = ( catastrophe_rate_stalled[i]/catastrophe_rate[i] - 1.0 )
-                / ( ( growing_speed[i] + growing_off_speed[i] ) * sim.prop->time_step );
+                / ( ( growing_speed[i] + growing_off_speed[i] ) * sim.time_step() );
             
             if ( catastrophe_coef[i] < 0 )
                 throw InvalidParameter("inconsistent fiber:dynamic parameters");
@@ -150,11 +150,11 @@ void ClassicFiberProp::complete(Simul const& sim)
         
         if ( rescue_rate[i] < 0 )
             throw InvalidParameter("fiber:rescue_rate should be >= 0");
-        rescue_prob[i] = -std::expm1( -rescue_rate[i] * sim.prop->time_step );
+        rescue_prob[i] = -std::expm1( -rescue_rate[i] * sim.time_step() );
 
         if ( rebirth_rate[i] < 0 )
             throw InvalidParameter("fiber:rebirth_rate should be >= 0");
-        rebirth_prob[i] = -std::expm1( -rebirth_rate[i] * sim.prop->time_step );
+        rebirth_prob[i] = -std::expm1( -rebirth_rate[i] * sim.time_step() );
     }
     
 #if NEW_CATASTROPHE_OUTSIDE

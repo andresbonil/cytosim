@@ -118,7 +118,7 @@ void CoupleProp::complete(Simul const& sim)
      Since `sreal()` is uniformly distributed, its variance is 1/3,
      and we need `diffusion_dt^2 = 6 D dt`
      */
-    diffusion_dt = sqrt( 6.0 * diffusion * sim.prop->time_step );
+    diffusion_dt = sqrt( 6.0 * diffusion * sim.time_step() );
 
     if ( stiffness < 0 )
         throw InvalidParameter("couple:stiffness must be specified and >= 0");

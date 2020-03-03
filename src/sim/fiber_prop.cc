@@ -472,7 +472,7 @@ void FiberProp::complete(Simul const& sim)
 #if OLD_SQUEEZE_FORCE
     if ( max_chewing_speed < 0 )
         throw InvalidParameter("fiber:max_chewing_speed must be >= 0");
-    max_chewing_speed_dt = max_chewing_speed * sim.prop->time_step;
+    max_chewing_speed_dt = max_chewing_speed * sim.time_step();
 #endif
     
 #if ( 0 )
@@ -481,7 +481,7 @@ void FiberProp::complete(Simul const& sim)
     fib.setStraight(Vector(-5,0,0), Vector(1,0,0), 10);
     
     fib.setDragCoefficient();
-    real mob_dt = sim.prop->time_step * fib.nbPoints() / fib.dragCoefficient();
+    real mob_dt = sim.time_step() * fib.nbPoints() / fib.dragCoefficient();
     
     real stiffness = 100;
     real coef1 = mob_dt * stiffness;

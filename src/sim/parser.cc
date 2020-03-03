@@ -690,7 +690,7 @@ void Parser::parse_run(std::istream& is)
                 {
                     if ( span <= 0 )
                         throw InvalidParameter("duration must be >= 0'");
-                    cnt = (unsigned)ceil(span/simul.prop->time_step);
+                    cnt = (unsigned)ceil(span/simul.time_step());
                 }
             }
         }

@@ -7,8 +7,8 @@
 #include "sim.h"
 #include <cmath>
 #include "property_list.h"
-#include "simul_prop.h"
 #include "slider.h"
+#include "simul.h"
 
 
 Hand * SliderProp::newHand(HandMonitor* m) const
@@ -49,7 +49,7 @@ void SliderProp::complete(Simul const& sim)
      Explicit
      */
     
-    mobility_dt = sim.prop->time_step * mobility;
+    mobility_dt = sim.time_step() * mobility;
     
     if ( stiffness > 0 )
     {

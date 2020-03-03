@@ -223,12 +223,12 @@ void HandProp::read(Glossary& glos)
 
 void HandProp::complete(Simul const& sim)
 {    
-    if ( sim.prop->time_step < REAL_EPSILON )
+    if ( sim.time_step() < REAL_EPSILON )
         throw InvalidParameter("simul:time_step is not defined");
     
     binding_range_sqr = square(binding_range);
-    binding_prob = -std::expm1(-binding_rate * sim.prop->time_step);
-    unbinding_rate_dt = unbinding_rate * sim.prop->time_step;
+    binding_prob = -std::expm1(-binding_rate * sim.time_step());
+    unbinding_rate_dt = unbinding_rate * sim.time_step();
     
     if ( binding_range < 0 )
         throw InvalidParameter(name()+":binding_range must be >= 0");
