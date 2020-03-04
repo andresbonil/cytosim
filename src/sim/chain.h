@@ -245,8 +245,8 @@ public:
     /// converts distance from the specified FiberEnd, to abscissa from the ORIGIN
     real         abscissaFrom(real dis, FiberEnd ref) const;
     
-    /// return abscissa specified in opt[key]
-    real         someAbscissa(Glossary& opt, std::string const& key, real alpha) const;
+    /// return abscissa specified with `dis, ref, mod`
+    real         someAbscissa(real dis, FiberEnd ref, int mod, real alpha) const;
 
     //---------------------
 

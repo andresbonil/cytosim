@@ -147,9 +147,18 @@ ObjectList FiberSet::newObjects(const std::string& name, Glossary& opt)
         if ( !sip && !cop )
             throw InvalidParameter("could not find fiber:attach single/couple `"+spe+"'");
         
+        // variables defining an abscissa:
+        int mod = 7;
+        real abs = 0;
+        FiberEnd ref = ORIGIN;
+        if ( opt.set(abs, var, 1) )
+            mod = 0;
+        opt.set(ref, var, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
+        opt.set(mod, var, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}, {"regular", 3}});
+
         for ( size_t n = 0; n < cnt; ++n )
         {
-            FiberSite fs(fib, fib->someAbscissa(opt, var, n/std::max(1UL, cnt-1)));
+            FiberSite fs(fib, fib->someAbscissa(abs, ref, mod, n/std::max(1UL, cnt-1)));
             Object * cs = nullptr;
             Hand * h = nullptr;
             if ( sip )
@@ -478,7 +487,16 @@ FiberSite FiberSet::someSite(std::string const& key, Glossary& opt) const
                 throw InvalidParameter("Could not find fiber specified for attachment");
             }
             
-            return FiberSite(fib, fib->someAbscissa(opt, key, 1.0));
+            // variables defining an abscissa:
+            int mod = 7;
+            real abs = 0;
+            FiberEnd ref = ORIGIN;
+            if ( opt.set(abs, key, 1) )
+                mod = 0;
+            opt.set(ref, key, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
+            opt.set(mod, key, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}});
+
+            return FiberSite(fib, fib->someAbscissa(abs, ref, mod, 1.0));
         }
     }
     throw InvalidParameter("unrecognized site specification");

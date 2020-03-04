@@ -1283,49 +1283,38 @@ real Chain::abscissaFrom(const real dis, const FiberEnd ref) const
      }
 
 */
-real Chain::someAbscissa(Glossary& opt, std::string const& key, real alpha) const
+real Chain::someAbscissa(real dis, FiberEnd ref, int mod, real alpha) const
 {
     const real len = length();
-    real abs = len;
-
-    if ( opt.set(abs, key, 1) )
+    real a = dis;
+    
+    switch ( mod )
     {
-        FiberEnd ref = ORIGIN;
-        opt.set(ref, key, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
-        
-        int mod = 0;
-        if ( opt.set(mod, key, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}, {"regular", 3}}) )
-        {
-            if ( mod == 1 )
-            {
-                real a;
-                do {
-                    a = abs * RNG.preal();
-                } while ( a > len );
-                abs = a;
-            }
-            else if ( mod == 2 )
-            {
-                real a;
-                do {
-                    a = abs * RNG.exponential();
-                } while ( a > len );
-                abs = a;
-            }
-            else if ( mod == 3 )
-                abs *= alpha;
-        }
-        
-        abs = abscissaFrom(abs, ref);
-
-        if ( !betweenMP(abs) )
-            throw InvalidParameter("hand::abscissa is out of range");
-        
-        return abs;
+        case 0:
+            break;
+        case 1:  // random
+            do {
+                a = dis * RNG.preal();
+            } while ( a > len );
+            break;
+        case 2:  // exponential
+            do {
+                a = dis * RNG.exponential();
+            } while ( a > len );
+            break;
+        case 3:  // regular
+            a *= alpha;
+            break;
+        case 7:
+            return RNG.real_uniform(abscissaM(), abscissaP());
     }
+    
+    dis = abscissaFrom(a, ref);
 
-    // abscissa is set randomly:
-    return RNG.real_uniform(abscissaM(), abscissaP());
+    if ( !betweenMP(dis) )
+        throw InvalidParameter("hand::abscissa is out of range");
+        
+    return dis;
 }
 
 /**
