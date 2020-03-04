@@ -39,8 +39,8 @@ new rail
 
 set solid core
 {
-    display = ( style=3 )
-    confine = surface, 1000, rail
+    display = ( style=3; )
+    confine = point, 1000, rail
 }
 
 set aster centrosome
