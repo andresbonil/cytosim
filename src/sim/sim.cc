@@ -108,8 +108,8 @@ int main(int argc, char* argv[])
         simul.initialize(arg);
     }
     catch( Exception & e ) {
-        print_magenta(std::cerr, "Error: "+e.brief());
-        std::cerr << e.info() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     catch(...) {
@@ -124,8 +124,8 @@ int main(int argc, char* argv[])
         Parser(simul, 1, 1, 1, 1, 1).readConfig();
     }
     catch( Exception & e ) {
-        print_magenta(std::cerr, "Error: "+e.brief());
-        std::cerr << e.info() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     catch(...) {

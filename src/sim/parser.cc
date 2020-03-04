@@ -1198,7 +1198,7 @@ void Parser::readConfig(std::string const& filename)
 {
     std::ifstream is(filename.c_str(), std::ifstream::in);
     if ( !is.good() )
-        throw InvalidIO("could not find or read `"+filename+"'\n");
+        throw InvalidIO("could not find or read `"+filename+"'");
     VLOG("--Parse `" << filename << "'  set " << do_set << "  change " << do_change);
     VLOG("  new " << do_new << "  run " << do_run << "  write " << do_write << "\n");
     evaluate(is);
@@ -1212,7 +1212,7 @@ void Parser::readConfig()
     }
     catch ( InvalidIO& e ) {
         if ( simul.prop->config_file == "config.cym" )
-            throw InvalidIO("You must specify a config file\n");
+            throw InvalidIO("You must specify a config file");
         throw;
     }
 }
