@@ -681,6 +681,5 @@ void Simul::writeProperties(char const* name, bool prune) const
 
 void Simul::loadProperties()
 {
-    if ( Parser(*this, 1, 1, 0, 0, 0).readConfig(prop->property_file) )
-        throw InvalidIO("property file `"+prop->property_file+"' not found");
+    Parser(*this, 1, 1, 0, 0, 0).readConfig(prop->property_file);
 }

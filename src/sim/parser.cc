@@ -731,7 +731,9 @@ void Parser::parse_read(std::istream& is)
             StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
     
-    if ( readConfig(file) )
+    if ( FilePath::is_file(file) )
+        readConfig(file);
+    else
     {
         if ( required )
             throw InvalidSyntax("could not open file `"+file+"'");
@@ -1192,22 +1194,26 @@ void Parser::evaluate(std::string const& code)
 }
 
 
-int Parser::readConfig(std::string const& filename)
+void Parser::readConfig(std::string const& filename)
 {
     std::ifstream is(filename.c_str(), std::ifstream::in);
-    if ( is.good() )
-    {
-        VLOG("--Parse `" << filename << "'  set " << do_set << "  change " << do_change);
-        VLOG("  new " << do_new << "  run " << do_run << "  write " << do_write << "\n");
-        evaluate(is);
-        return 0;
-    }
-    return 1;
+    if ( !is.good() )
+        throw InvalidIO("could not find or read `"+filename+"'\n");
+    VLOG("--Parse `" << filename << "'  set " << do_set << "  change " << do_change);
+    VLOG("  new " << do_new << "  run " << do_run << "  write " << do_write << "\n");
+    evaluate(is);
 }
 
 
-int Parser::readConfig()
+void Parser::readConfig()
 {
-    return readConfig(simul.prop->config_file);
+    try {
+        readConfig(simul.prop->config_file);
+    }
+    catch ( InvalidIO& e ) {
+        if ( simul.prop->config_file == "config.cym" )
+            throw InvalidIO("You must specify a config file\n");
+        throw;
+    }
 }
 

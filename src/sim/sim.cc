@@ -121,8 +121,7 @@ int main(int argc, char* argv[])
     time_t sec = TicToc::seconds_since_1970();
     
     try {
-        if ( Parser(simul, 1, 1, 1, 1, 1).readConfig() )
-            std::cerr << "You must specify a config file\n";
+        Parser(simul, 1, 1, 1, 1, 1).readConfig();
     }
     catch( Exception & e ) {
         print_magenta(std::cerr, "Error: "+e.brief());
