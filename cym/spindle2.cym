@@ -78,7 +78,7 @@ new 50 microtubule
 {
     position = ( rectangle 1 6 )
     length = 1
-    orientation = horizontal
+    direction = X
     plus_end = grow
 }
 

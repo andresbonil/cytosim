@@ -39,7 +39,7 @@ new 0 microtubule
 {
     length = 0.05
     position = rectangle 0 20
-    orientation = horizontal
+    direction = X
     plus_end = grow
 }
 

@@ -68,7 +68,7 @@ set fiber microtubule
 
 new 500 microtubule
 {
-    orientation = horizontal
+    direction = X
     position = ( cylinder 0 4 )
     length = 4
     plus_end = grow

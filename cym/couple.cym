@@ -53,14 +53,14 @@ set couple complex
 new 1 microtubule
 {
     position = 0 0 0
-    orientation = horizontal
+    direction = X
     length = 2
 }
 
 new 1 microtubule
 {
     position = 0 0 0
-    orientation = vertical
+    direction = Y
     length = 2
 }
 

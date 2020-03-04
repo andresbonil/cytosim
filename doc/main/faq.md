@@ -1009,7 +1009,6 @@ Cytosim alternates ’step()’ and ’solve()’ and you can easily add a bunch
 You can do this at every time step, for example, by changing ‘execute_run’ in this way:
 
         hold();
-        //fprintf(stderr, "> step %6i\n", sss);
 
         clk = clock();
         simul.step();

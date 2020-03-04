@@ -34,7 +34,7 @@ set fiber microtubule1
 new microtubule1
 {
     position = 0 0 0
-    orientation = vertical
+    direction = Y
     length = 20
 }
 
@@ -67,7 +67,7 @@ set fiber microtubule2
 new microtubule2
 {
     position = 0 0 0
-    orientation = horizontal
+    direction = X
     length = 20
 }
 
