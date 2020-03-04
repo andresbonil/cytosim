@@ -32,10 +32,10 @@ public:
             ++str;
     }
     
-    void print_variables(std::ostream& os)
+    static void print_variables(std::ostream& os, variable_list const& list)
     {
         os << "Known variables:\n";
-        for ( variable const& v : variables_ )
+        for ( variable const& v : list )
             os << "   " << v.first << " = " << v.second << "\n";
     }
 
@@ -54,7 +54,7 @@ private:
                 return v.second;
             }
         }
-        print_variables(std::clog);
+        print_variables(std::clog, variables_);
         throw InvalidSyntax("Unknown variable '"+std::string(1,*str)+"'");
         return 0;
     }
@@ -131,6 +131,7 @@ public:
     
     Evaluator(variable_list const& v) : variables_(v)
     {
+        //print_variables(std::clog, variables_);
     }
     
     real value(char const*& str)
