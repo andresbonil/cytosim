@@ -29,6 +29,7 @@ set fiber microtubule
 new 1 microtubule
 {
     length = 12
+    position = sphere 1
 }
 
 run 1000 system
