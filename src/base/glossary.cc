@@ -58,7 +58,7 @@ std::string format_count(size_t c)
         return " (unused)";
     if ( c == 1 )
         return " (used once)";
-    return " (used " + std::to_string(c) + " times) ";
+    return " (used " + std::to_string(c) + " times)";
 }
     
 
@@ -86,9 +86,9 @@ std::string format_counts(Glossary::pair_type const& pair)
     os << pair.first;
     if ( pair.second.size() > 0 )
     {
-        os << " = " << format_value(pair.second[0].value_) << format_count(pair.second[0].count_);
+        os << " = " << pair.second[0].value_ << format_count(pair.second[0].count_);
         for ( size_t i = 1; i < pair.second.size(); ++i )
-            os << ", " << format_value(pair.second[i].value_) << format_count(pair.second[i].count_);
+            os << ", " << pair.second[i].value_ << format_count(pair.second[i].count_);
     }
     return os.str();
 }
