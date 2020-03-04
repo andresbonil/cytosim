@@ -277,7 +277,7 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
                 condition = evaluator.inequality(ptr);
             }
             catch( Exception& e ) {
-                e << "in `"+condition_str+"'";
+                e.message(e.message()+" in `"+condition_str+"'");
                 throw;
             }
         }

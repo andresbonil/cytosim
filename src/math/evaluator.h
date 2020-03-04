@@ -31,6 +31,13 @@ public:
         while ( isspace(*str) )
             ++str;
     }
+    
+    void print_variables(std::ostream& os)
+    {
+        os << "Known variables:\n";
+        for ( variable const& v : variables_ )
+            os << "   " << v.first << " = " << v.second << "\n";
+    }
 
 private:
     
@@ -47,6 +54,7 @@ private:
                 return v.second;
             }
         }
+        print_variables(std::clog);
         throw InvalidSyntax("Unknown variable '"+std::string(1,*str)+"'");
         return 0;
     }

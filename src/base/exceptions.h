@@ -73,6 +73,12 @@ public:
     }
     
     /// change the message
+    std::string message() const
+    {
+        return msg_;
+    }
+
+    /// change the message
     void message(const std::string& m)
     {
         msg_ = m;
