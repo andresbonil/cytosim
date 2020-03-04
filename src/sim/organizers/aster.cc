@@ -242,7 +242,8 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
 #endif
         nbOrganized(1+nbf);
         placeAnchors(opt, origin, nbf);
-        
+        nbf = std::min(nbf, asLinks.size());
+
         if ( str.empty() )
         {
             if ( prop->fiber_rate <= 0 )
