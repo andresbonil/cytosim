@@ -11,7 +11,7 @@ set system display { style=2; point_size=5; }
 
 set space cell
 {
-    shape = half_periodic
+    shape = semi_periodic
 }
 
 new cell

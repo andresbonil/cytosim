@@ -59,7 +59,7 @@ set single graftedK
 new 1 microtubule
 {
     length = 10
-    orientation = XY
+    direction = XY
 }
 
 new 500 graftedK ( arc 12.56 3.14 at -1 4.2 )

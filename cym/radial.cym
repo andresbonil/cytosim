@@ -39,7 +39,7 @@ new 67 microtubule
     length = 9
     position = disc 0.5
     reference = minus_end
-    orientation = radial
+    direction = radial
 }
 
 set hand motor

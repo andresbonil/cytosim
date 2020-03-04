@@ -179,6 +179,6 @@ new 100 dynein_complex
 
 run 10000 system
 {
-    event = 1, ( new microtubule { position=cylinder 0 0; orientation=horizontal; length=0.1; } )
+    event = 1, ( new microtubule { position=cylinder 0 0; direction=X; length=0.1; } )
     nb_frames = 100
 }

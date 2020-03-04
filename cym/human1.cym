@@ -107,7 +107,7 @@ new 20000 kinesin5
 
 run system
 {
-    event = 8, ( new microtubule { position=cylinder 4 0; orientation=horizontal; length=0.05; plus_end=grow } )
+    event = 8, ( new microtubule { position=cylinder 4 0; direction=X; length=0.05; plus_end=grow } )
     nb_steps = 10000
     nb_frames = 100
 }
