@@ -731,7 +731,21 @@ void processKey(unsigned char key)
             thread.deleteHandles();
             flashText("Deleted mouse-controled handles");
             break;
+                    
+        case 'u': {
+            ViewProp& vp = glApp::currentView();
+            vp.back_color = vp.back_color.inverted();
+            vp.front_color = vp.front_color.inverted();
+        } break;
+
+        case 'i':
+            prop.toggleReport(0);
+            break;
             
+        case 'I':
+            prop.toggleReport(1);
+            break;
+
         //------------------------- play / stop / reverse ----------------------
             
         case '<':
@@ -748,14 +762,6 @@ void processKey(unsigned char key)
                 player.stop();
             else
                 player.nextFrame();
-            break;
-            
-        case 'i':
-            prop.toggleReport(0);
-            break;
-            
-        case 'I':
-            prop.toggleReport(1);
             break;
             
         case 'o':
