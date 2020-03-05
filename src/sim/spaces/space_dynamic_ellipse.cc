@@ -305,7 +305,7 @@ void SpaceDynamicEllipse::step()
 void SpaceDynamicEllipse::resize(Glossary& opt)
 {
     SpaceEllipse::resize(opt);
-    //prop->volume = volume();
+    prop->volume = volume();
     //std::cout << " dynamic_ellipse:volume set to " << prop->volume << std::endl;
     
     if ( prop->volume <= 0 )
