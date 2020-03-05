@@ -38,7 +38,6 @@ typedef Matrix33 SquareBlock;
 typedef Matrix44 SquareBlock;
 #endif
 
-class Element;
 
 ///real symmetric sparse Matrix
 /**
@@ -52,6 +51,11 @@ class Element;
  */
 class MatrixSparseSymmetricBlock
 {
+public:
+    
+    /// accessory class
+    class Element;
+
 private:
     
     /// size of matrix

@@ -102,10 +102,10 @@ public:
     void      evaluate(std::string const&);
 
     /// Open and parse the config file with the given name
-    int       readConfig(std::string const& name);
+    void      readConfig(std::string const& name);
 
     /// Parse the default config file i.e. calls readConfig(simul.prop->config)
-    int       readConfig();
+    void      readConfig();
 
 };
 

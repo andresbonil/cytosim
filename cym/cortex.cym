@@ -88,7 +88,7 @@ new 50 minifilament
     anchor4 = point1, point2, 0.85, motor;
     anchor5 = point1, point2, 0.90, motor;
     anchor6 = point1, point2, 0.95, motor;
-    orientation = horizontal;
+    direction = X;
     placement = inside, cell, ( z > p )
 }
 

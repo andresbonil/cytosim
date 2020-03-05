@@ -411,7 +411,7 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
                 std::cerr << "Warning: solid:separation reduced to " << dis << "\n";
             real dev = 0.0;
             if ( opt.set(dev, "deviation") && dev > rad )
-                throw InvalidParameter("solid:deviation should be <= radius\n");
+                throw InvalidParameter("solid:deviation should be <= radius");
             
             inx = 2;
             while ( opt.set(str, var, inx++) )

@@ -9,7 +9,9 @@
 #include "iowrapper.h"
 #include "fiber_segment.h"
 #include "fiber_prop.h"
-#include "simul_prop.h"
+#include "object_set.h"
+#include "single.h"
+#include "simul.h"
 #include "meca.h"
 #include "hand.h"
 #include "sim.h"
@@ -61,9 +63,8 @@ void Fiber::step()
     
     if ( needUpdate )
     {
-        needUpdate = false;
         adjustSegmentation();
-        update();
+        updateFiber();
     }
 }
 
@@ -97,11 +98,8 @@ Fiber::~Fiber()
 {
     detachHands();
 
-    if ( frGlue )
-    {
-        delete(frGlue);
-        frGlue = nullptr;
-    }
+    delete(frGlue);
+    frGlue = nullptr;
     
     if ( disp )
     {
@@ -153,11 +151,8 @@ real Fiber::projectPoint(Vector const& w, real & dis) const
 //------------------------------------------------------------------------------
 #pragma mark - Modifying
 
-void Fiber::flipPolarity()
+void Fiber::flipHandsPolarity()
 {
-    // flip all the points:
-    Chain::flipPolarity();
-    
     /* update abscissa of Hands to keep them in place:
      new_abs - minus = plus - old_abs
      new_abs = plus + minus - old_abs
@@ -1054,8 +1049,9 @@ real Fiber::freshAssembly(const FiberEnd end) const
  this updates the segmentation of the fiber if needed, the position of the Hands,
  and the boundaries of the Lattice if present.
  */
-void Fiber::update()
+void Fiber::updateFiber()
 {
+    needUpdate = false;
 #if ( 0 )
     Cytosim::log << reference() << " update [ "  << std::setw(9) << std::left << abscissaM();
     Cytosim::log << " "  << std::setw(9) << std::left << abscissaP() << " ]" << std::endl;
@@ -1357,8 +1353,6 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
             fnBirthTime = in.readFloat();
 #endif
 
-        update();
-
         if ( length() + REAL_EPSILON < prop->min_length )
         {
             Cytosim::log << "Warning: fiber length < fiber:min_length";
@@ -1400,7 +1394,6 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     else if ( tag == 'm' )
     {
         Chain::read(in, sim, tag);
-        update();
     }
 #endif
     else

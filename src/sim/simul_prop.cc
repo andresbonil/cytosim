@@ -141,8 +141,8 @@ void SimulProp::complete(Simul const& sim)
         if ( kT < 0 )
             throw InvalidParameter("simul:kT must be > 0");
         
-        if ( kT == 0 && tolerance > 0.001 )
-            throw InvalidParameter("if simul:kT==0, simul:tolerance must be set and <= 0.001");
+        if ( kT == 0 && tolerance > 0.01 )
+            throw InvalidParameter("if simul:kT==0, simul:tolerance must be set small");
     }
     /*
      If the Global parameters have changed, we update all derived parameters.

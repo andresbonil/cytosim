@@ -4,9 +4,9 @@
 #include "messages.h"
 #include "exceptions.h"
 #include "glossary.h"
-#include "simul_prop.h"
 #include "walker_prop.h"
 #include "walker.h"
+#include "simul.h"
 
 
 Hand * WalkerProp::newHand(HandMonitor* m) const
@@ -61,7 +61,7 @@ void WalkerProp::complete(Simul const& sim)
     if ( unbinding_chance > 1 )
         throw InvalidParameter("walker:unbinding_chance must be <= 1");
     
-    walking_rate_dt = sim.prop->time_step * fabs(unloaded_speed) / step_size;
+    walking_rate_dt = sim.time_step() * fabs(unloaded_speed) / step_size;
     var_rate_dt     = std::copysign(walking_rate_dt/stall_force, unloaded_speed);
 }
 

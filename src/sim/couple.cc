@@ -21,14 +21,11 @@ extern Modulo const* modulo;
 Couple::Couple(CoupleProp const* p, Vector const& w)
 : prop(p), cPos(w), cHand1(nullptr), cHand2(nullptr)
 {
-    if ( !p )
-        throw Exception("Null Couple::prop");
-
     cHand1 = prop->hand1_prop->newHand(this);
     cHand2 = prop->hand2_prop->newHand(this);
 
-    assert_true( cHand1 );
-    assert_true( cHand2 );
+    assert_true(cHand1);
+    assert_true(cHand2);
 }
 
 
@@ -43,17 +40,10 @@ Couple::~Couple()
     if ( linked() )
         objset()->remove(this);
     
-    if ( cHand1 )
-    {
-        delete(cHand1);
-        cHand1 = nullptr;
-    }
-    if ( cHand2 )
-    {
-        delete(cHand2);
-        cHand2 = nullptr;
-    }
-    
+    delete(cHand1);
+    cHand1 = nullptr;
+    delete(cHand2);
+    cHand2 = nullptr;
     prop = nullptr;
 }
 

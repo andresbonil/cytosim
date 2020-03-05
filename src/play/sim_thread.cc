@@ -90,8 +90,7 @@ void SimThread::run()
 {
     assert_true( isChild() );
     try {
-        if ( Parser::readConfig() )
-            std::cerr << "You must specify a config file\n";
+        Parser::readConfig();
     }
     catch( Exception & e ) {
         simul.relax();
@@ -441,7 +440,7 @@ size_t SimThread::readInput(size_t max_nb_lines)
                 glApp::flashText0(str);
             }
             catch ( Exception & e ) {
-                std::cerr << "Error in stdin: " << e.what() << '\n';
+                std::cerr << e.brief() << str;
             }
             if ( ++cnt >= max_nb_lines )
                 break;
@@ -466,8 +465,7 @@ void SimThread::reloadParameters(std::string const& file)
 {
     lock();
     // set a parser that can only change properties:
-    if ( Parser(simul, 0, 1, 0, 0, 0).readConfig(file) )
-        std::cerr << "Error: File not found";
+    Parser(simul, 0, 1, 0, 0, 0).readConfig(file);
     //std::cerr << "reloaded " << simul.prop->config_file << std::endl;
     unlock();
 }

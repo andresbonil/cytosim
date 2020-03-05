@@ -196,8 +196,8 @@ int main(int argc, char* argv[])
     }
     catch( Exception & e )
     {
-        print_magenta(std::cerr, "Error: "+e.brief());
-        std::cerr << e.info() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
@@ -239,8 +239,8 @@ int main(int argc, char* argv[])
     }
     catch( Exception & e )
     {
-        print_magenta(std::cerr, "Error: "+e.brief());
-        std::cerr << e.info() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
@@ -251,9 +251,6 @@ int main(int argc, char* argv[])
         try
         {
             std::string file = simul.prop->property_file;
-            
-            if ( !FilePath::is_file(file) )
-                throw InvalidIO("could not find `"+file+"'\n");
             
             Parser(simul, 1, 1, 0, 0, 0).readConfig(file);
             
@@ -275,8 +272,8 @@ int main(int argc, char* argv[])
         catch( Exception & e )
         {
             arg.warnings(std::cerr);
-            print_magenta(std::cerr, "Error: "+e.brief());
-            std::cerr << e.info() << '\n';
+            print_magenta(std::cerr, e.brief());
+            std::cerr << '\n' << e.info() << '\n';
             return EXIT_FAILURE;
         }
     }
@@ -397,8 +394,8 @@ int main(int argc, char* argv[])
     }
     catch ( Exception & e )
     {
-        print_magenta(std::cerr, "Error: "+e.brief());
-        std::cerr << e.info() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
@@ -415,8 +412,8 @@ int main(int argc, char* argv[])
         }
         catch( Exception & e )
         {
-            print_magenta(std::cerr, "Error: "+e.brief());
-            std::cerr << e.info() << '\n';
+            print_magenta(std::cerr, e.brief());
+            std::cerr << '\n' << e.info() << '\n';
             return EXIT_FAILURE;
         }
     }

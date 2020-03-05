@@ -29,14 +29,17 @@ void SpaceStrip::resize(Glossary& opt)
             throw InvalidParameter("square:length[] must be >= 0");
         length_[d] = len;
     }
-    if ( length_[DIM-1] <= 0 )
+#if ( DIM == 2 )
+    // that is for impersonating a 'cylinderP' in 2D:
+    if ( length_[1] <= 0 )
     {
         real rad = 0;
         if ( opt.set(rad, "radius") )
-            length_[DIM-1] = rad;
-        if ( length_[DIM-1] <= 0 )
-            throw InvalidParameter("strip:length[DIM-1] must be > 0");
+            length_[1] = rad;
     }
+#endif
+    if ( length_[DIM-1] <= 0 )
+        throw InvalidParameter("strip:length[DIM-1] must be > 0");
 }
 
 

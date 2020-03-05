@@ -94,6 +94,9 @@ protected:
     /// callback to signal that update is needed, to be called after a change in length
     void         postUpdate() { needUpdate = true; }
     
+    /// called if a Fiber tip has elongated or shortened
+    virtual void updateFiber() {}
+
     /// restore the distance between two points
     static void  reshape_two(const real*, real*, real cut);
 
@@ -131,9 +134,12 @@ public:
     /// set position of MINUS_END and direction (length and Nb of points are not modified)
     /** dir does not need to be normalized */
     void         setStraight(Vector const& pos, Vector const& dir);
-
+    
     /// set position of 'ref', direction and length of Fiber
-    void         setStraight(Vector const& pos, Vector const& dir, real len, FiberEnd ref);
+    void         setStraight(Vector const& pos, Vector const& dir, real len);
+
+    /// move Fiber around to put 'ref' where the CENTER was
+    void         moveEnd(FiberEnd ref);
     
     /// set shape with `np` points from the given array of size DIM*n_pts
     void         setShape(const real pts[], unsigned n_pts, unsigned np);
@@ -239,8 +245,8 @@ public:
     /// converts distance from the specified FiberEnd, to abscissa from the ORIGIN
     real         abscissaFrom(real dis, FiberEnd ref) const;
     
-    /// return abscissa specified in opt[key]
-    real         someAbscissa(Glossary& opt, std::string const& key, real alpha) const;
+    /// return abscissa specified with `dis, ref, mod`
+    real         someAbscissa(real dis, FiberEnd ref, int mod, real alpha) const;
 
     //---------------------
 
@@ -347,7 +353,7 @@ public:
     void         reshape() { getPoints(pPos); }
 
     /// invert polarity (swap PLUS end MINUS ends in place)
-    virtual void flipPolarity();
+    void         flipChainPolarity();
     
     //--------------------- Info
     

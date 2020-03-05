@@ -39,7 +39,7 @@ new 40 actin_pair
 { 
     fibers = 2, actin, ( length = 1 )
     position = ( rectangle 4 0.1 );
-    orientation = horizontal;
+    direction = X;
 }
 
 run 100 system

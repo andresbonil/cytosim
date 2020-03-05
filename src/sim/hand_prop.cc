@@ -9,6 +9,7 @@
 #include "sim.h"
 #include "property_list.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include "hand.h"
 #include "hand_monitor.h"
 
@@ -24,7 +25,11 @@
 #include "mighty_prop.h"
 #include "actor_prop.h"
 
-#if NEW_HANDS
+
+/// Switch to enable Myosin, Kinesin and Dynein
+#define NEW_HAND_TYPES 1
+
+#if NEW_HAND_TYPES
 #include "kinesin_prop.h"
 #include "dynein_prop.h"
 #include "myosin_prop.h"
@@ -115,7 +120,7 @@ HandProp * HandProp::newProperty(const std::string& nom, Glossary& glos)
             return new ActorProp(nom);
         if ( a == "bind" )
             return new HandProp(nom);
-#if NEW_HANDS
+#if NEW_HAND_TYPES
         if ( a == "kinesin" )
             return new KinesinProp(nom);
         if ( a == "dynein" )
@@ -219,14 +224,12 @@ void HandProp::read(Glossary& glos)
 
 void HandProp::complete(Simul const& sim)
 {    
-    if ( sim.prop->time_step < REAL_EPSILON )
+    if ( sim.time_step() < REAL_EPSILON )
         throw InvalidParameter("simul:time_step is not defined");
     
     binding_range_sqr = square(binding_range);
-    binding_prob = -std::expm1(-binding_rate * sim.prop->time_step);
-    unbinding_rate_dt = unbinding_rate * sim.prop->time_step;
-    
-    binding_rate_dt_8 = 8 * binding_rate * sim.prop->time_step;
+    binding_prob = -std::expm1(-binding_rate * sim.time_step());
+    unbinding_rate_dt = unbinding_rate * sim.time_step();
     
     if ( binding_range < 0 )
         throw InvalidParameter(name()+":binding_range must be >= 0");
@@ -245,11 +248,7 @@ void HandProp::complete(Simul const& sim)
 
     if ( sim.ready() )
     {
-#if TRICKY_HAND_ATTACHMENT
-        if ( binding_rate_dt_8 > sim.prop->acceptable_prob )
-#else
         if ( binding_prob > sim.prop->acceptable_prob )
-#endif
             Cytosim::warn << name() << ":binding_rate is too high: decrease time_step\n";
     
         if ( unbinding_rate_dt > sim.prop->acceptable_prob )

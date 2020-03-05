@@ -30,30 +30,12 @@ TreadmillingFiber::~TreadmillingFiber()
 //------------------------------------------------------------------------------
 #pragma mark -
 
-state_t TreadmillingFiber::dynamicStateM() const
-{
-    return mStateM;
-}
-
-
 void TreadmillingFiber::setDynamicStateM(state_t s)
 {
     if ( s == STATE_WHITE || s == STATE_GREEN || s == STATE_RED )
         mStateM = s;
     else
         throw InvalidParameter("Invalid AssemblyState for TreadmillingFiber MINUS_END");
-}
-
-
-real TreadmillingFiber::freshAssemblyM() const
-{
-    return mGrowthM;
-}
-
-
-state_t TreadmillingFiber::dynamicStateP() const
-{
-    return mStateP;
 }
 
 
@@ -66,32 +48,28 @@ void TreadmillingFiber::setDynamicStateP(state_t s)
 }
 
 
-real TreadmillingFiber::freshAssemblyP() const
-{
-    return mGrowthP;
-}
-
-
 //------------------------------------------------------------------------------
 
 void TreadmillingFiber::step()
 {    
+    constexpr int P = 0, M = 1;
+
     if ( mStateP == STATE_GREEN )
     {
         // calculate the force acting on the point at the end:
         real forceP = projectedForceEndP();
         
         // growth is reduced if free monomers are scarce:
-        mGrowthP = prop->growing_speed_dt[0] * prop->free_polymer;
+        mGrowthP = prop->growing_speed_dt[P] * prop->free_polymer;
         
         assert_true(mGrowthP>=0);
         // antagonistic force (< 0) decreases assembly rate exponentially
-        if ( forceP < 0  &&  prop->growing_force[0] < INFINITY )
-            mGrowthP *= exp(forceP/prop->growing_force[0]);
+        if ( forceP < 0  &&  prop->growing_force[P] < INFINITY )
+            mGrowthP *= exp(forceP/prop->growing_force[P]);
     }
     else if ( mStateP == STATE_RED )
     {
-        mGrowthP = prop->shrinking_speed_dt[0];
+        mGrowthP = prop->shrinking_speed_dt[P];
     }
     else
     {
@@ -105,16 +83,16 @@ void TreadmillingFiber::step()
         real forceM = projectedForceEndM();
         
         // growth is reduced if free monomers are scarce:
-        mGrowthM = prop->growing_speed_dt[1] * prop->free_polymer;
+        mGrowthM = prop->growing_speed_dt[M] * prop->free_polymer;
 
         assert_true(mGrowthM>=0);
         // antagonistic force (< 0) decreases assembly rate exponentially
-        if ( forceM < 0  &&  prop->growing_force[1] < INFINITY  )
-            mGrowthM *= exp(forceM/prop->growing_force[1]);
+        if ( forceM < 0  &&  prop->growing_force[M] < INFINITY  )
+            mGrowthM *= exp(forceM/prop->growing_force[M]);
     }
     else if ( mStateM == STATE_RED )
     {
-        mGrowthM = prop->shrinking_speed_dt[1];
+        mGrowthM = prop->shrinking_speed_dt[M];
     }
     else
     {

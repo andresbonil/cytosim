@@ -2,9 +2,9 @@
 
 #include "field_prop.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "messages.h"
 #include "glossary.h"
+#include "simul.h"
 #include "dim.h"
 
 //------------------------------------------------------------------------------
@@ -72,12 +72,12 @@ void FieldProp::read(Glossary& glos)
 //------------------------------------------------------------------------------
 void FieldProp::complete(Simul const& sim)
 {
-    time_step = sim.prop->time_step;
+    time_step = sim.time_step();
     
     confine_space_ptr = sim.findSpace(confine_space);
     
     if ( confine_space_ptr )
-        confine_space = confine_space_ptr->property()->name();
+        confine_space = confine_space_ptr->name();
 
     if ( sim.ready()  &&  !confine_space_ptr )
         throw InvalidParameter("A Space must be created before the field");

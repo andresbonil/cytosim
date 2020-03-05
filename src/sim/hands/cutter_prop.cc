@@ -5,9 +5,9 @@
 #include "glossary.h"
 #include "common.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "cutter_prop.h"
 #include "cutter.h"
+#include "simul.h"
 
 
 Hand * CutterProp::newHand(HandMonitor* m) const
@@ -55,7 +55,7 @@ void CutterProp::complete(Simul const& sim)
     if ( cutting_rate < 0 )
         throw InvalidParameter("cutter:cutting_rate must be >= 0");
 
-    cutting_rate_dt = cutting_rate * sim.prop->time_step;
+    cutting_rate_dt = cutting_rate * sim.time_step();
     
     if ( new_end_state[0] == STATE_BLACK )
         throw InvalidParameter("cutter:new_end_state[0] is invalid");

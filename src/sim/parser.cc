@@ -8,6 +8,7 @@
 #include "filepath.h"
 #include "stream_func.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include <fstream>
 
 
@@ -92,10 +93,7 @@ void Parser::parse_set(std::istream& is)
          define a new Property
          */
         name = Tokenizer::get_symbol(is);
-        blok = Tokenizer::get_block(is, '{');
-        
-        if ( blok.empty() )
-            throw InvalidSyntax("syntax error");
+        blok = Tokenizer::get_block(is, '{', true);
 
         if ( do_set )
         {
@@ -159,10 +157,7 @@ void Parser::parse_set(std::istream& is)
         }
         
         // set NAME { PARAMETER = VALUE }
-        blok = Tokenizer::get_block(is, '{');
-        
-        if ( blok.empty() )
-            throw InvalidSyntax("syntax error");
+        blok = Tokenizer::get_block(is, '{', true);
         
         if ( do_change )
         {
@@ -271,10 +266,7 @@ void Parser::parse_change(std::istream& is)
     }
 
     //change NAME { VALUE }
-    std::string blok = Tokenizer::get_block(is, '{');
-    
-    if ( blok.empty() )
-        throw InvalidSyntax("syntax error");
+    std::string blok = Tokenizer::get_block(is, '{', true);
     
     Glossary opt;
     if ( do_change )
@@ -363,6 +355,7 @@ void Parser::parse_new(std::istream& is)
 
     // Syntax sugar: () specify only position
     std::string blok = Tokenizer::get_block(is, '(');
+    
     if ( blok.empty() )
     {
         blok = Tokenizer::get_block(is, '{');
@@ -618,10 +611,7 @@ void Parser::parse_cut(std::istream& is)
         str = Tokenizer::get_symbol(is);
     }
     
-    std::string blok = Tokenizer::get_block(is, '{');
-
-    if ( blok.empty() )
-        throw InvalidSyntax("missing block after `cut'");
+    std::string blok = Tokenizer::get_block(is, '{', true);
     
     if ( do_run )
     {
@@ -690,7 +680,7 @@ void Parser::parse_run(std::istream& is)
                 {
                     if ( span <= 0 )
                         throw InvalidParameter("duration must be >= 0'");
-                    cnt = (unsigned)ceil(span/simul.prop->time_step);
+                    cnt = (unsigned)ceil(span/simul.time_step());
                 }
             }
         }
@@ -741,7 +731,9 @@ void Parser::parse_read(std::istream& is)
             StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
     
-    if ( readConfig(file) )
+    if ( FilePath::is_file(file) )
+        readConfig(file);
+    else
     {
         if ( required )
             throw InvalidSyntax("could not open file `"+file+"'");
@@ -843,7 +835,6 @@ void Parser::parse_export(std::istream& is)
     
     if ( file.empty() )
         throw InvalidSyntax("missing/invalid file name (use `export all FILENAME')");
-    
 
     std::string blok = Tokenizer::get_block(is, '{');
     
@@ -1203,22 +1194,26 @@ void Parser::evaluate(std::string const& code)
 }
 
 
-int Parser::readConfig(std::string const& filename)
+void Parser::readConfig(std::string const& filename)
 {
     std::ifstream is(filename.c_str(), std::ifstream::in);
-    if ( is.good() )
-    {
-        VLOG("--Parse `" << filename << "'  set " << do_set << "  change " << do_change);
-        VLOG("  new " << do_new << "  run " << do_run << "  write " << do_write << "\n");
-        evaluate(is);
-        return 0;
-    }
-    return 1;
+    if ( !is.good() )
+        throw InvalidIO("could not find or read `"+filename+"'");
+    VLOG("--Parse `" << filename << "'  set " << do_set << "  change " << do_change);
+    VLOG("  new " << do_new << "  run " << do_run << "  write " << do_write << "\n");
+    evaluate(is);
 }
 
 
-int Parser::readConfig()
+void Parser::readConfig()
 {
-    return readConfig(simul.prop->config_file);
+    try {
+        readConfig(simul.prop->config_file);
+    }
+    catch ( InvalidIO& e ) {
+        if ( simul.prop->config_file == "config.cym" )
+            throw InvalidIO("You must specify a config file");
+        throw;
+    }
 }
 

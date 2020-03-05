@@ -26,6 +26,15 @@ void SpaceSquare::resize(Glossary& opt)
             throw InvalidParameter("square:length[] must be >= 0");
         length_[d] = len;
     }
+#if ( DIM == 2 )
+    // that is for impersonating a 'cylinder' in 2D:
+    if ( length_[1] <= 0 )
+    {
+        real rad = 0;
+        if ( opt.set(rad, "radius") )
+            length_[1] = rad;
+    }
+#endif
 }
 
 

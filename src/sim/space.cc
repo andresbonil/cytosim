@@ -44,7 +44,7 @@ Vector Space::randomPlace() const
         res = inf + dif.e_mul(Vector::randP());
         if ( ++ouf > nb_trials )
         {
-            throw InvalidParameter("random placement failed for space `"+prop->name()+"'\n");
+            throw InvalidParameter("random placement failed for space `"+prop->name()+"'");
             //Cytosim::warn << "random placement failed for space `"+prop->name()+"'\n";
             return Vector(0,0,0);
         }
@@ -70,7 +70,7 @@ Vector Space::randomPlaceNearEdge(real rad, size_t nb_trials) const
         res = randomPlace();
         assert_true( inside(res) );
         if ( ++ouf > nb_trials )
-            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'\n");
+            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'");
     } while ( allInside(res, rad) );
     return res;
 }
@@ -101,7 +101,7 @@ Vector Space::randomPlaceOnEdge(real rad, size_t nb_trials) const
         res = project(pos);
         d = ( pos - res ).normSqr();
         if ( ++ouf > nb_trials )
-            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'\n");
+            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'");
     } while ( d > rr );
     
     return res;

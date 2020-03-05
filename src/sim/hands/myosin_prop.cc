@@ -4,7 +4,7 @@
 #include "myosin_prop.h"
 #include "exceptions.h"
 #include "glossary.h"
-#include "simul_prop.h"
+#include "simul.h"
 
 
 Hand * MyosinProp::newHand(HandMonitor* m) const
@@ -46,7 +46,7 @@ void MyosinProp::complete(Simul const& sim)
     if ( unloaded_speed < 0 )
         throw InvalidParameter("myosin:unloaded_speed must be >= 0");
 
-    walking_rate_dt = sim.prop->time_step * fabs(unloaded_speed) / step_size;
+    walking_rate_dt = sim.time_step() * fabs(unloaded_speed) / step_size;
     var_rate_dt     = std::copysign(walking_rate_dt/stall_force, unloaded_speed);
 }
 

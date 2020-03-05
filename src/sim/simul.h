@@ -152,8 +152,11 @@ public:
     /// perform one Monte-Carlo step, corresponding to `time_step`
     void            step();
     
-    /// time in the simulated world
+    /// time in the simulated world (shortcut to `prop->time`)
     real            time()   const;
+    
+    /// shortcut to prop->time_step;
+    real            time_step() const;
 
     /// this is called after a sequence of `step()` have been done
     void            relax();

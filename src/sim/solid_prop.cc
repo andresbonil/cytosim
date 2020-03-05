@@ -4,6 +4,7 @@
 #include "glossary.h"
 #include "property_list.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include "sim.h"
 
 
@@ -96,7 +97,7 @@ void SolidProp::complete(Simul const& sim)
     confine_space_ptr = sim.findSpace(confine_space);
     
     if ( confine_space_ptr )
-        confine_space = confine_space_ptr->property()->name();
+        confine_space = confine_space_ptr->name();
     
     if ( sim.ready() && confine != CONFINE_OFF )
     {

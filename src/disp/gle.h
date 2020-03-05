@@ -184,20 +184,22 @@ namespace gle
     /// draw Torus of radius `rad` and thickness `thick`
     void gleTorus(GLfloat rad, GLfloat thick, size_t inc = 1);
     
-    /// draw a nicer open tube along Z, of diameter 1 and length 1
-    void gleTubeF(GLfloat a, GLfloat b, int inc);
+    /// draw an open tube from B to T along Z, of diameter 1
+    void gleTube0(GLfloat B, GLfloat T, int inc);
+    /// draw an open tube from B to T along Z, of diameter 1
+    void gleTube0(GLfloat B, GLfloat RB, GLfloat T, GLfloat RT, int inc);
     /// draw a rough open tube along Z, of diameter 1 and length 1
-    inline void gleTube1()     { gleTubeF(0, 1, 8); }
+    inline void gleTube1()     { gleTube0(0, 1, 8); }
     /// draw an open tube along Z, of diameter 1 and length 1
-    inline void gleTube2()     { gleTubeF(0, 1, 4); }
+    inline void gleTube2()     { gleTube0(0, 1, 4); }
     /// draw a nice open tube along Z, of diameter 1 and length 1
-    inline void gleTube4()     { gleTubeF(0, 1, 2); }
+    inline void gleTube4()     { gleTube0(0, 1, 2); }
     /// draw a nicer open tube along Z, of diameter 1 and length 1
-    inline void gleTube8()     { gleTubeF(0, 1, 1); }
+    inline void gleTube8()     { gleTube0(0, 1, 1); }
     /// draw a tube along Z, of diameter 1 and length 1.5, Z=[-0.25, 1.25]
-    inline void gleLongTube1() { gleTubeF(-0.25f, 1.25f, 4); }
+    inline void gleLongTube1() { gleTube0(-0.25f, 1.25f, 4); }
     /// draw a nicer tube along Z, of diameter 1 and length 1.5, Z=[-0.25, 1.25]
-    inline void gleLongTube2() { gleTubeF(-0.25f, 1.25f, 2); }
+    inline void gleLongTube2() { gleTube0(-0.25f, 1.25f, 2); }
     /// draw an open tube along Z, of diameter 1 and length 1, Z=[0, 1]
     void gleHexTube1(GLfloat Zmin, GLfloat Zmax);
     /// draw a closed tube along Z, or diameter 1 and length 1
@@ -205,8 +207,12 @@ namespace gle
 
     /// draw a 3-portion cylinder with a larger central section
     void gleBarrel1();
-    /// display a cone directed along Z, of radius 1 in Z=[-1, +2], with closing disc at bottom
-    void gleCone1();
+    /// display a cone directed along Z, of radius 1 in Z=[B, T], possibly closed by a disc
+    void gleCone0(GLfloat B, GLfloat T, bool closed);
+    /// display an open cone directed along Z, of radius 1 in Z=[0, 1]
+    inline void gleCone1() { gleTube0(0, 1, 1, 0.25, 4); }
+    /// display a closed cone directed along Z, of radius 1 in Z=[-1, +2]
+    inline void gleLongCone1() { gleCone0(-1, 2, true); }
     /// display a cylindrical box, directed along Z, of length 1, radius 1 in Z=[-0.5, +0.5]
     void gleCylinderZ();
     /// display a dumbbell aligned with the Z axis, or radius 1/3, lenth 1
@@ -231,11 +237,12 @@ namespace gle
     inline void gleIcosahedronB()  { gleIcosahedron1(); }
     
     inline void gleArrowTailB()    { gleArrowTail1();   }
-    inline void gleCircleB()       { gleCircle();      }
-    inline void gleDiscB()         { gleDisc();      }
+    inline void gleCircleB()       { gleCircle();       }
+    inline void gleDiscB()         { gleDisc();         }
     inline void gleCylinderB()     { gleCylinderZ();    }
     inline void gleConeB()         { gleCone1();        }
-    
+    inline void gleLongConeB()     { gleLongCone1();    }
+
     void gleTube1B();
     void gleTube2B();
     void gleTube4B();

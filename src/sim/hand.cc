@@ -162,22 +162,25 @@ bool Hand::attachmentAllowed(FiberSite& sit) const
             break;
         case BOTH_ENDS:
         {
-            FiberEnd e = nearestEnd();
-        
-            if ( sit.abscissaFrom(e) > prop->bind_end_range )
-                return false;
-        
-            // also check the other fiber end:
-            FiberEnd o = ( e == PLUS_END ) ? MINUS_END : PLUS_END;
-        
-            // give equal chance to all ends within range:
-            if ( sit.abscissaFrom(o) < prop->bind_end_range  )
-                end = RNG.choice(MINUS_END, PLUS_END);
+            FiberEnd e = NO_END;
+            if ( sit.abscissaFromM() > prop->bind_end_range )
+            {
+                // too far from MINUS_END
+                if ( sit.abscissaFromP() > prop->bind_end_range )
+                    return false;       // too far from PLUS_END
+                e = PLUS_END;
+            }
             else
-                end = e;
-        }
+            {
+                // close from MINUS_END
+                if ( sit.abscissaFromP() > prop->bind_end_range )
+                    end = MINUS_END;    // too far from PLUS_END
+                else
+                    end = RNG.choice(MINUS_END, PLUS_END);
+            }
+        } break;
         default:
-            throw Exception("Illegal value of hand:bind_only_end");
+            throw Exception("illegal value of hand:bind_only_end");
     }
 
 #if NEW_BIND_ONLY_FREE_END

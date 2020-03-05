@@ -49,19 +49,21 @@ public:
     /// return the message
     std::string brief()
     {
-        return msg_;
+        return "Error, " + msg_ + ":";
     }
     
-    /// return supplementary messare
+    /// return supplementary message
     std::string info() const
     {
         return info_;
     }
 
-    /// return copy of the message
+    /// return copy of the message composed of brief and info
     std::string what() const
     {
-        return msg_ + info_;
+        if ( info_.size() > 0 )
+            return msg_ + ":\n" + info_;
+        return msg_;
     }
 
     /// return copy of the message
@@ -70,6 +72,12 @@ public:
         return msg_.c_str();
     }
     
+    /// change the message
+    std::string message() const
+    {
+        return msg_;
+    }
+
     /// change the message
     void message(const std::string& m)
     {
@@ -115,12 +123,6 @@ public:
     /// append string to info
     Exception& operator << (const std::string& arg)
     {
-        if ( arg.size() > 0 && isalnum(arg[0]) )
-        {
-            std::string s = msg_ + info_;
-            if ( s.empty() || isalnum(s.back()) )
-                info_.push_back(' ');
-        }
         info_.append(arg);
         return *this;
     }

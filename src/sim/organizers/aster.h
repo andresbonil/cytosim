@@ -23,10 +23,10 @@ private:
      1 = link fiber-end with coef1, fiber-side with coef2
      2 = the interpolation corresponds exactly to point 'ref'
      */
-    int      ord;
+    size_t   rank;
 
-    /// index of reference point on the Solid
-    unsigned ref;
+    /// index of first point on the Solid
+    size_t   prime;
     
     /// interpolation coefficient for Fiber end
     real     coef1[4];
@@ -38,7 +38,7 @@ private:
     real     len;
     
     /// index used for backward compatibility
-    unsigned alt;
+    size_t   alt;
     
 public:
     
@@ -50,8 +50,8 @@ public:
     
     void reset()
     {
-        ord = 0;
-        ref = 0;
+        rank = 0;
+        prime = 0;
         len = 0;
         for ( int i = 0; i < 4; ++i )
         {
@@ -90,14 +90,14 @@ public:
         coef2[0] = 1.0 - B.XX - B.YY - B.ZZ;
 #endif
         if ( A.norm_inf() < REAL_EPSILON )
-            ord = 1;
+            rank = 1;
         else
-            ord = 1+DIM;
+            rank = 1+DIM;
     }
 
     void write(Outputter& out) const
     {
-        out.writeUInt16(ref);
+        out.writeUInt16(prime);
         for ( int d = 1; d < 4; ++d )
             out.writeFloat(coef1[d]);
         for ( int d = 1; d < 4; ++d )
@@ -106,7 +106,7 @@ public:
     
     void read(Inputter& in)
     {
-        ref = in.readUInt16();
+        prime = in.readUInt16();
         
         for ( int d = 1; d < 4; ++d )
             coef1[d] = in.readFloat();
@@ -119,9 +119,9 @@ public:
         len = (Vector3(coef1+1)-Vector3(coef2+1)).norm();
         
         if ( fabs(coef1[1]) + fabs(coef1[2]) + fabs(coef1[3]) < REAL_EPSILON )
-            ord = 1;
+            rank = 1;
         else
-            ord = DIM;
+            rank = DIM;
     }
     
     void print(std::ostream& out) const
@@ -163,16 +163,16 @@ private:
     Array<AsterLink> asLinks;
 
     /// create and configure the Solid
-    ObjectList makeSolid(Simul&, Glossary& opt, unsigned& origin);
+    ObjectList makeSolid(Simul&, Glossary& opt, size_t& origin);
 
     /// create a Fiber for position 'inx'
     ObjectList makeFiber(Simul&, size_t inx, std::string const&, Glossary& opt);
 
     /// define the attachment position of fiber 'inx'
-    void       placeAnchor(Vector const&, Vector const&, unsigned origin);
+    void       placeAnchor(Vector const&, Vector const&, size_t origin);
 
     /// define the anchor points of Fibers
-    void       placeAnchors(Glossary& opt, unsigned origin, unsigned nbf);
+    void       placeAnchors(Glossary& opt, size_t origin, size_t nbf);
     
     /// Property
     AsterProp const* prop;
@@ -201,7 +201,7 @@ public:
     void          step();
     
     /// add interactions to a Meca
-    void          setInteractions(Meca &) const;
+    void          setInteractions(Meca&) const;
     
     /// position of first clamp for Fiber n
     Vector        posLink1(size_t n) const;

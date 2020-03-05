@@ -44,7 +44,7 @@ public:
     /**
      If this parameter is set, `mobility` is calculated as:
 
-         mobility = 1.0 / ( stiffness * sim.prop->time_step );
+         mobility = 1.0 / ( stiffness * sim.time_step() );
 
      Corresponding to the maximum mobility possible, since the Hand will
      move in one time-step to the position where the force originates.

@@ -147,9 +147,18 @@ ObjectList FiberSet::newObjects(const std::string& name, Glossary& opt)
         if ( !sip && !cop )
             throw InvalidParameter("could not find fiber:attach single/couple `"+spe+"'");
         
+        // variables defining an abscissa:
+        int mod = 7;
+        real abs = 0;
+        FiberEnd ref = ORIGIN;
+        if ( opt.set(abs, var, 1) )
+            mod = 0;
+        opt.set(ref, var, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
+        opt.set(mod, var, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}, {"regular", 3}});
+
         for ( size_t n = 0; n < cnt; ++n )
         {
-            FiberSite fs(fib, fib->someAbscissa(opt, var, n/std::max(1UL, cnt-1)));
+            FiberSite fs(fib, fib->someAbscissa(abs, ref, mod, n/std::max(1UL, cnt-1)));
             Object * cs = nullptr;
             Hand * h = nullptr;
             if ( sip )
@@ -425,7 +434,7 @@ FiberSite FiberSet::randomSite(FiberProp * arg) const
             abs += fib->length();
 
     if ( abs == 0 )
-        throw InvalidParameter("randomSite() called with no fibers!");
+        throw InvalidParameter("found no fibers of requested class");
 
     abs *= RNG.preal();
     
@@ -478,7 +487,16 @@ FiberSite FiberSet::someSite(std::string const& key, Glossary& opt) const
                 throw InvalidParameter("Could not find fiber specified for attachment");
             }
             
-            return FiberSite(fib, fib->someAbscissa(opt, key, 1.0));
+            // variables defining an abscissa:
+            int mod = 7;
+            real abs = 0;
+            FiberEnd ref = ORIGIN;
+            if ( opt.set(abs, key, 1) )
+                mod = 0;
+            opt.set(ref, key, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
+            opt.set(mod, key, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}});
+
+            return FiberSite(fib, fib->someAbscissa(abs, ref, mod, 1.0));
         }
     }
     throw InvalidParameter("unrecognized site specification");
@@ -541,11 +559,36 @@ void FiberSet::newFiberSitesM(Array<FiberSite>& res, const real spread) const
 }
 
 
-void FiberSet::flipAllFibers()
+void FiberSet::flipFiberPolarity()
 {
     for ( Fiber* fib=first(); fib; fib=fib->next() )
-        fib->flipPolarity();
+    {
+        fib->flipChainPolarity();
+        fib->flipHandsPolarity();
+    }
 }
+
+
+/**
+ After reading from file, the fiber structure need to be updated,
+ as well as the Hands bound to them.
+ */
+void FiberSet::prune(ObjectFlag f)
+{
+    for (Fiber* fib=first(), *n; fib; fib=n)
+    {
+        n = fib->next();
+        if ( fib->flag() == f )
+            delete(fib);
+        else
+        {
+            fib->updateFiber();
+            fib->resetLattice();
+            fib->flag(0);
+        }
+    }
+}
+
 
 //------------------------------------------------------------------------------
 #pragma mark -

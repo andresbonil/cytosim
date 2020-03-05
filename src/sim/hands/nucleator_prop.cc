@@ -6,7 +6,6 @@
 #include "glossary.h"
 #include "common.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "nucleator_prop.h"
 #include "nucleator.h"
 #include "simul.h"
@@ -90,7 +89,7 @@ void NucleatorProp::complete(Simul const& sim)
     if ( track_end && track_end != hold_end )
         throw InvalidParameter("if set, hand:track_end should be equal to hold_end");
         
-    rate_dt = rate * sim.prop->time_step;
+    rate_dt = rate * sim.time_step();
 }
 
 

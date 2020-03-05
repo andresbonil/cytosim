@@ -690,14 +690,16 @@ Vector Movable::readDirection0(std::istream& is, Vector const& pos, Space const*
         throw InvalidParameter("Unknown direction `"+tok+"'");
     }
     
-    // accept a Vector:
-    Vector vec(0,0,0);
-    if ( is >> vec )
     {
-        real n = vec.norm();
-        if ( n < REAL_EPSILON )
-            throw InvalidParameter("direction vector appears singular");
-        return vec / n;
+        // accept a Vector:
+        Vector vec(0,0,0);
+        if ( is >> vec )
+        {
+            real n = vec.norm();
+            if ( n < REAL_EPSILON )
+                throw InvalidParameter("direction vector appears singular");
+            return vec / n;
+        }
     }
     throw InvalidParameter("expected a vector specifying a `direction`");
 }
@@ -762,12 +764,14 @@ Vector Movable::readDirection(std::istream& is, Vector const& pos, Space const* 
  Keyword                 | Rotation / Result
  ------------------------|-----------------------------------------------------------
  `random`                | A rotation selected uniformly among all possible rotations
- `identity`              | The object is not rotated
+ `identity`, `off`       | The object is not rotated
  `X theta`               | A rotation around axis 'X' of angle `theta` in radians
  `Y theta`               | A rotation around axis 'Y' of angle `theta` in radians
  `Z theta`               | A rotation around axis 'Z' of angle `theta` in radians
- `angle A B C`           | As specified by 3 (or 1 in 2D) Euler angles in radians
- `degree A B C`          | As specified by 3 (or 1 in 2D) Euler angles in degrees
+ `angle A`               | Rotation around Z axis with angle of rotation in radians
+ `angle A axis X Y Z`    | Rotation around given axis with angle of rotation in radians
+ `axis X Y Z angle A`    | Rotation around given axis with angle of rotation in radians
+ `degree A axis X Y Z`   | As specified by axis and angle of rotation in degrees
  `quat q0 q1 q2 q3`      | As specified by the Quaternion (q0, q1, q2, q3)
 */
 
@@ -786,20 +790,45 @@ Rotation Movable::readRotation(std::istream& is)
         is >> ang;
 #if ( DIM >= 3 )
         Vector dir(0,0,1);
-        isp = is.tellg();
-        tok = Tokenizer::get_symbol(is);
-        if ( tok == "axis" )
-            is >> dir;
-        else
+        if ( is.good() )
         {
-            is.clear();
-            is.seekg(isp);
+            isp = is.tellg();
+            if ( Tokenizer::get_symbol(is) == "axis" )
+                is >> dir;
+            else
+            {
+                is.clear();
+                is.seekg(isp);
+            }
         }
         return Rotation::rotationAroundAxis(normalize(dir), cos(ang), sin(ang));
 #else
         return Rotation::rotation(cos(ang), sin(ang));
 #endif
     }
+#if ( DIM >= 3 )
+    else if ( tok == "axis" )
+    {
+        real ang = 0;
+        Vector dir(0,0,1);
+        is >> dir;
+        isp = is.tellg();
+        tok = Tokenizer::get_symbol(is);
+        if ( tok == "angle" )
+            is >> ang;
+        else if ( tok == "degree" )
+        {
+            is >> ang;
+            ang *= M_PI/180.0;
+        }
+        else
+        {
+            is.clear();
+            is.seekg(isp);
+        }
+        return Rotation::rotationAroundAxis(normalize(dir), cos(ang), sin(ang));
+    }
+#endif
     else if ( tok == "degree" )
     {
         real ang = 0;
@@ -813,7 +842,10 @@ Rotation Movable::readRotation(std::istream& is)
             if ( Tokenizer::get_symbol(is) == "axis" )
                 is >> dir;
             else
+            {
+                is.clear();
                 is.seekg(isp);
+            }
         }
         return Rotation::rotationAroundAxis(normalize(dir), cos(ang), sin(ang));
 #else

@@ -14,11 +14,4 @@
 #define BACKWARD_COMPATIBILITY
 
 
-/**
- Enables Myosin, Kinesin and Dynein
- Option normally OFF
- */
-#define NEW_HANDS 0
-
-
 #endif

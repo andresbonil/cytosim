@@ -84,17 +84,20 @@ public:
         return rot;
     }
     
+    /// apply translation, after *this
     void translate(Vector const& v)
     {
         mov += v;
     }
     
+    /// apply rotation, after *this
     void rotate(MatrixD const& mat)
     {
         rot = mat * rot;
         mov = mat * mov;
     }
 
+    /// apply another isometry, after *this
     void combine(Isometry const& iso)
     {
         mov = iso.rot * mov + iso.mov;

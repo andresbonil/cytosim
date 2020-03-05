@@ -80,12 +80,6 @@ void DynamicFiber::setDynamicStateM(state_t s)
 }
 
 
-real DynamicFiber::freshAssemblyM() const
-{
-    return mGrowthM;
-}
-
-
 int DynamicFiber::stepMinusEnd()
 {
     int res = 0;
@@ -154,11 +148,6 @@ void DynamicFiber::setDynamicStateP(state_t s)
     }
 }
 
-
-real DynamicFiber::freshAssemblyP() const
-{
-    return mGrowthP;
-}
 
 /**
  Using a modified Gillespie scheme with a variable rate.

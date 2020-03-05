@@ -35,13 +35,13 @@ new filament
 {
     length = 1
     position = 0 0 0
-    orientation = horizontal
+    direction = X
 }
 new filament
 {
     length = 1
     position = 0 0 0
-    orientation = vertical
+    direction = Y
 }
 
 
