@@ -5,7 +5,6 @@
 #include "glossary.h"
 
 
-//------------------------------------------------------------------------------
 void FakeProp::clear()
 {
     stiffness  = -1;
@@ -24,8 +23,6 @@ void FakeProp::complete(Simul const& sim)
         throw InvalidParameter("fake:stiffness must be specified and >= 0");
 }
 
-
-//------------------------------------------------------------------------------
 
 void FakeProp::write_values(std::ostream& os) const
 {

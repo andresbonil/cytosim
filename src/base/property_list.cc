@@ -20,7 +20,7 @@ void PropertyList::deposit(Property * p)
 {
     if ( p )
     {
-        int cnt = 0;
+        unsigned cnt = 0;
         for ( Property* i : vec_ )
         {
             if ( i->category() == p->category() )
@@ -70,9 +70,9 @@ Property * PropertyList::operator[] (const size_t n) const
 {
     if ( n >= vec_.size() )
     {
-        std::ostringstream oss;
-        oss << "out of range index " << n << " ( list-size = " << vec_.size() << " )";
-        throw InvalidSyntax(oss.str());
+        InvalidSyntax e("out-of-range");
+        e << " index " << n << " ( list-size = " << vec_.size() << " )";
+        throw e;
     }
     return vec_[n];
 }
@@ -129,10 +129,9 @@ Property * PropertyList::find_or_die(std::string const& nom) const
 
     if ( !p )
     {
-        std::ostringstream oss;
-        oss << "Unknown class `" << nom << "'\n";
-        write_names(oss, PREF);
-        throw InvalidSyntax(oss.str());
+        InvalidSyntax e("unknown class `"+nom+"'\n");
+        e << all_names(PREF);
+        throw e;
     }
     return p;
 }
@@ -175,10 +174,9 @@ Property * PropertyList::find_or_die(std::string const& cat, std::string const& 
     
     if ( !res )
     {
-        std::ostringstream oss;
-        oss << "Unknown " << cat << " class `" << nom << "'\n";
-        write_names(oss, PREF);
-        throw InvalidSyntax(oss.str());
+        InvalidSyntax e("unknown "+cat+" class `"+nom+"'\n");
+        e << all_names(PREF);
+        throw e;
     }
     
     return res;
@@ -191,10 +189,9 @@ Property * PropertyList::find_or_die(std::string const& cat, const unsigned num)
     
     if ( !res )
     {
-        std::ostringstream oss;
-        oss << "Unknown class " << cat << num << '\n';
-        write_names(oss, PREF);
-        throw InvalidSyntax(oss.str());
+        InvalidSyntax e("unknown class `"+cat+std::to_string(num)+"'\n");
+        e << all_names(PREF);
+        throw e;
     }
     
     return res;
@@ -303,6 +300,14 @@ void PropertyList::write_names(std::ostream& os, std::string const& pf) const
     }
 }
 
+
+std::string PropertyList::all_names(std::string const& pf) const
+{
+    std::ostringstream oss;
+    write_names(oss, pf);
+    return oss.str();
+}
+        
 /**
  The values identical to the default settings are skipped if prune==1
  */

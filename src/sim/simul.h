@@ -22,7 +22,6 @@
 #include "point_grid.h"
 #include "property_list.h"
 #include "field_values.h"
-#include "field.h"
 #include "meca.h"
 
 class Meca1D;
@@ -38,7 +37,7 @@ class Simul
 public:
     
     /// Meca used to set and integrate the equations of motion of Mecables
-    mutable Meca    sMeca;
+    mutable Meca      sMeca;
     
     /// grid used for attachment of Hand to Fiber
     mutable FiberGrid fiberGrid;
@@ -47,7 +46,7 @@ public:
     mutable PointGrid pointGrid;
     
     /// Meca used to solve the system with option 'solve=horizontal'
-    Meca1D *        pMeca1D;
+    Meca1D *          pMeca1D;
 
 private:
     
@@ -61,7 +60,7 @@ private:
     unsigned int    precondCounter;
     
     /// stores cpu time to automatically set the preconditionning option
-    unsigned long   precondCPU[4];
+    double          precondCPU[4];
     
     /// a copy of the properties as they were stored to file
     mutable std::string properties_saved;
@@ -105,7 +104,7 @@ public:
     /// list of Events in the Simulation
     EventSet        events;
     
-    //-------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     
     /// constructor
     Simul();
@@ -113,7 +112,7 @@ public:
     /// destructor
     virtual ~Simul();
         
-    //-------------------------------------------------------------------------------
+    //----------------------------- POPULATING ---------------------------------
     
     /// add Object to Simulation
     void            add(Object *);
@@ -138,37 +137,33 @@ public:
 
     /// reset simulation world (clear all sub-lists and variables)
     void            erase();
-    
-    //-------------------------------------------------------------------------------
 
     /// total number of objects in the Simulation
     size_t          nbObjects() const;
 
-    /// time in the simulated world
-    real            time()   const;
-    
-    //-------------------------------------------------------------------------------
+    //----------------------------- SIMULATING ---------------------------------
    
     /// perform basic initialization; register callbacks
     void            initialize(Glossary&);
     
-    /// return first Space with given name
-    Space const*    findSpace(std::string const& name) const;
-
-    /// call foldPosition() for all objects (implements periodic boundary conditions)
-    void            foldPosition() const;
-    
-    //-------------------------------------------------------------------------------
-    
-    /// ready the engine for a call to `step()` and `solve()`
+    /// ready the engine for a subsequent call to `step()` and `solve()`
     void            prepare();
     
     /// perform one Monte-Carlo step, corresponding to `time_step`
     void            step();
     
+    /// time in the simulated world (shortcut to `prop->time`)
+    real            time()   const;
+    
+    /// shortcut to prop->time_step;
+    real            time_step() const;
+
     /// this is called after a sequence of `step()` have been done
     void            relax();
     
+    /// this is called after a sequence of `step()` have been done
+    void            unrelax() { sReady = true; }
+
     /// true if engine is ready to go (between `prepare()` and `relax()`)
     bool            ready() const { return sReady; }
 
@@ -179,30 +174,30 @@ public:
     /// display Meca's links
     void            drawLinks();
     
+    /// call foldPosition() for all objects (implements periodic boundary conditions)
+    void            foldPosition() const;
+
     /// simulate the mechanics of the system and move Mecables accordingly, corresponding to `time_step`
     void            solve();
     
     /// like 'solve' but automatically select the fastest preconditionning method
     void            solve_auto();
 
-    /// replace coordinates of Mecables by the ones calculated in solve()
-    void            apply() const;
-
-    /// perform nothing
+    /// do nothing
     void            solve_not() {};
     
     /// calculate the motion of objects, but only in the X-direction
     void            solveX();
     
-    /// move every Fiber backward by `shift` (this is a extremely crude model)
-    void            solve_flux();
-    
     /// calculate Forces and Lagrange multipliers on the Mecables, but do not move them
     void            computeForces() const;
     
-    /// dump matrix and vector from Meca
-    void            dump() const;
+    /// dump matrix and vector from Meca in a format that can be read in MATLAB
+    void            dump(const char dirname[]) const;
     
+    /// dump system matrix and vector in sparse text format
+    void            saveSystem(const char dirname[]) const;
+
 private:
     
     /// give an estimate of the cell size of the FiberGrid
@@ -220,23 +215,27 @@ private:
     /// add steric interactions between spheres, solids and fibers to Meca
     void            setStericInteractions(Meca&) const;
     
-    //-------------------------------------------------------------------------------
-    /// Function used to parse the config file, and to read state from a file:
-    //-------------------------------------------------------------------------------
-
+    //----------------------------- PARSING ------------------------------------
+    
     /// return the ObjectSet corresponding to this Tag in the simulation (used for IO)
     ObjectSet*      findSetT(const ObjectTag);
-    
+
 public:
     
-    /// convert Object to Mecable* if the conversion seems valid; returns 0 otherwise
-    static Mecable* toMecable(Object *);
-    
+    /// Parse a text containing cytosim commands
+    void            evaluate(std::string const&);
+
     /// return the ObjectSet corresponding to a class
     ObjectSet*      findSet(const std::string& cat);
     
+    /// convert Object to Mecable* if the conversion seems valid; returns 0 otherwise
+    static Mecable* toMecable(Object *);
+
     /// find a Mecable from a string specifying name and inventory number (e.g. 'fiber1')
     Mecable*        findMecable(const std::string& spec) const;
+    
+    /// return first Space with given name
+    Space const*    findSpace(std::string const& name) const;
     
     /// read an Object reference and return the corresponding Object (`tag` is set)
     Object*         readReference(Inputter&, ObjectTag& tag);
@@ -281,17 +280,17 @@ public:
     
     /// export all Properties to a new file with specified name
     void      writeProperties(char const* filename, bool prune) const;
-
-    //-------------------------------------------------------------------------------
-    
-    /// current file format
-    const static int currentFormatID = 51;
-    
-    /// class for reading trajectory file
-    class     InputLock;
     
     /// load the properties contained in the standard output property file
     void      loadProperties();
+
+    //---------------------------- LOAD OBJECTS --------------------------------
+    
+    /// current file format
+    const static int currentFormatID = 52;
+    
+    /// class for reading trajectory file
+    class     InputLock;
     
     /// read objects from file, and add them to the simulation state
     int       readObjects(Inputter&, ObjectSet* subset);
@@ -311,10 +310,10 @@ public:
     /// write sim-world in binary or text mode, appending to existing file or creating new file
     void      writeObjects(std::string const& filename, bool append, bool binary) const;
     
-    //-------------------------------------------------------------------------------
+    //----------------------------- REPORTING ----------------------------------
 
     /// call `Simul::report0`, adding lines before and after with 'start' and 'end' tags.
-    void      report(std::ostream&, std::string const&, Glossary&) const;
+    void      report(std::ostream&, std::string, Glossary&) const;
     
     /// call one of the report function
     void      report0(std::ostream&, std::string const&, Glossary&) const;
@@ -382,20 +381,20 @@ public:
     /// print sum of all bending energy
     void      reportFiberBendingEnergy(std::ostream&) const;
     
+    /// print component of forces experienced by Fibers due to confinement
+    void      reportFiberConfineForce(std::ostream& out) const;
+
     /// print radial component of forces experienced by Fibers due to confinement
     real      reportFiberConfinement(std::ostream& out) const;
 
-    /// print interection abscissa between fibers
+    /// print position of hands bound to fibers
     void      reportFiberHands(std::ostream&) const;
     
+    /// print position of bound hands that are associated with stiffness
+    void      reportFiberLinks(std::ostream&) const;
+
     /// print summary of Fiber's lattice quantities
-    void      reportFiberLattice(std::ostream&) const;
-
-    /// print interection abscissa between fibers
-    void      reportFiberConnectors(std::ostream&, Glossary&) const;
-
-    /// print interection abscissa between fibers
-    void      reportNetworkBridges(std::ostream&, Glossary&) const;
+    void      reportFiberLattice(std::ostream&, bool density) const;
     
     /// print positions of interection between two fibers
     void      reportFiberIntersections(std::ostream&, Glossary&) const;
@@ -446,9 +445,6 @@ public:
     /// print state of Singles
     void      reportSingle(std::ostream&) const;
     
-    /// print position of Singles
-    void      reportSingleState(std::ostream&) const;
-    
     /// print position of Singles of a certain kind
     void      reportSingleState(std::ostream&, std::string const&) const;
 
@@ -456,7 +452,7 @@ public:
     void      reportSinglePosition(std::ostream&, std::string const&) const;
    
     /// print position of Singles
-    void      reportAttachedSinglePosition(std::ostream&, std::string const&) const;
+    void      reportAttachedSingle(std::ostream&, std::string const&) const;
 
     /// print state of Couples 
     void      reportSpherePosition(std::ostream&) const;
@@ -470,7 +466,7 @@ public:
     /// print something about Fields
     void      reportField(std::ostream&) const;
     
-    //-------------------------------------------------------------------------------
+    //------------------------------ CUSTOM ------------------------------------
     
     /// flag fibers according to connectivity defined by Couple of given type
     void      flagClustersCouples(Property const*) const;

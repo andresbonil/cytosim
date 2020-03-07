@@ -47,19 +47,19 @@ void help(std::ostream& os)
 }
 
 
-FILE * openFile(const char base[], int ix)
+FILE * openFile(const char base[], unsigned ix)
 {
     char name[256] = { 0 };
     FILE * f = 0;
     
     if ( binary )
     {
-        snprintf(name, sizeof(name), "%s%04i.bin", base, ix);
+        snprintf(name, sizeof(name), "%s%04u.bin", base, ix);
         f = fopen(name, "wb");
     }
     else
     {
-        snprintf(name, sizeof(name), "%s%04i.txt", base, ix);
+        snprintf(name, sizeof(name), "%s%04u.txt", base, ix);
         f = fopen(name, "w");
     }
     if ( f == 0 )
@@ -279,7 +279,7 @@ void drawMicrotubule(Fiber const& fib)
 }
 
 
-void displayLink(Couple const* cop)
+void drawLink(Couple const* cop)
 {
     int   dat[3] = { 7, (int)cop->identity(), (int)cop->prop->number() };
     float vec[6] = { 0 };
@@ -317,7 +317,8 @@ int main(int argc, char* argv[])
     std::string fiber_type = argv[1];
     Property * selected = 0;
     
-    arg.read_strings(argc-2, argv+2);
+    if ( arg.read_strings(argc-2, argv+2) )
+        return EXIT_FAILURE;
 
     arg.set(binary, "binary");
     arg.set(style, "style", {{"filament", 1}, {"actin", 2}, {"microtubule", 3}});
@@ -381,7 +382,7 @@ int main(int argc, char* argv[])
                 Fiber * f1 = cop->fiber1();
                 Fiber * f2 = cop->fiber2();
                 if ( f1 && f2 && ( selected==0 || ( f1->prop==selected && f2->prop==selected )))
-                    displayLink(cop);
+                    drawLink(cop);
             }
             fclose(file);
             ++frame;

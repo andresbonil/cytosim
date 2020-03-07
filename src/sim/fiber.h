@@ -9,30 +9,22 @@
 #include "fiber_prop.h"
 #include "node_list.h"
 #include "lattice.h"
-#include "field.h"
 #include "sim.h"
 
 
 class Hand;
+class Field;
 class Single;
 class FiberSet;
 class FiberSegment;
 class LineDisp;
 
 
-/// Flag to associate a Lattice to the Fiber {-1, 0, 1}
+/// Flag to associate a Lattice to the Fiber {0, 1}
 #define FIBER_HAS_LATTICE 0
 
-/**
- The type of Lattice associated with each Fiber is defined here:
- */
-#if FIBER_HAS_LATTICE > 0
-// Lattice composed of integers, appropriate for discrete occupancy
+/// Lattice composed of integers, appropriate for discrete occupancy
 typedef Lattice<uint64_t> FiberLattice;
-#else
-// Lattice composed of floating point values, for continuous values
-typedef Lattice<real> FiberLattice;
-#endif
 
 /// a Mecafil to which many Hand may bind
 /**
@@ -65,11 +57,11 @@ private:
     {
     public:
         real    abs;      ///< abscissa of the cut, from the reference
-        int     stateM;   ///< state of the new MINUS_END
-        int     stateP;   ///< state of the new PLUS_END
+        state_t stateM;   ///< state of the new MINUS_END
+        state_t stateP;   ///< state of the new PLUS_END
         
         /// constructor (abscissa, new_plus_end_state, new_minus_end_state)
-        SeverPos(real a, int p, int m) { abs=a; stateP=p; stateM=m; }
+        SeverPos(real a, state_t p, state_t m) { abs=a; stateP=p; stateM=m; }
         
         /// sort from PLUS_END to MINUS_END, i.e. with decreasing abscissa
         real operator < (SeverPos const&b) const { return abs > b.abs; }
@@ -140,7 +132,7 @@ public:
     
 
     /// invert polarity and adjust abscissa of Hands to keep them at the same place
-    void           flipPolarity();
+    void           flipHandsPolarity();
     
     /// remove the portion of size `len` that includes the MINUS_END
     void           cutM(real len);
@@ -149,7 +141,7 @@ public:
     void           cutP(real len);
     
     /// Cut all segments intersecting the plane defined by <em> n.pos + a = 0 </em>
-    void           planarCut(Vector const& n, real a, int stateP, int stateM);
+    void           planarCut(Vector const& n, real a, state_t stateP, state_t stateM);
     
     /// cut fiber at distance `abs` from the MINUS_END; returns section `[ abs - PLUS_END ]`
     Fiber *        severP(real abs);
@@ -158,7 +150,7 @@ public:
     Fiber *        severNow(real abs) { return severP(abs-abscissaM()); }
 
     /// register a cut at abscissa `a` from the ORIGIN, with `m` and `p` the states of the new ends
-    void           sever(real a, int p, int m) { pendingCuts.insert(SeverPos(a, p, m)); }
+    void           sever(real a, state_t p, state_t m) { pendingCuts.insert(SeverPos(a, p, m)); }
     
     /// perform all the cuts registered by sever()
     void           severNow();
@@ -175,7 +167,7 @@ public:
     virtual void   step();
     
     /// called if a Fiber tip has elongated or shortened
-    void           update();
+    void           updateFiber();
     
     //--------------------------------------------------------------------------
 
@@ -188,23 +180,23 @@ public:
     //--------------------------------------------------------------------------
     
     /// return assembly/disassembly state of MINUS_END
-    virtual unsigned dynamicStateM() const { return STATE_WHITE; }
+    virtual state_t dynamicStateM() const { return STATE_WHITE; }
 
     /// return assembly/disassembly state of PLUS_END
-    virtual unsigned dynamicStateP() const { return STATE_WHITE; }
+    virtual state_t dynamicStateP() const { return STATE_WHITE; }
 
     /// return assembly/disassembly state of the FiberEnd
-    unsigned         dynamicState(FiberEnd end) const;
+    state_t         dynamicState(FiberEnd end) const;
 
     
     /// change state of MINUS_END
-    virtual void   setDynamicStateM(unsigned) {}
+    virtual void   setDynamicStateM(state_t) {}
 
     /// change state of PLUS_END
-    virtual void   setDynamicStateP(unsigned) {}
+    virtual void   setDynamicStateP(state_t) {}
 
     /// change state of FiberEnd `end` to `s`
-    void           setDynamicState(FiberEnd end, unsigned s);
+    void           setDynamicState(FiberEnd end, state_t s);
     
     
     /// the length of freshly assembled polymer at the MINUS_END during the last time step
@@ -262,42 +254,22 @@ public:
     
     /// const reference to Fiber's Lattice
     FiberLattice const&  lattice() const { return frLattice; }
+
+    /// recalculate occupancy lattice from bound Hands
+    void           resetLattice();
 #else
-    real  unit_;
+    /// does nothing
+    void           resetLattice() {}
 #endif
-
-    /// initialize lattice sites to represent a constant linear density
-    void           setLattice(Lattice<real>&, real density) const;
-
-    /// transfer all lattice substance to the Field
-    void           releaseLattice(Lattice<real>&, Field*) const;
-
-    /// update lattice values as `value <- cst + fac * value`
-    void           evolveLattice(Lattice<real>&, real cst, real fac) const;
-
-    /// transfer from Field to Lattice at rate `on` and back at rate `off`
-    void           equilibrateLattice(Lattice<real>&, Field*, real on, real off) const;
-    
-    /// transfer from Field to Lattice at rate `on`
-    void           bindLattice(Lattice<real>&, Field*, real rate) const;
-    
-    /// transfer from Field to Lattice at rate `on`
-    void           fluxLattice(Lattice<real>&, Field*, real speed) const;
-    
-    /// sever fiber proportionally to the quantity stored in the Lattice
-    void           cutFiberLattice(Lattice<real>&);
-
-    /// write Fiber's Lattice
-    void           writeLattice(FiberLattice const&, Outputter& out) const;
     
     /// record minium, maximum and sum of lattice values
-    void           infoLattice(FiberLattice const&, unsigned&, real& sm, real& mn, real& mx, bool density) const;
+    void           infoLattice(real& len, unsigned&, real& sm, real& mn, real& mx) const;
 
     /// print Lattice data (for debugging purpose)
     void           printLattice(std::ostream&, FiberLattice const&) const;
-    
-    /// recalculate occupancy lattice from bound Hands
-    void           resetLattice();
+
+    /// lattice to be displayed
+    FiberLattice const* drawableLattice() const;
 
     //--------------------------------------------------------------------------
     

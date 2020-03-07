@@ -41,7 +41,7 @@ set fiber filament
 new 125 filament
 {
     length = 0.01
-    orientation = horizontal
+    direction = X
 }
 
 run system

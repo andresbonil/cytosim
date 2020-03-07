@@ -3,7 +3,7 @@
 #include "kinesin_prop.h"
 #include "exceptions.h"
 #include "glossary.h"
-#include "simul_prop.h"
+#include "simul.h"
 
 
 Hand * KinesinProp::newHand(HandMonitor* m) const
@@ -16,8 +16,10 @@ void KinesinProp::clear()
 {
     DigitProp::clear();
 
-    stall_force    = 0;
-    unloaded_speed = 0;
+    stall_force     = 0;
+    unloaded_speed  = 0;
+    walking_rate_dt = 0;
+    var_rate_dt     = 0;
 }
 
 
@@ -43,9 +45,8 @@ void KinesinProp::complete(Simul const& sim)
     if ( unloaded_speed < 0 )
         throw InvalidParameter("kinesin:unloaded_speed must be >= 0");
 
-    stepping_rate     = fabs(unloaded_speed) / step_size;
-    stepping_rate_dt  = sim.prop->time_step * stepping_rate;
-    var_rate_dt       = std::copysign(stepping_rate_dt/stall_force, unloaded_speed);
+    walking_rate_dt = sim.time_step() * fabs(unloaded_speed) / step_size;
+    var_rate_dt     = std::copysign(walking_rate_dt/stall_force, unloaded_speed);
 }
 
 

@@ -137,7 +137,10 @@ public:
 
     /// print names of known Property
     void         write_names(std::ostream&, std::string const&) const;
-    
+
+    /// return names of known Property
+    std::string  all_names(std::string const&) const;
+
     /// write all Property
     void         write(std::ostream&, bool prune) const;
 };

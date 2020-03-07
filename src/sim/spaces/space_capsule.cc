@@ -19,7 +19,7 @@ void SpaceCapsule::resize(Glossary& opt)
 {
     real len = length_, rad = radius_;
     
-    if ( opt.set(rad, "width") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
     // total length is specified:
@@ -129,8 +129,8 @@ Vector SpaceCapsule::randomPlace() const
 #elif ( DIM == 2 )
         res.set((length_+radius_)*RNG.sreal(), radius_*RNG.sreal());
 #else
-        Vector2 sec = Vector2::randB(radius_);
-        res.set((length_+radius_)*RNG.sreal(), sec.XX, sec.YY);
+        const Vector2 V = Vector2::randB(radius_);
+        res.set((length_+radius_)*RNG.sreal(), V.XX, V.YY);
 #endif
         
         if ( ++ouf > nb_trials )
@@ -181,7 +181,7 @@ void SpaceCapsule::setInteraction(Vector const& pos, Mecapoint const& pe, real r
 
 void SpaceCapsule::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("capsule", 16);
     out.writeUInt16(2);
     out.writeFloat(length_);
     out.writeFloat(radius_);
@@ -198,7 +198,7 @@ void SpaceCapsule::setLengths(const real len[])
 void SpaceCapsule::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "capsule");
     setLengths(len);
 }
 

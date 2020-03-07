@@ -93,14 +93,12 @@ namespace glApp
 #pragma mark -
 
 /**
- initialize views[0]
+ initialize a single View: views[0]
  */
 void glApp::initialize()
 {
-    /// start with one single view
     views.clear();
-    View tmp("*");
-    views.push_back(tmp);
+    views.push_back(View("*"));
 }
 
 
@@ -232,11 +230,13 @@ int glApp::createWindow(void (*func)(View&, int))
     glutInitWindowPosition(view.window_position[0], view.window_position[1]);
     
     // create window with title containing current working directory:
+    int win = 0;
     char str[256] = { 0 };
     strncpy(str, "Cytosim    ", sizeof(str));
-    getcwd(str+10, 246);
-
-    int win = glutCreateWindow(str);
+    if ( getcwd(str+10, 246) )
+        win = glutCreateWindow(str);
+    else
+        win = glutCreateWindow("Cytosim");
     assert_true( win > 0 );
     //std::clog << "new window " << win << std::endl;
 
@@ -520,8 +520,8 @@ void glApp::processNormalKey(unsigned char c, int, int)
         
             
         case 'h':
-            view.show_memo = ( view.show_memo + 1 ) % 3;
-            if ( view.show_memo == 2 )
+            view.draw_memo = ( view.draw_memo + 1 ) % 3;
+            if ( view.draw_memo == 2 )
             {
                 std::ostringstream oss;
                 help(oss);
@@ -533,7 +533,7 @@ void glApp::processNormalKey(unsigned char c, int, int)
         
         
         case 'x':
-            view.show_axes = ( view.show_axes ? 0 : mDIM );
+            view.draw_axes = ( view.draw_axes ? 0 : mDIM );
             break;
 
 #if ( 0 )
@@ -785,7 +785,7 @@ void glApp::processMenuEvent(int item)
         case 0:   return;
         case 1:   view.reset();                      break;
         case 2:   view.scale_bar_mode = ! view.scale_bar_mode;    break;
-        case 3:   view.show_axes = ( view.show_axes ? 0 : mDIM ); break;
+        case 3:   view.draw_axes = ( view.draw_axes ? 0 : mDIM ); break;
         case 4:   toggleFullScreen();                break;
         case 7:   setDimensionality(mDIM==2?3:2);    break;
         

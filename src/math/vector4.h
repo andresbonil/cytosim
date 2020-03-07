@@ -26,7 +26,11 @@
  allowing easy conversion operators to and from C-array.
  Although this is not guaranteed by the C-standard, this is usually the case.
  */
+#if VECTOR4_USES_AVX
+class alignas(32) Vector4
+#else
 class Vector4
+#endif
 {
     
 public:
@@ -318,12 +322,12 @@ public:
         return ( XX == XX ) && ( YY == YY ) && ( ZZ == ZZ ) && ( TT == TT );
     }
     
-    /// true if all components are zero
-    bool null() const
+    /// true if some component is not zero
+    bool is_not_zero() const
     {
-        return ( XX == 0.0 ) && ( YY == 0.0 ) && ( ZZ == 0.0 ) && ( TT == 0.0 );
+        return ( XX || YY || ZZ || TT );
     }
-    
+
     /// scale to unit norm
     void normalize()
     {
@@ -594,6 +598,9 @@ public:
     
     /// Vector with random independent coordinates in [-1,+1]
     static const Vector4 randS();
+    
+    /// Vector with random independent coordinates in [-1/2,+1/2]
+    static const Vector4 randH();
     
     /// Vector with random independent coordinates in [-n,+n]
     static const Vector4 randS(real n);

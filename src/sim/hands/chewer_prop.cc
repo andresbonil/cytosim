@@ -8,6 +8,7 @@
 #include "simul_prop.h"
 #include "chewer_prop.h"
 #include "chewer.h"
+#include "simul.h"
 
 
 Hand * ChewerProp::newHand(HandMonitor* m) const
@@ -42,7 +43,7 @@ void ChewerProp::complete(Simul const& sim)
     if ( chewing_speed < 0 )
         throw InvalidParameter("chewer:chewing_speed must be >= 0");
 
-    chewing_speed_dt = chewing_speed * sim.prop->time_step;
+    chewing_speed_dt = chewing_speed * sim.time_step();
     
     if ( diffusion < 0 )
         throw InvalidParameter("chewer:diffusion must be >= 0");
@@ -53,10 +54,10 @@ void ChewerProp::complete(Simul const& sim)
      Since `sreal()` is uniformly distributed, its variance is 1/3,
      and we need `diffusion_dt^2 = 6 D dt`
      */
-    diffusion_dt = sqrt( 6.0 * diffusion * sim.prop->time_step );
+    diffusion_dt = sqrt( 6.0 * diffusion * sim.time_step() );
     
     // use Einstein's relation to get a mobility:
-    mobility_dt = diffusion * sim.prop->time_step / sim.prop->kT;
+    mobility_dt = diffusion * sim.time_step() / sim.prop->kT;
     
     std::clog << " Chewer `" << name() << "' has mobility = " << diffusion / sim.prop->kT << "\n";
 }
@@ -72,12 +73,12 @@ void ChewerProp::checkStiffness(real stiff, real len, real mul, real kT) const
     real a = mobility_dt * stiff * mul;
     if ( a > 1.0 )
     {
-        std::ostringstream oss;
-        oss << "simulating `" << name() << "' may fail as:\n";
-        oss << PREF << "mobility = " << diffusion / kT << '\n';
-        oss << PREF << "mobility * stiffness * time_step = " << a << '\n';
-        oss << PREF << "-> reduce time_step (really)\n";
-        throw InvalidParameter(oss.str());
+        InvalidParameter e("unstable chewer\n");
+        e << "simulating `" << name() << "' may fail as:\n";
+        e << PREF << "mobility = " << diffusion / kT << '\n';
+        e << PREF << "mobility * stiffness * time_step = " << a << '\n';
+        e << PREF << "-> reduce time_step (really)\n";
+        throw e;
     }
     
 }

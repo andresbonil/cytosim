@@ -22,7 +22,7 @@ void SpaceCylinderZ::resize(Glossary& opt)
 {
     real rad = radius_, top = top_, bot = bot_;
 
-    if ( opt.set(rad, "width") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
     opt.set(bot, "bottom");
@@ -49,7 +49,7 @@ void SpaceCylinderZ::boundaries(Vector& inf, Vector& sup) const
 
 real  SpaceCylinderZ::volume() const
 {
-    return 2 * M_PI * ( top_ - bot_ ) * radius_ * radius_;
+    return M_PI * ( top_ - bot_ ) * radius_ * radius_;
 }
 
 
@@ -82,8 +82,8 @@ bool  SpaceCylinderZ::allInside(Vector const& w, const real rad ) const
 
 Vector SpaceCylinderZ::randomPlace() const
 {
-    Vector2 sec = Vector2::randB(radius_);
-    return Vector(sec.XX, sec.YY, bot_+RNG.preal()*(top_-bot_));
+    const Vector2 V = Vector2::randB(radius_);
+    return Vector(V.XX, V.YY, bot_+RNG.preal()*(top_-bot_));
 }
 
 //------------------------------------------------------------------------------
@@ -144,17 +144,17 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe,
 #if ( DIM >= 3 )
     bool cap = false;
     bool cyl = false;
-    real zzz;
+    real Z;
 
     // inside cylinder radius_
     if ( 2 * pos.ZZ - B > T )
     {
-        zzz = T;
+        Z = T;
         cap = ( pos.ZZ > T );
     }
     else
     {
-        zzz = B;
+        Z = B;
         cap = ( pos.ZZ < B );
     }
     
@@ -168,8 +168,7 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe,
     else if ( ! cap )
     {
         // inside cylinder in XY plane and also inside in Z:
-        if ( fabs(pos.ZZ-zzz) > rad - sqrt(dis) )
-        //if ( dis > rad*rad + square(pos.ZZ-p) - 2 * rad * fabs(pos.ZZ-p) )
+        if ( dis > square( rad - fabs(pos.XX-Z) ) )
             cyl = true;
         else
             cap = true;
@@ -179,7 +178,7 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe,
     {
         const index_t inx = 2 + DIM * pe.matIndex();
         meca.mC(inx, inx) -= stiff;
-        meca.base(inx)    += stiff * zzz;
+        meca.base(inx)    += stiff * Z;
     }
     
     if ( cyl )
@@ -219,11 +218,12 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe, real
 
 void SpaceCylinderZ::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("cylinderZ", 16);
+    out.writeUInt16(4);
     out.writeFloat(radius_);
     out.writeFloat(bot_);
     out.writeFloat(top_);
+    out.writeFloat(0.f);
 }
 
 
@@ -237,7 +237,7 @@ void SpaceCylinderZ::setLengths(const real len[])
 void SpaceCylinderZ::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "cylinderZ");
     setLengths(len);
 }
 

@@ -153,13 +153,6 @@ public:
      */
     real         end_size[2];
     
-    /// length of a section displayed near the fiber tips
-    /**
-     if `end_length[0] > 0`, a section near the PLUS_END is drawn with the color of the PLUS_END.
-     if `end_length[1] > 0`, a section near the MINUS_END is drawn with the color of the MINUS_END.
-     */
-    real         end_length[2];
-    
     /// colors of the different FiberTip states
     /**
      This determines the set of color that are used to display the fiber tips,
@@ -291,7 +284,7 @@ public:
      and the centroid of the polymer mass.
      It is useful to evaluate the amount of order in the network.
      */
-    int          show_average;
+    int          draw_average;
 
     /// @}
 

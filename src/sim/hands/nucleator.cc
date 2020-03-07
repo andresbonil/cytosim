@@ -78,22 +78,11 @@ void Nucleator::makeFiber(Simul& sim, Vector pos, std::string const& fiber_type,
                 rot = Rotation::randomRotationToVector(ha->dirFiber());
                 // remove key to avoid warning:
                 opt.clear("orientation");
+                break;
             }
-            else
-            {
-                fib->mark(0);
-                std::string str;
-                if ( opt.set(str, "orientation") )
-                {
-                    std::istringstream iss(str);
-                    rot = Movable::readRotation(iss, pos, fib->prop->confine_space_ptr);
-                }
-                else {
-                    rot = Rotation::randomRotation();
-                }
-            }
+            fib->mark(0);
         }
-        break;
+        // here is an intentional fallback on the next case:
         
         case NucleatorProp::NUCLEATE_ORIENTATED:
         {
@@ -101,7 +90,13 @@ void Nucleator::makeFiber(Simul& sim, Vector pos, std::string const& fiber_type,
             if ( opt.set(str, "orientation") )
             {
                 std::istringstream iss(str);
-                rot = Movable::readRotation(iss, pos, fib->prop->confine_space_ptr);
+                rot = Movable::readOrientation(iss, pos, fib->prop->confine_space_ptr);
+            }
+            else if ( opt.set(str, "direction") )
+            {
+                std::istringstream iss(str);
+                Vector vec = Movable::readDirection(iss, pos, fib->prop->confine_space_ptr);
+                rot = Rotation::randomRotationToVector(vec);
             }
             else {
                 rot = Rotation::randomRotation();
@@ -141,9 +136,8 @@ void Nucleator::makeFiber(Simul& sim, Vector pos, std::string const& fiber_type,
 
     //std::clog << "nucleated fiber in direction " << fib->dirEndM() << "\n";
 
-    // report unused options:
-    if ( opt.warnings(std::cerr) )
-        std::cerr << "in nucleator:\n" << prop->fiber_spec << "\n";
+    // report unused values:
+    opt.warnings(std::cerr, 1, " in nucleator's spec");
 }
 
 
@@ -151,7 +145,7 @@ void Nucleator::makeFiber(Simul& sim, Vector pos, std::string const& fiber_type,
 /**
  Does not attach nearby Fiber, but can nucleate
  */
-void Nucleator::stepUnattached(const FiberGrid&, Vector const& pos)
+void Nucleator::stepUnattached(Simul& sim, Vector const& pos)
 {
     assert_false( attached() );
     
@@ -162,11 +156,11 @@ void Nucleator::stepUnattached(const FiberGrid&, Vector const& pos)
         gspTime = RNG.exponential();
         try {
             Glossary opt(prop->fiber_spec);
-            makeFiber(*haMonitor->simul_ptr(), pos, prop->fiber_type, opt);
+            makeFiber(sim, pos, prop->fiber_type, opt);
         }
         catch( Exception & e )
         {
-            e << "\nException occured while executing nucleator:code";
+            e << "\nException occurred while executing nucleator:code";
             throw;
         }
     }
@@ -219,7 +213,7 @@ void Nucleator::detach()
 {
     if ( prop->addictive )
         fiber()->setDynamicState(nearestEnd(), STATE_RED);
-        
+    
     Hand::detach();
 }
 

@@ -88,8 +88,9 @@ public:
     
 public:
 
-    /// derived variable
+    /// local copy of SimulProp:time_step
     real          time_step;
+    
     /// derived variable
     real          decay_frac;
     

@@ -38,7 +38,7 @@ namespace gle
     */
     void circle(size_t cnt, GLfloat co[], GLfloat si[], GLfloat rad, double start)
     {
-        const double theta = 2.0 * M_PI / cnt;
+        const double theta = 2.0 * M_PI / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
     
@@ -63,7 +63,7 @@ namespace gle
     void arc(size_t cnt, GLfloat co[], GLfloat si[], GLfloat rad,
              double start, double end, GLfloat cx, GLfloat cy )
     {
-        const double theta = ( end - start ) / cnt;
+        const double theta = ( end - start ) / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
     
@@ -89,7 +89,7 @@ namespace gle
     // This works only if 'GLfloat == float'
     void circle(size_t cnt, float cosi[], float rad)
     {
-        const double theta = 2.0 * M_PI / cnt;
+        const double theta = 2.0 * M_PI / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
         const double c2 = c * c - s * s;
@@ -116,7 +116,7 @@ namespace gle
 #else
     void circle(size_t cnt, GLfloat cosi[], GLfloat rad)
     {
-        const double theta = 2.0 * M_PI / cnt;
+        const double theta = 2.0 * M_PI / (double)cnt;
         const double c = cos(theta);
         const double s = sin(theta);
     
@@ -626,15 +626,31 @@ namespace gle
     //-----------------------------------------------------------------------
 #pragma mark - Tubes
     
-    void gleTubeF(GLfloat a, GLfloat b, int inc)
+    void gleTube0(GLfloat B, GLfloat T, int inc)
     {
-        assert_true( a <= b );
+        assert_true( B <= T );
         glBegin(GL_TRIANGLE_STRIP);
         for( size_t n = 0; n <= ncircle; n += inc )
         {
             glNormal3f(co_[n], si_[n], 0);
-            glVertex3f(co_[n], si_[n], b);
-            glVertex3f(co_[n], si_[n], a);
+            glVertex3f(co_[n], si_[n], T);
+            glVertex3f(co_[n], si_[n], B);
+        }
+        glEnd();
+    }
+
+    void gleTube0(GLfloat B, GLfloat rB, GLfloat T, GLfloat rT, int inc)
+    {
+        assert_true( B <= T );
+        const GLfloat N = 1.f/sqrtf((T-B)*(T-B)+(rT-rB)*(rT-rB));
+        const GLfloat C = N * (T-B);
+        const GLfloat S = N * (rB-rT);
+        glBegin(GL_TRIANGLE_STRIP);
+        for( size_t n = 0; n <= ncircle; n += inc )
+        {
+            glNormal3f(C*co_[n], C*si_[n], S);
+            glVertex3f(rT*co_[n], rT*si_[n], T);
+            glVertex3f(rB*co_[n], rB*si_[n], B);
         }
         glEnd();
     }
@@ -818,7 +834,7 @@ namespace gle
     
     void gleCylinder1()
     {
-        gleTubeF(0, 1, 1);
+        gleTube0(0, 1, 1);
         glTranslatef(0,0,1);
         gleDisc();
         glTranslatef(0,0,-1);
@@ -1119,51 +1135,54 @@ namespace gle
     
     void gleCylinderZ()
     {
-        const GLfloat top =  0.5;
-        const GLfloat bot = -0.5;
+        const GLfloat T =  0.5;
+        const GLfloat B = -0.5;
         
         glBegin(GL_TRIANGLE_FAN);
         glNormal3f( 0, 0, -1 );
-        glVertex3f( 0, 0, -1 );
+        glVertex3f( 0, 0,  B );
         for ( size_t n = 0; n <= ncircle; ++n )
-            glVertex3f(co_[n], -si_[n], bot);
+            glVertex3f(co_[n], -si_[n], B);
         glEnd();
         
         glBegin(GL_TRIANGLE_STRIP);
         for ( size_t n = 0; n <= ncircle; ++n )
         {
-            glNormal3f(co_[n], si_[n],  0 );
-            glVertex3f(co_[n], si_[n], top);
-            glVertex3f(co_[n], si_[n], bot);
+            glNormal3f(co_[n], si_[n], 0);
+            glVertex3f(co_[n], si_[n], T);
+            glVertex3f(co_[n], si_[n], B);
         }
         glEnd();
         
         glBegin(GL_TRIANGLE_FAN);
         glNormal3f( 0, 0, 1 );
-        glVertex3f( 0, 0, 0 );
+        glVertex3f( 0, 0, T );
         for ( size_t n = 0; n <= ncircle; ++n )
-            glVertex3f(co_[n], -si_[n], top);
+            glVertex3f(co_[n], si_[n], T);
         glEnd();
     }
     
     
-    void gleCone1()
+    void gleCone0(GLfloat B, GLfloat T, bool closed)
     {
-        glBegin(GL_TRIANGLE_FAN);
-        glNormal3f( 0, 0, -1 );
-        glVertex3f( 0, 0, -1 );
-        for ( size_t n = 0; n <= ncircle; ++n )
-            glVertex3f(co_[n], -si_[n], -1);
-        glEnd();
-        
+        if ( closed )
+        {
+            glBegin(GL_TRIANGLE_FAN);
+            glNormal3f( 0, 0, B );
+            glVertex3f( 0, 0, B );
+            for ( size_t n = 0; n <= ncircle; ++n )
+                glVertex3f(co_[n], -si_[n], B);
+            glEnd();
+        }
         glBegin(GL_TRIANGLE_FAN);
         glNormal3f( 0, 0, 1 );
-        glVertex3f( 0, 0, 2 );
-        const GLfloat c = 3.f/sqrtf(10), s = 1.f/sqrtf(10);
+        glVertex3f( 0, 0, T );
+        const GLfloat S = -1.f/sqrtf((T-B)*(T-B)+1);
+        const GLfloat C = (B-T)*S;
         for ( size_t n = 0; n <= ncircle; ++n )
         {
-            glNormal3f(c*co_[n], c*si_[n], s);
-            glVertex3f(co_[n], si_[n], -1);
+            glNormal3f(C*co_[n], C*si_[n], S);
+            glVertex3f(co_[n], si_[n], B);
         }
         glEnd();
     }
@@ -1744,7 +1763,7 @@ namespace gle
     {
         glPushMatrix();
         gleTransAlignZ(dir, pos, scale, scale);
-        gleConeB();
+        gleLongConeB();
         glPopMatrix();
     }
     
@@ -1840,7 +1859,7 @@ namespace gle
         gleTube1B();
         glTranslatef(0, 0, 1);
         glScaled(3.0, 3.0, 3*radius);
-        gleConeB();
+        gleLongConeB();
         glPopMatrix();
     }
     
@@ -1851,7 +1870,7 @@ namespace gle
         gleTube1B();
         glTranslatef(0, 0, 1);
         glScaled(3.0, 3.0, 3*radius);
-        gleConeB();
+        gleLongConeB();
         glPopMatrix();
     }
     
@@ -1862,7 +1881,7 @@ namespace gle
         gleTube1B();
         glTranslatef(0, 0, 1);
         glScaled(3.0, 3.0, 3*radius);
-        gleConeB();
+        gleLongConeB();
         glPopMatrix();
     }
     
@@ -2359,7 +2378,7 @@ namespace gle
             gleTube1B();
             glTranslatef(0, 0, 1);
             glScalef(3, 3, R/(S-R));
-            gleConeB();
+            gleLongConeB();
             glPopMatrix();
         }
         // display a white ball at the origin

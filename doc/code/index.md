@@ -13,7 +13,7 @@ After installing `doxygen` on your machine, in the project root directory, enter
 
 	make doc
 
-The output is dumped into [`doc/code/doxygen/`](doxygen).
+The output is dumped into [`doc/code/doxygen/`](doxygen) and accessible [here](doxygen/index.html).
 
 ### Contact
 

@@ -95,10 +95,7 @@ public:
     /// set previous Hand in Fiber's list
     void    prev(Hand * h) { haPrev = h; }
 
-
-    /// return other Hand if part of a Couple, and zero otherwise
-    Hand *         otherHand() const;
-
+    
     /// move to a different fiber, at the same abscissa
     void           relocate(Fiber* f);
     
@@ -130,7 +127,7 @@ public:
     virtual void   detach();
 
     /// simulate when the Hand is not attached
-    virtual void   stepUnattached(FiberGrid const&, Vector const& pos);
+    virtual void   stepUnattached(Simul&, Vector const& pos);
 
     /// simulate when the Hand is attached but not under load
     virtual void   stepUnloaded();
@@ -141,7 +138,7 @@ public:
     /// check abscissa against fiber edge, and calls handle functions if necessary.
     void           checkFiberRange();
 
-    /// this is called when disassembly occured PLUS_END
+    /// this is called when disassembly occurred PLUS_END
     virtual void   handleDisassemblyM();
     
     /// this is called when the attachment point is below the MINUS_END
@@ -155,6 +152,17 @@ public:
     
     /// attach at the given end of Fiber (this calls attach(FiberSite))
     void           attachToEnd(Fiber * f, FiberEnd end) { attach(FiberSite(f, f->abscissaEnd(end))); }
+    
+    
+    /// return other Hand if part of a Couple, and zero otherwise
+    Hand *         otherHand() const;
+
+    /// return position of other Hand, if part of a Couple, or of Single
+    Vector         otherPosition() const;
+    
+    /// return stiffness of associated link
+    real           interactionStiffness() const;
+
     
     /// read from file
     void           read(Inputter&, Simul&);

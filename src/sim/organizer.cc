@@ -84,7 +84,7 @@ Vector Organizer::position() const
     Vector res(0,0,0);
     for ( Mecable const* i : mObjects )
         res += i->position();
-    return res / mObjects.size();
+    return res / (real)mObjects.size();
 }
 
 
@@ -93,7 +93,7 @@ Vector Organizer::positionP(unsigned ix) const
     Vector res(0,0,0);
     for ( Mecable const* i : mObjects )
         res += i->posPoint(ix);
-    return res / mObjects.size();
+    return res / (real)mObjects.size();
 }
 
 
@@ -168,9 +168,9 @@ void Organizer::read(Inputter& in, Simul& sim, ObjectTag tag)
     nbOrganized(nbo);
     
     //std::clog << " Organizer::read with " << nb << " objects" << std::endl;
+    ObjectTag g;
     for ( unsigned i = 0; i < nbo; ++i )
     {
-        ObjectTag g;
         Object * w = sim.readReference(in, g);
         if ( w )
         {

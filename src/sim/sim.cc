@@ -5,7 +5,8 @@
 #include "messages.h"
 #include "glossary.h"
 #include "exceptions.h"
-#include "backtrace.h"
+#include "ansi_colors.h"
+#include "filepath.h"
 #include "splash.h"
 #include "tictoc.h"
 #include <csignal>
@@ -30,9 +31,9 @@ void handle_signal(int sig)
      */
     char str[128] = { 0 };
     strncpy(str, "Cytosim received signal   \n", 128);
-    str[25] = '0' +  sig     % 10;
-    str[24] = '0' + (sig/10) % 10;
-    write(STDERR_FILENO, str, 28);
+    str[25] = (char)('0' + ( sig     % 10));
+    str[24] = (char)('0' + ((sig/10) % 10));
+    (void) write(STDERR_FILENO, str, 28);
     _exit(sig);
 }
 
@@ -64,8 +65,9 @@ int main(int argc, char* argv[])
     Glossary arg;
 
     //parse the command line:
-    arg.read_strings(argc-1, argv+1);
-    
+    if ( arg.read_strings(argc-1, argv+1) )
+        return EXIT_FAILURE;
+
     if ( arg.use_key("help") || arg.use_key("--help") )
     {
         splash(std::cout);
@@ -75,18 +77,26 @@ int main(int argc, char* argv[])
 
     if ( arg.use_key("info") || arg.use_key("--version")  )
     {
+        splash(std::cout);
         print_version(std::cout);
         std::cout << "    DIM = " << DIM << '\n';
         return EXIT_SUCCESS;
     }
     
-    if ( ! arg.use_key("*") )
+    if ( ! arg.use_key("+") )
     {
         Cytosim::out.open("messages.cmo");
         Cytosim::log.redirect(Cytosim::out);
         Cytosim::warn.redirect(Cytosim::out);
     }
     
+    // change working directory if specified:
+    if ( arg.has_key("directory") )
+    {
+        FilePath::change_dir(arg.value("directory", 0));
+        //std::clog << "Cytosim working directory is " << FilePath::get_cwd() << '\n';
+    }
+
 #ifdef CODE_VERSION
     Cytosim::out << "CYTOSIM PI version " << CODE_VERSION << "\n";
 #else
@@ -98,11 +108,12 @@ int main(int argc, char* argv[])
         simul.initialize(arg);
     }
     catch( Exception & e ) {
-        std::cerr << "Error: " << e.what() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     catch(...) {
-        std::cerr << "Error: an unknown exception occured during initialization\n";
+        print_red(std::cerr, "Error: an unknown exception occurred during initialization\n");
         return EXIT_FAILURE;
     }
     
@@ -110,21 +121,21 @@ int main(int argc, char* argv[])
     time_t sec = TicToc::seconds_since_1970();
     
     try {
-        if ( Parser(simul, 1, 1, 1, 1, 1).readConfig() )
-            std::cerr << "You must specify a config file\n";
+        Parser(simul, 1, 1, 1, 1, 1).readConfig();
     }
     catch( Exception & e ) {
-        std::cerr << "\nError: " << e.what() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     catch(...) {
-        std::cerr << "\nAn unknown exception occured\n";
+        std::cerr << "\nError: an unknown exception occurred\n";
         return EXIT_FAILURE;
     }
     
     Cytosim::out << "% " << TicToc::date() << "\n";
     sec = TicToc::seconds_since_1970() - sec;
-    Cytosim::out << "end  " << sec << " s ( " << ( sec / 60 ) / 60.0 << " h )\n";
+    Cytosim::out << "end  " << sec << " s ( " << (real)( sec / 60 ) / 60.0 << " h )\n";
     Cytosim::out.close();
     return EXIT_SUCCESS;
 }

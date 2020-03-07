@@ -192,7 +192,7 @@ void ObjectSet::erase(NodeList & list)
 
 void ObjectSet::erase(Object * obj)
 {
-    //std::clog << "ObjectSet::erase " << title() << " " << obj->reference() << '\n';
+    //std::clog << "ObjectSet::erase " << obj->reference() << '\n';
     remove(obj);
     delete(obj);
 }
@@ -205,10 +205,11 @@ void ObjectSet::erase()
 }
 
 
-Object* ObjectSet::findObject(std::string spec, long num) const
+Object* ObjectSet::findObject(std::string spec, long num, const std::string& title) const
 {
+    //std::clog << "findObject(" << spec << "|" << num << "|" << title << ")\n";
     // check for a string starting with the class name (eg. 'fiber'):
-    if ( spec == title() )
+    if ( spec == title )
     {
         Inventoried * inv = nullptr;
         if ( num > 0 )
@@ -243,26 +244,39 @@ Object* ObjectSet::findObject(std::string spec, long num) const
         return static_cast<Object*>(inv);
     }
     
-    if ( num > 0 )
+    // finally search for a property name:
+    Property * pp = simul.findProperty(title, spec);
+
+    if ( pp )
     {
-        // finally get object by identity:
-        Object * obj = findID(num);
-        if ( obj )
+        Inventoried* inv = nullptr;
+        if ( num > 0 )
         {
-            if ( spec == obj->property()->name() || spec == obj->property()->category() )
-                return obj;
+            // 'microtubule1' would return the first created microtubule
+            // std::clog << "findObject -> highest pick `" << spec << num << "'\n";
+            inv = inventory.first();
+            while ( inv )
+            {
+                num -= ( static_cast<Object*>(inv)->property() == pp );
+                if ( num <= 0 )
+                    break;
+                inv = inventory.next(inv);
+            }
         }
-    }
-    else
-    {
-        // 'microtubule0' would return a random 'microtubule'
-        Property * prop = simul.findProperty(title(), spec);
-        if ( prop )
+        else
         {
-            ObjectList sel = collect(match_property, prop);
-            if ( sel.size() > 0 )
-                return sel.pick_one();
+            // 'microtubule0' would return the last created microtubule
+            //std::clog << "findObject -> highest pick `" << spec << num << "'\n";
+            inv = inventory.last();
+            while ( inv )
+            {
+                num += ( static_cast<Object*>(inv)->property() == pp );
+                if ( num > 0 )
+                    break;
+                inv = inventory.previous(inv);
+            }
         }
+        return static_cast<Object*>(inv);
     }
     
     return nullptr;
@@ -290,7 +304,7 @@ bool splitObjectSpec(std::string& str, long& num)
 
 /*
  There are several ways to designate an object.
- For example, if the class name is 'fiber', one may use:
+ For example, if the class name (title) is 'fiber', one may use:
  - `fiber1`  indicates fiber number 1
  - `fiber2`  indicates fiber number 2, etc.
  - `first`   indicates the oldest fiber remaining
@@ -301,7 +315,7 @@ bool splitObjectSpec(std::string& str, long& num)
  - `fiber-1` the penultimate fiber, etc.
  .
  */
-Object* ObjectSet::findObject(std::string spec) const
+Object* ObjectSet::findObject(std::string spec, const std::string& title) const
 {
     //std::clog << "ObjectSet::findObject " << spec << std::endl;
     
@@ -314,16 +328,27 @@ Object* ObjectSet::findObject(std::string spec) const
     // try to split into a word and a number:
     long num = 0;
     if ( splitObjectSpec(spec, num) )
-        return findObject(spec, num);
+        return findObject(spec, num, title);
 
     // check category name, eg. 'fiber':
-    if ( spec == title() )
+    if ( spec == title )
     {
         ObjectList all = collect();
+        //std::clog << "findObject -> random pick among " << sel.size() << " " << title << "\n";
         if ( all.size() > 0 )
             return all.pick_one();
     }
     
+    // check property name:
+    Property * p = simul.findProperty(title, spec);
+    if ( p )
+    {
+        ObjectList sel = collect(match_property, p);
+        //std::clog << "findObject -> random pick among " << sel.size() << " " << spec << "\n";
+        if ( sel.size() > 0 )
+            return sel.pick_one();
+    }
+
     return nullptr;
 }
 
@@ -333,10 +358,10 @@ Object* ObjectSet::findObject(std::string spec) const
  but it can be any one of them, since the lists are regularly
  shuffled to randomize the order in the list.
  */
-Object * ObjectSet::findObject(Property const* prop) const
+Object * ObjectSet::findObject(Property const* p) const
 {
     for ( Object* obj=first(); obj; obj=obj->next() )
-        if ( obj->property() == prop )
+        if ( obj->property() == p )
             return obj;
     return nullptr;
 }
@@ -394,9 +419,9 @@ ObjectList ObjectSet::collect(bool (*func)(Object const*, void const*), void con
 }
 
 
-ObjectList ObjectSet::collect(Property * prop) const
+ObjectList ObjectSet::collect(Property * p) const
 {
-    return collect(match_property, prop);
+    return collect(match_property, p);
 }
 
 
@@ -436,7 +461,7 @@ void ObjectSet::prune(NodeList const& list, ObjectFlag f, ObjectFlag g)
 /**
  Write Reference and Object's data, for all Objects in `list`
  */
-void ObjectSet::write(NodeList const& list, Outputter& out)
+void ObjectSet::writeNodes(Outputter& out, NodeList const& list)
 {
     for ( Node const* n=list.front(); n; n=n->next() )
     {
@@ -449,20 +474,8 @@ void ObjectSet::write(NodeList const& list, Outputter& out)
 
 
 /**
- Export all objects to file
- */
-void ObjectSet::write(Outputter& out) const
-{
-    if ( size() > 0 )
-    {
-        out.put_line("\n#section "+title(), out.binary());
-        write(nodes, out);
-    }
-}
-
-
-/**
  Load an object from file, overwritting the current object if it is found
+ in the ObjectSet, to make it identical to what was saved in the file.
  */
 Object * ObjectSet::readObject(Inputter& in, const ObjectTag tag, bool fat)
 {
@@ -552,33 +565,49 @@ Object * ObjectSet::readObject(Inputter& in, const ObjectTag tag, bool fat)
     }
 
     w->mark(mk);
-    w->flag(0);
     return w;
+}
+
+
+/**
+ Load an object from file, overwritting the current object in the ObjectSet
+ */
+void ObjectSet::loadObject(Inputter& in, const ObjectTag tag, bool fat, bool skip)
+{
+    Object * w = readObject(in, tag, fat);
+    
+    // clear flag to indicate that object was refreshed:
+    w->flag(0);
+
+    if ( skip )
+        delete(w);
+    else if ( !w->linked() )
+        add(w);
 }
 
 
 //------------------------------------------------------------------------------
 
 
-void ObjectSet::report(std::ostream& os) const
+void ObjectSet::writeAssets(std::ostream& os, const std::string& title) const
 {
     if ( size() > 0 )
     {
-        os << title() << '\n';
-        PropertyList plist = simul.properties.find_all(title());
+        os << '\n' << title;
+        PropertyList plist = simul.properties.find_all(title);
         if ( plist.size() > 0 )
         {
             for ( Property * p : plist )
             {
-                unsigned cnt = count(match_property, p);
-                os << std::setw(10) << cnt << " " << p->name() << '\n';
+                size_t cnt = count(match_property, p);
+                os << '\n' << std::setw(10) << cnt << " " << p->name();
             }
             if ( plist.size() > 1 )
-                os << std::setw(10) << size() << " total\n";
+                os << '\n' << std::setw(10) << size() << " total";
         }
         else
         {
-            os << std::setw(10) << size() << " " << title() << '\n';
+            os << '\n' << std::setw(10) << size() << " " << title;
         }
     }
 }

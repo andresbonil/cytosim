@@ -1,3 +1,4 @@
+% Two flipper tracks makes an infinite ping-pong
 % F. Nedelec, June 2011
 
 set space cell
@@ -14,11 +15,7 @@ set simul system
 {
     viscosity = 0.01
     time_step = 0.0025
-    display = (
-        style = 2;
-        delay = 10;
-        point_size = 8
-    )
+    display = ( style=2; delay=10; point_size=8; )
     precondition = 0
 }
 
@@ -32,24 +29,21 @@ set fiber microtubule
 set hand fast
 {
     binding_rate = 10
-    binding_range = 0.01
-    unbinding_rate = 0.3
+    binding_range = 0.015
+    unbinding_rate = 0.2
     unbinding_force = 2.5
     stall_force = 6
     
     activity = move
     unloaded_speed = 1
-    display = {
-        color = 0xE69F00FF;
-        size = 5
-    }
+    display = ( color = 0xE69F00FF; size = 5 )
 }
 
 set hand slow
 {
     binding_rate = 10
-    binding_range = 0.01
-    unbinding_rate = 0.3
+    binding_range = 0.02
+    unbinding_rate = 0.1
     unbinding_force = 2.5
     stall_force = 6
     
@@ -83,17 +77,16 @@ new 1 microtubule
 
 new 400 graftedF ( line 16 )
 
-new 100 graftedS ( line 1 at 10 0 ) 
-new 350 graftedF ( arc 15.7 3.14 turn -1 0 0 at 7.5 0 ) 
+new  50 graftedS ( line 1 at 11 0 ) 
+new 350 graftedF ( arc 17 4.0 turn -1 0 0 at 7.5 0 ) 
 
-new 100 graftedS ( line 1 at -10 0 ) 
-new 350 graftedF ( arc 15.7 3.14 turn 1 0 0 at -7.5 0 ) 
+new  50 graftedS ( line 1 at -11 0 ) 
+new 350 graftedF ( arc 17 4.0 turn 1 0 0 at -7.5 0 ) 
 
 
-run system
+run 100000 system
 {
     nb_frames = 400
-    nb_steps = 80000
 }
 
 

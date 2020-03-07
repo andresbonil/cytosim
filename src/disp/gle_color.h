@@ -58,10 +58,10 @@ private:
     /// update 'col_' to match values in 'rgba_'
     void update_float()
     {
-        col_[0] = ( 0xFF & ( rgba_ >> 24 ) ) / 255.f;
-        col_[1] = ( 0xFF & ( rgba_ >> 16 ) ) / 255.f;
-        col_[2] = ( 0xFF & ( rgba_ >>  8 ) ) / 255.f;
-        col_[3] = ( 0xFF & rgba_ ) / 255.f;
+        col_[0] = (float)( 0xFF & ( rgba_ >> 24 ) ) / 255.f;
+        col_[1] = (float)( 0xFF & ( rgba_ >> 16 ) ) / 255.f;
+        col_[2] = (float)( 0xFF & ( rgba_ >>  8 ) ) / 255.f;
+        col_[3] = (float)( 0xFF & rgba_ ) / 255.f;
     }
     
 #pragma mark -
@@ -126,10 +126,10 @@ public:
     /// export components as bytes
     void put_bytes(GLubyte& r, GLubyte& g, GLubyte& b, GLubyte& a)
     {
-        r = 0xFF & ( rgba_ >> 24 );
-        g = 0xFF & ( rgba_ >> 16 );
-        b = 0xFF & ( rgba_ >> 8 );
-        a = 0xFF & ( rgba_ );
+        r = 0xFF & (GLubyte)( rgba_ >> 24 );
+        g = 0xFF & (GLubyte)( rgba_ >> 16 );
+        b = 0xFF & (GLubyte)( rgba_ >> 8 );
+        a = 0xFF & (GLubyte)( rgba_ );
     }
     
     /// set from 4-bytes integer
@@ -377,13 +377,13 @@ public:
     
     
     /// set a RGB color from a factor in [-PI, PI], continuously varying through all colors
-    static void set_hue_components(GLfloat& r, GLfloat& g, GLfloat& b, float h);
+    static void set_hue_components(GLfloat& r, GLfloat& g, GLfloat& b, GLfloat h);
     
     /// set a RGB values from a factor in [0, 1], continuously varying between blue, green, red
-    static void set_jet_components(GLfloat& r, GLfloat& g, GLfloat& b, float h);
+    static void set_jet_components(GLfloat& r, GLfloat& g, GLfloat& b, GLfloat h);
     
     /// set a RGB values from a factor in [0, 1], continuously varying through blue, green, red, yellow, white
-    static void set_jet_components_dark(GLfloat& r, GLfloat& g, GLfloat& b, float h);
+    static void set_jet_components_dark(GLfloat& r, GLfloat& g, GLfloat& b, GLfloat h);
 
     /// return new saturated color with given Hue value `h` in [-PI, PI]
     static gle_color hue_color(float h, float alpha = 1.0f);

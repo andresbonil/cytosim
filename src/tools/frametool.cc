@@ -32,10 +32,11 @@ enum { COUNT, COPY, LAST, SIZE, EPID, SPLIT };
 enum { UNKNOWN, FRAME_START, FRAME_SECTION, FRAME_END };
 
 FILE * output = stdout;
-const size_t buf_size = 64;
+const size_t buf_size = 128;
 char buf[buf_size];
 
 unsigned long frame_pid = 0;
+double frame_time = 0;
 
 
 FILE * openfile(char name[], char const* mode)
@@ -101,6 +102,8 @@ int whatline(FILE* in, FILE* out)
         if ( 0 == strncmp(buf, "#end ", 5) )     return FRAME_END;
         if ( 0 == strncmp(buf, " #end ", 6) )    return FRAME_END;
         if ( 0 == strncmp(buf, "#section ", 9) ) return FRAME_SECTION;
+        if ( 0 == strncmp(buf, "#time ", 6) )
+            frame_time = strtod(buf+6, 0);
     }
     return UNKNOWN;
 }
@@ -108,19 +111,13 @@ int whatline(FILE* in, FILE* out)
 
 //=============================================================================
 
-void error(const char* message)
-{
-    fprintf(stderr, "ERROR: %s\n", message);
-    exit(EXIT_FAILURE);
-}
-
 
 /// Slice represents a regular subset of indices
 class Slice
 {
-    unsigned s; ///< start
-    unsigned i; ///< increment
-    unsigned e; ///< end
+    size_t s; ///< start
+    size_t i; ///< increment
+    size_t e; ///< end
     
 public:
     
@@ -138,25 +135,40 @@ public:
         e = ~0U;
 
         int c = 0;
-        c = sscanf(arg, "%u:%u:%u", &s, &i, &e);
-        //fprintf(stderr, "%s:%i\n", arg, c);
-        
-        if ( arg[strlen(arg)-1] == ':' )
+        char * str;
+        errno = 0;
+        s = strtoul(arg, &str, 10);
+        if ( errno ) goto finish;
+        if ( *str == ':' )
         {
-            if ( c == 3 )
-                error("unexpected third ':'");
+            c = 1;
+            ++str;
+            i = strtoul(str, &str, 10);
+            if ( errno ) goto finish;
+            if ( *str == ':' )
+            {
+                ++str;
+                if ( *str == 0 ) return;
+                c = 2;
+                e = strtoul(str, &str, 10);
+                if ( errno ) goto finish;
+            }
         }
-        else
-        {
-            if ( c == 1 )
-                e = s;
-            if ( c == 2 )
-            { e = i; i = 1; }
-        }
-        //fprintf(stderr, "slice %u:%u:%u\n", s, p, e);
+        if ( *str ) goto finish;
+
+        if ( c == 0 )
+            e = s;
+        if ( c == 1 )
+        { e = i; i = 1; }
+
+        //fprintf(stderr, "slice %lu:%lu:%lu\n", s, i, e);
+        return;
+    finish:
+        fprintf(stderr, "syntax error in `%s', expected START:INCREMENT:END\n", arg);
+        exit(EXIT_FAILURE);
     }
     
-    bool match(unsigned n)
+    bool match(size_t n)
     {
         if ( n < s )
             return false;
@@ -175,7 +187,7 @@ public:
 
 void countFrame(const char str[], FILE* in)
 {
-    int  frm = 0;
+    size_t frm = 0;
     int code = 0;
     do {
         code = whatline(in, nullptr);
@@ -183,28 +195,30 @@ void countFrame(const char str[], FILE* in)
             ++frm;
     } while ( code != EOF );
     
-    printf("%40s: %i frames\n", str, frm);
+    printf("%40s: %lu frames\n", str, frm);
 }
 
 
 void sizeFrame(FILE* in)
 {
-    int  code = 0, frm = -1, cnt = 0, oldcnt = 0;
+    long cnt = 0, oldcnt = 0;
+    size_t frm = 0;
+    int code = 0;
 
     while ( code != EOF )
     {
-        ++cnt;
         code = whatline(in, nullptr);
         
         if ( code == FRAME_END )
         {
-            printf("%lu  frame %5i: %7i lines (%+i)\n", frame_pid, frm, cnt, cnt-oldcnt);
+            printf("pid %lu   frame %5lu    time %8.3f   %7li lines (%+li)\n",
+                   frame_pid, frm, frame_time, cnt, cnt-oldcnt);
             oldcnt = cnt;
+            ++frm;
         }
         
         if ( code == FRAME_START )
         {
-            ++frm;
             cnt = 0;
         }
     }
@@ -213,8 +227,8 @@ void sizeFrame(FILE* in)
 
 void extract(FILE* in, FILE* out, Slice sli)
 {
-    unsigned frm = 0;
-    int  code = 0;
+    size_t frm = 0;
+    int code = 0;
     FILE * file = sli.match(0) ? out : nullptr;
 
     while ( code != EOF )
@@ -248,7 +262,7 @@ void extract_pid(FILE* in, unsigned long pid)
         code = whatline(in, out);
         
         if ( code == FRAME_START && pid == frame_pid )
-            out = stdout;
+            out = output;
         else
             out = nullptr;
     }
@@ -289,16 +303,27 @@ void extractLast(FILE* in)
 
 void split(FILE * in)
 {
-    int frm = 0;
-    int  code = 0;
+    size_t frm = 0;
+    int code = 0;
     char name[128] = { 0 };
-    snprintf(name, sizeof(name), "objects%04i.cmo", frm);
+    snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
     FILE * out = fopen(name, "w");
    
     while ( code != EOF )
     {
         code = whatline(in, out);
         
+        if ( code == FRAME_START )
+        {
+            snprintf(name, sizeof(name), "objects%04lu.cmo", frm);
+            out = openfile(name, "w");
+            if ( out )
+            {
+                flockfile(out);
+                fprintf(out, "#Cytosim\n");
+            }
+        }
+
         if ( code == FRAME_END )
         {
             if ( out )
@@ -306,11 +331,8 @@ void split(FILE * in)
                 funlockfile(out);
                 fclose(out);
             }
+            out = 0;
             ++frm;
-            snprintf(name, sizeof(name), "objects%04i.cmo", frm);
-            out = openfile(name, "w");
-            if ( out )
-                flockfile(out);
         }
     }
 }
@@ -360,24 +382,41 @@ bool is_dir(const char path[])
     return false;
 }
 
+
 int main(int argc, char* argv[])
 {
+    int has_file = 0;
     int mode = COUNT;
     char cmd[256] = "";
-    char filename[256] = "objects.cmo";
+    char file_in[256] = "objects.cmo";
+    char fileout[256] = { 0 };
     unsigned long pid = 0;
 
     for ( int i = 1; i < argc ; ++i )
     {
-        if ( 0 == strncmp(argv[i], "help", 4) )
+        char * arg = argv[i];
+        if ( 0 == strncmp(arg, "help", 4) )
         {
             help();
             return EXIT_SUCCESS;
         }
-        if ( is_file(argv[i]) )
-            strncpy(filename, argv[i], sizeof(filename));
-        else if ( is_dir(argv[i]) )
-            snprintf(filename, sizeof(filename), "%s/objects.cmo", argv[i]);
+        char *dot = strrchr(arg, '.');
+        if ( dot && !strcmp(dot, ".cmo" ) )
+        {
+            if ( is_file(arg) )
+            {
+                if ( has_file++ )
+                {
+                    fprintf(stderr, "error: only one input file can be specified\n");
+                    return EXIT_SUCCESS;
+                }
+                strncpy(file_in, arg, sizeof(file_in));
+            }
+            else
+                strncpy(fileout, arg, sizeof(fileout));
+        }
+        else if ( is_dir(arg) )
+            snprintf(file_in, sizeof(file_in), "%s/objects.cmo", arg);
         else
         {
             strncpy(cmd, argv[i], sizeof(cmd));
@@ -388,7 +427,7 @@ int main(int argc, char* argv[])
                 mode = LAST;
             else if ( 0 == strncmp(cmd, "split", 5) )
                 mode = SPLIT;
-            else if ( 0 == strncmp(cmd, "size", 4) )
+            else if ( 0 == strncmp(cmd, "size", 4) || *cmd == '+' )
                 mode = SIZE;
             else if ( 0 == strncmp(cmd, "count", 5) )
                 mode = COUNT;
@@ -399,7 +438,7 @@ int main(int argc, char* argv[])
                 pid = strtoul(cmd+4, nullptr, 10);
                 if ( errno )
                 {
-                    fprintf(stderr, "unexpected syntax");
+                    fprintf(stderr, "syntax error");
                     return EXIT_FAILURE;
                 }
             }
@@ -413,40 +452,42 @@ int main(int argc, char* argv[])
     
     //----------------------------------------------
     
-    FILE * file = openfile(filename, "r");
-    
-    if ( !file )
-        return EXIT_FAILURE;
-    
-    flockfile(file);
-    switch(mode)
+    FILE * file = openfile(file_in, "r");
+    if ( !file || ferror(file) )
     {
-        case COUNT:
-            countFrame(filename,file);
-            break;
-
-        case SIZE:
-            sizeFrame(file);
-            break;
-
-        case COPY:
-            extract(file, stdout, Slice(cmd));
-            break;
-            
-        case LAST:
-            extractLast(file);
-            break;
-            
-        case EPID:
-            extract_pid(file, pid);
-            break;
-            
-        case SPLIT:
-            split(file);
-            break;
+        fprintf(stderr, "failed to open input file\n");
+        return EXIT_FAILURE;
     }
+    flockfile(file);
+
+    if ( mode == COUNT )
+        countFrame(file_in, file);
+    else if ( mode == SIZE )
+        sizeFrame(file);
+    else
+    {
+        if ( *fileout )
+        {
+            output = fopen(fileout, "wb");
+            if ( ! output || ferror(output) )
+            {
+                fprintf(stderr, "failed to open output file\n");
+                return EXIT_FAILURE;
+            }
+        }
+        if ( mode == COPY )
+            extract(file, output, Slice(cmd));
+        else if ( mode == LAST )
+            extractLast(file);
+        else if ( mode == EPID )
+            extract_pid(file, pid);
+        else if ( mode == SPLIT )
+            split(file);
+        if ( output != stdout )
+            fclose(output);
+    }
+    
     funlockfile(file);
     fclose(file);
-    
     return EXIT_SUCCESS;
 }

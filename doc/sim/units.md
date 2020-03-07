@@ -1,13 +1,13 @@
 # Physical units in Cytosim
  
- Cytosim is not aware of units, and it is the responsability of the user to provide coherent values. The parameters could thus in principle be specified in any system of units, but the same system must be used consistently for all values! However, for convenience, cytosim provides default values for some parameters, and this is done in a particular system of units. Specifically:
+ Cytosim is not aware of units, and it is the user's responsability to provide coherent values. The parameters could in principle be specified in any system of units, but the same system must be used consistently for all values! However, for convenience, Cytosim provides default values for some parameters, for example:
 
  Parameter   | Default value    |
  ------------|-------------------
  viscosity   | 1      pN.s/um^2
  kT          | 0.0042 pN.um
 
- It is therefore very strongly advised to adhere to this system, and to convert all parameter values before using them in cytosim. It is in any case a convenient set of units for cytoskeletal work. Cytosim's system of units:
+ It is therefore strongly advised to convert all parameter values to Cytosim's preferred system of units:
 
  Quantity    | Unit        | Symbol | Value                           |
  ------------|-------------|--------|----------------------------------
@@ -34,9 +34,9 @@
  bending elasticity |  pN.um^2
  viscosity          |  pN.s/um^2
  
-The number of objects are usually specified directly. Thus if you know a concentration,
-you simply need to multiply by the volume of the cell. The binding and unbinding rates are
+The number of objects are usually specified directly and if you know a concentration,
+you will need to multiply by the volume of the cell. The binding and unbinding rates are
 specified as molecular rate (1/s) and knowing the equilibrium constant of the reaction is
-usually not sufficient to deduce both rate, although knowing the equilibrium constant should
-help you to constrain the ratio of the two.
+usually not sufficient to deduce both rates, although knowing the equilibrium constant should
+help you to constrain the ratio of the binding to the unbinding rate.
 

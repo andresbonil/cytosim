@@ -10,7 +10,7 @@
 #include "display.h"
 #include "sim_thread.h"
 #include "display_prop.h"
-#include "play_prop.h"
+#include "player_prop.h"
 
 class FiberDisp;
 class View;
@@ -20,11 +20,14 @@ class Player
 {
 public:
 
+    /// Simulation object
+    Simul        simul;
+    
     /// the display parameters
-    DisplayProp  DP;
+    DisplayProp  disp;
     
     /// the parameters for play
-    PlayProp     PP;
+    PlayerProp   prop;
     
     /// container for object's display properties
     PropertyList dproperties;
@@ -34,9 +37,6 @@ public:
     
     /// a flag for live simulation
     bool         goLive;
-
-    /// an alias to `thread` Simul
-    Simul    &   simul;
     
     /// the Display object
     Display  *   mDisplay;
@@ -101,9 +101,6 @@ public:
     
     /// reset the sim-state and timer
     void restart();
-
-    /// load specified frame
-    void loadFrame(int);
 
     /// load previous frame
     void previousFrame();

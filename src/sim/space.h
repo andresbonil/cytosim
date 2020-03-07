@@ -34,6 +34,11 @@ The edges are considered to be inside.
 */
 class Space : public Object
 {
+protected:
+    
+    /// read numbers from file
+    static void read_data(Inputter&, real*, std::string const&);
+
 public:
     
     /// parameters
@@ -88,10 +93,7 @@ public:
     
 #if ( 0 )
     /// apply a force directed towards the edge of this Space
-    virtual void   setInteraction(Vector const&, Interpolation const&, Meca &, real stiff) const;
-
-    /// apply a force directed towards the edge of this Space
-    virtual void   setInteraction(Interpolation const&, Meca &, real stiff, Confinement conf) const;
+    void   setInteraction(Vector const&, Interpolation const&, Meca &, real stiff) const;
 #endif
     
     /// true if all points of the sphere (`center`, `radius`) are inside this Space
@@ -159,6 +161,9 @@ public:
     /// return associated Property
     Property const* property() const { return prop; }
     
+    /// returns the name of the Property
+    std::string    name() const { return prop->name(); }
+
     /// a static_cast<> of Node::next()
     Space*         next() const { return static_cast<Space*>(nNext); }
     
@@ -173,9 +178,6 @@ public:
     
     /// get dimensions from array `len`
     virtual void   setLengths(const real len[8]) {}
-
-    /// read numbers from file
-    virtual void   read_data(Inputter&, real*);
 
     //------------------------------ DISPLAY ----------------------------------
     

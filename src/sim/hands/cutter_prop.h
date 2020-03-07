@@ -34,7 +34,7 @@ public:
       - new_end_state[1] is for the new MINUS_END
       .
      */
-    int     new_end_state[2];
+    state_t new_end_state[2];
     
     /// @}
     

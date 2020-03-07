@@ -38,9 +38,3 @@ More scripts located in [`python/run`](run)
 * [`read_config.py`](look/read_config.py)
 
 More scripts located in [`python/look `](look)
-
-# Cytosim to `blender`
-
-Scripts located in [`python/blender`](blender)
-
-Check [dedicated index](blender/index.md)

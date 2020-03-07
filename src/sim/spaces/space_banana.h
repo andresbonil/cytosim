@@ -12,7 +12,7 @@
  
  Parameters:
      - `length` = the overall length
-     - `width` = the diameter of the torus in its crosssections
+     - `width` = the diameter of the torus in its cross sections
      - `curvature` = the main radius of the torus centerline
      .
  
@@ -40,7 +40,7 @@ private:
     void update();
     
     /// project on the backbone circle
-    Vector project0(Vector const& pos) const;
+    Vector backbone(Vector const& pos) const;
 
 public:
         

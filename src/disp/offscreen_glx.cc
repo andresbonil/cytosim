@@ -3,7 +3,9 @@
 /**
  off-screen rendering on X11, using GL-X
  Using PBuffers, which are supported from GLX version 1.3 (OpenGL 1.2)
-*/
+ 
+ https://en.wikipedia.org/wiki/Pixel_buffer
+ */
 
 #include <cstdio>
 #include <X11/Xlib.h>

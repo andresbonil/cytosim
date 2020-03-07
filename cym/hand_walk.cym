@@ -34,7 +34,7 @@ set fiber fiber1
     segmentation = 1
     lattice = 1, 0.010
     binding_key = 1
-    display = ( show_lattice=1; line=10, 0; )
+    display = ( lattice=1; line=10, 0; )
 }
 
 set fiber fiber2
@@ -43,7 +43,7 @@ set fiber fiber2
     segmentation = 1
     lattice = 1, 0.010
     binding_key = 2 
-    display = ( show_lattice=1; line=10, 0; )
+    display = ( lattice=1; line=10, 0; )
 }
 
 set fiber fiber3
@@ -52,7 +52,7 @@ set fiber fiber3
     segmentation = 1
     lattice = 1, 0.010
     binding_key = 3  % this means both key=1 and key=2 can bind
-    display = ( show_lattice=1; line=10, 0; )
+    display = ( lattice=1; line=10, 0; )
 }
 
 set hand motor1

@@ -12,8 +12,10 @@
 SpacePolygon::SpacePolygon(SpaceProp const* p)
 : Space(p)
 {
-    volume_ = 0;
+    surface_ = 0;
     height_ = 0;
+    inf_.reset();
+    sup_.reset();
     
     if ( DIM == 1 )
         throw InvalidParameter("polygon is not usable in 1D");
@@ -87,13 +89,8 @@ void SpacePolygon::resize(Glossary& opt)
 
 void SpacePolygon::update()
 {
-    volume_ = poly_.surface();
-    assert_true( poly_.surface() > 0 );
-    
-#if ( DIM > 2 )
-    // total height = half_height
-    volume_ *= 2 * height_;
-#endif
+    surface_ = poly_.surface();
+    assert_true( surface_ > 0 );
     
     if ( poly_.complete(REAL_EPSILON) )
         throw InvalidParameter("unfit polygon: consecutive points may overlap");
@@ -116,6 +113,14 @@ bool SpacePolygon::inside(Vector const& w) const
 #else
     return false;
 #endif
+}
+
+
+Vector SpacePolygon::randomPlace() const
+{
+    if ( surface_ <= 0 )
+        throw InvalidParameter("cannot pick point inside polygon of null surface");
+    return Space::randomPlace();
 }
 
 
@@ -272,7 +277,7 @@ void SpacePolygon::setInteractions(Meca & meca, FiberSet const& fibers) const
             for ( int i = 0; i < n_pik; ++i )
             {
                 real dis;
-                real abs = loc.projectPoint(pik[i], abs, dis);
+                real abs = loc.projectPoint(pik[i], dis);
                 if ( 0 <= abs  &&  abs < ls )
                 {
                     if ( !inside(loc.pos(abs)) || !inside(loc.pos1()) || !inside(loc.pos2()) )

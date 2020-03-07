@@ -75,17 +75,17 @@ set single gDynein
 
 
 % female motif
-new 3000  gKinesin ( circle 3 0.2 at -3 2 )
-new  500  gKinesin ( rectangle 0.1 2 0.1 at -3 -3.0 )
-new  500  gKinesin ( rectangle 2 0.1 0.1 at -3 -2.9 )
+new 3000  gKinesin ( circle 3 0.3 at -3 2 )
+new  500  gKinesin ( rectangle 0.3 4 0.1 at -3 -3.0 )
+new  500  gKinesin ( rectangle 4 0.3 0.1 at -3 -2.9 )
 
 
 % male motif
-new 3000  gDynein ( circle 3 0.2 at +3 -2 )
-new  500  gDynein ( rectangle 1.5 0.1 at 4.5 0 align 1 1.5 at 3 -2 )
+new 3000  gDynein ( circle 3 0.3 at +3 -2 )
+new  500  gDynein ( rectangle 3.0 0.3 at 4.5 0 align 1 1.5 at 3 -2 )
 
-new  500  gDynein ( rectangle 1.0 0.1 at -1.0 0 align 1 +1 at 6 0 align 1 1.5 at 3 -2 )
-new  500  gDynein ( rectangle 1.0 0.1 at -1.0 0 align 1 -1 at 6 0 align 1 1.5 at 3 -2 )
+new  500  gDynein ( rectangle 2.0 0.3 at -1.0 0 align 1 +1 at 6 0 align 1 1.5 at 3 -2 )
+new  500  gDynein ( rectangle 2.0 0.3 at -1.0 0 align 1 -1 at 6 0 align 1 1.5 at 3 -2 )
 
 % cortical pool
 new 500   gKinesin ( edge 0.1 )

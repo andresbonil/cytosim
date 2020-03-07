@@ -10,8 +10,6 @@
 Walker::Walker(WalkerProp const* p, HandMonitor* h)
 : Digit(p,h), nextStep(0), prop(p)
 {
-    // works if digit:step_size == lattice:step_size
-    stride = std::copysign(1, prop->unloaded_speed);
 }
 
 
@@ -26,8 +24,9 @@ void Walker::attach(FiberSite const& s)
     stride = std::copysign(n, prop->unloaded_speed);
 #else
     // here digit::step_size must be equal to fiber:step_size
-    if ( lattice()->unit() != prop->step_size  )
+    if ( lattice() && lattice()->unit() != prop->step_size  )
         throw InvalidParameter("digit:step_size must be equal to fiber:lattice_unit");
+    stride = std::copysign(1, prop->unloaded_speed);
 #endif
 }
 
@@ -40,7 +39,7 @@ void Walker::stepUnloaded()
 {
     assert_true( attached() );
     
-    nextStep -= prop->stepping_rate_dt;
+    nextStep -= prop->walking_rate_dt;
     
     while ( nextStep <= 0 )
     {
@@ -51,7 +50,7 @@ void Walker::stepUnloaded()
             return;
         }
         
-        site_t s = site() + stride;
+        lati_t s = site() + stride;
         
         if ( outsideMP(s) )
         {
@@ -81,9 +80,9 @@ void Walker::stepLoaded(Vector const& force, real force_norm)
     assert_true( attached() );
     
     // calculate displacement, dependent on the load along the desired direction of displacement
-    real rate_step = prop->stepping_rate_dt + dot(force, dirFiber()) * prop->var_rate_dt;
+    real R = prop->walking_rate_dt + dot(force, dirFiber()) * prop->var_rate_dt;
 
-    nextStep -= rate_step;
+    nextStep -= std::max((real)0, R);
     
     while ( nextStep <= 0 )
     {
@@ -94,7 +93,7 @@ void Walker::stepLoaded(Vector const& force, real force_norm)
             return;
         }
 
-        site_t s = site() + stride;
+        lati_t s = site() + stride;
 
         if ( outsideMP(s) )
         {

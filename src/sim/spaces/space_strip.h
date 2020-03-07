@@ -20,7 +20,7 @@
  */
 class SpaceStrip : public Space
 {
-    /// dimensions
+    ///  half to total width in each dimension
     real   length_[3];
 
 public:
@@ -38,7 +38,7 @@ public:
     void        boundaries(Vector& inf, Vector& sup) const;
     
     /// the volume inside
-    real        volume()           const;
+    real        volume() const;
     
     /// true if the point is inside the Space
     bool        inside(Vector const&) const;

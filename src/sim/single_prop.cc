@@ -11,6 +11,7 @@
 #include "wrist_long.h"
 #include "picket.h"
 #include "picket_long.h"
+#include "simul.h"
 
 /**
  @defgroup SingleGroup Single and related
@@ -127,7 +128,7 @@ void SingleProp::complete(Simul const& sim)
     confine_space_ptr = sim.findSpace(confine_space);
     
     if ( confine_space_ptr )
-        confine_space = confine_space_ptr->property()->name();
+        confine_space = confine_space_ptr->name();
 
     if ( sim.ready() && confine != CONFINE_OFF )
     {
@@ -151,9 +152,9 @@ void SingleProp::complete(Simul const& sim)
      Since `sreal()` is uniformly distributed, its variance is 1/3,
      and we need `diffusion_dt^2 = 6 D dt`
      */
-    diffusion_dt = sqrt( 6.0 * diffusion * sim.prop->time_step );
+    diffusion_dt = sqrt( 6.0 * diffusion * sim.time_step() );
 #if NEW_MOBILE_SINGLE
-    speed_dt = speed * sim.prop->time_step;
+    speed_dt = speed * sim.time_step();
 #endif
     
     if ( stiffness < 0 )
@@ -174,7 +175,7 @@ void SingleProp::complete(Simul const& sim)
          */
         if ( length > hand_prop->binding_range )
             throw InvalidParameter("hand:binding_range must be >= single:length");
-            //Cytosim::warn << "Attachment cannot occur because single:length > hand:binding_range" << std::endl;
+            //Cytosim::warn << "Attachment cannot occur because single:length > hand:binding_range\n";
     }
 }
 

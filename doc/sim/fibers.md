@@ -1,7 +1,8 @@
 # Fibers
 
+**UNFINISHED**
 
-Fibers are cytosim's representation of cytoskeletal filaments, i.e. actin and microtubules. They are constituted of discrete segments, the length of those is the _segmentation_. The fibers are rigid, i.e. segments tend to be aligned, this is control by the _rigidity_. Fibers can be of fixed length or be dynamic ; this is described by their _activity_. They can be restricted to the inside of a volume, as prescribed by the keyword _confine_. They can also interact sterically with one another or with other objects, as indicated by _steric_.
+Fibers are cytosim's representation of cytoskeletal filaments, i.e. actin and microtubules. They are constituted of discrete segments, the length of those is the _segmentation_. The fibers are rigid, i.e. segments tend to be aligned, this is controlled by the _rigidity_. Fibers can be of fixed length or be dynamic ; this is described by their _activity_. They can be restricted to the inside of a volume, as prescribed by the keyword _confine_. They can also interact sterically with one another or with other objects, as set by _steric_.
 
 
 # Parameters of a fiber

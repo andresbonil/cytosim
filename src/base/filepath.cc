@@ -10,17 +10,22 @@
 #include "exceptions.h"
 
 
+std::string FilePath::get_cwd()
+{
+    char cwd[1024] = { 0 };
+    if ( getcwd(cwd, sizeof(cwd)) )
+        return cwd;
+    else
+        return "";
+}
+
+
 bool FilePath::is_file(const char path[])
 {
     struct stat s;
     if ( 0 == stat(path, &s) )
         return S_ISREG(s.st_mode);
     return false;
-}
-
-bool FilePath::is_file(std::string const& str)
-{
-    return is_file(str.c_str());
 }
 
 
@@ -32,38 +37,25 @@ bool FilePath::is_dir(const char path[])
     return false;
 }
 
-bool FilePath::is_dir(std::string const& str)
+
+int FilePath::make_dir(const char name[])
 {
-    return is_dir(str.c_str());
+    return mkdir(name, S_IRWXU|S_IRWXG|S_IRWXG|S_IXOTH);
 }
 
 
-std::string FilePath::get_cwd()
+int FilePath::change_dir(const char path[])
 {
-    char cwd[1024];
-    getcwd(cwd, sizeof(cwd));
-    return cwd;
-}
-
-
-int FilePath::make_dir(const char path[])
-{
-    return mkdir(path, S_IRWXU|S_IRWXG|S_IRWXG|S_IXOTH);
-}
-
-
-int FilePath::change_dir(std::string const& path)
-{
-    if ( path == "." )
+    if ( !path || *path == 0 )
         return 0;
-    return chdir(path.c_str());
+    return chdir(path);
 }
 
 
-std::vector<std::string> FilePath::list_dir(std::string const& path)
+std::vector<std::string> FilePath::list_dir(const char path[])
 {
     std::vector<std::string> res;
-    DIR * dp = opendir(path.c_str());
+    DIR * dp = opendir(path);
     if ( dp )
     {
         struct dirent * ep = readdir(dp);
@@ -79,10 +71,10 @@ std::vector<std::string> FilePath::list_dir(std::string const& path)
 }
 
 
-std::vector<std::string>  FilePath::list_dir(std::string const& path, std::string const& ext)
+std::vector<std::string> FilePath::list_dir(const char path[], std::string const& ext)
 {
     std::vector<std::string> res;
-    DIR * dp = opendir(path.c_str());
+    DIR * dp = opendir(path);
     if ( dp )
     {
         struct dirent * ep = readdir(dp);
@@ -106,11 +98,11 @@ std::vector<std::string>  FilePath::list_dir(std::string const& path, std::strin
 }
 
 
-std::string FilePath::dir_part(std::string const& path)
+std::string FilePath::dir_part(const char path[])
 {
-    char* res, tmp[PATH_MAX];
+    char* res, tmp[PATH_MAX] = { 0 };
     
-    if ( !realpath(path.c_str(), tmp) )
+    if ( !realpath(path, tmp) )
         return ".";
     
     res = dirname(tmp);
@@ -122,10 +114,10 @@ std::string FilePath::dir_part(std::string const& path)
 }
 
 
-std::string FilePath::file_part(std::string const& path)
+std::string FilePath::file_part(const char path[])
 {
-    char str[MAXPATHLEN];
-    strncpy(str, path.c_str(), MAXPATHLEN);
+    char str[MAXPATHLEN] = { 0 };
+    strncpy(str, path, MAXPATHLEN);
     char * res = basename(str);
     
     if ( !res )

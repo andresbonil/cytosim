@@ -1,14 +1,28 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
-#include "glossary.h"
-#include "mecapoint.h"
 #include "organizer_set.h"
+#include "organizer.h"
+#include "mecapoint.h"
+#include "glossary.h"
 #include "nucleus.h"
 #include "bundle.h"
 #include "aster.h"
 #include "fake.h"
 #include "solid.h"
 #include "simul.h"
+
+
+// first Organizer
+Organizer * OrganizerSet::first() const
+{
+    return static_cast<Organizer*>(nodes.front());
+}
+
+// find object with given ID
+Organizer * OrganizerSet::findID(ObjectID n) const
+{
+    return static_cast<Organizer*>(inventory.get(n));
+}
 
 //------------------------------------------------------------------------------
 
@@ -89,6 +103,16 @@ ObjectList OrganizerSet::newObjects(const std::string& nom, Glossary& opt)
     return res;
 }
 
+
+void OrganizerSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
+}
+
 //------------------------------------------------------------------------------
 
 void OrganizerSet::add(Object * obj)
@@ -108,7 +132,7 @@ Aster * OrganizerSet::findAster(const ObjectID n) const
 Organizer * OrganizerSet::findOrganizer(const Mecable * m) const
 {
     for ( Organizer * o=first(); o; o=o->next() )
-        for ( unsigned i = 0; i < o->nbOrganized(); ++i )
+        for ( size_t i = 0; i < o->nbOrganized(); ++i )
             if ( m == o->organized(i) )
                 return o;
 
@@ -129,21 +153,21 @@ void OrganizerSet::report(std::ostream& os) const
     if ( size() > 0 )
     {
         unsigned total = 0;
-        os << title() << "\n";
+        os << '\n' << title();
         for ( Property * i : simul.properties.find_all("aster", "bundle") )
         {
             unsigned cnt = count(match_property, i);
-            os << std::setw(10) << cnt << " " << i->name() << '\n';
+            os << '\n' << std::setw(10) << cnt << " " << i->name();
             ++total;
         }
         for ( Property * i : simul.properties.find_all("nucleus", "fake") )
         {
             unsigned cnt = count(match_property, i);
-            os << std::setw(10) << cnt << " " << i->name() << '\n';
+            os << '\n' << std::setw(10) << cnt << " " << i->name();
             ++total;
         }
         if ( total > 1 )
-            os << std::setw(10) << size() << " total\n";
+            os << '\n' << std::setw(10) << size() << " total";
     }
 }
 

@@ -4,7 +4,6 @@
 
 #include "gle_color.h"
 #include "property.h"
-#include "vector.h"
 #include "gle.h"
 
 
@@ -65,7 +64,7 @@ class PointDisp : public Property
     void makePixelmaps(GLfloat, unsigned supersampling);
     
     /// draw pixel map
-    void drawPixelmap(Vector const& pos, unsigned ii) const;
+    void drawPixelmap(unsigned ii) const;
     
     /// save pixelmap to file
     void savePixelmap(GLubyte*, unsigned dim, GLuint) const;
@@ -169,30 +168,66 @@ public:
     
     /// recalculate bitmaps
     void      prepare(GLfloat uf, GLfloat sf, bool make_maps);
-
-#if POINTDISP_USES_PIXELMAPS
     
     /// draw inactive state
-    void      drawI(Vector const& pos) const { if ( perceptible ) drawPixelmap(pos, 0); }
+    template < typename VECTOR >
+    void drawI(VECTOR const& pos) const
+    {
+        if ( perceptible )
+        {
+    #if POINTDISP_USES_PIXELMAPS
+            gle::gleRasterPos(pos);
+            drawPixelmap(0);
+    #else
+            glPushMatrix();
+            gle::gleTranslate(pos);
+            gle::gleScale(realSize);
+            color2.load();
+            gle::gleDisc();
+            glPopMatrix();
+    #endif
+        }
+    }
 
-    /// draw active unbound state
-    void      drawF(Vector const& pos) const { if ( perceptible ) drawPixelmap(pos, 1); }
-    
-    /// draw active bound state
-    void      drawA(Vector const& pos) const { if ( perceptible ) drawPixelmap(pos, 2); }
+    /// draw active state, unattached
+    template < typename VECTOR >
+    void drawF(VECTOR const& pos) const
+    {
+        if ( perceptible )
+        {
+    #if POINTDISP_USES_PIXELMAPS
+            gle::gleRasterPos(pos);
+            drawPixelmap(1);
+    #else
+            glPushMatrix();
+            gle::gleTranslate(pos);
+            gle::gleScale(realSize);
+            color2.load();
+            strokeA();
+            glPopMatrix();
+    #endif
+        }
+    }
 
-#else
-    
-    /// draw inactive state
-    void      drawI(Vector const& pos) const;
-
-    /// draw active state
-    void      drawF(Vector const& pos) const;
-    
-    /// draw active state
-    void      drawA(Vector const& pos) const;
-
-#endif
+    /// draw active state, attached
+    template < typename VECTOR >
+    void drawA(VECTOR const& pos) const
+    {
+        if ( perceptible )
+        {
+    #if POINTDISP_USES_PIXELMAPS
+            gle::gleRasterPos(pos);
+            drawPixelmap(2);
+    #else
+            glPushMatrix();
+            gle::gleTranslate(pos);
+            gle::gleScale(realSize);
+            color.load();
+            strokeA();
+            glPopMatrix();
+    #endif
+        }
+    }
 
 };
 

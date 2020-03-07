@@ -26,8 +26,8 @@ MatrixSparseSymmetric2::MatrixSparseSymmetric2()
     nmax_      = 0;
     ija_       = nullptr;
     sa_        = nullptr;
-    col_next_  = new index_t[1];
-    col_next_[0] = 0;
+    next_  = new index_t[1];
+    next_[0] = 0;
 #endif
 }
 
@@ -71,8 +71,8 @@ void MatrixSparseSymmetric2::allocate(size_t alc)
         }
         
 #if MATRIX2_OPTIMIZED_MULTIPLY
-        delete[] col_next_;
-        col_next_ = new index_t[allocated_+1];
+        delete[] next_;
+        next_ = new index_t[allocated_+1];
 #endif
     }
 }
@@ -82,13 +82,13 @@ void MatrixSparseSymmetric2::deallocate()
 {
     if ( col_ )
     {
-        for ( size_t  ii = 0; ii < allocated_; ++ii )
+        for ( size_t ii = 0; ii < allocated_; ++ii )
             delete[] col_[ii];
         delete[] col_;       col_      = nullptr;
         delete[] col_size_;  col_size_ = nullptr;
         delete[] col_max_;   col_max_  = nullptr;
 #if MATRIX2_OPTIMIZED_MULTIPLY
-        delete[] col_next_;  col_next_ = nullptr;
+        delete[] next_;  next_ = nullptr;
         delete[] ija_;    ija_ = nullptr;
         free_real(sa_); sa_ = nullptr;
 #endif
@@ -316,13 +316,13 @@ int MatrixSparseSymmetric2::bad() const
 }
 
 
-size_t MatrixSparseSymmetric2::nbElements(index_t start, index_t end) const
+size_t MatrixSparseSymmetric2::nbElements(index_t start, index_t stop) const
 {
-    assert_true( start <= end );
-    assert_true( end <= size_ );
+    assert_true( start <= stop );
+    assert_true( stop <= size_ );
     //all allocated elements are counted, even if zero
     size_t cnt = 0;
-    for ( index_t jj = start; jj < end; ++jj )
+    for ( index_t jj = start; jj < stop; ++jj )
         cnt += col_size_[jj];
     return cnt;
 }
@@ -334,9 +334,9 @@ std::string MatrixSparseSymmetric2::what() const
 {
     std::ostringstream msg;
 #if MATRIX2_USES_SSE
-    msg << "MSS2e (" << nbElements() << ")";
+    msg << "MSS2e " << nbElements();
 #else
-    msg << "MSS2 (" << nbElements() << ")";
+    msg << "MSS2 " << nbElements();
 #endif
     return msg.str();
 }
@@ -364,7 +364,7 @@ void MatrixSparseSymmetric2::printColumns(std::ostream& os)
     {
         os << "\n   " << jj << "   " << col_size_[jj];
 #if MATRIX2_OPTIMIZED_MULTIPLY
-        os << " " << col_next_[jj];
+        os << " " << next_[jj];
 #endif
     }
     std::endl(os);
@@ -483,7 +483,7 @@ void MatrixSparseSymmetric2::vecMulAddIso3D(const real* X, real* Y) const
 
 void MatrixSparseSymmetric2::setNextColumn()
 {
-    col_next_[size_] = size_;
+    next_[size_] = size_;
     
     if ( size_ > 0 )
     {
@@ -493,12 +493,12 @@ void MatrixSparseSymmetric2::setNextColumn()
         {
             if ( col_size_[inx] > 0 )
                 nxt = inx;
-            col_next_[inx] = nxt;
+            next_[inx] = nxt;
         }
         if ( col_size_[0] > 0 )
-            col_next_[0] = 0;
+            next_[0] = 0;
         else
-            col_next_[0] = nxt;
+            next_[0] = nxt;
     }
 }
 
@@ -554,7 +554,7 @@ void MatrixSparseSymmetric2::prepareForMultiply(int)
 
 void MatrixSparseSymmetric2::vecMulAdd(const real* X, real* Y) const
 {
-    for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[0]; jj < size_; jj = next_[jj+1] )
     {
         assert_true( col_size_[jj] > 0 );
         real X0 = X[jj];
@@ -577,7 +577,7 @@ void MatrixSparseSymmetric2::vecMulAdd(const real* X, real* Y) const
 
 void MatrixSparseSymmetric2::vecMulAddIso2D(const real* X, real* Y) const
 {
-    for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[0]; jj < size_; jj = next_[jj+1] )
     {
         assert_true( col_size_[jj] > 0 );
         assert_true( col_[jj][0].inx == jj );
@@ -601,7 +601,7 @@ void MatrixSparseSymmetric2::vecMulAddIso2D(const real* X, real* Y) const
 
 void MatrixSparseSymmetric2::vecMulAddIso2D(const real* X, real* Y) const
 {    
-    for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[0]; jj < size_; jj = next_[jj+1] )
     {
         assert_true( col_size_[jj] > 0 );
         assert_true( col_[jj][0].inx == jj );
@@ -631,7 +631,7 @@ void MatrixSparseSymmetric2::vecMulAddIso2D(const real* X, real* Y) const
 
 void MatrixSparseSymmetric2::vecMulAddIso3D(const real* X, real* Y) const
 {
-    for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[0]; jj < size_; jj = next_[jj+1] )
     {
         assert_true( col_size_[jj] > 0 );
         assert_true( col_[jj][0].inx == jj );

@@ -17,7 +17,7 @@ void SpaceSphere::resize(Glossary& opt)
 {
     real rad = radius_;
     
-    if ( opt.set(rad, "length") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
     
@@ -87,9 +87,10 @@ void SpaceSphere::setInteraction(Vector const& pos, Mecapoint const& pe, real ra
 
 void SpaceSphere::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(1);
+    out.put_characters("sphere", 16);
+    out.writeUInt16(2);
     out.writeFloat(radius_);
+    out.writeFloat(0.f);
 }
 
 
@@ -103,7 +104,7 @@ void SpaceSphere::setLengths(const real len[])
 void SpaceSphere::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "sphere");
     setLengths(len);
 }
 

@@ -117,15 +117,15 @@ void FileWrapper::put_line(const std::string& str, bool end)
 }
 
 
-void FileWrapper::get_line(std::string& line, const char sep)
+std::string FileWrapper::get_line(const char end)
 {
-    line.clear();
+    std::string res;
 
     if ( ferror(mFile) )
-        return;
+        return res;
 
-    const size_t CHK = 16;
-    char str[CHK];
+    const size_t CHK = 32;
+    char buf[CHK];
     
     fpos_t pos;
     char * m;
@@ -133,26 +133,73 @@ void FileWrapper::get_line(std::string& line, const char sep)
     while ( !feof(mFile) )
     {
         fgetpos(mFile, &pos);
-        size_t s = fread(str, 1, CHK, mFile);
+        size_t s = fread(buf, 1, CHK, mFile);
         
         // search for separator:
-        m = (char*)memchr(str, sep, s);
+        m = (char*)memchr(buf, end, s);
         
         if ( m )
         {
-            line.append(str, m-str);
+            s = (size_t)( m - buf );
+            res.append(buf, s);
             //reposition at end of line:
             fsetpos(mFile, &pos);
-            fread(str, 1, m-str+1, mFile);
+            if ( s+1 != fread(buf, 1, s+1, mFile) )
+                throw InvalidIO("unexpected error");
             //fprintf(stderr,"-|%s|-\n", line.c_str());
-            return;
+            break;
         }
-        line.append(str, s);
+        res.append(buf, s);
     }
     
-    return;
+    return res;
 }
 
+
+void FileWrapper::put_characters(std::string const& str, size_t cnt)
+{
+    // write characters from 'str':
+    size_t s = std::min(cnt, str.size());
+    cnt -= fwrite(str.c_str(), 1, s, mFile);
+    // fill the rest with '0'
+    const size_t CHK = 32;
+    char buf[CHK] = { 0 };
+    while ( cnt > 0 )
+        cnt -= fwrite(buf, 1, std::min(CHK, cnt), mFile);
+}
+
+
+std::string FileWrapper::get_characters(size_t cnt)
+{
+    std::string res;
+    const size_t CHK = 32;
+    char buf[CHK] = { 0 };
+    
+    while ( cnt > 0 )
+    {
+        size_t s = fread(buf, 1, std::min(CHK, cnt), mFile);
+        res.append(buf, s);
+        cnt -= s;
+    }
+
+    // trim trailing zeros:
+    std::string::size_type e = res.find((char)0);
+    return res.substr(0, e);
+}
+
+
+std::string FileWrapper::get_word()
+{
+    std::string res;
+    int c = get_char();
+    while ( isspace(c) )
+        c = get_char();
+    do {
+        res.push_back(c);
+        c = get_char();
+    } while ( !isspace(c) );
+    return res;
+}
 
 /**
  This will search for the string and position the stream
@@ -168,7 +215,7 @@ void FileWrapper::skip_until(const char * str)
     char buf[CHK+2];
 
     fpos_t pos, match;
-    size_t offset = 0;
+    size_t off = 0;
     
     const char ccc = str[0];
     const char * s = str;
@@ -186,7 +233,7 @@ void FileWrapper::skip_until(const char * str)
             if ( !b )
                 continue;
             match  = pos;
-            offset = b - buf;
+            off = (size_t)(b - buf);
             ++s;
             ++b;
         }
@@ -204,18 +251,19 @@ void FileWrapper::skip_until(const char * str)
                 if ( *s == 0 )
                 {
                     fsetpos(mFile, &match);
-                    fread(buf, 1, offset, mFile);
+                    if ( off != fread(buf, 1, off, mFile) )
+                        throw InvalidIO("unexpected error");
                     return;
                 }
             }
             else
             {
                 s = str;
-                b = (char*)memchr(b, ccc, nbuf-(b-buf));
+                b = (char*)memchr(b, ccc, nbuf-(size_t)(b - buf));
                 if ( !b )
                     break;
                 match  = pos;
-                offset = b - buf;
+                off = (size_t)(b - buf);
                 ++s;
             }
             ++b;

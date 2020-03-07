@@ -8,22 +8,29 @@
 
 void* operator new(std::size_t size)
 {
-    //printf("new(%lu)\n", size);
     void * ptr = nullptr;
 #if ( 1 )
     constexpr std::size_t sup = 1 << 30;
-    // we align all memory to 32 bytes
-    if ( size < sup )
-        posix_memalign(&ptr, 32, size);
+    if ( size > sup )
+    {
+        std::printf("Error: excessive memory requested %5zu\n", size);
+        throw std::bad_alloc();
+    }
+#endif
+#if ( 1 )
+    // get memory aligned to 32 bytes
+    if ( posix_memalign(&ptr, 32, size) )
+        throw std::bad_alloc();
 #else
     // system's default (unaligned) memory
     ptr = std::malloc(size);
 #endif
     if ( ptr == nullptr )
         throw std::bad_alloc();
-    //std::printf("Cytosim new %5zu %p\n", s, ptr);
+    //std::printf("Cytosim new %5zu %p\n", size, ptr);
     return ptr;
 }
+
 
 void operator delete(void * ptr) throw()
 {

@@ -24,7 +24,7 @@ new cell
 set fiber microtubule
 {
     rigidity = 20
-    segmentation = 0.25
+    segmentation = 0.1
     display = (
         line_width = 2
         line_style = 1

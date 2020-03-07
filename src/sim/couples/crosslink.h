@@ -22,14 +22,14 @@ public:
     /// property
     CrosslinkProp const* prop;
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     Crosslink(CrosslinkProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor
     virtual      ~Crosslink();
     
     /// simulation step for a free Couple: diffusion
-    virtual void  stepFF(FiberGrid const&);
+    virtual void  stepFF(Simul&);
     
     /// add interactions to a Meca
     void          setInteractions(Meca &) const;

@@ -4,9 +4,11 @@
 #include "couple.h"
 #include "couple_long.h"
 #include "hand_prop.h"
+#include "messages.h"
 #include "glossary.h"
 #include "property_list.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include <cmath>
 
 
@@ -97,7 +99,7 @@ void CoupleProp::complete(Simul const& sim)
     confine_space_ptr = sim.findSpace(confine_space);
 
     if ( confine_space_ptr )
-        confine_space = confine_space_ptr->property()->name();
+        confine_space = confine_space_ptr->name();
 
     if ( sim.ready() && confine != CONFINE_OFF )
     {
@@ -117,7 +119,7 @@ void CoupleProp::complete(Simul const& sim)
      Since `sreal()` is uniformly distributed, its variance is 1/3,
      and we need `diffusion_dt^2 = 6 D dt`
      */
-    diffusion_dt = sqrt( 6.0 * diffusion * sim.prop->time_step );
+    diffusion_dt = sqrt( 6.0 * diffusion * sim.time_step() );
 
     if ( stiffness < 0 )
         throw InvalidParameter("couple:stiffness must be specified and >= 0");
@@ -140,14 +142,14 @@ void CoupleProp::complete(Simul const& sim)
          In most cases, this is not desirable and physically inconsistent.
          */
         if ( length > hand1_prop->binding_range )
-            Cytosim::warn << "hand1:binding_range should be >= couple:length for " << name() << std::endl;
+            Cytosim::warn << "hand1:binding_range should be >= couple:length for " << name() << "\n";
 
         if ( hand2_prop != hand1_prop )
         {
             hand2_prop->checkStiffness(stiffness, length, 2, sim.prop->kT);
         
             if ( length > hand2_prop->binding_range )
-                Cytosim::warn << "hand2:binding_range should be >= couple:length for " << name() << std::endl;
+                Cytosim::warn << "hand2:binding_range should be >= couple:length for " << name() << "\n";
         }
     }
 }

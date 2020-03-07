@@ -39,7 +39,7 @@ set fiber fiber2
     segmentation = 1
     lattice = 1, 0.01
     binding_key = 3
-    display = ( show_lattice=1; line=8, 0; )
+    display = ( lattice=1; line=8, 0; )
 }
 
 set fiber fiber3

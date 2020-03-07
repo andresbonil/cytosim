@@ -195,11 +195,8 @@ public:
     /// draw Fiber linear features
     virtual void drawFiberLines(Fiber const&) const;
     
-    /// draw Fiber linear features over length `len` near the MINUS_END
-    virtual void drawFiberLinesM(Fiber const&, real len, real width) const;
-    
-    /// draw Fiber linear features over length `len` near the PLUS_END
-    virtual void drawFiberLinesP(Fiber const&, real len, real width) const;
+    /// draw one segment of a Fiber (used to display transparent fibers)
+    virtual void drawFiberLinesT(Fiber const&, unsigned) const;
 
     /// actin-like rendering using a sphere to represent each monomer
     void         drawFilament(Fiber const& fib, gle_color const&, gle_color const&, gle_color const&) const;
@@ -217,13 +214,13 @@ public:
     virtual void drawFiberSpeckles(Fiber const&) const;
    
     /// display lattice subtance using color
-    virtual void drawFiberLattice1(Fiber const&, FiberLattice const&, real width) const;
+    virtual void drawFiberLattice1(Fiber const&, real width) const;
     
     /// display lattice subtance using color
-    virtual void drawFiberLattice2(Fiber const&, FiberLattice const&, real width) const;
+    virtual void drawFiberLattice2(Fiber const&, real width) const;
    
     /// display lattice cell edges
-    virtual void drawFiberLatticeEdges(Fiber const&, FiberLattice const&, real size) const;
+    virtual void drawFiberLatticeEdges(Fiber const&, real size) const;
 
     /// display Labels for a Fiber
     void         drawFiberLabels(Fiber const&, void* font) const;

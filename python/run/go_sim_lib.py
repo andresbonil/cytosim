@@ -1,17 +1,28 @@
-# `go_sim_lib.py` is a miniature python library to run Cytosim
-#  it is used by go_sim.py and not executable by itself
+# `go_sim_lib.py` is a miniature library to run Cytosim.
+#  It is not executable by directly, but it used by go_sim.py
+#  to create directory, copy files, move directories, etc.
 #
-# Copyright F. Nedelec, 2007--2018
+# Copyright F. Nedelec 2007--2019, S. Dmitrieff 2019
 
 
 try:
-    import os, shutil, exceptions, subprocess
+    import os, shutil, subprocess
 except ImportError:
     import sys
     host = os.getenv('HOSTNAME', 'unknown')
     sys.stderr.write("go_sim_lib.py could not load python modules on %s\n" % host)
     sys.exit()
 
+try:
+    import exceptions
+except:
+    try:
+        import builtins as exceptions
+    except:
+        import sys
+        host = os.getenv('HOSTNAME', 'unknown')
+        sys.stderr.write("go_sim_lib.py could not load `exceptions` on %s\n" % host)
+        sys.exit()
 
 class Error( exceptions.Exception ):
     """go_sim.py exception class"""
@@ -190,7 +201,7 @@ def run(exe, conf, name, args=[]):
         raise Error("missing/unreadable config file")
     conf = os.path.abspath(conf);    
     # use a temporary directory on the cluster:
-    if os.environ.has_key('SLURM_JOB_ID') or os.environ.has_key('LSB_JOBID'):
+    if 'SLURM_JOB_ID' in os.environ or 'LSB_JOBID' in os.environ:
         wdir = make_temp_directory()
     else:
         wdir = make_directory(name)

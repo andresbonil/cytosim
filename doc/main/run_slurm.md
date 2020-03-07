@@ -168,7 +168,7 @@ Directory       |   Content                                                |
 `save`          | Completed results directories run0000, run0001, etc.
 
 The config files in `todo` will be deleted once the simulations are completed.
-The data in `logs` is only interesting if some error occured,
+The data in `logs` is only interesting if some error occurred,
 and if everything went smoothly, you can delete it:
 
 	rm -r todo

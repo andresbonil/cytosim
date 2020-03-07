@@ -1,9 +1,9 @@
 # Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 
-OBJ_BASE:=messages.o filewrapper.o filepath.o iowrapper.o exceptions.o\
-     tictoc.o node.o node_list.o inventoried.o inventory.o stream_func.o\
-     tokenizer.o glossary.o property.o property_list.o backtrace.o ansi_colors.o\
+OBJ_BASE := messages.o filewrapper.o filepath.o iowrapper.o exceptions.o\
+            tictoc.o node_list.o inventory.o stream_func.o tokenizer.o\
+            glossary.o property.o property_list.o backtrace.o ansi_colors.o\
 
 #----------------------------rules----------------------------------------------
 

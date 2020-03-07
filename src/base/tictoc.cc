@@ -106,14 +106,14 @@ double TicToc::seconds_today()
 }
 
 
-long TicToc::centiseconds()
+double TicToc::centiseconds()
 {
     struct timeval tv;
     gettimeofday(&tv, nullptr);
-    return 100 * tv.tv_sec + tv.tv_usec / 10000;
+    return 100 * tv.tv_sec + tv.tv_usec / 10000.0;
 }
 
-int TicToc::microseconds()
+double TicToc::microseconds()
 {
     struct timeval tv;
     gettimeofday(&tv, nullptr);

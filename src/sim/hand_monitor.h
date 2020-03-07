@@ -37,7 +37,7 @@ public:
     virtual void beforeDetachment(Hand const*) {}
     
     
-   /// return the Hand that is not the argument, in a Couple
+    /// return the Hand that is not the argument, in a Couple
     virtual Hand * otherHand(Hand const*) const { return nullptr; }
 
     /// return the position of the Hand that is not the argument, for a Couple
@@ -48,17 +48,14 @@ public:
     /** If the hand is not part of a Couple, this returns a random unit vector */
     virtual Vector otherDirection(Hand const*) const { return Vector::randU(); }
 
-    /// identity() for associated object
-    virtual ObjectID nucleatorID() const { return 0; }
-    
-     /// container Simul object
-    virtual Simul* simul_ptr() const { return nullptr; };
-    
     /// resting length of the interaction
     virtual real   interactionLength() const { return 0; }
     
     /// stiffness of the interaction
     virtual real   interactionStiffness() const { return 0; }
+
+    /// identity() of containing object
+    virtual ObjectID nucleatorID() const { return 0; }
 
 };
 

@@ -27,7 +27,7 @@ set fiber microtubule
 new 60 microtubule
 {
     length = 10
-    orientation = horizontal
+    direction = X
 }
 
 set fiber glucan
@@ -40,7 +40,7 @@ set fiber glucan
 new 40 glucan
 {
     length = 10
-    orientation = horizontal
+    direction = X
 }
 
 run system 

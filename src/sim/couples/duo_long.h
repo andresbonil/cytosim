@@ -29,14 +29,14 @@ class DuoLong : public Duo
     
 public:
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     DuoLong(DuoProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor
     virtual ~DuoLong();
      
     /// position on the side of fiber1 used for sideInteractions
-    Vector  posSide() const;
+    Vector  sidePos() const;
  
     /// force between hands, essentially: stiffness * ( cHand2->posHand() - cHand1->posHand() )
     Vector  force() const;

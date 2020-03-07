@@ -54,13 +54,11 @@ private:
     /// specialization of HandMonitor
     Vector    otherPosition(Hand const*) const { return posFoot(); }
     /// = identity() of the Object on which a Wrist is attached, or Single::identity()
-    ObjectID  nucleatorID() const { if ( base() ) return base()->identity(); return Object::identity(); }
-    /// Simul container
-    Simul*    simul_ptr() const { return &Object::simul(); }
+    ObjectID  nucleatorID()              const { return base()?base()->identity():Object::identity(); }
     /// specialization of HandMonitor
-    real      interactionLength() const { return prop->length; }
+    real      interactionLength()        const { return prop->length; }
     /// stiffness of the interaction
-    real      interactionStiffness() const { return 0; }
+    real      interactionStiffness()     const { return 0; }
 
 protected:
     
@@ -139,22 +137,22 @@ public:
     //--------------------------------------------------------------------------
     
     /// the position of the anchoring point
-    virtual Vector  posFoot()             const  { return sPos; }
+    virtual Vector  posFoot()     const { return sPos; }
     
     /// position on the side of fiber used for sideInteractions
-    virtual Vector  posSide()             const  { return sHand->pos(); }
+    virtual Vector  sidePos()     const { return sHand->pos(); }
     
     /// the Mecable to which this is anchored, or zero
-    virtual Mecable const* base()         const  { return nullptr; }
+    virtual Mecable const* base() const { return nullptr; }
     
     /// true if Single creates an interaction
-    virtual bool    hasForce() const             { return false; }
+    virtual bool    hasForce()    const { return false; }
 
     /// force = stiffness * ( position_anchor - position_hand ), or zero for a diffusible Single
-    virtual Vector  force()               const  { return Vector(0,0,0); }
+    virtual Vector  force()       const { return Vector(0,0,0); }
 
     /// Monte-Carlo step if the Hand is not attached
-    virtual void    stepF(const FiberGrid&);
+    virtual void    stepF(Simul&);
     
     /// Monte-Carlo step if the Hand is attached
     virtual void    stepA();

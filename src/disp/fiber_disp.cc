@@ -29,9 +29,6 @@ void FiberDisp::clear()
     end_size[0]      = 6;
     end_size[1]      = 6;
     
-    end_length[0]    = 0;
-    end_length[1]    = 0;
-    
     end_color[0]     = 0xFFFFFFFF;  // white
     end_color[1]     = 0x00FF00FF;  // green
     end_color[2]     = 0xFFFF00FF;  // yellow
@@ -59,7 +56,7 @@ void FiberDisp::clear()
     
     explode          = 0;
     explode_range    = 0;
-    show_average     = 0;
+    draw_average     = 0;
 }
 
 
@@ -77,33 +74,24 @@ void FiberDisp::read(Glossary& glos)
 
     glos.set(coloring,         "coloring");
     
-    glos.set(line_width,       "line");
-    glos.set(line_style,       "line", 1, {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}});
-    glos.set(line_caps,        "line", 2);
-
-    glos.set(line_width,       "lines");
-    glos.set(line_style,       "lines", 1, {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}});
-    glos.set(line_caps,        "lines", 2);
-    glos.set(line_style,       "line_style", {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}});
-    glos.set(line_width,       "line_width");
-    glos.set(line_width,       "width");
-    glos.set(line_caps,        "line_caps");
-
-    glos.set(point_size,       "point");
-    glos.set(point_style,      "point", 1, {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}});
-
-    glos.set(point_size,       "points");
-    glos.set(point_style,      "points", 1, {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}});
-    glos.set(point_interval,   "points", 2);
+    std::string key = glos.has_key("line") ? "line" : "lines";
+    glos.set(line_width, "line_width")
+    || glos.set(line_width, key) || glos.set(line_width, "width");
+    glos.set(line_style, "line_style", {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}})
+    || glos.set(line_style, key, 1, {{"off", 0}, {"line", 1}, {"tension", 2}, {"curvature", 3}, {"orientation", 4}});
+    glos.set(line_caps,  "line_caps")
+    || glos.set(line_caps, key, 2);
     
-    glos.set(point_interval,   "point_interval");
+    key = glos.has_key("point") ? "point" : "points";
+    glos.set(point_size, "point_size")
+    || glos.set(point_size, key) || glos.set(point_size, "size");
+    glos.set(point_style, "point_style", {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}})
+    || glos.set(point_style, key, 1, {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}});
+    glos.set(point_interval, "point_interval")
+    || glos.set(point_interval, key, 2);
 
     if ( point_interval <= 0 )
         point_interval = 1;
-
-    glos.set(point_style,      "point_style", {{"off", 0}, {"point", 1}, {"arrow", 2}, {"center", 3}});
-    glos.set(point_size,       "point_size");
-    glos.set(point_size,       "size");
 
     if ( glos.set(end_size[0], "plus_end") )
         end_style[0] = 2;
@@ -115,34 +103,34 @@ void FiberDisp::read(Glossary& glos)
     glos.set(end_style[1], "minus_end", 1, {{"off", 0}, {"sphere", 1}, {"cone", 2},
             {"cylinder", 3}, {"fins", 4}, {"inverted_fins", 5}, {"cube", 6}});
     
-    glos.set(end_style, 2,     "end_style");
-    glos.set(end_size,  2,     "end_size");
-    glos.set(end_length, 2,    "end_length");
-    glos.set(end_color, 5,     "end_color");
+    glos.set(end_style,  2,    "end_style");
+    glos.set(end_size,   2,    "end_size");
+    glos.set(end_color,  5,    "end_color");
     
 #ifdef BACKWARD_COMPATIBILITY
-    glos.set(end_length, 2,    "end_section");
-    glos.set(lattice_style,    "show_lattice");
+    glos.set(lattice_style,    "draw_lattice");
     glos.set(lattice_scale,    "lattice_max");
+    glos.set(tension_scale,    "tension");
 #endif
     
-    glos.set(lattice_scale,    "lattice_scale");
-    glos.set(lattice_style,    "lattice");
-    glos.set(lattice_scale,    "lattice", 1);
+    glos.set(lattice_style,    "lattice")
+    || glos.set(lattice_style, "lattice_style");
+    glos.set(lattice_scale,    "lattice_scale")
+    || glos.set(lattice_scale, "lattice", 1);
     glos.set(lattice_rescale,  "lattice", 2);
 
-    glos.set(label_style,      "label");
-    glos.set(label_style,      "labels");
-    glos.set(label_style,      "label_style");
-    
-    glos.set(speckle_size,     "speckle");
-    glos.set(speckle_style,    "speckles", 1, {{"off", 0}, {"random", 1}, {"regular", 2}});
-    glos.set(speckle_interval, "speckles", 2);
+    glos.set(label_style,      "label_style")
+    || glos.set(label_style, "labels") || glos.set(label_style, "label");
 
-    glos.set(speckle_size,     "speckle_size");
-    glos.set(speckle_style,    "speckle_style");
-    glos.set(speckle_interval, "speckle_interval");
-    glos.set(speckle_interval, "interval");
+    key = glos.has_key("speckle") ? "speckle" : "speckles";
+    glos.set(speckle_size,     "speckle_size")
+    || glos.set(speckle_size, key);
+    glos.set(speckle_style,    "speckle_style")
+    || glos.set(speckle_style, key, 1, {{"off", 0}, {"random", 1}, {"regular", 2}});
+    
+    glos.set(speckle_interval, "speckle_interval")
+    || glos.set(speckle_interval, key, 2)
+    || glos.set(speckle_interval, "interval");
 
     if ( speckle_interval <= 0 )
         speckle_interval = 1;
@@ -152,7 +140,7 @@ void FiberDisp::read(Glossary& glos)
     glos.set(exclude_axis,     "exclude_axis");
     
     if ( glos.set(mask, "mask") )
-        mask_bitfield = RNG.number_of_bits(mask);
+        mask_bitfield = RNG.distributed_bits(mask);
     glos.set(mask_bitfield, "mask", 1);
 
     glos.set(tension_scale,    "tension_scale");
@@ -167,7 +155,7 @@ void FiberDisp::read(Glossary& glos)
         explode = 1;
 #endif
     
-    glos.set(show_average,     "show_average");
+    glos.set(draw_average,     "draw_average");
 }
 
 
@@ -182,7 +170,6 @@ void FiberDisp::write_values(std::ostream& os) const
     write_value(os, "lines",        line_width, line_style, line_caps);
     write_value(os, "plus_end",     end_size[0], end_style[0]);
     write_value(os, "minus_end",    end_size[1], end_style[1]);
-    write_value(os, "end_length",   end_length, 2);
     write_value(os, "end_color",    end_color, 5);
  
     write_value(os, "lattice",      lattice_style, lattice_scale, lattice_rescale);
@@ -194,6 +181,6 @@ void FiberDisp::write_values(std::ostream& os) const
     write_value(os, "tension_scale",tension_scale);
     write_value(os, "forces",       force_scale, force_color);
     write_value(os, "explode",      explode, explode_range);
-    write_value(os, "show_average", show_average);
+    write_value(os, "draw_average", draw_average);
 }
 

@@ -44,7 +44,7 @@ new 12 balls
 new 100 filament
 {
     length = 1
-    orientation = horizontal
+    direction = X
 }
 
 run 5000 system

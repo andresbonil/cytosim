@@ -48,9 +48,14 @@ new 5 microtubule
     plus_end = grow
 }
 
+new event
+{
+   rate = 1
+   code = ( new microtubule { length=0.012; plus_end=grow; } )
+}
+
 run 40000 system
 {
     nb_frames = 100
-    event = 1, ( new microtubule { length=0.012; plus_end=grow; } )
 }
 

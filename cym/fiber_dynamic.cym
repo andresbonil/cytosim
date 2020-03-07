@@ -39,13 +39,18 @@ new 0 microtubule
 {
     length = 0.05
     position = rectangle 0 20
-    orientation = horizontal
+    direction = X
     plus_end = grow
+}
+
+new event
+{
+   rate = 1
+   code = ( new microtubule { position=(rectangle 0 20); length=0.05; direction=X; plus_end=grow; } )
 }
 
 run 500000 system
 {
     nb_frames = 10
     solve = 0
-    event = 1, ( new microtubule { position=(rectangle 0 20); length=0.05; orientation=horizontal; plus_end=grow; } )
 }

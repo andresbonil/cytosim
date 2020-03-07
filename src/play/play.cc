@@ -2,10 +2,12 @@
 
 #include "simul_prop.h"
 #include "glossary.h"
+#include "messages.h"
 #include "offscreen.h"
 #include "saveimage.h"
 #include "filepath.h"
 #include "splash.h"
+#include "ansi_colors.h"
 
 #include "opengl.h"
 #include "player.h"
@@ -15,9 +17,9 @@
 Player player;
 
 SimThread& thread = player.thread;
-Simul&      simul = thread.sim();
-PlayProp&      PP = player.PP;
-DisplayProp&   DP = player.DP;
+Simul&      simul = player.simul;
+PlayerProp&  prop = player.prop;
+DisplayProp& disp = player.disp;
 
 /// enable to create a player for command-line-only offscreen rendering
 //#define HEADLESS_PLAYER
@@ -126,23 +128,20 @@ enum { ONSCREEN, OFFSCREEN_IMAGE, OFFSCREEN_MOVIE, ONSCREEN_MOVIE };
 
 int main(int argc, char* argv[])
 {
-    int  mode = ONSCREEN;
-    int  magnify = 1;
+    int mode = ONSCREEN;
+    int magnify = 1;
     Glossary arg;
     
     Cytosim::all_silent();
     std::atexit(goodbye);
 
-    try {
-        arg.read_strings(argc-1, argv+1);
-    }
-    catch( Exception & e ) {
-        std::cerr << "Error: " << e.what() << '\n';
+    if ( arg.read_strings(argc-1, argv+1) )
         return EXIT_FAILURE;
-    }
     
     // check for major options:
-    
+    if ( arg.use_key("-") )
+        Cytosim::warn.silent();
+
     if ( arg.use_key("help") )
     {
         splash(std::cout);
@@ -159,7 +158,7 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
     
-    if ( arg.use_key("live") )
+    if ( arg.use_key("live") || arg.has_key(".cym") )
         player.goLive = true;
     
     if ( arg.use_key("image") )
@@ -179,10 +178,6 @@ int main(int argc, char* argv[])
     // get image over-sampling:
     arg.set(magnify, "magnify") || arg.set(magnify, "magnification");
 
-    // The user can specify a frame index to be loaded:
-    int frm = 0;
-    arg.set(frm, "frame");
-
     // change working directory if specified:
     if ( arg.has_key("directory") )
     {
@@ -190,13 +185,19 @@ int main(int argc, char* argv[])
         //std::clog << "Cytosim working directory is " << FilePath::get_cwd() << '\n';
     }
 
+    // can specify a frame index to be loaded:
+    size_t frm = 0;
+    bool has_frame = false;
+    
     try
     {
+        has_frame = arg.set(frm, "frame");
         simul.initialize(arg);
     }
     catch( Exception & e )
     {
-        std::cerr << "Error: " << e.what() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
@@ -225,33 +226,31 @@ int main(int argc, char* argv[])
         else if ( has_setup )
             std::cerr << " warning: could not read `" << setup << "'\n";
         
-        // read settings from 'config.cym', but do not overwrite the command-line options:
+        // read settings from the setup file, but do not overwrite the command-line options:
         arg.read(simul.prop->display, 1);
         simul.prop->display_fresh = false;
         
         if ( !arg.empty() )
         {
             view.read(arg);
-            DP.read(arg);
-            PP.read(arg);
+            disp.read(arg);
+            prop.read(arg);
         }
     }
     catch( Exception & e )
     {
-        std::cerr << "Error: " << e.what() << '\n';
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
     //---------Open trajectory file and read state
 
-    if ( ! player.goLive || frm )
+    if ( ! player.goLive || has_frame )
     {
         try
         {
             std::string file = simul.prop->property_file;
-            
-            if ( !FilePath::is_file(file) )
-                throw InvalidIO("could not find `"+file+"'\n");
             
             Parser(simul, 1, 1, 0, 0, 0).readConfig(file);
             
@@ -264,17 +263,17 @@ int main(int argc, char* argv[])
             // load requested frame from trajectory file:
             if ( thread.loadFrame(frm) )
             {
-                // if EOF is reached, reload last frame in file:
-                thread.loadFrame(-1);
-                if ( thread.currFrame() > 0 )
-                    std::cerr << "Warning: could only load frame " << thread.currFrame() << '\n';
+                // load last frame in file:
+                if ( thread.loadLastFrame() )
+                    std::cerr << "Warning: could only load frame " << thread.currentFrame() << ' ';
             }
-            frm = thread.currFrame();
+            frm = thread.currentFrame();
         }
         catch( Exception & e )
         {
             arg.warnings(std::cerr);
-            std::cerr << "\nError: " << e.what() << '\n';
+            print_magenta(std::cerr, e.brief());
+            std::cerr << '\n' << e.info() << '\n';
             return EXIT_FAILURE;
         }
     }
@@ -291,7 +290,7 @@ int main(int argc, char* argv[])
         const int W = view.width() * magnify;
         const int H = view.height() * magnify;
         
-        //std::cerr << W << "x" << H << << " downsample " << PP.downsample << '\n';
+        //std::cerr << W << "x" << H << << " downsample " << prop.downsample << '\n';
         
         if ( !OffScreen::openContext() )
         {
@@ -311,7 +310,7 @@ int main(int argc, char* argv[])
         }
         
         gle::initialize();
-        player.setStyle(DP.style);
+        player.setStyle(disp.style);
         view.initGL();
 
         if ( mode == OFFSCREEN_IMAGE )
@@ -321,7 +320,7 @@ int main(int argc, char* argv[])
             do {
                 thread.loadFrame(frm);
                 // only save requested frames:
-                if ( thread.currFrame() == frm )
+                if ( thread.currentFrame() == frm )
                 {
                     displayOffscreen(view, magnify);
                     if ( multi )
@@ -335,10 +334,10 @@ int main(int argc, char* argv[])
         }
         else if ( mode == OFFSCREEN_MOVIE )
         {
-            // save every PP.period
-            unsigned s = PP.period;
+            // save every prop.period
+            unsigned s = prop.period;
             do {
-                if ( ++s >= PP.period )
+                if ( ++s >= prop.period )
                 {
                     displayOffscreen(view, magnify);
                     if ( multi )
@@ -375,9 +374,9 @@ int main(int argc, char* argv[])
 
     if ( mode == ONSCREEN_MOVIE )
     {
-        PP.exit_at_eof = true;
-        PP.save_images = true;
-        PP.play = 1;
+        prop.exit_at_eof = true;
+        prop.save_images = true;
+        prop.play = 1;
     }
     
     //-------- initialize graphical user interface and graphics
@@ -385,15 +384,18 @@ int main(int argc, char* argv[])
     try
     {
         gle::initialize();
-        player.setStyle(DP.style);
+        player.setStyle(disp.style);
         buildMenus();
+        glutAttachMenu(GLUT_RIGHT_BUTTON);
+        glutMenuStatusFunc(menuCallback);
         glutTimerFunc(100, timerCallback, 0);
         if ( glApp::isFullScreen() )
             glutFullScreen();
     }
     catch ( Exception & e )
     {
-        printf("Initialization error: %s\n", e.what());
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
         return EXIT_FAILURE;
     }
     
@@ -401,16 +403,17 @@ int main(int argc, char* argv[])
     {
         try
         {
-            thread.period(PP.period);
+            thread.period(prop.period);
             
-            if ( frm > 0 )
+            if ( has_frame )
                 thread.extend();
             else
                 thread.start();
         }
         catch( Exception & e )
         {
-            std::cerr << "\nError: " << e.what() << '\n';
+            print_magenta(std::cerr, e.brief());
+            std::cerr << '\n' << e.info() << '\n';
             return EXIT_FAILURE;
         }
     }

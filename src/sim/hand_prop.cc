@@ -9,6 +9,7 @@
 #include "sim.h"
 #include "property_list.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include "hand.h"
 #include "hand_monitor.h"
 
@@ -24,7 +25,11 @@
 #include "mighty_prop.h"
 #include "actor_prop.h"
 
-#if NEW_HANDS
+
+/// Switch to enable Myosin, Kinesin and Dynein
+#define NEW_HAND_TYPES 1
+
+#if NEW_HAND_TYPES
 #include "kinesin_prop.h"
 #include "dynein_prop.h"
 #include "myosin_prop.h"
@@ -115,7 +120,7 @@ HandProp * HandProp::newProperty(const std::string& nom, Glossary& glos)
             return new ActorProp(nom);
         if ( a == "bind" )
             return new HandProp(nom);
-#if NEW_HANDS
+#if NEW_HAND_TYPES
         if ( a == "kinesin" )
             return new KinesinProp(nom);
         if ( a == "dynein" )
@@ -167,19 +172,13 @@ void HandProp::clear()
 
 void HandProp::read(Glossary& glos)
 {
-    glos.set(binding_rate,       "binding_rate");
-    glos.set(binding_range,      "binding_range");
-    glos.set(binding_key,        "binding_key");
-    //alternative syntax:
-    glos.set(binding_rate,       "binding", 0);
-    glos.set(binding_range,      "binding", 1);
-    glos.set(binding_key,        "binding", 2);
+    glos.set(binding_rate,  "binding_rate")  || glos.set(binding_rate,  "binding", 0);
+    glos.set(binding_range, "binding_range") || glos.set(binding_range, "binding", 1);
+    glos.set(binding_key,   "binding_key")   || glos.set(binding_key,   "binding", 2);
     
-    glos.set(unbinding_rate,     "unbinding_rate");
-    glos.set(unbinding_force,    "unbinding_force");
-    //alternative syntax:
-    glos.set(unbinding_rate,     "unbinding", 0);
-    glos.set(unbinding_force,    "unbinding", 1);
+    glos.set(unbinding_rate,  "unbinding_rate")  || glos.set(unbinding_rate,  "unbinding", 0);
+    glos.set(unbinding_force, "unbinding_force") || glos.set(unbinding_force, "unbinding", 1);
+    
     
     glos.set(bind_also_end, "bind_also_end", {{"off",       NO_END},
                                               {"plus_end",  PLUS_END},
@@ -190,8 +189,8 @@ void HandProp::read(Glossary& glos)
                                               {"plus_end",  PLUS_END},
                                               {"minus_end", MINUS_END},
                                               {"both_ends", BOTH_ENDS}});
-    glos.set(bind_end_range,     "bind_only_end", 1);
-    glos.set(bind_end_range,     "bind_end_range");
+    
+    glos.set(bind_end_range, "bind_end_range") || glos.set(bind_end_range, "bind_only_end", 1);
 
 #ifdef BACKWARD_COMPATIBILITY
     glos.set(bind_also_end, "bind_also_ends", {{"off",       NO_END},
@@ -218,21 +217,19 @@ void HandProp::read(Glossary& glos)
 
 #ifdef BACKWARD_COMPATIBILITY
     if ( glos.set(hold_growing_end, "hold_growing_ends") )
-        Cytosim::warn << "hand:hold_growing_ends was renamed hold_growing_end" << std::endl;
+        Cytosim::warn << "hand:hold_growing_ends was renamed hold_growing_end\n";
 #endif
 }
 
 
 void HandProp::complete(Simul const& sim)
 {    
-    if ( sim.prop->time_step < REAL_EPSILON )
+    if ( sim.time_step() < REAL_EPSILON )
         throw InvalidParameter("simul:time_step is not defined");
     
     binding_range_sqr = square(binding_range);
-    binding_rate_prob = -std::expm1(-binding_rate * sim.prop->time_step);
-    unbinding_rate_dt = unbinding_rate * sim.prop->time_step;
-    
-    binding_rate_dt_8 = 8 * binding_rate * sim.prop->time_step;
+    binding_prob = -std::expm1(-binding_rate * sim.time_step());
+    unbinding_rate_dt = unbinding_rate * sim.time_step();
     
     if ( binding_range < 0 )
         throw InvalidParameter(name()+":binding_range must be >= 0");
@@ -251,17 +248,17 @@ void HandProp::complete(Simul const& sim)
 
     if ( sim.ready() )
     {
-        if ( binding_rate_dt_8 > sim.prop->acceptable_rate )
-            Cytosim::warn << name() << ":binding_rate is too high: decrease time_step" << std::endl;
+        if ( binding_prob > sim.prop->acceptable_prob )
+            Cytosim::warn << name() << ":binding_rate is too high: decrease time_step\n";
     
-        if ( unbinding_rate_dt > sim.prop->acceptable_rate )
-            Cytosim::warn << name() << ":unbinding_rate is too high: decrease time_step" << std::endl;
+        if ( unbinding_rate_dt > sim.prop->acceptable_prob )
+            Cytosim::warn << name() << ":unbinding_rate is too high: decrease time_step\n";
     }
     
 #ifdef BACKWARD_COMPATIBILITY
     if ( unbinding_force == 0 )
     {
-        Cytosim::warn << "assuming that hand:unbinding_force=+inf, since the set value was zero" << std::endl;
+        Cytosim::warn << "assuming that hand:unbinding_force=+inf, since the set value was zero\n";
         unbinding_force = INFINITY;
     }
 #endif
@@ -297,8 +294,7 @@ void HandProp::checkStiffness(real stiff, real len, real mul, real kT) const
     
     if ( en > 10.0 && binding_rate > 0 )
     {
-        Cytosim::warn << "hand `" << name() << "' overcomes high energy when binding:\n"\
-        << PREF << "stiffness * binding_range^2 = " << en << " kT" << std::endl;
+        Cytosim::warn << "binding of `" << name() << "' is thermodynamically unfavorable (stiffness * binding_range^2 = " << en << " kT)\n";
         //<< PREF << "you could decrease stiffness or binding_range\n";
     }
     
@@ -308,7 +304,7 @@ void HandProp::checkStiffness(real stiff, real len, real mul, real kT) const
     if ( ap > 10.0 )
     {
         Cytosim::warn << "hand `" << name() << "' may unbind just after binding:\n"\
-        << PREF << "exp( stiffness * binding_range / unbinding_force ) = " << ap << std::endl;
+        << PREF << "exp( stiffness * binding_range / unbinding_force ) = " << ap << "\n";
         //<< PREF << "you could decrease stiffness or binding_range\n";
     }
 }
@@ -353,9 +349,9 @@ real HandProp::bindingSectionRate() const
 real HandProp::bindingSectionProb() const
 {
 #if ( DIM == 2 )
-    return 2 * binding_range * binding_rate_prob;
+    return 2 * binding_range * binding_prob;
 #elif ( DIM == 3 )
-    return M_PI * binding_range * binding_range * binding_rate_prob;
+    return M_PI * binding_range * binding_range * binding_prob;
 #else
     return 0;
 #endif

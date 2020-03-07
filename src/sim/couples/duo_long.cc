@@ -59,7 +59,11 @@ Vector DuoLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
 
 //------------------------------------------------------------------------------
 
-Vector DuoLong::posSide() const
+/*
+Note that, since `mArm` is calculated by setInteraction(),
+the result of sidePos() will be incorrect if 'solve=0'
+*/
+Vector DuoLong::sidePos() const
 {
 #if ( DIM == 1 )
     
@@ -83,7 +87,7 @@ Vector DuoLong::posSide() const
  */
 Vector DuoLong::force() const
 {
-    Vector d = cHand2->pos() - DuoLong::posSide();
+    Vector d = cHand2->pos() - DuoLong::sidePos();
     
     //correct for periodic space:
     if ( modulo )

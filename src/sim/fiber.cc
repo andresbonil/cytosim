@@ -3,12 +3,15 @@
 #include <algorithm>
 
 #include "fiber.h"
+#include "field.h"
 #include "messages.h"
 #include "glossary.h"
 #include "iowrapper.h"
 #include "fiber_segment.h"
 #include "fiber_prop.h"
-#include "simul_prop.h"
+#include "object_set.h"
+#include "single.h"
+#include "simul.h"
 #include "meca.h"
 #include "hand.h"
 #include "sim.h"
@@ -19,6 +22,8 @@
 
 void Fiber::step()
 {
+    assert_small( length1() - length() );
+
     //add single that act like glue
     if ( prop->glue )
     {
@@ -31,7 +36,7 @@ void Fiber::step()
     unsigned p = hasKink(0);
     if ( p )
     {
-        PRINT_ONCE("SEVER_KINKED_FIBERS\n");
+        LOG_ONCE("SEVER_KINKED_FIBERS\n");
         objset()->add(severPoint(p));
     }
 #endif
@@ -39,7 +44,7 @@ void Fiber::step()
     // Delete kinked filaments
     if ( hasKink(0) )
     {
-        PRINT_ONCE("DELETE_KINKED_FIBERS\n");
+        LOG_ONCE("DELETE_KINKED_FIBERS\n");
         delete(this);
         return;
     }
@@ -58,29 +63,9 @@ void Fiber::step()
     
     if ( needUpdate )
     {
-        needUpdate = false;
         adjustSegmentation();
-        update();
+        updateFiber();
     }
-    
-#if FIBER_HAS_LATTICE < 0
-    //std::clog << reference() << " lattice " << std::fixed << frLattice->data(0) << std::endl;
-    //std::clog << reference() << " lattice sum = " << frLattice->sum() << "     ";
-    
-    if ( prop->lattice_binding_rate > 0 || prop->lattice_unbinding_rate > 0 )
-    {
-        real on  = prop->lattice_binding_rate * prop->time_step;
-        real off = -std::expm1( -prop->lattice_unbinding_rate * prop->time_step );
-        equilibrateLattice(frLattice, prop->field_ptr, on, off);
-    }
-    
-    if ( prop->lattice_flux_speed != 0 )
-        fluxLattice(frLattice, prop->field_ptr, prop->lattice_flux_speed);
-    
-    if ( prop->lattice_cut_fiber )
-        cutFiberLattice(frLattice);
-    //std::clog << frLattice->sum() << std::endl;
-#endif
 }
 
 
@@ -112,17 +97,9 @@ Fiber::Fiber(FiberProp const* p)
 Fiber::~Fiber()
 {
     detachHands();
-    
-#if FIBER_HAS_LATTICE < 0
-    if ( prop->field_ptr )
-        releaseLattice(frLattice, prop->field_ptr);
-#endif
 
-    if ( frGlue )
-    {
-        delete(frGlue);
-        frGlue = nullptr;
-    }
+    delete(frGlue);
+    frGlue = nullptr;
     
     if ( disp )
     {
@@ -174,11 +151,8 @@ real Fiber::projectPoint(Vector const& w, real & dis) const
 //------------------------------------------------------------------------------
 #pragma mark - Modifying
 
-void Fiber::flipPolarity()
+void Fiber::flipHandsPolarity()
 {
-    // flip all the points:
-    Chain::flipPolarity();
-    
     /* update abscissa of Hands to keep them in place:
      new_abs - minus = plus - old_abs
      new_abs = plus + minus - old_abs
@@ -267,15 +241,6 @@ Fiber* Fiber::severPoint(unsigned int pti)
     // remove MINUS_END portion on new piece:
     fib->truncateM(pti);
     assert_true(fib->abscissaM() == abs);
-    
-#if FIBER_HAS_LATTICE < 0
-    if ( frLattice.ready() )
-    {
-        assert_true( frLattice.unit() == fib->frLattice.unit() );
-        // transfer Lattice values located above the cut
-        fib->frLattice.takeP(frLattice, frLattice.index_round(abs));
-    }
-#endif
 
     // remove PLUS_END portion on self
     truncateP(pti);
@@ -292,10 +257,9 @@ Fiber* Fiber::severPoint(unsigned int pti)
         ha = nx;
     }
     
-#if FIBER_HAS_LATTICE > 0
     resetLattice();
     fib->resetLattice();
-#endif
+
     return fib;
 }
 
@@ -333,18 +297,6 @@ Fiber* Fiber::severP(real abs)
     assert_small(fib->abscissaM() - abscissaM());
     // remove MINUS_END portion on new piece
     fib->Chain::cutM(abs);
-
-#if FIBER_HAS_LATTICE < 0
-    if ( frLattice.ready() )
-    {
-        assert_true( frLattice.unit() == fib->frLattice.unit() );
-        // ensure valid range:
-        fib->frLattice.setRange(abscissaM()+abs, abscissaP());
-        
-        // transfer Lattice values located above the cut:
-        fib->frLattice.takeP(frLattice, frLattice.index_round(abscissaM()+abs));
-    }
-#endif
     
     assert_small(fib->abscissaM()-abs-abscissaM());
     
@@ -367,10 +319,8 @@ Fiber* Fiber::severP(real abs)
         ha = nx;
     }
 
-#if FIBER_HAS_LATTICE > 0
     resetLattice();
     fib->resetLattice();
-#endif
 
     return fib;
 }
@@ -436,7 +386,7 @@ void Fiber::severNow()
                 }
                 catch ( Exception & e )
                 {
-                    e << ", when cutting fiber " << reference();
+                    e << "while cutting fiber " << reference();
                     throw;
                 }
             
@@ -474,7 +424,7 @@ unsigned Fiber::hasKink(const real max_cosine) const
 }
 
 
-void Fiber::planarCut(Vector const& n, const real a, int stateP, int stateM)
+void Fiber::planarCut(Vector const& n, const real a, state_t stateP, state_t stateM)
 {
     Array<real> cuts;
     
@@ -527,18 +477,6 @@ void Fiber::join(Fiber * fib)
     //transfer dynamic state of PLUS_END:
     setDynamicStateP(fib->dynamicStateP());
 
-#if FIBER_HAS_LATTICE < 0
-    if ( frLattice.ready() )
-    {
-        assert_true( frLattice.unit() == fib->frLattice.unit() );
-        // ensure valid range:
-        frLattice.setRange(abscissaM(), abscissaP());
-        
-        // transfer Lattice values from other fiber
-        frLattice.takeP(fib->frLattice, frLattice.indexM());
-    }
-#endif
-
     // transfer all Hands
     Hand * ha = fib->handListFront;
     while ( ha )
@@ -549,9 +487,7 @@ void Fiber::join(Fiber * fib)
     }
     delete(fib);
 
-#if FIBER_HAS_LATTICE > 0
     resetLattice();
-#endif
 }
 
 
@@ -581,37 +517,34 @@ Clift R, Grace JR, Weber ME. Bubbles, drops, and particles: Courier Corporation;
  */
 
 
-/** 
- Fiber::setDragCoefficientVolume() calculates the mobility for the entire fiber, 
+/**
+ dragCoefficientVolume() calculates the mobility for the entire fiber,
  considering that the cylinder is straight and moving in a infinite fluid.
  fiber:hydrodynamic_radius[1] is a hydrodynamic cutoff that makes the
  drag coefficient proportional to length beyond the cutoff.
  
- The formula for a cylinder is taken from:\n
- <em>
- Tirado and de la Torre. J. Chem. Phys 71(6) 1979 \n
- http://link.aip.org/link/doi/10.1063/1.438613 \n
- </em>
+ The drag is determined by the viscosity and the length and diameter of the
+ filament. The aspect ratio is defined by:
 
- We calculate the translational drag coefficient averaged over all possible configurations:
+    shape = length / diameter;
 
-       aspect = length / diameter;
-       Ct =  0.312 + 0.565/aspect - 0.100/(aspect*aspect);
-       drag_cylinder = 3*M_PI*viscosity*length / ( log(aspect) + Ct );
- 
- The rotational diffusion coefficient is given by:
- Tirado and de la Torre. J. Chem. Phys 73(4) 1980 \n
+The formula for a cylinder were calculated numerically in:
+> Tirado and de la Torre. J. Chem. Phys 71(6) 1979
+> http://doi.org/10.1063/1.438613
+> Page 2584, Table 1, last column, last line for infinite aspect ratio
 
-       Cr = -0.662 + 0.917/aspect - 0.050/(aspect*aspect);
-       drag_rotation = M_PI*viscosity*length / ( log(aspect) + Cr )
- 
- If the length is shorter than the diameter, the formula above fails and may even give negative result.
- Hence we also calculate the drag of a sphere with the same radius as the cylinder:
+The translational drag coefficient is averaged over all possible configurations:
 
-       drag_sphere = 6*PI*visc*R
+    drag_cylinder = 3 * PI * viscosity * length / ( log(shape) + 0.312 );
 
- We use the maximum value between 'drag_sphere' and 'drag_cylinder'.
- */
+If the length is shorter than the diameter, the formula above fails and may
+even give negative result. Hence we also calculate the drag of a sphere with
+the same radius as the cylinder:
+
+    drag_sphere = 6 * PI * viscosity * radius
+
+We use the maximum value between 'drag_sphere' and 'drag_cylinder'.
+*/
 real Fiber::dragCoefficientVolume()
 {
     real len = length();
@@ -654,9 +587,9 @@ real Fiber::dragCoefficientVolume()
 #else
     /*
      Tirado and de la Torre. J. Chem. Phys 71(6) 1979
-     given the averaged translational friction coefficient for a cylinder:
-     (Table 1, last line for infinite aspect ratio)
+     give the averaged translational friction coefficient for a cylinder:
      3*PI*length*viscosity / ( log(length/diameter) + 0.32 )
+     (Page 2584, Table 1, last column, last line for infinite aspect ratio)
      */
     
     // length below which the formula is not valid:
@@ -665,14 +598,12 @@ real Fiber::dragCoefficientVolume()
     real drag_cylinder = pref * len / ( log( 0.5 * lenc / prop->hydrodynamic_radius[0] ) + 0.32 );
 #endif
 
-    real drag;
+    real drag = drag_sphere;
     
-    if ( len < min_len )
-        drag = drag_sphere;
-    else
+    if ( len > min_len )
     {
         // use largest drag coefficient
-        drag = ( drag_cylinder > drag_sphere ? drag_cylinder : drag_sphere );
+        drag = std::max(drag_cylinder, drag_sphere);
     }
     
     //Cytosim::log("Drag coefficient of Fiber in infinite fluid = %.1e\n", drag);
@@ -683,11 +614,9 @@ real Fiber::dragCoefficientVolume()
 
 
 /**
- Fiber::setDragCoefficientSurface() uses a formula calculated by F. Gittes in:\n
- <em>
- Hunt et al. Biophysical Journal (1994) v 67 pp 766-781 \n
- http://dx.doi.org/10.1016/S0006-3495(94)80537-5 \n
- </em>
+ dragCoefficientSurface() uses a formula calculated by F. Gittes in:\n
+ > Hunt et al. Biophysical Journal (1994) v 67 pp 766-781
+ > http://dx.doi.org/10.1016/S0006-3495(94)80537-5
  
  It applies to a cylinder moving parallel to its axis and near an immobile surface:
 
@@ -711,11 +640,9 @@ real Fiber::dragCoefficientVolume()
 
        acosh(x) = ln[ x + sqrt(x^2-1)) ] ~ ln[2x] if x >> 1
 
- Hunt et al. also credit this reference for the formula:\n
- <em>
- The slow motion of a cylinder next to a plane wall.
- Jeffrey, D.J. & Onishi, Y. (1981) Quant. J. Mech. Appl. Math. 34, 129-137.
- </em>
+ Hunt et al. also credit this reference for the formula:
+ > The slow motion of a cylinder next to a plane wall.
+ > Jeffrey, D.J. & Onishi, Y. (1981) Quant. J. Mech. Appl. Math. 34, 129-137.
 */
 real Fiber::dragCoefficientSurface()
 {
@@ -760,11 +687,11 @@ void Fiber::setDragCoefficient()
 
     //the forces are distributed equally on all points, hence we multiply by nPoints
     assert_true( nPoints > 0 );
-    rfDragPoint = drag / nPoints;
+    rfPointMobility = nPoints / drag;
     
 #if ( 0 )
     Cytosim::log << "Fiber L = " << std::setw(7) << length();
-    Cytosim::log << " drag = " << drag << " drag_point " << rfDragPoint << std::endl;
+    Cytosim::log << " drag = " << drag << " point_mobility " << rfPointMobility << std::endl;
 #endif
 }
 
@@ -775,7 +702,7 @@ void Fiber::prepareMecable()
     storeDirections();
     makeProjection();
 
-    assert_true( rfDragPoint > REAL_EPSILON );
+    assert_true( rfPointMobility > REAL_EPSILON );
 
     // the scaling of the bending elasticity depends on the length of the segments
     rfRigidity = prop->rigidity / segmentationCube();
@@ -988,32 +915,35 @@ int comp_abscissa(const void* a, const void* b)
 void Fiber::sortHands() const
 {
     size_t cnt = nbHands();
-    Hand ** tmp = new Hand*[cnt];
-    
-    size_t i = 0;
-    Hand * n = handListFront;
-    
-    while ( n )
+    if ( cnt > 1 )
     {
-        tmp[i++] = n;
-        n = n->next();
+        Hand ** tmp = new Hand*[cnt];
+        
+        size_t i = 0;
+        Hand * n = handListFront;
+        
+        while ( n )
+        {
+            tmp[i++] = n;
+            n = n->next();
+        }
+        
+        qsort(tmp, cnt, sizeof(Hand*), comp_abscissa);
+        
+        n = tmp[0];
+        handListFront = n;
+        n->prev(nullptr);
+        for ( i = 1; i < cnt; ++i )
+        {
+            n->next(tmp[i]);
+            tmp[i]->prev(n);
+            n = tmp[i];
+        }
+        n->next(nullptr);
+        handListBack = n;
+        
+        delete[] tmp;
     }
-    
-    qsort(tmp, cnt, sizeof(Hand*), comp_abscissa);
-    
-    n = tmp[0];
-    handListFront = n;
-    n->prev(nullptr);
-    for ( i = 1; i < cnt; ++i )
-    {
-        n->next(tmp[i]);
-        tmp[i]->prev(n);
-        n = tmp[i];
-    }
-    n->next(nullptr);
-    handListBack = n;
-    
-    delete[] tmp;
 }
 
 
@@ -1083,7 +1013,7 @@ unsigned Fiber::nbHandsNearEnd(const real len, const FiberEnd ref) const
 //------------------------------------------------------------------------------
 #pragma mark - Dynamic ends
 
-unsigned Fiber::dynamicState(FiberEnd end) const
+state_t Fiber::dynamicState(FiberEnd end) const
 {
     if ( end == PLUS_END )
         return dynamicStateP();
@@ -1094,7 +1024,7 @@ unsigned Fiber::dynamicState(FiberEnd end) const
 }
 
 
-void Fiber::setDynamicState(const FiberEnd end, const unsigned s)
+void Fiber::setDynamicState(const FiberEnd end, const state_t s)
 {
     if ( end == PLUS_END )
         setDynamicStateP(s);
@@ -1119,8 +1049,9 @@ real Fiber::freshAssembly(const FiberEnd end) const
  this updates the segmentation of the fiber if needed, the position of the Hands,
  and the boundaries of the Lattice if present.
  */
-void Fiber::update()
+void Fiber::updateFiber()
 {
+    needUpdate = false;
 #if ( 0 )
     Cytosim::log << reference() << " update [ "  << std::setw(9) << std::left << abscissaM();
     Cytosim::log << " "  << std::setw(9) << std::left << abscissaP() << " ]" << std::endl;
@@ -1149,271 +1080,12 @@ void Fiber::update()
     if ( frLattice.ready() )
     {
         frLattice.setRange(abscissaM(), abscissaP());
-        
-        if ( prop->field_ptr )
-        {
-            real sumM;
-            // release Lattice substance located outside the valid abscissa range
-            frLattice.collectM(sumM);
-            prop->field_ptr->cell(posEndM()) += sumM;
-            //Cytosim::log << " Fiber::MINUS_END releases " << sumM << std::endl;
-            
-            real sumP;
-            frLattice.collectP(sumP);
-            prop->field_ptr->cell(posEndP()) += sumP;
-            //Cytosim::log << " Fiber::PLUS_END releases " << sumP << std::endl;
-        }
     }
 #endif
 }
 
 //------------------------------------------------------------------------------
 #pragma mark - Lattice
-
-/**
- */
-void Fiber::setLattice(Lattice<real>& lat, real density) const
-{
-    const real uni = lat.unit();
-    const auto inf = lat.indexM();
-    const auto sup = lat.indexP();
-    assert_true( inf <= sup );
-    auto * site = lat.data();
-    
-    if ( inf == sup )
-    {
-        //the Fiber is entirely covered by one site!
-        assert_true( lat.abscissa(inf+1) >= abscissaP() );
-        site[inf] = density * ( abscissaP() - abscissaM() );
-    }
-    else
-    {
-        // the terminal site may be truncated
-        site[inf] = density * ( lat.abscissa(inf+1) - abscissaM() );
-        
-        for ( auto h = inf+1; h < sup; ++h )
-        site[h] = density * uni;
-        
-        // the terminal site may be truncated
-        site[sup] = density * ( abscissaP() - lat.abscissa(sup) );
-    }
-}
-
-/**
-Update all Lattice sites according to:
-
-    site[i] <- cst + fac * site[i]
-
- */
-void Fiber::evolveLattice(Lattice<real>& lat, real cst, real fac) const
-{
-    const auto inf = lat.indexM();
-    const auto sup = lat.indexP();
-    auto * site = lat.data();
-
-    //std::clog << "evolve " << inf << " " << sup << "\n";
-    for ( auto h = inf; h <= sup; ++h )
-        site[h] = cst + fac * site[h];
-}
-
-
-void Fiber::bindLattice(Lattice<real>& lat, Field * fld, real binding_rate) const
-{
-    // we want roughly one point per cell:
-    const real spread = fld->cellWidth();
-    
-    // each point represents a Fiber chunk of length 'spread':
-    const real rate = binding_rate * spread / fld->cellVolume();
-    
-    // fraction of the cell content that will bind in one time_step:
-    const real frac = -std::expm1( -rate * prop->time_step );
-    
-    real abs = spread * RNG.exponential();
-    const real len = length();
-    
-    // stochastic sampling with distance 'spread' along the Fiber:
-    while ( abs < len )
-    {
-        Vector pos = posM(abs);
-        real& cell = fld->cell(pos);
-        assert_true( cell >= 0 );
-        
-        // amount to be transfered:
-        real flux = cell * frac;
-        
-        cell -= flux;
-        lat.cell(abs+abscissaM()) += flux;
-        
-        abs += spread * RNG.exponential();
-    }
-}
-
-
-/**
- Release a fraction 'frac' of the Lattice substance into the Field.
- The subtance in each Lattice site is released in a cell
- corresponding to a random position within this site.
- The factor `frac` must be between 0 and 1.
- */
-void Fiber::equilibrateLattice(Lattice<real>& lat, Field * fld, real on, real off) const
-{
-    const real uni = lat.unit();
-    const auto inf = lat.indexM();
-    const auto sup = lat.indexP();
-    auto * site = lat.data();
-
-    if ( inf == sup )
-    {
-        //the Fiber is entirely covered by one site!
-        assert_true( lat.abscissa(inf+1) >= abscissaP() );
-        real & cell = fld->cell(posM(RNG.preal()*length()));
-        real flux = on * cell - off * site[inf];
-        cell      -= flux;
-        site[inf] += flux;
-    }
-    else
-    {
-        // the terminal site may be truncated
-        real a = RNG.preal() * ( uni*(inf+1) - abscissaM() );
-        real & cell = fld->cell(posM(a));
-        real flux = on * cell - off * site[inf];
-        cell      -= flux;
-        site[inf] += flux;
-        
-        for ( auto h = inf+1; h < sup; ++h )
-        {
-            // we select a random position along each site and find corresponding cell:
-            cell = fld->cell(pos(uni*(RNG.preal()+h)));
-            flux = on * cell - off * site[h];
-            cell    -= flux;
-            site[h] += flux;
-        }
-        
-        // the terminal site may be truncated
-        a = uni*sup + RNG.preal() * ( abscissaP() - uni*sup );
-        cell = fld->cell(pos(a));
-        flux = on * cell - off * site[sup];
-        cell      -= flux;
-        site[sup] += flux;
-    }
-}
-
-
-void Fiber::fluxLattice(Lattice<real>& lat, Field * fld, real speed) const
-{
-    const auto inf = lat.indexM();
-    const auto sup = lat.indexP();
-    auto * site = lat.data();
-
-    const real fac = speed * prop->time_step / prop->lattice_unit;
-    
-    if ( fabs(fac) > 1 )
-        throw InvalidParameter("lattice_flux_speed * time_step / lattice_unit is too high");
-
-    if ( fac < 0 )
-    {
-        real s = site[inf];
-        
-        for ( auto h = inf; h < sup; ++h )
-            site[h] -= fac * ( site[h+1] - site[h] );
-        
-        prop->field_ptr->cell(posEndM()) -= fac * s;
-        site[sup] += fac * site[sup];
-    }
-    else
-    {
-        real s = site[sup];
-        
-        for ( auto h = sup; h > inf; --h )
-            site[h] -= fac * ( site[h] - site[h-1] );
-        
-        prop->field_ptr->cell(posEndP()) += fac * s;
-        site[inf] -= fac * site[inf];
-    }
-}
-
-
-/**
- Release all Lattice substance into the Field.
- The subtance in each Lattice site is released in a cell
- corresponding to a random position within this site.
- */
-void Fiber::releaseLattice(Lattice<real>& lat, Field * fld) const
-{
-    const real uni = lat.unit();
-    const auto inf = lat.indexM();
-    const auto sup = lat.indexP();
-    auto * site = lat.data();
-    
-    //@todo Handle the terminal site differently since they are truncated
-    for ( auto h = inf; h <= sup; ++h )
-    {
-        fld->cell(pos(uni*(RNG.preal()+h))) += site[h];
-        site[h] = 0;
-    }
-}
-
-
-void Fiber::cutFiberLattice(Lattice<real>& lat)
-{
-    const real uni = lat.unit();
-    const auto inf = lat.indexM();
-    const auto sup = lat.indexP();
-    auto * site = lat.data();
-
-    const real fac = 1.0 / prop->time_step;
-    
-    assert_true( inf >= lat.inf() );
-    assert_true( sup <  lat.sup() );
-    assert_true( lat.abscissa(inf) <= abscissaM() );
-    assert_true( lat.abscissa(sup+1) >= abscissaP() );
-    
-    auto h = inf;
-    real val = fac * RNG.exponential();
-    real ai  = abscissaM();
-    real as  = lat.abscissa(h+1);
-    if ( as > abscissaP() )
-        as = abscissaP();
-    
-    while ( h <= sup )
-    {
-        assert_true( site[h] >= 0 );
-        val -= site[h];
-        //assert_true( ai >= abscissaM() );
-        //assert_true( as <= abscissaP() );
-        
-        while ( val < 0 )
-        {
-            /*
-             Since val < 0 and 0 <= val+site[h],
-             then        -val/site[h] <= 1
-             hence   0 < -val/site[h] < 1
-             */
-            real abs = ai - ( as - ai ) * val / site[h];
-            
-            assert_true( abs >= ai - REAL_EPSILON );
-            assert_true( abs <= as + REAL_EPSILON );
-            
-            sever(abs, STATE_RED, STATE_GREEN);
-            val += fac * RNG.exponential();
-        }
-        
-        ai = as;
-        if ( ++h == sup )
-            as = abscissaP();
-        else
-            as += uni;
-    }
-}
-
-
-void Fiber::writeLattice(FiberLattice const& lat, Outputter& out) const
-{
-    writeHeader(out, TAG_LATTICE);
-    // lat.write(out);
-    // only write information corresponding to actual Fiber abscissa range:
-    lat.write(out, lat.indexM(), lat.indexP()+1);
-}
 
 
 void Fiber::printLattice(std::ostream& os, FiberLattice const& lat) const
@@ -1430,18 +1102,34 @@ void Fiber::printLattice(std::ostream& os, FiberLattice const& lat) const
 }
 
 
-void Fiber::infoLattice(FiberLattice const& lat, unsigned& cnt, real& sm, real& mn, real& mx, bool density) const
+void Fiber::infoLattice(real& len, unsigned& cnt, real& sm, real& mn, real& mx) const
 {
-    const real scale = ( density ? 1.0/lat.unit() : 1.0 );
-    const auto sup = lat.indexP();
-    for ( auto i = lat.indexM(); i <= sup; ++i )
+#if FIBER_HAS_LATTICE
+    FiberLattice const& lat = frLattice;
+    if ( lat.ready() )
     {
-        cnt++;
-        sm += lat.data(i);
-        real x = lat.data(i) * scale;
-        mn = std::min(mn, x);
-        mx = std::max(mx, x);
+        len += length();
+        const auto sup = lat.indexP();
+        for ( auto i = lat.indexM(); i <= sup; ++i )
+        {
+            ++cnt;
+            sm += lat.data(i);
+            real x = lat.data(i);
+            mn = std::min(mn, x);
+            mx = std::max(mx, x);
+        }
     }
+#endif
+}
+
+
+FiberLattice const* Fiber::drawableLattice() const
+{
+#if FIBER_HAS_LATTICE
+    return &digitLattice;
+#else
+    return nullptr;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1620,7 +1308,12 @@ void Fiber::write(Outputter& out) const
 
 #if FIBER_HAS_LATTICE
     if ( frLattice.ready() )
-        writeLattice(frLattice, out);
+    {
+        writeHeader(out, TAG_LATTICE);
+        // frLattice.write(out);
+        // only write information corresponding to actual Fiber abscissa range:
+        frLattice.write(out, frLattice.indexM(), frLattice.indexP()+1);
+    }
 #endif
 }
 
@@ -1660,8 +1353,6 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
             fnBirthTime = in.readFloat();
 #endif
 
-        update();
-
         if ( length() + REAL_EPSILON < prop->min_length )
         {
             Cytosim::log << "Warning: fiber length < fiber:min_length";
@@ -1678,11 +1369,12 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
 #else
             FiberLattice dummy;
             dummy.read(in);
-            unit_ = dummy.unit();
+            // store unit, to get digits at the right abscissa
+            const_cast<FiberProp*>(prop)->lattice_unit = dummy.unit();
 #endif
         }
         catch( Exception & e ) {
-            e << ", Reading Lattice for " << reference();
+            e << "reading Lattice for " << reference();
             throw;
         }
     }
@@ -1702,7 +1394,6 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     else if ( tag == 'm' )
     {
         Chain::read(in, sim, tag);
-        update();
     }
 #endif
     else

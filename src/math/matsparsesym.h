@@ -10,7 +10,7 @@
 
 ///real symmetric sparse Matrix
 /**
- MatrixSparseSymmetric1 uses a sparse storage, with arrays of elements for each column.
+ MatrixSparseSymmetric uses a sparse storage, with arrays of elements for each column.
  */
 class MatrixSparseSymmetric
 {
@@ -87,12 +87,15 @@ public:
     /// add upper triangular half of 'this' block ( idx, idx, idx+siz, idx+siz ) to `mat`
     void addTriangularBlock(real* mat, index_t ldd, index_t si, unsigned nb, unsigned dim) const;
     
-    ///optional optimization that may accelerate multiplications by a vector
+    /// prepare matrix for multiplications by a vector (must be called)
     void prepareForMultiply(int dim);
     
     /// multiplication of a vector: Y = Y + M * X with dim(X) = dim(M)
     void vecMulAdd(const real* X, real* Y) const;
     
+    /// multiplication of a vector: Y = Y + M * X with dim(X) = dim(M)
+    void vecMulAdd_ALT(const real* X, real* Y) const { vecMulAdd(X, Y); }
+
     /// 2D isotropic multiplication of a vector: Y = Y + M * X with dim(X) = 2 * dim(M)
     void vecMulAddIso2D(const real* X, real* Y) const;
     
@@ -103,7 +106,7 @@ public:
     bool nonZero() const;
     
     /// number of element which are not null
-    size_t nbElements(index_t start, index_t end) const;
+    size_t nbElements(index_t start, index_t stop) const;
     
     /// number of blocks which are not null
     size_t nbElements() const { return nbElements(0, size_); }

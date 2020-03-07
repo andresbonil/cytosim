@@ -20,10 +20,10 @@ namespace VecPrint
         {
             char str[32], fmt[32];
             snprintf(fmt, sizeof(fmt), " %%%i.%if", digits+5, digits);
-            for ( size_t ii = 0; ii < m; ++ii )
+            for ( size_t i = 0; i < m; ++i )
             {
-                snprintf(str, sizeof(str), fmt, vec[ii]);
-                if ( ii % 4 )
+                snprintf(str, sizeof(str), fmt, vec[i]);
+                if ( i % 4 )
                     os << str;
                 else
                     os << "  " << str;
@@ -43,9 +43,9 @@ namespace VecPrint
         {
             char str[32], fmt[32];
             snprintf(fmt, sizeof(fmt), " %%%i.%ie", 9, digits);
-            for ( size_t ii = 0; ii < m; ++ii )
+            for ( size_t i = 0; i < m; ++i )
             {
-                snprintf(str, sizeof(str), fmt, vec[ii]);
+                snprintf(str, sizeof(str), fmt, vec[i]);
                 os << str << '\n';
             }
         }
@@ -123,7 +123,7 @@ namespace VecPrint
     
     /// print a matrix in sparse format, but adding `off` to all line and column indices
     template< typename T >
-    void sparse_off(std::ostream& os, size_t m, size_t n, const T* mat, size_t ldd, int off, int digits = 8)
+    void sparse_off(std::ostream& os, size_t m, size_t n, const T* mat, size_t ldd, size_t off, int digits = 8)
     {
         if ( !mat || m == 0 || n == 0 )
             os << " void";

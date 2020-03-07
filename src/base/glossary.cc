@@ -39,6 +39,61 @@ Glossary::Glossary(const std::string& str)
     read(iss);
 }
 
+
+//------------------------------------------------------------------------------
+#pragma mark - Formating
+
+std::string format_value(std::string const& str)
+{
+    if ( std::string::npos != str.find_first_of(" ;") )
+        return '(' + str + ')';
+    else
+        return str;
+}
+
+
+std::string format_count(size_t c)
+{
+    if ( c == 0 )
+        return " (unused)";
+    if ( c == 1 )
+        return " (used once)";
+    return " (used " + std::to_string(c) + " times)";
+}
+    
+
+std::string format(Glossary::pair_type const& pair)
+{
+    std::ostringstream os;
+    os << pair.first;
+    if ( pair.second.size() > 0 )
+    {
+        os << " = " << format_value(pair.second[0].value_);
+        for ( size_t i = 1; i < pair.second.size(); ++i )
+            os << ", " << format_value(pair.second[i].value_);
+        os << ";";
+    }
+    return os.str();
+}
+
+/**
+ Write the usage-counter for each value.
+ The width of each record will match what is printed by Glossary::write()
+ */
+std::string format_counts(Glossary::pair_type const& pair)
+{
+    std::ostringstream os;
+    os << pair.first;
+    if ( pair.second.size() > 0 )
+    {
+        os << " = " << pair.second[0].value_ << format_count(pair.second[0].count_);
+        for ( size_t i = 1; i < pair.second.size(); ++i )
+            os << ", " << pair.second[i].value_ << format_count(pair.second[i].count_);
+    }
+    return os.str();
+}
+
+
 //------------------------------------------------------------------------------
 #pragma mark - Access
 
@@ -156,11 +211,11 @@ size_t Glossary::nb_values(key_type const& k) const
 }
 
 
-bool Glossary::has_value(key_type const& key, unsigned indx) const
+bool Glossary::has_value(key_type const& key, size_t inx) const
 {
     map_type::const_iterator w = mTerms.find(key);
     if ( w != mTerms.end() )
-        return indx < w->second.size();
+        return inx < w->second.size();
     return false;
 }
 
@@ -179,7 +234,7 @@ Glossary::rec_type const* Glossary::values(key_type const& key) const
 }
 
 
-std::string Glossary::value(key_type const& key, unsigned inx) const
+std::string Glossary::value(key_type const& key, size_t inx) const
 {
     map_type::const_iterator w = mTerms.find(key);
     if ( w != mTerms.end() )
@@ -195,10 +250,10 @@ std::string Glossary::value(key_type const& key, unsigned inx) const
 
 
 /**
- This is equivalement to value(key, indx) == val, except
+ This is equivalement to value(key, inx) == val, except
  that the counter is incremented only if there is a match
  */
-bool Glossary::value_is(key_type const& key, unsigned inx, std::string const& val) const
+bool Glossary::value_is(key_type const& key, size_t inx, std::string const& val) const
 {
     map_type::const_iterator w = mTerms.find(key);
     if ( w != mTerms.end() )
@@ -253,7 +308,7 @@ int Glossary::read_key(Glossary::pair_type& res, std::istream& is)
 void Glossary::add_value(Glossary::pair_type& res, std::string& str, bool def)
 {
     //remove any space at the end of the string:
-    std::string val = Tokenizer::trimmed(str);
+    std::string val = Tokenizer::trim(str);
     
     VLOG2("Glossary::SET" << std::setw(20) << res.first << "[" << res.second.size() << "] = |" << val << "|\n");
 
@@ -335,7 +390,7 @@ int Glossary::read_value(Glossary::pair_type& res, std::istream& is)
     }
     
     is.unget();
-    throw InvalidSyntax("Unexpected token `"+std::string(1,c)+"'");
+    throw InvalidSyntax("syntax error: unexpected `"+std::string(1,c)+"'");
 }
 
 
@@ -354,30 +409,27 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
     {
         // for a new key, we accept all values
         rec_type & rec = mTerms[pair.first];
-        for ( unsigned v = 0; v < pair.second.size(); ++v )
-            rec.push_back(pair.second[v]);
+        for ( size_t i = 0; i < pair.second.size(); ++i )
+            rec.push_back(pair.second[i]);
     }
     else
     {
         // for pre-existing keys, we check every values:
         rec_type & rec = w->second;
-        for ( unsigned v = 0; v < pair.second.size(); ++v )
+        for ( size_t i = 0; i < pair.second.size(); ++i )
         {
-            if ( rec.size() <= v )
-                rec.push_back(pair.second[v]);
+            if ( rec.size() <= i )
+                rec.push_back(pair.second[i]);
             else
             {
-                if ( !rec[v].defined_  ||  !no_overwrite )
-                    rec[v] = pair.second[v];
-                else if ( pair.second[v].value_ != rec[v].value_  &&  no_overwrite > 1 )
+                if ( !rec[i].defined_  ||  !no_overwrite )
+                    rec[i] = pair.second[i];
+                else if ( pair.second[i].value_ != rec[i].value_  &&  no_overwrite > 1 )
                 {
-                    std::ostringstream oss;
-                    oss << "conflicting definitions:\n";
-                    write(oss, PREF, *w);
-                    oss << "\n";
-                    write(oss, PREF, pair);
-                    oss << "\n";
-                    throw InvalidSyntax(oss.str());
+                    InvalidSyntax e("conflicting definitions:\n");
+                    e << PREF << format(*w) << "\n";
+                    e << PREF << format(pair) << "\n";
+                    throw e;
                 }
             }
         }
@@ -386,9 +438,9 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
 
 
 /// define one value for the key at specified index: `key[inx]=val`.
-void Glossary::define(key_type const& key, unsigned inx, const std::string& str)
+void Glossary::define(key_type const& key, size_t inx, const std::string& str)
 {
-    std::string val = Tokenizer::trimmed(str);
+    std::string val = Tokenizer::trim(str);
     map_type::iterator w = mTerms.find(key);
     
     if ( w == mTerms.end() )
@@ -427,6 +479,33 @@ void Glossary::define(key_type const& k, const std::string& rhs)
 
 
 //------------------------------------------------------------------------------
+#pragma mark - Output
+
+
+void Glossary::write(std::ostream& os, std::string const& prefix) const
+{
+    for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )
+    {
+        os << prefix << format(*i);
+        std::endl(os);
+    }
+}
+
+
+std::ostream& operator << (std::ostream& os, Glossary::pair_type const& pair)
+{
+    os << "  " << format(pair);
+    return os;
+}
+
+
+std::ostream& operator << (std::ostream& os, Glossary const& glos)
+{
+    glos.write(os, "  ");
+    return os;
+}
+
+//------------------------------------------------------------------------------
 #pragma mark - Input
 
 /**
@@ -453,7 +532,7 @@ void Glossary::read_entry(std::istream& is, int no_overwrite)
     try
     {
         if ( read_key(pair, is) )
-            throw InvalidParameter("unexpected syntax");
+            throw InvalidParameter("syntax error");
         
         while ( read_value(pair, is) );
         
@@ -462,7 +541,7 @@ void Glossary::read_entry(std::istream& is, int no_overwrite)
     }
     catch( Exception& e )
     {
-        e << '\n' << StreamFunc::marked_line(is, isp, PREF);
+        e << "\n" << StreamFunc::marked_line(is, isp, PREF);
         throw;
     }
     
@@ -571,20 +650,23 @@ void Glossary::read_string(const char arg[], int no_overwrite)
  
  Strings corresponding to existing directories
  */
-void Glossary::read_strings(int argc, char* argv[], int no_overwrite)
+int Glossary::read_strings(int argc, char* argv[], int no_overwrite)
 {
-    for ( int ii = 0; ii < argc; ++ii )
+    int res = 0;
+    for ( int i = 0; i < argc; ++i )
     {
         try
         {
-            read_string(argv[ii], no_overwrite);
+            read_string(argv[i], no_overwrite);
         }
         catch( Exception & e )
         {
-            e << " in `" << argv[ii] << "'\n";
-            throw;
+            print_magenta(std::cerr, e.brief());
+            std::cerr << e.info() << '\n';
+            res = 1;
         }
     }
+    return res;
 }
 
 
@@ -592,68 +674,6 @@ std::istream& operator >> (std::istream& is, Glossary& glos)
 {
     glos.read(is);
     return is;
-}
-
-//------------------------------------------------------------------------------
-#pragma mark - Output
-
-std::string Glossary::format_value(std::string const& str)
-{
-    if ( std::string::npos != str.find_first_of(" ;") )
-        return '(' + str + ')';
-    else
-        return str;
-}
-
-
-void Glossary::write(std::ostream& os, std::string const& prefix, Glossary::pair_type const& pair)
-{
-    os << prefix << pair.first;
-    if ( pair.second.size() > 0 )
-    {
-        os << " = " << format_value(pair.second[0].value_);
-        for ( size_t v = 1; v < pair.second.size(); ++v )
-            os << ", " << format_value(pair.second[v].value_);
-        os << ";";
-    }
-}
-
-/**
- Write the usage-counter for each value.
- The width of each record will match what is printed by Glossary::write()
- */
-void Glossary::write_counts(std::ostream& os, std::string const& prefix, Glossary::pair_type const& pair)
-{
-    if ( pair.second.size() > 0 )
-    {
-        os << prefix << std::setw(pair.first.size()) << "used" << " : ";
-        os << std::setw(format_value(pair.second[0].value_).size()) << pair.second[0].count_;
-        for ( size_t v = 1; v < pair.second.size(); ++v )
-            os << "," << std::setw(format_value(pair.second[v].value_).size()+1) << pair.second[v].count_;
-    }
-}
-
-
-void Glossary::write(std::ostream& os, std::string const& prefix) const
-{
-    for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )
-    {
-        write(os, prefix, *i);
-        std::endl(os);
-    }
-}
-
-
-std::ostream& operator << (std::ostream& os, Glossary::pair_type const& pair)
-{
-    Glossary::write(os, "  ", pair);
-    return os;
-}
-
-std::ostream& operator << (std::ostream& os, Glossary const& glos)
-{
-    glos.write(os, "  ");
-    return os;
 }
 
 //------------------------------------------------------------------------------
@@ -667,14 +687,14 @@ std::ostream& operator << (std::ostream& os, Glossary const& glos)
  - 0 otherwise
  .
  */
-int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsigned threshold)
+int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, size_t threshold, std::string const& msg)
 {
     int used = 0, exhausted = 1, overused = 0;
     const rec_type& rec = pair.second;
         
-    for ( size_t v = 0; v < rec.size(); ++v )
+    for ( size_t i = 0; i < rec.size(); ++i )
     {
-        val_type const& val = rec[v];
+        val_type const& val = rec[i];
         if ( val.count_ > 0 )
             used = 1;
         if ( !val.count_ && val.defined_ )
@@ -686,23 +706,19 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
     std::string warn;
     
     if ( !used )
-        warn = "this parameter was ignored";
+        warn = "Warning, this parameter was ignored";
     else if ( !exhausted )
-        warn = "a value was ignored";
+        warn = "Warning, a value was ignored";
     if ( overused )
-        warn = "some value might have been overused";
+        warn = "Warning, some value might have been overused";
     
     if ( warn.size() )
     {
-        print_magenta(os, "Warning, " + warn + ":\n");
-        write(os, PREF, pair);
-        os << "\n";
         if ( used )
-        {
-            write_counts(os, PREF, pair);
-            os << "\n";
-        }
-        std::flush(os);
+            print_yellow(os, warn + msg + ": " + format_counts(pair));
+        else
+            print_yellow(os, warn + msg + ": " + format(pair));
+        std::endl(os);
         
         if ( ! used )
             return 4;
@@ -717,11 +733,11 @@ int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, unsign
 /**
  @returns total number of warnings associated with entire set of terms
  */
-int Glossary::warnings(std::ostream& os, unsigned threshold) const
+int Glossary::warnings(std::ostream& os, size_t threshold, std::string const& msg) const
 {
     int res = 0;
     for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )
-        res |= warnings(os, *i, threshold);
+        res |= warnings(os, *i, threshold, msg);
     return res;
 }
 
@@ -731,9 +747,9 @@ int Glossary::warnings(std::ostream& os, unsigned threshold) const
  This copies the string, removing spaces
 */
 template <>
-void Glossary::set_one(std::string& var, key_type const& key, std::string const& val) const
+void Glossary::set_value(std::string& var, key_type const& key, std::string const& val)
 {
-    //var = Tokenizer::trimmed(val);
+    //var = Tokenizer::trim(val);
     var = val;
     VLOG2("Glossary::SET STR   " << key << " = |" << var << "|\n");
 }
@@ -744,7 +760,7 @@ void Glossary::set_one(std::string& var, key_type const& key, std::string const&
  also accepting 'inf', '+inf' and '-inf' for INFINITY values
  */
 template <>
-void Glossary::set_one(float& var, key_type const& key, std::string const& val) const
+void Glossary::set_value(float& var, key_type const& key, std::string const& val)
 {
 /*
     // Infinite values are normally handled by std::strtof()
@@ -773,7 +789,7 @@ void Glossary::set_one(float& var, key_type const& key, std::string const& val) 
  also accepting 'inf', '+inf' and '-inf' for INFINITY values
  */
 template <>
-void Glossary::set_one(double& var, key_type const& key, std::string const& val) const
+void Glossary::set_value(double& var, key_type const& key, std::string const& val)
 {
 /*
     // Infinite values are normally handled by std::strtod()

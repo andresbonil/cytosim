@@ -31,7 +31,7 @@ void Solid::step()
 void Solid::setInteractions(Meca & meca) const
 {
 #if NEW_RADIAL_FLOW
-    PRINT_ONCE("NEW_RADIAL_FLOW enabled: Solids converge to the same point\n");
+    LOG_ONCE("NEW_RADIAL_FLOW enabled: Solids converge to the same point\n");
     /// Special code for Maria Burdyniuk
     real now = simul().time();
     if ( prop->flow_time[0] > now )
@@ -127,7 +127,7 @@ void Solid::reset()
     soShapeSize = 0;
     soDrag      = 0;
 #if ( DIM > 2 )
-    soMomentum = Matrix33(0,1);
+    soMomentum = Matrix33(0, 1);
 #endif
     soReshapeTimer = RNG.pint(7);
 }
@@ -279,7 +279,7 @@ void Solid::release()
 
  <h3> Add Singles to a Solid </h3>
  
- The parameter 'attach' can be used to add Single to the points of a Solid:
+ Extra parameters can be used to add Single to the points of a Solid:
  
      new solid NAME
      {
@@ -287,8 +287,6 @@ void Solid::release()
        sphere0  = ... , SINGLE_SPEC
        etc.
        anchor   = SINGLE_SPEC [, SINGLE_SPEC] ...
-       attach0  = SINGLE_SPEC [, SINGLE_SPEC] ...
-       attach1  = SINGLE_SPEC [, SINGLE_SPEC] ...
        etc.
      }
  
@@ -305,8 +303,8 @@ void Solid::release()
 
      new solid NAME
      {
-        attach1 = 1 grafted each
-        attach2 = 10 grafted
+        point1 = center, 1, grafted
+        sphere1 = 1 0 0, 7 grafted
      }
  */
 
@@ -317,7 +315,7 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
     unsigned inp, inx, nbp;
 
     if ( opt.has_key("point0") )
-        throw InvalidParameter("points start at index 1 (use `point1`, `point2`, etc.)");
+        throw InvalidParameter("point indices start at 1 (use `point1`, `point2`, etc.)");
     
     // interpret each instruction as a command to add points:
     inp = 1;
@@ -388,40 +386,46 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
         addTriad(rad);
 
 #if ( DIM > 1 )
-        real sep = 1.0, dev = 0.0;
-        if ( opt.set(dev, "deviation") && opt.set(sep, "separation") )
+        real sep = 1.0;
+        if ( opt.set(sep, "separation") )
         {
             // attach Single on the surface of this sphere:
             size_t nbs = opt.nb_values(var) - 2;
             // 'pts' is a set of unit vectors:
             std::vector<Vector> pts(nbs, Vector(0,0,0));
 
-            // we decrease gradually the separation, until all points can fit:
+            // separation should not be greater than diameter:
+            sep = std::min(sep, 2*rad);
+            // decrease separation gradually, until all points can fit:
             real dis = sep;
             size_t ouf = 0;
-            while ( tossPointsSphere(pts, dis/rad, 1024) < nbs )
+            while ( tossPointsSphere(pts, dis/rad, 128) < nbs )
             {
-                if ( ++ouf > 1024 )
+                if ( ++ouf > 128 )
                 {
                     ouf = 0;
-                    dis /= 1.1892;
+                    dis /= 1.0905044; // sqrt(sqrt(sqrt(2)))
                 }
             }
             if ( dis < sep )
                 std::cerr << "Warning: solid:separation reduced to " << dis << "\n";
+            real dev = 0.0;
+            if ( opt.set(dev, "deviation") && dev > rad )
+                throw InvalidParameter("solid:deviation should be <= radius");
             
             inx = 2;
             while ( opt.set(str, var, inx++) )
             {
                 // get a number and the name of a class:
-                unsigned num = Tokenizer::get_integer(str, 1);
+                size_t num = 1;
+                Tokenizer::split_integer(num, str);
                 SingleProp * sip = sim.findProperty<SingleProp>("single", str);
                 
                 /* add Wrists anchored on the local coordinate system:
                  we use unit vectors here since the Triad is build with 'rad' */
                 // we use unit vectors here since the Triad is build with 'rad'
                 Vector pos = pts[inx-3];
-                for ( unsigned i = 0; i < num; ++i )
+                for ( size_t i = 0; i < num; ++i )
                 {
                     vec = normalize(pos+pos.randOrthoB(dev/rad));
                     res.push_back(new Wrist(sip, this, ref, vec));
@@ -436,12 +440,13 @@ ObjectList Solid::build(Glossary& opt, Simul& sim)
             while ( opt.set(str, var, inx++) )
             {
                 // get a number and the name of a class:
-                unsigned num = Tokenizer::get_integer(str, 1);
+                size_t num = 1;
+                Tokenizer::split_integer(num, str);
                 SingleProp * sip = sim.findProperty<SingleProp>("single", str);
                 
                 /* add Wrists anchored on the local coordinate system:
                  we use unit vectors here since the Triad is build with 'rad' */
-                for ( unsigned i = 0; i < num; ++i )
+                for ( size_t i = 0; i < num; ++i )
                     res.push_back(new Wrist(sip, this, ref, Vector::randU()));
             }
         }
@@ -748,7 +753,7 @@ void Solid::reshape()
     
     Vector avg = Mecable::position();
     
-    Matrix33 S(0, 0);
+    Matrix33 S(0,0);
     for ( unsigned i = 0; i < nPoints; ++i )
         S.addOuterProduct(soShape+DIM*i, pPos+DIM*i);
     
@@ -954,13 +959,13 @@ void Solid::makeProjection()
 {
 }
 
-void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Solid::projectForces(const real* X, real* Y) const
 {
     real T = 0;
     for ( unsigned p = 0; p < nPoints; ++p )
         T += X[p];
     
-    T *= alpha / ( prop->viscosity * soDrag );
+    T *= 1.0 / ( prop->viscosity * soDrag );
     
     for ( unsigned p = 0; p < nPoints; ++p )
         Y[p] = T;
@@ -1006,7 +1011,7 @@ void Solid::makeProjection()
 }
 
 
-void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Solid::projectForces(const real* X, real* Y) const
 {
     Vector T(0.0,0.0);  // Translation
     real R = 0;         // Infinitesimal Rotation (a vector in Z)
@@ -1022,8 +1027,8 @@ void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
         R += pos[0] * xxx[1] - pos[1] * xxx[0];
     }
     
-    const real A = alpha / ( prop->viscosity * soDragRot );
-    const real B = alpha / ( prop->viscosity * soDrag );
+    const real A = 1.0 / ( prop->viscosity * soDragRot );
+    const real B = 1.0 / ( prop->viscosity * soDrag );
 
     R = A * ( R + cross(T,soCenter) );
     T = B * T + cross(soCenter,R);
@@ -1077,7 +1082,7 @@ void Solid::makeProjection()
     soCenter = cen / sum;
     if ( cnt == 1 )
     {
-        soMomentum = Matrix33(0,1.0/soDragRot);
+        soMomentum = Matrix33(0, 1.0/soDragRot);
         return;
     }
     
@@ -1086,7 +1091,7 @@ void Solid::makeProjection()
     const real B = soDrag;
     const real D = soDragRot - soDrag*soCenter.normSqr();
     
-    // finally set the matrix in front of R in setSpeedsFromForces()
+    // finally set the matrix in front of R in projectForces()
     soMomentum(0,0) = D + A * (mYY+mZZ) + B * soCenter.XX * soCenter.XX;
     soMomentum(1,0) =   - A *  mXY      + B * soCenter.XX * soCenter.YY;
     soMomentum(2,0) =   - A *  mXZ      + B * soCenter.XX * soCenter.ZZ;
@@ -1118,7 +1123,7 @@ void Solid::makeProjection()
  This calculates the total force and momentum in the center of mobility,
  scale to get speed, and distribute according to solid motion mechanics.
 */
-void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Solid::projectForces(const real* X, real* Y) const
 {
     Vector T(0,0,0);    //Translation
     Vector R(0,0,0);    //Rotation
@@ -1141,8 +1146,8 @@ void Solid::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
     
     Vector V = R + cross(T, soCenter);
     
-    const real A = alpha / ( prop->viscosity );
-    const real B = alpha / ( prop->viscosity * soDrag );
+    const real A = 1.0 / ( prop->viscosity );
+    const real B = 1.0 / ( prop->viscosity * soDrag );
 
     R = A * ( soMomentum * V );
 

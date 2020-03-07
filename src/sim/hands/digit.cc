@@ -26,7 +26,7 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
             throw InvalidParameter("fiber:lattice was not defined");
         
         // index to site containing given abscissa:
-        site_t s = lat->index(sit.abscissa());
+        lati_t s = lat->index(sit.abscissa());
 
         if ( lat->outsideMP(s) || unavailable(lat, s) )
             return false;
@@ -46,7 +46,6 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
  */
 void Digit::attach(FiberSite const& sit)
 {
-    assert_true(sit.lattice());
     Hand::attach(sit);
     assert_true(vacant(site()));
     inc();
@@ -68,7 +67,7 @@ void Digit::detach()
 //------------------------------------------------------------------------------
 #pragma mark -
 
-void Digit::hop(site_t s)
+void Digit::hop(lati_t s)
 {
     assert_true( attached() );
 #if FIBER_HAS_LATTICE
@@ -90,8 +89,8 @@ void Digit::hop(site_t s)
  */
 void Digit::crawlP(const int n)
 {
-    site_t s = site();
-    site_t e = s + n;
+    lati_t s = site();
+    lati_t e = s + n;
     
     while ( s < e )
     {
@@ -112,8 +111,8 @@ void Digit::crawlP(const int n)
  */
 void Digit::crawlM(const int n)
 {
-    site_t s = site();
-    site_t e = s - n;
+    lati_t s = site();
+    lati_t e = s - n;
     
     while ( s > e )
     {
@@ -197,9 +196,9 @@ std::ostream& operator << (std::ostream& os, Digit const& obj)
 }
 
 
+#if FIBER_HAS_LATTICE
 void Fiber::resetLattice()
 {
-#if FIBER_HAS_LATTICE
     frLattice.clear();
     
     for ( Hand * ha = handListFront; ha; ha = ha->next() )
@@ -207,6 +206,6 @@ void Fiber::resetLattice()
         if ( ha->lattice() == &frLattice )
             static_cast<Digit*>(ha)->inc();
     }
-#endif
 }
+#endif
 

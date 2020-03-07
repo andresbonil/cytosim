@@ -4,10 +4,8 @@
 #include "property_list.h"
 #include "glossary.h"
 #include "simul.h"
-#include "simul_prop.h"
 
 
-//------------------------------------------------------------------------------
 void BundleProp::clear()
 {
     stiffness  = -1;
@@ -44,7 +42,7 @@ void BundleProp::complete(Simul const& sim)
         sim.properties.find_or_die("fiber", fiber_type);
     }
 
-    fiber_prob = -std::expm1( -fiber_rate * sim.prop->time_step );
+    fiber_prob = -std::expm1( -fiber_rate * sim.time_step() );
 
     if ( overlap < 0 )
         throw InvalidParameter("bundle:overlap must be specified and >= 0");
@@ -53,8 +51,6 @@ void BundleProp::complete(Simul const& sim)
         throw InvalidParameter("bundle:stiffness must be specified and >= 0");
 }
 
-
-//------------------------------------------------------------------------------
 
 void BundleProp::write_values(std::ostream& os) const
 {

@@ -52,11 +52,11 @@ real Chain::contourLength(const real* pts, unsigned n_pts)
 
 Chain::Chain()
 {
-    fnNormal.set(0, 0, 1);
     fnCut          = 0;
     fnSegmentation = 0;
     fnAbscissaM    = 0;
     fnAbscissaP    = 0;
+    fnNormal.set(0, 0, 1);
     fnBirthTime    = 0;
     needUpdate     = false;
 }
@@ -75,11 +75,11 @@ void Chain::setStraight(Vector const& pos, Vector const& dir)
     Vector dpts = dir * ( fnCut / dir.norm() );
     //
     for ( unsigned p = 0 ; p < nPoints; ++p )
-        setPoint( p, pos + p * dpts );
+        setPoint(p, pos + p * dpts);
 }
 
 
-void Chain::setStraight(Vector const& pos, Vector const& dir, real len, const FiberEnd ref)
+void Chain::setStraight(Vector const& pos, Vector const& dir, real len)
 {
     assert_true( fnSegmentation > REAL_EPSILON );
 
@@ -91,25 +91,30 @@ void Chain::setStraight(Vector const& pos, Vector const& dir, real len, const Fi
     setNbPoints(np);
     setSegmentation(len/(np-1));
     fnAbscissaP = fnAbscissaM + len;
+    setStraight(pos, dir);
+    updateFiber();
+}
 
+
+void Chain::moveEnd(const FiberEnd ref)
+{
     switch( ref )
     {
         case MINUS_END:
-            setStraight(pos, dir);
+            translate(posMiddle()-posEndM());
             break;
             
         case PLUS_END:
-            setStraight(pos+dir*len, -dir);
+            translate(posMiddle()-posEndM());
+            flipChainPolarity();
             break;
             
         case CENTER:
-            setStraight(pos-0.5*dir*len, dir);
             break;
             
         default:
-            ABORT_NOW("invalid argument `ref`");
+            ABORT_NOW("invalid argument to Chain::moveEnd()");
     }
-    postUpdate();
 }
 
 
@@ -170,7 +175,7 @@ void Chain::setShape(const real pts[], unsigned n_pts, unsigned np)
     }
     b.load(pts+DIM*n_pts-DIM);
     setPoint(np, b);
-    postUpdate();
+    updateFiber();
     reshape();
 }
 
@@ -212,7 +217,7 @@ void Chain::setEquilibrated(real len, real persistence_length)
         Rotation rot = Rotation::rotationToVector(vec).transposed();
         rotate(rot);
     }
-    postUpdate();
+    updateFiber();
 }
 
 
@@ -569,17 +574,9 @@ void Chain::reshape_global(const unsigned ns, const real* src, real* dst, real c
  */
 void Chain::getPoints(real const* ptr)
 {
-    // use here static memory
-    static size_t alc = 0;
-    static real* mem = nullptr;
-    
-    if ( alc < allocated() )
-    {
-        alc = allocated();
-        free_real(mem);
-        mem = new_real(alc*9);
-    }
-    
+    // allocate memory
+    real* mem = new_real(9*allocated());
+
 #if ( DIM > 1 )
     if ( nPoints == 2 )
         reshape_two(ptr, pPos, fnCut);
@@ -587,16 +584,18 @@ void Chain::getPoints(real const* ptr)
 #endif
     {
         reshape_global(nbSegments(), ptr, pPos, fnCut);
-        //std::cerr << "A crude method was used to reshape " << reference() << '\n';
+        Cytosim::warn << "Warning: a crude method was used to reshape " << reference() << '\n';
     }
+
+    free_real(mem);
 }
 
 
 /**
- Flip all the points. This does not change fnAscissa,
+ Flip all the points without changing fnAbscissaM or fnAbscissaP,
  and the abscissa of center thus stays as it is.
 */
-void Chain::flipPolarity()
+void Chain::flipChainPolarity()
 {
     unsigned ii = 0;
     unsigned jj = lastPoint();
@@ -886,6 +885,7 @@ void Chain::truncateM(unsigned p)
 void Chain::truncateP(unsigned p)
 {
     Mecable::truncateP(p);
+    fnAbscissaP = abscissaPoint(p);
     postUpdate();
 }
 
@@ -928,7 +928,7 @@ void Chain::join(Chain const* fib)
     fnAbscissaP = fnAbscissaM + cut * fnCut;
     getPoints(tmp);
     free_real(tmp);
-    postUpdate();
+    updateFiber();
 }
 
 //------------------------------------------------------------------------------
@@ -992,7 +992,8 @@ real curvature3(Vector const& A, Vector const& B, Vector const& C)
 
 real Chain::curvature(unsigned p) const
 {
-    assert_true( 0 < p && p < lastPoint() );
+    if ( p < 1 || lastPoint() <= p )
+        return 0;
     return curvature3(posP(p-1), posP(p), posP(p+1));
 }
 
@@ -1282,49 +1283,38 @@ real Chain::abscissaFrom(const real dis, const FiberEnd ref) const
      }
 
 */
-real Chain::someAbscissa(std::string const& key, Glossary& opt, real alpha) const
+real Chain::someAbscissa(real dis, FiberEnd ref, int mod, real alpha) const
 {
     const real len = length();
-    real abs = len;
-
-    if ( opt.set(abs, key, 1) )
+    real a = dis;
+    
+    switch ( mod )
     {
-        FiberEnd ref = ORIGIN;
-        opt.set(ref, key, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
-        
-        int mod = 0;
-        if ( opt.set(mod, key, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}, {"regular", 3}}) )
-        {
-            if ( mod == 1 )
-            {
-                real a;
-                do {
-                    a = abs * RNG.preal();
-                } while ( a > len );
-                abs = a;
-            }
-            else if ( mod == 2 )
-            {
-                real a;
-                do {
-                    a = abs * RNG.exponential();
-                } while ( a > len );
-                abs = a;
-            }
-            else if ( mod == 3 )
-                abs *= alpha;
-        }
-        
-        abs = abscissaFrom(abs, ref);
-
-        if ( !betweenMP(abs) )
-            throw InvalidParameter("hand::abscissa is out of range");
-        
-        return abs;
+        case 0:
+            break;
+        case 1:  // random
+            do {
+                a = dis * RNG.preal();
+            } while ( a > len );
+            break;
+        case 2:  // exponential
+            do {
+                a = dis * RNG.exponential();
+            } while ( a > len );
+            break;
+        case 3:  // regular
+            a *= alpha;
+            break;
+        case 7:
+            return RNG.real_uniform(abscissaM(), abscissaP());
     }
+    
+    dis = abscissaFrom(a, ref);
 
-    // abscissa is set randomly:
-    return RNG.real_uniform(abscissaM(), abscissaP());
+    if ( !betweenMP(dis) )
+        throw InvalidParameter("hand::abscissa is out of range");
+        
+    return dis;
 }
 
 /**
@@ -1572,6 +1562,7 @@ void Chain::dump(std::ostream& os) const
 
 void Chain::write(Outputter& out) const
 {
+    assert_small( length1() - length() );
     out.writeUInt32(signature());
     out.writeFloat(length());
     out.writeFloat(fnSegmentation);

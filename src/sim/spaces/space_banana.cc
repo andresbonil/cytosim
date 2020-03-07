@@ -23,7 +23,7 @@ void SpaceBanana::resize(Glossary& opt)
     
     if ( opt.set(wid, "radius") )
         wid *= 2;
-    else opt.set(wid, "width");
+    else opt.set(wid, "diameter");
     opt.set(rad, "curvature");
     opt.set(len, "length");
 
@@ -83,7 +83,7 @@ void SpaceBanana::boundaries(Vector& inf, Vector& sup) const
 
 
 /// project on the backbone circular arc in the XY plane:
-Vector SpaceBanana::project0(Vector const& pos) const
+Vector SpaceBanana::backbone(Vector const& pos) const
 {
     Vector cp = pos - bCenter;
     
@@ -107,14 +107,14 @@ Vector SpaceBanana::project0(Vector const& pos) const
 
 bool SpaceBanana::inside(Vector const& pos) const
 {
-    Vector prj = project0(pos);
+    Vector prj = backbone(pos);
     return ( distanceSqr(pos, prj) <= bWidthSqr );
 }
 
 
 Vector SpaceBanana::project(Vector const& pos) const
 {
-    Vector cen = project0(pos);
+    Vector cen = backbone(pos);
     Vector dif = pos - cen;
     real n = dif.normSqr();
     return cen + (bWidth / sqrt(n)) * dif;
@@ -125,11 +125,12 @@ Vector SpaceBanana::project(Vector const& pos) const
 
 void SpaceBanana::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("banana", 16);
+    out.writeUInt16(4);
     out.writeFloat(bLength);
     out.writeFloat(bWidth);
     out.writeFloat(bRadius);
+    out.writeFloat(0.f);
 }
 
 
@@ -144,7 +145,7 @@ void SpaceBanana::setLengths(const real len[])
 void SpaceBanana::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "banana");
     setLengths(len);
 }
 

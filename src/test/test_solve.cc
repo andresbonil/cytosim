@@ -171,8 +171,8 @@ void processNormalKey(unsigned char c, int x, int y)
         case 'o':
             delay *= 2; break;
         case 'p':
-            if ( delay > 1 ) delay /= 2; break;
-            
+            if ( delay > 1 ) delay /= 2;
+            break;
         case 'K':
             km *= 2; break;
         case 'J':

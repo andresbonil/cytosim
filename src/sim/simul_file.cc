@@ -4,13 +4,16 @@
 #include <fstream>
 #include <unistd.h>
 #include "filepath.h"
+#include "messages.h"
 #include "parser.h"
 
-/// Current format version number used for writing object-files.
+
 /**
+ A number `currentFormatID` is used to define the format of trajectory files
  This is the initial value to Inputter::formatID()
  History of changes in file format:
 
+ 52: 18/10/2019 Space's shape is stored always on 16 characters
  51: 03/03/2019 Storing number of Aster links
  50: 19/12/2018 Fiber's birth time moved to Filament (now Chain)
  49: 12/12/2018 FiberSite writes the Lattice index but not the abscissa
@@ -125,22 +128,26 @@ void Simul::writeObjects(std::string const& name, bool append, bool binary) cons
  */
 Object * Simul::readReference(Inputter& in, ObjectTag & tag)
 {
+    int c = 0;
     do
-        tag = in.get_char();
-    while ( tag == ' ' );
+        c = in.get_char();
+    while ( c == ' ' );
     
+    if ( c == EOF )
+        throw InvalidIO("unexpected end of file");
+
+    tag = c & 127;
     // detect fat reference:
-    int fat = ( tag & 128 );
+    int fat = ( c & 128 );
 #ifdef BACKWARD_COMPATIBILITY  // formatID() < 50
-    if ( tag == '$' )
+    if ( c == '$' )
     {
         tag = in.get_char();
+        if ( tag == EOF )
+            throw InvalidIO("unexpected end of file");
         fat = 1;
     }
 #endif
-
-    if ( tag == EOF )
-        throw InvalidIO("unexpected end of file");
     
     // Object::TAG is the 'void' reference
     if ( tag == Object::TAG )
@@ -216,24 +223,21 @@ Object * Simul::readReference(Inputter& in, ObjectTag & tag)
         if ( in.formatID() < 49 )
         {
             // skip ObjectMark which is not used
-            int c = in.get_char();
-            if ( c == ':' )
+            int h = in.get_char();
+            if ( h == ':' )
             {
                 unsigned long u;
                 if ( 1 != fscanf(file, "%lu", &u) )
                 throw InvalidIO("readReference (compatibility) failed");
             }
             else
-            in.unget(c);
+            in.unget(h);
         }
 #endif
     }
 
     if ( id == 0 )
         return nullptr;
-    
-    // keep ASCII part
-    tag &= 127;
     
     if ( !isalpha(tag) )
         throw InvalidIO("`"+std::string(1,tag)+"' is not a valid class TAG");
@@ -264,7 +268,7 @@ private:
     bool  frozen;
     
     /// value of flag
-    constexpr static ObjectFlag FLAG = 777;
+    static constexpr ObjectFlag FLAG = 777;
     
 public:
     
@@ -351,7 +355,7 @@ int Simul::reloadObjects(Inputter& in, ObjectSet* subset)
     // set flag to erase any object that was not updated
     InputLock lock(this);
 
-    // if no error occured, erase objects that have not been updated
+    // if no error occurred, erase objects that have not been updated
     if ( 0 == loadObjects(in, subset) )
         lock.prune();
 
@@ -388,7 +392,6 @@ int Simul::loadObjects(Inputter& in, ObjectSet* subset)
     }
     catch(Exception & e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
         in.unlock();
         throw;
     }
@@ -440,7 +443,7 @@ int Simul::readObjects(Inputter& in, ObjectSet* subset)
             c = in.get_char();
             if ( c == '#' )
             {
-                in.get_line(line);
+                line = in.get_line();
                 break;
             }
             tag = ( c & 127 );
@@ -589,29 +592,22 @@ int Simul::readObjects(Inputter& in, ObjectSet* subset)
 #endif
             try
             {
-                Object * obj = nullptr;
                 if ( objset )
                 {
                     // check that we are using the correct ObjectSet:
                     assert_true( objset == findSetT(tag) );
-                    obj = objset->readObject(in, tag, fat);
+                    bool skip = ( subset && subset!=objset );
+                    objset->loadObject(in, tag, fat, skip);
                 }
                 else
                 {
+                    // this is the 'older' pathway
                     ObjectSet * set = findSetT(tag);
                     if ( set )
                     {
-                        obj = set->readObject(in, tag, fat);
-                        if ( !obj->linked() )
-                            set->add(obj);
+                        bool skip = ( subset && subset!=set );
+                        set->loadObject(in, tag, fat, skip);
                     }
-                }
-                if ( !obj->linked() )
-                {
-                    if ( !subset || subset==objset )
-                        objset->add(obj);
-                    else
-                        delete(obj);
                 }
             }
             catch( Exception & e )
@@ -678,13 +674,12 @@ void Simul::writeProperties(char const* name, bool prune) const
         //this should be equivalent to: writeProperties(os, prune);
         os << properties_saved << std::endl;
         os.close();
-        //std::clog << "Writing properties at frame " << currFrame() << std::endl;
+        //std::clog << "Writing properties at frame " << currentFrame() << std::endl;
     }
 }
 
 
 void Simul::loadProperties()
 {
-    if ( Parser(*this, 1, 1, 0, 0, 0).readConfig(prop->property_file) )
-        throw InvalidIO("property file `"+prop->property_file+"' not found");
+    Parser(*this, 1, 1, 0, 0, 0).readConfig(prop->property_file);
 }

@@ -121,8 +121,8 @@ void View::closeDisplay() const
 {
     endClipping();
     
-    if ( show_axes )
-        gleDrawAxes(axes_size, show_axes);
+    if ( draw_axes )
+        gleDrawAxes(axes_size, draw_axes);
     
     if ( scale_bar_mode )
     {
@@ -145,18 +145,18 @@ void View::closeDisplay() const
 */
 void View::drawInteractiveFeatures() const
 {
-    if ( show_memo && memo.size() )
+    if ( draw_memo && memo.size() )
     {
         glColor3f(1,1,1);
         drawText(memo, GLUT_BITMAP_8_BY_13, 0x000000CC, 4);
     }
 
-    if ( message.size() )
+    if ( top_message.size() )
     {
         //glEnable(GL_COLOR_LOGIC_OP);
         //glLogicOp(GL_INVERT);
         front_color.load();
-        drawText(message, nullptr, 0x0, 3);
+        drawText(top_message, nullptr, 0x0, 3);
         //glDisable(GL_COLOR_LOGIC_OP);
     }
     
@@ -803,7 +803,7 @@ void View::drawScaleH(GLfloat s, GLfloat a, GLfloat b) const
     
     // draw tick marks
     GLfloat w = 2.0;
-    char str[8] = {0};
+    char str[16] = {0};
     do {
         s /= 10;
         a /= 10;
@@ -853,7 +853,7 @@ void View::drawScaleV(GLfloat s, GLfloat a, GLfloat b) const
     
     // draw tick marks
     GLfloat w = 2.0;
-    char str[8] = {0};
+    char str[16] = {0};
     do {
         s /= 10;
         a /= 10;

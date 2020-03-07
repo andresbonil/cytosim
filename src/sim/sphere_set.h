@@ -17,7 +17,7 @@ public:
     //--------------------------
     
     /// identifies the class
-    std::string title() const { return "sphere"; }
+    static std::string title() { return "sphere"; }
     
     /// create a new property of category `cat` for a class `name`
     Property *  newProperty(const std::string& cat, const std::string& name, Glossary&) const;
@@ -27,6 +27,12 @@ public:
     
     /// create a new object (used for reading trajectory file)
     Object *    newObject(ObjectTag, unsigned);
+    
+    /// write all Objects to file
+    void        write(Outputter& out) const;
+        
+    /// print a summary of the content (nb of objects, class)
+    void        report(std::ostream& out) const { writeAssets(out, title()); }
 
     //--------------------------
    

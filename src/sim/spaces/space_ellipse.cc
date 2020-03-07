@@ -42,11 +42,11 @@ void SpaceEllipse::resize(Glossary& opt)
     for ( int d = 0; d < DIM; ++d )
     {
         real len = length_[d];
-        if ( opt.set(len, "length", d) )
+        if ( opt.set(len, "diameter", d) || opt.set(len, "length", d) )
             len *= 0.5;
         else opt.set(len, "radius", d);
         if ( len < REAL_EPSILON )
-            throw InvalidParameter("ellipse:length[] must be > 0");
+            throw InvalidParameter("ellipse:radius[] must be > 0");
         length_[d] = len;
     }
     update();
@@ -85,7 +85,7 @@ real SpaceEllipse::volume() const
     return 2 * length_[0];
 }
 
-bool  SpaceEllipse::inside(Vector const& w) const
+bool SpaceEllipse::inside(Vector const& w) const
 {
     return fabs(w.XX) < length_[0];
 }
@@ -97,7 +97,7 @@ real SpaceEllipse::volume() const
     return M_PI * length_[0] * length_[1];
 }
 
-bool  SpaceEllipse::inside(Vector const& w) const
+bool SpaceEllipse::inside(Vector const& w) const
 {
     return square(w.XX/length_[0]) + square(w.YY/length_[1]) <= 1;
 }
@@ -190,11 +190,12 @@ Vector3 SpaceEllipse::project3D(Vector3 const& w) const
 
 void SpaceEllipse::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("ellipse", 16);
+    out.writeUInt16(4);
     out.writeFloat(length_[0]);
     out.writeFloat(length_[1]);
     out.writeFloat(length_[2]);
+    out.writeFloat(0.f);
 }
 
 void SpaceEllipse::setLengths(const real len[])
@@ -208,7 +209,7 @@ void SpaceEllipse::setLengths(const real len[])
 void SpaceEllipse::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "ellipse");
     setLengths(len);
 }
 

@@ -12,7 +12,7 @@ namespace Cytosim
     Output log(std::clog);
     
     /// for warnings
-    Output warn(std::cerr, -32);
+    Output warn(std::cerr, 32U, "WARNING: ");
     
     /// output operator with `printf()` syntax and flush
     void Output::operator()(const char* fmt, ...)

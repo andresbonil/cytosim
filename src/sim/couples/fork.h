@@ -27,7 +27,7 @@ public:
     /// property
     ForkProp const* prop;
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     Fork(ForkProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor

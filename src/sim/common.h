@@ -36,6 +36,11 @@ enum AssemblyState
 };
 
 
+// used as function argument to define an AssemblyState
+/* This is needed as ENUM are treated as signed int */
+typedef unsigned state_t;
+
+
 /// Possible modes of confinements
 enum Confinement
 {

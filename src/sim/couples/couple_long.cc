@@ -61,7 +61,11 @@ Vector CoupleLong::calcArm(const Interpolation & pt, Vector const& pos, real len
 
 //------------------------------------------------------------------------------
 
-Vector CoupleLong::posSide() const
+/*
+Note that, since `mArm` is calculated by setInteraction(),
+the result of sidePos() will be incorrect if 'solve=0'
+*/
+Vector CoupleLong::sidePos() const
 {
 #if ( DIM == 1 )
     
@@ -85,7 +89,7 @@ Vector CoupleLong::posSide() const
  */
 Vector CoupleLong::force() const
 {
-    Vector d = cHand2->pos() - CoupleLong::posSide();
+    Vector d = cHand2->pos() - CoupleLong::sidePos();
     
     //correct for periodic space:
     if ( modulo )

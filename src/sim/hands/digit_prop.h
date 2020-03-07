@@ -4,7 +4,7 @@
 #define DIGIT_PROP_H
 
 #include "hand_prop.h"
-
+#include "fiber.h"
 
 /// Additional Property for Digit
 /**

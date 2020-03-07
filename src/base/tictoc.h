@@ -6,6 +6,13 @@
 
 #include <ctime>
 
+/// import __rdtsc()
+#if defined(__APPLE__) || defined(__linux)
+#  include <x86intrin.h>
+#else
+#  include <intrin.h>
+#endif
+
 /// A set of functions related to time
 /**
  Functions to get wall-time, and processor-time,
@@ -46,10 +53,10 @@ namespace TicToc
     double  seconds_today();
     
     /// number of centiseconds since midnight
-    long    centiseconds();
+    double  centiseconds();
  
     /// number of microseconds
-    int     microseconds();
+    double  microseconds();
     
     /// return CPU time in seconds and update `clk` to current time
     double  processor_time(clock_t&);

@@ -20,6 +20,12 @@
 /// 4x4 matrix class with 16 'real' elements
 class alignas(32) Matrix44
 {
+    /// access to modifiable element by index
+    real& operator[](int i)       { return val[i]; }
+    
+    /// access element value by index
+    real  operator[](int i) const { return val[i]; }
+
 public:
 
     /// values of the elements
@@ -84,8 +90,8 @@ public:
     /// dimensionality
     static int dimension() { return 4; }
     
-    /// leading dimension
-    static int stride() { return 4; }
+    /// human-readible identifier
+    static std::string what() { return "4*4"; }
 
     /// set all elements to zero
     void reset()
@@ -109,10 +115,6 @@ public:
     /// conversion to array of 'real'
     real* data()             { return val; }
     real* addr(int i, int j) { return val + ( i + 4*j ); }
-
-    /// access operator to elements by index
-    real& operator[](int i)       { return val[i]; }
-    real  operator[](int i) const { return val[i]; }
 
     /// access functions to element by line and column indices
     real& operator()(int i, int j)       { return val[i+4*j]; }
@@ -151,6 +153,24 @@ public:
         fprintf(f, " \\ %9.3f %+9.3f %+9.3f %+9.3f /\n",  val[0x3], val[0x7], val[0xB], val[0xF]);
     }
     
+    /// conversion to string
+    std::string to_string(int w, int p) const
+    {
+        std::ostringstream os;
+        os.precision(p);
+        os << "[";
+        for ( int i = 0; i < 4; ++i )
+        {
+            for ( int j = 0; j < 4; ++j )
+                os << " " << std::fixed << std::setw(w) << (*this)(i,j);
+            if ( i < 2 )
+                os << ";";
+            else
+                os << " ]";
+        }
+        return os.str();
+    }
+
     /// scale all elements
     void scale(const real alpha)
     {
@@ -262,7 +282,7 @@ public:
     }
     
     /// maximum of all component's absolute values
-    real norm() const
+    real norm_inf() const
     {
         real res = fabs(val[0]);
         for ( unsigned i = 1; i < 16; ++i )
@@ -282,14 +302,14 @@ public:
     }
 
     /// true if matrix is symmetric
-    bool is_symmetric() const
+    real asymmetry() const
     {
-        return ( val[0x4] == val[0x1]
-                && val[0x8] == val[0x2]
-                && val[0xC] == val[0x3]
-                && val[0x9] == val[0x6]
-                && val[0xD] == val[0x7]
-                && val[0xE] == val[0xB] );
+        return ( std::fabs(val[0x4]-val[0x1])
+                + std::fabs(val[0x8]-val[0x2])
+                + std::fabs(val[0xC]-val[0x3])
+                + std::fabs(val[0x9]-val[0x6])
+                + std::fabs(val[0xD]-val[0x7])
+                + std::fabs(val[0xE]-val[0xB]) );
     }
 
 #if MATRIX44_USES_AVX
@@ -313,9 +333,9 @@ public:
         vec4 s1 = mul4(load4(val+4 ), vec);
         vec4 s2 = mul4(load4(val+8 ), vec);
         vec4 s3 = mul4(load4(val+12), vec);
-        vec4 xy = add4(unpacklo4(s0, s1), unpackhi4(s0, s1));
-        vec4 zt = add4(unpacklo4(s2, s3), unpackhi4(s2, s3));
-        return add4(permute2f128(xy, zt, 0x20), permute2f128(xy, zt, 0x31));
+        s0 = add4(unpacklo4(s0, s1), unpackhi4(s0, s1));
+        s1 = add4(unpacklo4(s2, s3), unpackhi4(s2, s3));
+        return add4(permute2f128(s0, s1, 0x20), permute2f128(s0, s1, 0x31));
     }
 
     /// multiplication by a vector: this * V
@@ -657,16 +677,16 @@ public:
 };
 
 
-/// output matrix lines to std::ostream
-inline std::ostream& operator << (std::ostream& os, Matrix44 const& M)
+/// output a Matrix44
+inline std::ostream& operator << (std::ostream& os, Matrix44 const& mat)
 {
-    std::streamsize w = os.width();
+    int w = (int)os.width();
     os.width(1);
     os << "[";
     for ( int i = 0; i < 4; ++i )
     {
         for ( int j = 0; j < 4; ++j )
-            os << " " << std::fixed << std::setw(w) << M(i,j);
+            os << " " << std::fixed << std::setw(w) << mat(i,j);
         if ( i < 2 )
             os << ";";
         else

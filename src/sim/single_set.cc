@@ -28,11 +28,11 @@ void SingleSet::prepare(PropertyList const& properties)
 }
 
 
-void SingleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
+void SingleSet::step()
 {
     // use alternate attachment strategy:
     if ( uni )
-        uniAttach(fibers);
+        uniAttach(simul.fibers);
 
     /*
      ATTENTION: we have multiple lists, and Objects are automatically transfered
@@ -62,10 +62,10 @@ void SingleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepF(fgrid);
+        obj->stepF(simul);
         if ( ! nxt ) break;
         obj = nxt->next();
-        nxt->stepF(fgrid);
+        nxt->stepF(simul);
     }
 }
 
@@ -289,12 +289,12 @@ void SingleSet::write(Outputter& out) const
     if ( sizeA() > 0 )
     {
         out.put_line("\n#section single A", out.binary());
-        ObjectSet::write(aList, out);
+        writeNodes(out, aList);
     }
     if ( sizeF() > 0 )
     {
         out.put_line("\n#section single F", out.binary());
-        ObjectSet::write(fList, out);
+        writeNodes(out, fList);
     }
 }
 
@@ -329,17 +329,17 @@ void SingleSet::report(std::ostream& os) const
 {
     if ( size() > 0 )
     {
-        os << title() << "\n";
+        os << '\n' << title();
         PropertyList plist = simul.properties.find_all(title());
         for ( Property * i : plist )
         {
             SingleProp * p = static_cast<SingleProp*>(i);
             unsigned cnt = count(match_property, p);
-            os << std::setw(10) << cnt << " " << p->name();
-            os << " ( " << p->hand << " )\n";
+            os << '\n' << std::setw(10) << cnt << ' ' << p->name();
+            os << " ( " << p->hand << " )";
         }
         if ( plist.size() > 1 )
-            os << std::setw(10) << size() << " total\n";
+            os << '\n' << std::setw(10) << size() << " total";
     }
 }
 
@@ -601,21 +601,18 @@ void SingleSet::uniAttach(FiberSet const& fibers)
  */
 bool SingleSet::uniPrepare(PropertyList const& properties)
 {
-    unsigned inx = 0;
     bool res = false;
-    
+    unsigned last = 0;
+
     for ( Property const* i : properties.find_all("single") )
     {
         SingleProp const* p = static_cast<SingleProp const*>(i);
-        if ( p->fast_diffusion )
-            res = true;
-        
-        if ( p->number() > inx )
-            inx = p->number();
+        res |= p->fast_diffusion;
+        last = std::max(last, p->number());
     }
     
     if ( res )
-        uniLists.resize(inx+1);
+        uniLists.resize(last+1);
     
     return res;
 }

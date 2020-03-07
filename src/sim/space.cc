@@ -41,16 +41,13 @@ Vector Space::randomPlace() const
     
     size_t ouf = 0;
     do {
-        
         res = inf + dif.e_mul(Vector::randP());
-
         if ( ++ouf > nb_trials )
         {
-            Cytosim::warn << "placement failed in Space::randomPlace()" << std::endl;
+            throw InvalidParameter("random placement failed for space `"+prop->name()+"'");
+            //Cytosim::warn << "random placement failed for space `"+prop->name()+"'\n";
             return Vector(0,0,0);
-            //throw InvalidParameter("placement failed in Space::randomPlace()");
         }
-        
     } while ( ! inside(res) );
     
     return res;
@@ -64,13 +61,16 @@ Vector Space::randomPlace() const
  */
 Vector Space::randomPlaceNearEdge(real rad, size_t nb_trials) const
 {
+    if ( rad <= 0 )
+        throw InvalidParameter("a distance must be > 0");
+
     size_t ouf = 0;
     Vector res;
     do {
         res = randomPlace();
         assert_true( inside(res) );
         if ( ++ouf > nb_trials )
-            throw InvalidParameter("placement failed in Space::randomPlaceNearEdge()");
+            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'");
     } while ( allInside(res, rad) );
     return res;
 }
@@ -86,7 +86,7 @@ Vector Space::randomPlaceNearEdge(real rad, size_t nb_trials) const
 Vector Space::randomPlaceOnEdge(real rad, size_t nb_trials) const
 {
     if ( rad <= 0 )
-        throw InvalidParameter("surface:distance must be > 0");
+        throw InvalidParameter("a distance must be > 0");
 
     size_t ouf = 0;
     real d, rr = rad * rad;
@@ -101,7 +101,7 @@ Vector Space::randomPlaceOnEdge(real rad, size_t nb_trials) const
         res = project(pos);
         d = ( pos - res ).normSqr();
         if ( ++ouf > nb_trials )
-            throw InvalidParameter("placement failed in Space::randomPlaceOnEdge()");
+            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'");
     } while ( d > rr );
     
     return res;
@@ -193,20 +193,20 @@ real Space::max_extension() const
      volume ~ ( number-of-points-inside / number-of-point ) * volume-of-rectangle
  
  */
-real Space::estimateVolume(unsigned long cnt) const
+real Space::estimateVolume(size_t cnt) const
 {
     Vector inf, sup;
     boundaries(inf, sup);
     Vector dif = sup - inf;
     
-    unsigned long in = 0;
-    for ( unsigned long i = 0; i < cnt; ++i )
+    size_t in = 0;
+    for ( size_t i = 0; i < cnt; ++i )
     {
         Vector pos = inf + dif.e_mul(Vector::randP());
         in += inside(pos);
     }
     
-    real vol = in / real(cnt);
+    real vol = real(in) / real(cnt);
     for ( int d = 0; d < DIM; ++d )
         vol *= dif[d];
 
@@ -236,12 +236,12 @@ Vector Space::bounce(Vector pos) const
     do {
         p = project(pos);
         pos = 2*p - pos;
-        q = project(pos);
-        pos = 2*q - pos;
         if ( inside(pos) )
             return pos;
-        else if ( distanceSqr(p, q) < REAL_EPSILON )
-            return p;
+        q = project(pos);
+        pos = 2*q - pos;
+        if ( inside(pos) || distanceSqr(p, q) < REAL_EPSILON )
+            return pos;
     } while ( ++cnt < 8 );
     
     static size_t msg = 0;
@@ -381,34 +381,6 @@ void Space::setInteraction(Vector const& pos, Interpolation const& pi, Meca & me
     setInteraction(pos, pi.exact2(), meca, pi.coef1()*stiff);
 }
 
-
-/**
- This will add a force component if:
- - ( conf == inside ) && ! Space::inside(pos)
- - ( conf == outside ) &&  Space::inside(pos)
- - ( conf == surface )
- .
- */
-void Space::setInteraction(Interpolation const& pi, Meca & meca, real stiff, Confinement conf) const
-{
-    if ( conf == CONFINE_ON )
-    {
-        setInteraction(pi.pos(), pi, meca, stiff);
-    }
-    else if ( conf == CONFINE_INSIDE )
-    {
-        Vector pos = pi.pos();
-        if ( ! inside(pos) )
-            setInteraction(pos, pi, meca, stiff);
-    }
-    else if ( conf == CONFINE_OUTSIDE )
-    {
-        Vector pos = pi.pos();
-        if ( inside(pos) )
-            setInteraction(pos, pi, meca, stiff);
-    }
-}
-
 #endif
 
 //------------------------------------------------------------------------------
@@ -417,7 +389,7 @@ void Space::setInteraction(Interpolation const& pi, Meca & meca, real stiff, Con
 
 void Space::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("space", 16);
     out.writeUInt16(0);
 }
 
@@ -425,12 +397,12 @@ void Space::write(Outputter& out) const
 void Space::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "space");
     setLengths(len);
 }
 
 
-void Space::read_data(Inputter& in, real len[8])
+void Space::read_data(Inputter& in, real len[8], std::string const& expected)
 {
 #ifdef BACKWARD_COMPATIBILITY
     if ( in.formatID() < 35 )
@@ -452,27 +424,24 @@ void Space::read_data(Inputter& in, real len[8])
     }
 #endif
     
-    // read the 'shape' stored as a space-terminated string
     std::string str;
-    int c = in.get_char();
-    if ( c == ' ' )
-        c = in.get_char();
-    do {
-        str.push_back(c);
-        c = in.get_char();
-    } while ( c != ' ' );
-
-    // check that this matches current Space:
-    if ( str.compare(0, prop->shape.size(), prop->shape) )
+#ifdef BACKWARD_COMPATIBILITY
+    if ( in.formatID() < 52 )
+        str = in.get_word(); // stored as a space-terminated string
+    else
+#endif
+        str = in.get_characters(16); // stored as 16 characters
+    
+    // compare with expected shape:
+    if ( str.compare(0, expected.size(), expected) )
     {
-        std::ostringstream oss;
-        oss << "Space `" << prop->name() << "' has shape " << str;
-        oss << " in objects and " << prop->shape << " in property";
-        throw InvalidIO(oss.str());
+        InvalidIO e("space:shape mismatch");
+        e << "found space:shape `" << str << "' in file but `" << expected << "' was expected";
+        throw e;
     }
     
     // read the dimensions:
-    unsigned n = 0;
+    size_t n = 0;
 #ifdef BACKWARD_COMPATIBILITY
     if ( in.formatID() < 43 )
         n = in.readUInt8();
@@ -480,9 +449,11 @@ void Space::read_data(Inputter& in, real len[8])
 #endif
         n = in.readUInt16();
     
-    n = std::min(n, 8U);
-    for ( unsigned d = 0; d < n; ++d )
+    size_t d = 0;
+    for ( ; d < std::min(8UL,n); ++d )
         len[d] = in.readFloat();
+    for ( ; d < n; ++d )
+        in.readFloat();
 }
 
 //------------------------------------------------------------------------------

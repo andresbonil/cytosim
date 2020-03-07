@@ -63,11 +63,11 @@ Vector Wrist::force() const
 }
 
 
-void Wrist::stepF(const FiberGrid& grid)
+void Wrist::stepF(Simul& sim)
 {
     assert_false( sHand->attached() );
 
-    sHand->stepUnattached(grid, posFoot());
+    sHand->stepUnattached(sim, posFoot());
 }
 
 

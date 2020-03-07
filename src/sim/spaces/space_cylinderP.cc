@@ -20,7 +20,7 @@ void SpaceCylinderP::resize(Glossary& opt)
 {
     real len = length_, rad = radius_;
     
-    if ( opt.set(rad, "width") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
 
@@ -53,16 +53,17 @@ void SpaceCylinderP::boundaries(Vector& inf, Vector& sup) const
 }
 
 
-real  SpaceCylinderP::volume() const
+real SpaceCylinderP::volume() const
 {
     return 2 * M_PI * length_ * radius_ * radius_;
 }
 
 
-bool  SpaceCylinderP::inside(Vector const& w) const
+bool SpaceCylinderP::inside(Vector const& w) const
 {
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= radius_ * radius_ );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( RT <= radius_ * radius_ );
 #elif ( DIM > 1 )
     return ( fabs(w.YY) <= radius_ );
 #else
@@ -75,7 +76,8 @@ bool SpaceCylinderP::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= square(radius_-rad) );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( RT <= square(radius_-rad) );
 #elif ( DIM > 1 )
     return ( fabs(w.YY) <= radius_-rad );
 #else
@@ -87,8 +89,8 @@ bool SpaceCylinderP::allInside(Vector const& w, const real rad ) const
 Vector SpaceCylinderP::randomPlace() const
 {
 #if ( DIM >= 3 )
-    Vector2 sec = Vector2::randB(radius_);
-    return Vector(length_*RNG.sreal(), sec.XX, sec.YY);
+    const Vector2 V = Vector2::randB(radius_);
+    return Vector(length_*RNG.sreal(), V.XX, V.YY);
 #elif ( DIM > 1 )
     return Vector(length_*RNG.sreal(), radius_*RNG.sreal());
 #else
@@ -111,9 +113,9 @@ Vector SpaceCylinderP::project(Vector const& w) const
     }
     else
     {
-        Vector2 yz = Vector2::randU();
-        p.YY = radius_ * yz.XX;
-        p.ZZ = radius_ * yz.YY;
+        const Vector2 V = Vector2::randU();
+        p.YY = radius_ * V.XX;
+        p.ZZ = radius_ * V.YY;
     }
 #endif
     return p;
@@ -144,7 +146,7 @@ void SpaceCylinderP::setInteraction(Vector const& pos, Mecapoint const& pe, real
 
 void SpaceCylinderP::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("cylinderP", 16);
     out.writeUInt16(2);
     out.writeFloat(length_);
     out.writeFloat(radius_);
@@ -157,10 +159,11 @@ void SpaceCylinderP::setLengths(const real len[])
     radius_ = len[1];
 }
 
+
 void SpaceCylinderP::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "cylinderP");
     setLengths(len);
 }
 

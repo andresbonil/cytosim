@@ -47,14 +47,15 @@ public:
     
 protected:
     
-    /// position and position in previous step of complex
-    Vector   cPos;
+    /// position of complex when detached
+    Vector cPos;
     
     /// first Hand
-    Hand    * cHand1;
+    Hand * cHand1;
 
     /// second Hand
-    Hand    * cHand2;
+    Hand * cHand2;
+    
     
     /// specialization of HandMonitor
     bool      allowAttachment(FiberSite const&);
@@ -64,8 +65,6 @@ protected:
     void      beforeDetachment(Hand const*);
     /// specialization of HandMonitor
     ObjectID  nucleatorID() const { return Object::identity(); }
-    /// Simul container
-    Simul*    simul_ptr() const { return &Object::simul(); }
     /// specialization of HandMonitor
     Hand *    otherHand(Hand const*) const;
     /// specialization of HandMonitor
@@ -74,15 +73,15 @@ protected:
     Vector    otherDirection(Hand const*) const;
     /// specialization of HandMonitor
     real      interactionLength() const { return prop->length; }
-    /// stiffness of the interaction
-    real      interactionStiffness() const { return prop->stiffness; }
+    /// stiffness of the interaction, if the Couple is bridging
+    real      interactionStiffness() const { return ( cHand1->attached() && cHand2->attached() ) * prop->stiffness; }
 
     /// update position to account for diffusion in one time step
     void      diffuse() { cPos.addRand(prop->diffusion_dt); }
     
 public:
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     Couple(CoupleProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor
@@ -92,9 +91,6 @@ public:
     Couple&  operator=(Couple const&);
     
     //--------------------------------------------------------------------------
-    
-    /// change the property and update the two Hands
-    void           setProperty(CoupleProp *);
     
     /// add interactions to the Meca
     virtual void   setInteractions(Meca &) const;
@@ -130,6 +126,9 @@ public:
     /// the state of the Couple in { 0 ... 3 } representing { FF, FA, FA, AA }
     int            state()                const { return cHand1->attached() + 2 * cHand2->attached(); }
     
+    /// category of link: 0=parallel; 1=anti-parallel; 2=X; 3=T; 4=V
+    int            configuration(FiberEnd end, real len) const;
+
     ///stiffness of the link ( = prop->stiffness )
     real           stiffness()            const;
     
@@ -143,7 +142,7 @@ public:
     real           cosAngle()             const { return dot(cHand1->dirFiber(), cHand2->dirFiber()); }
    
     /// position on the side of fiber1 used for sideInteractions
-    virtual Vector posSide()              const { return cHand1->pos(); }
+    virtual Vector sidePos()              const { return cHand1->pos(); }
     
     /// the position of the complex if it is unattached
     Vector         posFree()              const { return cPos; }
@@ -151,13 +150,13 @@ public:
     //--------------------------------------------------------------------------
 
     /// simulation step for a free Couple: diffusion
-    virtual void   stepFF(const FiberGrid&);
+    virtual void   stepFF(Simul&);
     
     /// simulation step for a Couple attached by Hand1
-    virtual void   stepAF(const FiberGrid&);
+    virtual void   stepAF(Simul&);
     
     /// simulation step for a Couple attached by Hand2
-    virtual void   stepFA(const FiberGrid&);
+    virtual void   stepFA(Simul&);
     
     /// simulation step for a doubly-attached Couple
     virtual void   stepAA();
@@ -166,6 +165,9 @@ public:
 
     /// pointer to Hand1
     Hand*    hand1()                            { return cHand1; }
+   
+    /// pointer to constant Hand1
+    Hand const* hand1()                   const { return cHand1; }
     
     /// true if Hand1 is attached
     bool     attached1()                  const { return cHand1->attached(); }
@@ -196,6 +198,9 @@ public:
     /// pointer to Hand2
     Hand*    hand2()                            { return cHand2; }
     
+    /// pointer to constant Hand2
+    Hand const* hand2()                   const { return cHand2; }
+
     /// true if Hand2 is attached
     bool     attached2()                  const { return cHand2->attached(); }
     

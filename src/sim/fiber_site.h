@@ -52,14 +52,14 @@ protected:
     real          fbAbs;
     
     /// propagate Lattice cell index type
-    typedef FiberLattice::site_t site_t;
+    typedef FiberLattice::lati_t lati_t;
     
 #if FIBER_HAS_LATTICE
     /// pointer to the Lattice of the Fiber, or NULL if not in use
     FiberLattice* fbLattice;
     
     /// index in the Fiber's Lattice
-    site_t        fbSite;
+    lati_t        fbSite;
 #endif
 
 public:
@@ -83,10 +83,10 @@ public:
     FiberLattice* lattice() const { return fbLattice; }
     
     /// index of Lattice's site
-    site_t        site()    const { return fbSite; }
+    lati_t        site()    const { return fbSite; }
     
     /// set FiberLattice pointer at site `s` and abscissa `a`
-    void engageLattice(FiberLattice* l, site_t s, real a)
+    void engageLattice(FiberLattice* l, lati_t s, real a)
     {
         fbLattice = l;
         fbSite    = s;

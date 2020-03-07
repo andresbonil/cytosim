@@ -24,7 +24,7 @@
  The index of a site can be positive or negative, but always corresponds
  to the abscissa taken along the Fiber:
  
-     index = (site_t) floor( abscissa / unit );
+     index = (lati_t) floor( abscissa / unit );
  
  The Lattice may hold different types of information at each site, eg. a 'number of molecule'.
  The linear density can be derived by dividing by the unit length:
@@ -39,7 +39,7 @@ public:
     
     /// type used to index the Lattice
     /** This must be a signed integer type */
-    typedef int  site_t;
+    typedef int  lati_t;
 
     /// type stored in each Lattice cell
     typedef CELL cell_t;
@@ -47,10 +47,10 @@ public:
 private:
     
     /// lowest valid index (can be negative or positive)
-    site_t     laInf;
+    lati_t     laInf;
     
     /// highest valid index plus one (laSup > laInf)
-    site_t     laSup;
+    lati_t     laSup;
     
     /// distance between adjacent sites
     real       laUnit;
@@ -62,15 +62,15 @@ private:
     cell_t *   laSite;
     
     /// index of cell containing the MINUS_END
-    site_t     laIndexM;
+    lati_t     laIndexM;
     
     /// index of cell containing the PLUS_END
-    site_t     laIndexP;
+    lati_t     laIndexP;
     
 #pragma mark - Allocation
     
     /// allocate for indices within [inf, sup[, and copy values from `src`
-    void allocate_copy(site_t inf, site_t sup, cell_t src[], site_t src_inf, site_t src_sup)
+    void allocate_copy(lati_t inf, lati_t sup, cell_t src[], lati_t src_inf, lati_t src_sup)
     {
         //std::clog << this << " Lattice::allocate [" << inf << ", " << sup << "[\n";
         assert_true( inf <= sup );
@@ -79,13 +79,13 @@ private:
         cell_t * mem = ptr - inf;
         
         // reset new array:
-        for ( site_t s = inf; s < sup; ++s )
+        for ( lati_t s = inf; s < sup; ++s )
             mem[s] = 0;
 
         // transfer `src` data from given range
         if ( src )
         {
-            for ( site_t s = src_inf; s < src_sup; ++s )
+            for ( lati_t s = src_inf; s < src_sup; ++s )
             {
                 assert_true( inf <= s );
                 assert_true( s < sup );
@@ -103,7 +103,7 @@ private:
     
     
     /// allocate sites for indices within [inf, sup[, conserving existing indices
-    void allocate(site_t inf, site_t sup, site_t margin)
+    void allocate(lati_t inf, lati_t sup, lati_t margin)
     {
         assert_true( inf <= sup );
         
@@ -220,8 +220,8 @@ public:
     /// set cell values outside the valid range
     void markEdges(const cell_t val)
     {
-        for ( site_t i = laInf;   i < laIndexM; ++i ) laSite[i] = val;
-        for ( site_t i = laIndexP+1; i < laSup; ++i ) laSite[i] = val;
+        for ( lati_t i = laInf;   i < laIndexM; ++i ) laSite[i] = val;
+        for ( lati_t i = laIndexP+1; i < laSup; ++i ) laSite[i] = val;
     }
     
     /// set the range of valid abscissa
@@ -235,11 +235,8 @@ public:
 #endif
         laIndexM = index(a);
         laIndexP = index(b);
-        
-        assert_true(abscissa(laIndexM) <= a && a <= abscissa(laIndexM+1.0));
-        assert_true(abscissa(laIndexP) <= b && b <= abscissa(laIndexP+1.0));
 
-        /* allocate with some safety margin */
+        /* allocate with a safety margin of 8 cells */
         allocate(laIndexM, laIndexP+1, 8);
 #if 0
         if ( !std::is_same<real, cell_t>::value )
@@ -248,16 +245,16 @@ public:
     }
 
     /// index of site containing the MINUS_END
-    site_t  indexM() const { return laIndexM; }
+    lati_t  indexM() const { return laIndexM; }
     
     /// index of site containing the PLUS_END
-    site_t  indexP() const { return laIndexP; }
+    lati_t  indexP() const { return laIndexP; }
 
     /// first valid index
-    site_t  inf()    const { return laInf; }
+    lati_t  inf()    const { return laInf; }
     
     /// last valid index plus one
-    site_t  sup()    const { return laSup; }
+    lati_t  sup()    const { return laSup; }
 
     /// distance between adjacent sites
     real    unit()   const { return laUnit; }
@@ -265,25 +262,25 @@ public:
 #pragma mark - Index / Abscissa
 
     /// index of the site containing abscissa `a`
-    site_t  index(real a)       const { return (site_t)floor(a/laUnit); }
+    lati_t  index(real a)       const { return (lati_t)floor(a/laUnit); }
     
     /// index of the site after the one containing abscissa `a`
-    site_t  index_sup(real a)   const { return (site_t)ceil(a/laUnit); }
+    lati_t  index_sup(real a)   const { return (lati_t)ceil(a/laUnit); }
     
     /// index of the site after the one containing abscissa `a`
-    site_t  index_round(real a) const { return (site_t)round(a/laUnit); }
+    lati_t  index_round(real a) const { return (lati_t)round(a/laUnit); }
 
     /// true if index 'i' is covered by the lattice allocated range
-    bool    valid(site_t i)     const { return ( laInf <= i  &&  i < laSup ); }
+    bool    valid(lati_t i)     const { return ( laInf <= i  &&  i < laSup ); }
     
     /// true if index 'i' is not covered by the lattice allocated range
-    bool    invalid(site_t i)   const { return ( i < laInf  ||  laSup <= i ); }
+    bool    invalid(lati_t i)   const { return ( i < laInf  ||  laSup <= i ); }
     
     /// true if index 'i' corresponds to a site that is completely between Minus and Plus ends
-    bool    betweenMP(site_t i) const { return ( laIndexM < i  &&  i < laIndexP ); }
+    bool    betweenMP(lati_t i) const { return ( laIndexM < i  &&  i < laIndexP ); }
     
     /// true if index 'i' corresponds to a site that is partly or entirely outside the range
-    bool    outsideMP(site_t i) const { return ( i <= laIndexM || laIndexP <= i ); }
+    bool    outsideMP(lati_t i) const { return ( i <= laIndexM || laIndexP <= i ); }
 
     
     /// the site of index `h` covers the abscissa range `unit * h < s < unit * ( h + 1 )`
@@ -300,31 +297,31 @@ public:
     cell_t* data() const  { return laSite; }
     
     /// value at index `s`, equivalent to []
-    cell_t&       data(site_t s)       { assert_true(valid(s)); return laSite[s]; }
+    cell_t&       data(lati_t s)       { assert_true(valid(s)); return laSite[s]; }
 
     /// value at index `s`, equivalent to []
-    cell_t const& data(site_t s) const { assert_true(valid(s)); return laSite[s]; }
+    cell_t const& data(lati_t s) const { assert_true(valid(s)); return laSite[s]; }
     
     /// reference to Site at index s
-    cell_t& operator[](site_t s) { assert_true(valid(s)); return laSite[s]; }
+    cell_t& operator[](lati_t s) { assert_true(valid(s)); return laSite[s]; }
     
     /// value at abscissa `a`, with convertion to site index, unlike operator []
-    cell_t&       cell(real a)          { site_t s=index(a); assert_true(valid(s)); return laSite[s]; }
+    cell_t&       cell(real a)          { lati_t s=index(a); assert_true(valid(s)); return laSite[s]; }
     
     /// value at abscissa `a`, with convertion to site index, unlike operator []
-    cell_t const& cell(real a)    const { site_t s=index(a); assert_true(valid(s)); return laSite[s]; }
+    cell_t const& cell(real a)    const { lati_t s=index(a); assert_true(valid(s)); return laSite[s]; }
 
     /// set all sites to `value`
     void clear(cell_t value = 0)
     {
-        for ( site_t s = laInf; s < laSup; ++s )
+        for ( lati_t s = laInf; s < laSup; ++s )
             laSite[s] = value;
     }
 
 #pragma mark - Transfer
     
     /// transfer cells within `[s, e[` to *this, and reset transfered values
-    void take(Lattice<CELL> & lat, site_t is, site_t ie, cell_t zero)
+    void take(Lattice<CELL> & lat, lati_t is, lati_t ie, cell_t zero)
     {
         //std::clog << " Lattice::take [" << is << ", " << ie << "[\n";
         // select valid range:
@@ -347,13 +344,13 @@ public:
     
     
     /// transfer values in [inf, e[
-    void takeM(Lattice<CELL> & lat, const site_t e)
+    void takeM(Lattice<CELL> & lat, const lati_t e)
     {
         take(lat, laInf, e, 0);
     }
     
     /// transfer values in [s, sup[
-    void takeP(Lattice<CELL> & lat, const site_t s)
+    void takeP(Lattice<CELL> & lat, const lati_t s)
     {
         take(lat, s, laSup, 0);
     }
@@ -362,7 +359,7 @@ public:
 
     /// sum all sites in `[s, e[`, set them to zero and return total in `res`
     template <typename SUM>
-    void collectCells(SUM& res, site_t is, site_t ie)
+    void collectCells(SUM& res, lati_t is, lati_t ie)
     {
         res = 0;
         // limit boundaries
@@ -372,7 +369,7 @@ public:
         // collect
         while ( s < e )
         {
-            res += *s;
+            res += (SUM)*s;
             *s = 0;
             ++s;
         }
@@ -405,7 +402,7 @@ public:
 
     /// sum of values for all sites in `[s, e[` and return total in `res`
     template <typename SUM>
-    void sum(SUM& res, site_t is, site_t ie) const
+    void sum(SUM& res, lati_t is, lati_t ie) const
     {
         // check boundaries
         CELL * s = laSite + std::max(is, laInf);
@@ -422,14 +419,14 @@ public:
     
     /// sum of values for all sites below `e` (not-included)
     template <typename SUM>
-    void sumM(SUM& res, const site_t e) const
+    void sumM(SUM& res, const lati_t e) const
     {
         sum(res, laInf, e);
     }
 
     /// sum of values for all sites above `s` (included)
     template <typename SUM>
-    void sumP(SUM& res, const site_t s) const
+    void sumP(SUM& res, const lati_t s) const
     {
         sum(res, s, laSup);
     }
@@ -453,10 +450,10 @@ public:
 #pragma mark - I/O
     
     /// write data within [inf, sup[ to file
-    void write_data(Outputter& out, site_t inf, site_t sup) const;
+    void write_data(Outputter& out, lati_t inf, lati_t sup) const;
     
     /// write specified range to file
-    void write(Outputter& out, site_t inf, site_t sup) const
+    void write(Outputter& out, lati_t inf, lati_t sup) const
     {
         if ( sup < inf )
             throw InvalidIO("incoherent Lattice boundaries");
@@ -486,8 +483,8 @@ public:
     /// clear all cells and read data from file 
     void read(Inputter& in)
     {
-        site_t inf = in.readInt32();
-        site_t sup = in.readInt32();
+        lati_t inf = in.readInt32();
+        lati_t sup = in.readInt32();
         real uni = in.readFloat();
         in.readUInt16();
         in.readUInt8();
@@ -509,27 +506,27 @@ public:
         
         if ( nbytes == 1 )
         {
-            for ( site_t s = inf; s < sup; ++s )
+            for ( lati_t s = inf; s < sup; ++s )
                 laSite[s] = in.readUInt8();
         }
         else if ( nbytes == 2 )
         {
-            for ( site_t s = inf; s < sup; ++s )
+            for ( lati_t s = inf; s < sup; ++s )
                 laSite[s] = in.readUInt16();
         }
         else if ( nbytes == 4 )
         {
-            for ( site_t s = inf; s < sup; ++s )
+            for ( lati_t s = inf; s < sup; ++s )
                 laSite[s] = in.readUInt32();
         }
         else if ( nbytes == 8 )
         {
-            for ( site_t s = inf; s < sup; ++s )
+            for ( lati_t s = inf; s < sup; ++s )
                 laSite[s] = in.readUInt64();
         }
         else
         {
-            for ( site_t s = inf; s < sup; ++s )
+            for ( lati_t s = inf; s < sup; ++s )
                 laSite[s] = in.readFloat();
         }
     }

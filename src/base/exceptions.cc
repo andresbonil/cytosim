@@ -4,5 +4,5 @@
 
 
 /// This is used to align text in the error messages
-const char PREF[] = "        | ";
+const char PREF[] = "          | ";
 

@@ -300,44 +300,48 @@ std::vector<std::string> Tokenizer::split(std::string& str, char sep, bool get_e
 
 /**
  Split string `arg` into an integer, a space, and the remaining string.
- Any space after the integer is discarded. `arg` is truncated.
+ Any space after the integer is discarded. `arg` is truncated in the process.
  */
-int Tokenizer::get_integer(std::string& arg, int val)
+bool Tokenizer::split_integer(long& val, std::string& arg)
 {
     char const* ptr = arg.c_str();
     char * end;
     errno = 0;
     long num = strtol(ptr, &end, 10);
-    if ( !errno && end > ptr && isspace(*end) )
+    if ( !errno && end > ptr && ( *end==0 || isspace(*end) ) )
     {
+        val = num;
         // skip any additional space characters:
         while ( isspace(*end) )
             ++end;
-        arg.erase(0, end-ptr);
-        return num;
+        // remove consumed characters:
+        arg.erase(0, (size_t)(end-ptr));
+        return true;
     }
-    return val;
+    return false;
 }
 
 /**
  Split string `arg` into an integer, a space, and the remaining string.
- Any space after the integer is discarded. `arg` is truncated.
+ Any space after the integer is discarded. `arg` is truncated in the process.
  */
-unsigned int Tokenizer::get_integer(std::string& arg, unsigned int val)
+bool Tokenizer::split_integer(unsigned long& val, std::string& arg)
 {
     char const* ptr = arg.c_str();
     char * end;
     errno = 0;
     unsigned long num = strtoul(ptr, &end, 10);
-    if ( !errno && end > ptr && isspace(*end) )
+    if ( !errno && end > ptr && ( *end==0 || isspace(*end) ) )
     {
+        val = num;
         // skip any additional space characters:
         while ( isspace(*end) )
             ++end;
-        arg.erase(0, end-ptr);
-        return num;
+        // remove consumed characters:
+        arg.erase(0, (size_t)(end-ptr));
+        return true;
     }
-    return val;
+    return false;
 }
 
 /**
@@ -440,13 +444,15 @@ std::string Tokenizer::get_hexadecimal(std::istream& is)
 
 std::string Tokenizer::get_token(std::istream& is, bool eat_line)
 {
-    int c = skip_space(is, eat_line);
+    int c = skip_space(is, false);
  
     if ( c == EOF )
         return "";
     
     if ( c == '\n' )
     {
+        if ( !eat_line )
+            return "";
         is.get();
         return "\n";
     }
@@ -539,7 +545,7 @@ std::string Tokenizer::get_block_text(std::istream& is, char c_in, const char c_
  
  @returns content of the block without delimiters
  */
-std::string Tokenizer::get_block(std::istream& is, char c_in)
+std::string Tokenizer::get_block(std::istream& is, char c_in, bool or_die)
 {
     assert_true(c_in);
     
@@ -552,6 +558,9 @@ std::string Tokenizer::get_block(std::istream& is, char c_in)
         VLOG("BLOCK |" << res << "|\n");
         return res;
     }
+
+    if ( or_die )
+        throw InvalidSyntax("syntax error (expected `{...}')");
 
     return "";
 }
@@ -568,21 +577,21 @@ std::string Tokenizer::get_block(std::istream& is)
 }
 
 
-std::string Tokenizer::strip_block(std::string const& blok)
+std::string Tokenizer::strip_block(std::string const& arg)
 {
-    size_t s = blok.size();
+    size_t s = arg.size();
     
     if ( s < 2 )
-        return blok;
+        return arg;
     
-    char c = block_delimiter( blok[0] );
+    char c = block_delimiter(arg[0]);
     if ( c )
     {
-        if ( blok[s-1] != c )
+        if ( arg[s-1] != c )
             throw InvalidSyntax("mismatched enclosing symbols");
-        return blok.substr(1, s-2);
+        return arg.substr(1, s-2);
     }
-    return blok;
+    return arg;
 }
 
 
@@ -594,7 +603,7 @@ std::string Tokenizer::get_until(std::istream& is, std::string what)
 {
     std::string res;
     res.reserve(16384);
-    int d = 0;
+    unsigned d = 0;
     char c = 0;
     is.get(c);
     
@@ -616,7 +625,7 @@ std::string Tokenizer::get_until(std::istream& is, std::string what)
             {
                 res.push_back(what[0]);
                 if ( d > 1 ) {
-                    is.seekg(-d, std::ios_base::cur);
+                    is.seekg(-(int)d, std::ios_base::cur);
                     d = 0;
                 } else {
                     if ( c == what[0] )
@@ -635,12 +644,12 @@ std::string Tokenizer::get_until(std::istream& is, std::string what)
 }
 
 
-std::string Tokenizer::trimmed(std::string const& str, const std::string& ws)
+std::string Tokenizer::trim(std::string const& str, const std::string& ws)
 {
-    std::string::size_type beg = str.find_first_not_of(ws);
-    if ( beg == std::string::npos )
+    std::string::size_type s = str.find_first_not_of(ws);
+    if ( s == std::string::npos )
         return std::string();
-    std::string::size_type end = str.find_last_not_of(ws);
-    return str.substr(beg, 1+end-beg);
+    std::string::size_type e = str.find_last_not_of(ws);
+    return str.substr(s, 1+e-s);
 }
 

@@ -112,7 +112,7 @@ Fiber* FiberProp::newFiber() const
 Fiber* FiberProp::newFiber(Glossary& opt) const
 {
     Fiber * fib = newFiber();
-    real len = length;
+    real len = 1.0;
     
     /* 
      initial length and reference point for placement can be specified in 'opt'
@@ -137,8 +137,8 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         }
     }
 
-    if ( len < min_length ) len = min_length;
-    if ( len > max_length ) len = max_length;
+    len = std::max(len, min_length);
+    len = std::min(len, max_length);
     
 #if ( 1 )
     // specify the vertices directly:
@@ -153,7 +153,8 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
                 throw InvalidParameter("fiber:points must be a list of comma-separated vectors");
             fib->setPoint(p, vec);
         }
-        fib->imposeLength(len);
+        if ( opt.has_key("length") )
+            fib->imposeLength(len);
     }
     else
 #endif
@@ -178,56 +179,62 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         free_real(tmp);
     }
     else
-    {        
-        FiberEnd ref = CENTER;
-
-        opt.set(ref, "reference", {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
-        
+    {
         real pl = 0; // persistence length
-        // initialize points:
+        // place fiber horizontally with center at the origin:
         if ( opt.set(pl, "equilibrate") && pl > 0 )
             fib->setEquilibrated(len, pl);
         else
-            fib->setStraight(Vector(0,0,0), Vector(1,0,0), len, ref);
+            fib->setStraight(Vector(-0.5*len,0,0), Vector(1,0,0), len);
+        
+        FiberEnd ref = CENTER;
+        if ( opt.set(ref, "reference", {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}}) )
+            fib->moveEnd(ref);
     }
     
     // possible dynamic states of the ends
-    Glossary::dict_type<int> keys({{"white",     STATE_WHITE},
-                                   {"green",     STATE_GREEN},
-                                   {"yellow",    STATE_YELLOW},
-                                   {"orange",    STATE_ORANGE},
-                                   {"red",       STATE_RED},
-                                   {"static",    STATE_WHITE},
-                                   {"grow",      STATE_GREEN},
-                                   {"growing",   STATE_GREEN},
-                                   {"shrink",    STATE_RED},
-                                   {"shrinking", STATE_RED}});
+    Glossary::dict_type<state_t> keys({{"white",     STATE_WHITE},
+                                       {"green",     STATE_GREEN},
+                                       {"yellow",    STATE_YELLOW},
+                                       {"orange",    STATE_ORANGE},
+                                       {"red",       STATE_RED},
+                                       {"static",    STATE_WHITE},
+                                       {"grow",      STATE_GREEN},
+                                       {"growing",   STATE_GREEN},
+                                       {"shrink",    STATE_RED},
+                                       {"shrinking", STATE_RED}});
     
     
     // set state of plus ends:
-    int p = STATE_WHITE;
+    state_t p = STATE_WHITE;
 #ifdef BACKWARD_COMPATIBILITY
     if ( opt.set(p, "plus_end_state") )
-        Cytosim::warn << "use `plus_end = STATE` instead of `plus_end_state = STATE`" << std::endl;
+    {
+        fib->setDynamicStateP(p);
+        Cytosim::warn << "use `plus_end = STATE` instead of `plus_end_state = STATE`\n";
+    }
 #endif
     if ( opt.set(p, "plus_end", keys) || opt.set(p, "end_state", keys) )
         fib->setDynamicStateP(p);
 
     // set state of minus ends:
-    int m = STATE_WHITE;
+    state_t m = STATE_WHITE;
 #ifdef BACKWARD_COMPATIBILITY
     if ( opt.set(m, "minus_end_state") )
-        Cytosim::warn << "use `minus_end = STATE` instead of `minus_end_state = STATE`" << std::endl;
+    {
+        Cytosim::warn << "use `minus_end = STATE` instead of `minus_end_state = STATE`\n";
+        fib->setDynamicStateM(m);
+    }
 #endif
     if ( opt.set(m, "minus_end", keys) || opt.set(m, "end_state", 1, keys) )
         fib->setDynamicStateM(m);
 
 #ifdef BACKWARD_COMPATIBILITY
     if ( fib->prop->activity != "none" && m == 0 && p == 0 )
-        Cytosim::warn << "Fiber may not grow as both ends are in state `white`" << std::endl;
+        Cytosim::warn << "Fiber may not grow as both ends are in state `white`\n";
 #endif
     
-    fib->update();
+    fib->updateFiber();
 
     return fib;
 }
@@ -238,7 +245,6 @@ void FiberProp::clear()
 {
     rigidity            = -1;
     segmentation        = 1;
-    length              = 1;
     min_length          = 0.010;      // suitable for actin/microtubules
     max_length          = INFINITY;
     total_polymer       = INFINITY;
@@ -254,10 +260,6 @@ void FiberProp::clear()
 
     lattice             = 0;
     lattice_unit        = 0;
-    lattice_cut_fiber   = 0;
-    lattice_flux_speed  = 0;
-    lattice_binding_rate = 0;
-    lattice_unbinding_rate = 0;
 
     confine             = CONFINE_OFF;
     confine_stiffness   = -1;
@@ -267,9 +269,6 @@ void FiberProp::clear()
     steric              = 0;
     steric_radius       = 0;
     steric_range        = 0;
-    
-    field               = "none";
-    field_ptr           = nullptr;
     
     glue                = 0;
     glue_single         = "none";
@@ -291,7 +290,6 @@ void FiberProp::clear()
     
     used_polymer        = 0;
     free_polymer        = 1;
-    time_step           = 0;
     
 #if OLD_SQUEEZE_FORCE
     squeeze             = 0;
@@ -305,7 +303,6 @@ void FiberProp::read(Glossary& glos)
 {
     glos.set(rigidity,          "rigidity");
     glos.set(segmentation,      "segmentation");
-    glos.set(length,            "length");
     glos.set(min_length,        "min_length");
     glos.set(max_length,        "max_length");
     glos.set(total_polymer,     "total_polymer");
@@ -316,9 +313,9 @@ void FiberProp::read(Glossary& glos)
     {
         persistent = !ds;
         if ( ds )
-            Cytosim::warn << "please use `persistent=0` instead of `delete_stub=1`" << std::endl;
+            Cytosim::warn << "use `persistent=0` instead of `delete_stub=1`\n";
         else
-            Cytosim::warn << "please use `persistent=1` instead of `delete_stub=0`" << std::endl;
+            Cytosim::warn << "use `persistent=1` instead of `delete_stub=0`\n";
     }
 #endif
     
@@ -332,11 +329,6 @@ void FiberProp::read(Glossary& glos)
     glos.set(lattice,           "lattice");
     glos.set(lattice_unit,      "lattice", 1);
     glos.set(lattice_unit,      "lattice_unit");
-    
-    glos.set(lattice_cut_fiber, "lattice_cut_fiber");
-    glos.set(lattice_flux_speed, "lattice_flux_speed");
-    glos.set(lattice_binding_rate, "lattice_binding_rate");
-    glos.set(lattice_unbinding_rate, "lattice_unbinding_rate");
     
     glos.set(confine,           "confine", {{"off",       CONFINE_OFF},
                                             {"on",        CONFINE_ON},
@@ -380,7 +372,6 @@ void FiberProp::read(Glossary& glos)
     glos.set(steric_radius,     "steric_radius");
     glos.set(steric_range,      "steric_range");
     
-    glos.set(field,             "field");
     glos.set(glue,              "glue");
     glos.set(glue_single,       "glue", 1);
     
@@ -402,8 +393,6 @@ void FiberProp::read(Glossary& glos)
 
 void FiberProp::complete(Simul const& sim)
 {
-    time_step = sim.prop->time_step;
-    
     if ( viscosity < 0 )
         viscosity = sim.prop->viscosity;
     
@@ -413,7 +402,7 @@ void FiberProp::complete(Simul const& sim)
     confine_space_ptr = sim.findSpace(confine_space);
     
     if ( confine_space_ptr )
-        confine_space = confine_space_ptr->property()->name();
+        confine_space = confine_space_ptr->name();
 
     if ( sim.ready() && confine != CONFINE_OFF )
     {
@@ -423,9 +412,6 @@ void FiberProp::complete(Simul const& sim)
         if ( confine_stiffness < 0 )
             throw InvalidParameter(name()+":confine_stiffness must be specified and >= 0");
     }
-
-    if ( length <= 0 )
-        throw InvalidParameter("fiber:length should be > 0");
 
     if ( min_length < 0 )
         throw InvalidParameter("fiber:min_length should be >= 0");
@@ -446,25 +432,14 @@ void FiberProp::complete(Simul const& sim)
             glue_prop = sim.findProperty<SingleProp>("single", glue_single);
     }
     
-    if ( field != "none" )
-    {
-        Property * fp = sim.properties.find("field", field);
-        field_ptr = static_cast<Field*>(sim.fields.findObject(fp));
-    }
-    
     if ( lattice && sim.ready() )
     {
+#if FIBER_HAS_LATTICE
         if ( lattice_unit <= 0 )
             throw InvalidParameter("fiber:lattice_unit (known as fiber:lattice[1]) must be specified and > 0");
-
-        if ( lattice_flux_speed != 0 || lattice_binding_rate != 0 || lattice_unbinding_rate != 0 )
-        {
-            if ( field.empty() )
-                throw InvalidParameter("fiber:lattice features require fiber:field to be specified");
-
-            if ( !field_ptr )
-                throw InvalidParameter("fiber:field not found");
-        }
+#else
+        throw InvalidParameter("cytosim cannot run with fiber:lattice");
+#endif
     }
 
     if ( rigidity < 0 )
@@ -480,7 +455,7 @@ void FiberProp::complete(Simul const& sim)
         if ( fib->property() == this  &&  fib->segmentation() != segmentation )
         {
             fib->segmentation(segmentation);
-            fib->update();
+            fib->updateFiber();
         }
     }
 #endif
@@ -497,16 +472,16 @@ void FiberProp::complete(Simul const& sim)
 #if OLD_SQUEEZE_FORCE
     if ( max_chewing_speed < 0 )
         throw InvalidParameter("fiber:max_chewing_speed must be >= 0");
-    max_chewing_speed_dt = max_chewing_speed * sim.prop->time_step;
+    max_chewing_speed_dt = max_chewing_speed * sim.time_step();
 #endif
     
 #if ( 0 )
     //print some information on the 'stiffness' of the matrix
     Fiber fib(this);
-    fib.setStraight(Vector(0,0,0), Vector(1,0,0), 10, CENTER);
+    fib.setStraight(Vector(-5,0,0), Vector(1,0,0), 10);
     
     fib.setDragCoefficient();
-    real mob_dt = sim.prop->time_step * fib.nbPoints() / fib.dragCoefficient();
+    real mob_dt = sim.time_step() * fib.nbPoints() / fib.dragCoefficient();
     
     real stiffness = 100;
     real coef1 = mob_dt * stiffness;
@@ -527,7 +502,6 @@ void FiberProp::write_values(std::ostream& os) const
 {
     write_value(os, "rigidity",            rigidity);
     write_value(os, "segmentation",        segmentation);
-    write_value(os, "length",              length);
     write_value(os, "min_length",          min_length);
     write_value(os, "max_length",          max_length);
     write_value(os, "total_polymer",       total_polymer);
@@ -540,13 +514,8 @@ void FiberProp::write_values(std::ostream& os) const
 #endif
     write_value(os, "binding_key",         binding_key);
     write_value(os, "lattice",             lattice, lattice_unit);
-    write_value(os, "lattice_cut_fiber",   lattice_cut_fiber);
-    write_value(os, "lattice_flux_speed",  lattice_flux_speed);
-    write_value(os, "lattice_binding_rate", lattice_binding_rate);
-    write_value(os, "lattice_unbinding_rate", lattice_unbinding_rate);
     write_value(os, "confine",             confine, confine_stiffness, confine_space);
     write_value(os, "steric",              steric, steric_radius, steric_range);
-    write_value(os, "field",               field);
     write_value(os, "glue",                glue, glue_single);
 #if NEW_COLINEAR_FORCE
     write_value(os, "colinear_force",      colinear_force);

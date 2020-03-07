@@ -29,7 +29,11 @@ class Vector2;
  allowing easy conversion operators to and from C-array.
  Although this is not guaranteed by the C-standard, this is usually the case.
  */
+#if VECTOR3_USES_AVX
+class alignas(32) Vector3
+#else
 class Vector3
+#endif
 {
     
 public:
@@ -77,7 +81,7 @@ public:
     Vector3(vec4 const& v) { vec = v; }
     /// conversion to SIMD vector
     operator vec4 () const { return vec; }
-#elif defined(__AVX__)
+#elif defined(__AVX__) && REAL_IS_DOUBLE
     /// conversion to SIMD vector
     operator vec4 () const { return load3(&XX); }
     /// construct from SIMD vector
@@ -353,10 +357,10 @@ public:
         return ( XX == XX ) && ( YY == YY ) && ( ZZ == ZZ );
     }
     
-    /// true if all components are zero
-    bool null() const
+    /// true if some component is not zero
+    bool is_not_zero() const
     {
-        return ( XX == 0.0 ) && ( YY == 0.0 ) && ( ZZ == 0.0 );
+        return ( XX || YY || ZZ );
     }
 
     /// scale to unit norm
@@ -475,21 +479,21 @@ public:
     }
     
     /**
-     Set vectors 'ex' and 'ey' to build an orthonormal basis (this, ex, ey),
+     Set vectors 'E' and 'F' to build an orthonormal basis (this, E, F),
      assuming that 'norm(*this) == 1'
      
      From `Building an Orthonormal Basis, Revisited`,
      Tom Duff et al. Journal of Computer Graphics Techniques Vol. 6 N.1, 2017
      */
-    void orthonormal(Vector3& ex, Vector3& ey) const
+    void orthonormal(Vector3& E, Vector3& F) const
     {
         assert_true(fabs(normSqr() - 1.0) < 0.01);
 #if 0
         if ( fabs(normSqr() - 1.0) > 0.01 )
         {
             // this should not happen...
-            ex = orthogonal(1);
-            ey = cross(*this, ex).normalized();
+            E = orthogonal(1);
+            F = cross(*this, E).normalized();
             std::clog << "rescued orthonormal(" << toString() << ")\n";
         }
 #endif
@@ -501,16 +505,16 @@ public:
         const real b = YY * a;
         const real c = XX * a;
         // below normSqr(ex) = normSqr(this) + a*a*(normSqr(this)-s*s)
-        ex.set(-ZZ - b, c, XX);
-        ey.set(s * c, s * b - 1.0, s * YY);
+        E.set(-ZZ - b, c, XX);
+        F.set(s * c, s * b - 1.0, s * YY);
         //if you do not mind an inverted basis, use ey.set(c, b-s, YY);
 #else
         /// original code from Duff et al.
         const real a = -1.0 / ( ZZ + s );
         const real b = XX * YY * a;
         // below normSqr(ex) = 1 + x*x*a*a*(normSqr(this)-s*s)
-        ex.set(1.0 + s * XX * XX * a, s * b, -s * XX);
-        ey.set(b, s + YY * YY * a, -YY);
+        E.set(1.0 + s * XX * XX * a, s * b, -s * XX);
+        F.set(b, s + YY * YY * a, -YY);
 #endif
     }
     
@@ -826,6 +830,9 @@ public:
     
     /// Vector with random independent coordinates in [-1,+1]
     static const Vector3 randS();
+    
+    /// Vector with random independent coordinates in [-1/2,+1/2]
+    static const Vector3 randH();
     
     /// Vector with random independent coordinates in [-n,+n]
     static const Vector3 randS(real n);

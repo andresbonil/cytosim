@@ -52,7 +52,12 @@ Vector ShackleLong::calcArm(const Interpolation & pt, Vector const& pos, real le
 #endif
 
 //------------------------------------------------------------------------------
-Vector ShackleLong::posSide() const
+
+/*
+Note that, since `mArm` is calculated by setInteraction(),
+the result of sidePos() will be incorrect if 'solve=0'
+*/
+Vector ShackleLong::sidePos() const
 {
 #if ( DIM == 1 )
     
@@ -75,7 +80,7 @@ Vector ShackleLong::posSide() const
  */
 Vector ShackleLong::force() const
 {
-    Vector d = cHand2->pos() - ShackleLong::posSide();
+    Vector d = cHand2->pos() - ShackleLong::sidePos();
         
     //correct for periodic space:
     if ( modulo )

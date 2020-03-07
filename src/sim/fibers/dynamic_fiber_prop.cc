@@ -8,6 +8,8 @@
 #include "simul_prop.h"
 #include "exceptions.h"
 #include "glossary.h"
+#include "messages.h"
+#include "simul.h"
 
 
 Fiber* DynamicFiberProp::newFiber() const
@@ -56,12 +58,12 @@ void DynamicFiberProp::read(Glossary& glos)
 #ifdef BACKWARD_COMPATIBILITY
     
     if ( glos.set(growing_force[0], "dynamic_force") )
-        Cytosim::warn << "fiber:dynamic_force was renamed growing_force" << std::endl;
+        Cytosim::warn << "fiber:dynamic_force was renamed growing_force\n";
     
     int f = 0;
     if ( glos.set(f, "fate", {{"none", 0}, {"destroy", 1}, {"rescue", 2}}))
     {
-        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`" << std::endl;
+        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`\n";
         persistent = ( f != 1 );
         rebirth_rate[0] = ( f == 2 ? INFINITY : 0 );
     }
@@ -81,15 +83,15 @@ void DynamicFiberProp::complete(Simul const& sim)
         
         if ( growing_speed[i] < 0 )
             throw InvalidParameter("fiber:growing_speed should be >= 0");
-        growing_rate_dt[i] = sim.prop->time_step * fabs(growing_speed[i]) / unit_length;
+        growing_rate_dt[i] = sim.time_step() * fabs(growing_speed[i]) / unit_length;
 
         if ( growing_off_speed[i] > 0 )
             throw InvalidParameter("growing_off_speed should be <= 0");
-        growing_off_rate_dt[i] = sim.prop->time_step * growing_off_speed[i] / unit_length;
+        growing_off_rate_dt[i] = sim.time_step() * growing_off_speed[i] / unit_length;
 
         if ( hydrolysis_rate[i] < 0 )
             throw InvalidParameter("fiber:hydrolysis_rate should be >= 0");
-        hydrolysis_rate_2dt[i] = 2 * sim.prop->time_step * hydrolysis_rate[i];
+        hydrolysis_rate_2dt[i] = 2 * sim.time_step() * hydrolysis_rate[i];
         
         
         zone_space_ptr = sim.findSpace(zone_space);
@@ -98,15 +100,15 @@ void DynamicFiberProp::complete(Simul const& sim)
             throw InvalidParameter("fiber:zone_radius should be >= 0");
         if ( zone_hydrolysis_rate[i] < 0 )
             throw InvalidParameter("fiber:zone_hydrolysis_rate should be >= 0");
-        zone_hydrolysis_rate_2dt[i] = 2 * sim.prop->time_step * zone_hydrolysis_rate[i];
+        zone_hydrolysis_rate_2dt[i] = 2 * sim.time_step() * zone_hydrolysis_rate[i];
         
         if ( shrinking_speed[i] > 0 )
             throw InvalidParameter("fiber:shrinking_speed should be <= 0");
-        shrinking_rate_dt[i] = sim.prop->time_step * fabs(shrinking_speed[i]) / unit_length;
+        shrinking_rate_dt[i] = sim.time_step() * fabs(shrinking_speed[i]) / unit_length;
         
         if ( rebirth_rate[i] < 0 )
             throw InvalidParameter("fiber:rebirth_rate should be >= 0");
-        rebirth_prob[i] = -std::expm1( -rebirth_rate[i] * sim.prop->time_step );
+        rebirth_prob[i] = -std::expm1( -rebirth_rate[i] * sim.time_step() );
     }
 
     if ( min_length <= 0 )

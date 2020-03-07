@@ -4,7 +4,20 @@
 #include "iowrapper.h"
 #include "glossary.h"
 #include "simul.h"
+#include "event.h"
 
+
+// first object
+Event * EventSet::first() const
+{
+    return static_cast<Event*>(nodes.front());
+}
+
+// return pointer to the Object of given ID, or zero if not found
+Event * EventSet::findID(ObjectID n) const
+{
+    return static_cast<Event*>(inventory.get(n));
+}
 
 void EventSet::step()
 {
@@ -38,8 +51,10 @@ Object * EventSet::newObject(const ObjectTag tag, unsigned num)
      {
          code = CODE;
          rate = POSITIVE_REAL;
-         recurrent = [0, 1];
+         interval = POSITIVE_REAL;
      }
+ 
+  `rate` (inverse of time) or `interval` (time) must be specified but not both.
  */
 ObjectList EventSet::newObjects(const std::string&, Glossary& opt)
 {
@@ -47,5 +62,15 @@ ObjectList EventSet::newObjects(const std::string&, Glossary& opt)
     Event * e = new Event(simul.time(), opt);
     res.push_back(e);
     return res;
+}
+
+
+void EventSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
 }
 

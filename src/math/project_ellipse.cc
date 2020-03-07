@@ -95,17 +95,8 @@ void projectEllipse(real&   pX, real&  pY,
         
         real F    = 1 - ( pXX         + pYY       );
         real dF   = 2 * ( pXX / aah   + pYY / bbh );
-#if ( 0 )
-        real ddF  =   - pXX / ( aah * aah ) - pYY / ( bbh * bbh );  // * 2
-        //dddF =    + pXX / ( aah * aah * aah ) + pYY / ( bbh * bbh * bbh );  // * 6
-        //fprintf(stderr, "       %+.10f   %+.10f   %+.10f\n", F, dF, ddF);
-
-        // Halley's method convergence is cubic in general
-        h -= ( F * dF ) / ( dF * dF - F * ddF );
-#else
         // Newtons' method
         h -= F / dF;
-#endif
         
         //fprintf(stderr, "  %i : h %+f  F %+20.16f  dF %+20.16f  dh %e\n", cnt, h, F, dF, h-h_old);
         
@@ -245,15 +236,8 @@ void projectEllipsoid(real  p[3],
 
         real   F = 1 - ( pXX         + pYY         + pZZ       );
         real  dF = 2 * ( pXX / aah   + pYY / bbh   + pZZ / cch );
-#if ( 0 )
-        real ddF =   - pXX/(aah*aah) - pYY/(bbh*bbh) - pZZ/(cch*cch);  // * 2
-        
-        // Halley's method convergence is cubic in general
-        h -= ( F * dF ) / ( dF * dF - F * ddF );
-#else
         // Newton's method
         h -= F / dF;
-#endif
         
         //fprintf(stderr, "  %i : h %+f  F %+e dh %+.20f\n", cnt, h_old, F, h-h_old);
         //fprintf(stderr, "       %+.10f   %+.10f   %+.10f   %+.10f\n", F, F/dF, ddF/dF, dddF/dF);
@@ -289,23 +273,4 @@ void projectEllipsoid(real  p[3],
     fprintf(stderr, " %2i  >>> h %12.8f  F  %+e\n", cnt, h, F);
 #endif
 }
-
-
-#if ( 0 )
-
-// Halley's method convergence is cubic in general
-dh = -( F * dF ) / ( dF * dF - 0.5 * F * ddF );
-
-// 4th order method:
-dh = -F * ( dF * dF - 0.5 * F * ddF ) / ( dF * dF * dF - F * dF * ddF + dddF * F * F / 6 );
-
-// modified 4th order method:
-dh = -F / dF * ( 1 + 0.5 * F * ddF / ( dF * dF ) + F * F * ( 3 * ddF * ddF - dF * dddF ) / ( 6 * dF * dF * dF * dF ));
-
-// or equivalently:
-real R = F / dF;
-real T = ddF / dF;
-dh = -R * ( 1 + 0.5 * R * T + R * R * ( 0.5 * T * T - dddF / ( 6 * dF ) ));
-
-#endif
 

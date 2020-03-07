@@ -18,10 +18,12 @@
 
 int verbose = 1;
 int prefix = 0;
+size_t cnt = 0;
+
 
 void help(std::ostream& os)
 {
-    os << "Cytosim-report "<<DIM<<"D, file version %i\n" << Simul::currentFormatID << '\n';
+    os << "Cytosim-report "<<DIM<<"D, file version " << Simul::currentFormatID << '\n';
     os << "       generates reports/statistics from a trjacetory file\n";
     os << "Syntax:\n";
     os << "       report [time] WHAT [OPTIONS]\n";
@@ -99,6 +101,7 @@ void report_prefix(Simul const& simul, std::ostream& os, std::string const& what
 
 void report(Simul const& simul, std::ostream& os, std::string const& what, int frm, Glossary& opt)
 {
+    ++cnt;
     try
     {
         if ( prefix )
@@ -141,21 +144,22 @@ int main(int argc, char* argv[])
     std::ofstream ofs;
 
     // check for prefix:
-    int inx = 1;
-    while ( argc > inx+1 )
+    int ax = 1;
+    while ( argc > ax+1 )
     {
-        if ( strstr(argv[inx], "time") )
+        if ( strstr(argv[ax], "time") )
             prefix |= 1;
-        else if ( strstr(argv[inx], "frame") )
+        else if ( strstr(argv[ax], "frame") )
             prefix |= 2;
         else
             break;
-        ++inx;
+        ++ax;
     }
     
-    what = argv[inx++];
-    arg.read_strings(argc-inx, argv+inx);
-    
+    what = argv[ax++];
+    if ( arg.read_strings(argc-ax, argv+ax) )
+        return EXIT_FAILURE;
+
 #ifdef BACKWARD_COMPATIBILITY
     if ( arg.set(str, "prefix") && str=="time" )
         prefix = 1;
@@ -244,9 +248,7 @@ int main(int argc, char* argv[])
         ofs.close();
 
     /// check if all specified parameters were used:
-    std::stringstream ss;
-    if ( arg.warnings(ss) > 1 )
-        std::cerr << ss.str() << '\n';
+    arg.warnings(std::cerr, cnt);
     
     return EXIT_SUCCESS;
 }

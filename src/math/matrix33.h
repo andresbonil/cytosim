@@ -10,6 +10,12 @@
 #include <cstdio>
 #include <iostream>
 
+/// BLD is the leading dimension of the matrix
+/**
+ The code works with BLD = 3 or 4, and typically memory storage is less with 3,
+ but performance may be better with 4, as memory is aligned
+ */
+
 #ifdef __AVX__
 #  define MATRIX33_USES_AVX REAL_IS_DOUBLE
 #  include "simd.h"
@@ -19,22 +25,24 @@
 #  define BLD 3
 #endif
 
-/// this is the leading dimension of the matrix
-/**
- The code works with BLD = 3 or 4, and typically memory storage is less with 3,
- but performance may be better with 4, as memory is aligned
- */
-
 
 /// 3x3 matrix class with 9 'real' elements
 class alignas(32) Matrix33
 {
-public:
-
+private:
+    
     /// values of the elements
     real val[BLD*3];
+
+    /// access to modifiable element by index
+    real& operator[](int i)       { return val[i]; }
     
-    Matrix33() { clear_extra(); }
+    /// access element value by index
+    real  operator[](int i) const { return val[i]; }
+    
+public:
+    
+    Matrix33() { clear_shadow(); }
     
     /// copy constructor
     Matrix33(Matrix33 const& M)
@@ -57,7 +65,7 @@ public:
         val[0+BLD*2] = g;
         val[1+BLD*2] = h;
         val[2+BLD*2] = i;
-        clear_extra();
+        clear_shadow();
     }
 
     /// construct Matrix with `d` on the diagonal and other values equal to `a`
@@ -72,8 +80,7 @@ public:
         val[0+BLD*2] = z;
         val[1+BLD*2] = z;
         val[2+BLD*2] = d;
-
-        clear_extra();
+        clear_shadow();
     }
 
     ~Matrix33() {}
@@ -81,9 +88,13 @@ public:
     /// dimensionality
     static int dimension() { return 3; }
     
-    /// leading dimension
-    static int stride() { return BLD; }
-
+    /// human-readible identifier
+#if ( BLD == 3 )
+    static std::string what() { return "3*3"; }
+#else
+    static std::string what() { return "4*3"; }
+#endif
+    
     /// set all elements to zero
     void reset()
     {
@@ -105,11 +116,7 @@ public:
     /// conversion to array of 'real'
     real* data()             { return val; }
     real* addr(int i, int j) { return val + ( i + BLD*j ); }
-
-    /// access operator to elements by index
-    real& operator[](int i)       { return val[i]; }
-    real  operator[](int i) const { return val[i]; }
-
+    
     /// access functions to element by line and column indices
     real& operator()(int i, int j)       { return val[i+BLD*j]; }
     real  operator()(int i, int j) const { return val[i+BLD*j]; }
@@ -138,7 +145,7 @@ public:
         return ( val[0] + val[BLD+1] + val[BLD*2+2] );
     }
 
-    /// set matrix by giving its lines
+    /// set matrix by giving lines
     void setLines(Vector3 const& A, Vector3 const& B, Vector3 const& C)
     {
         val[0      ] = A.XX;
@@ -152,7 +159,7 @@ public:
         val[2+BLD*2] = C.ZZ;
     }
     
-    /// set matrix by giving its columns
+    /// set matrix by giving columns
     void setColumns(Vector3 const& A, Vector3 const& B, Vector3 const& C)
     {
         val[0      ] = A.XX;
@@ -177,22 +184,23 @@ public:
     /// conversion to string
     std::string to_string(int w, int p) const
     {
-        std::ostringstream os("[ ");
+        std::ostringstream os;
         os.precision(p);
-        for ( int x = 0; x < 3; ++x )
+        os << "[";
+        for ( int i = 0; i < 3; ++i )
         {
-            for ( int y = 0; y < 3; ++y )
-                os << std::setw(w) << std::fixed << (*this)(y,x) << " ";
-            if ( x < 2 )
-                os << "| ";
+            for ( int j = 0; j < 3; ++j )
+                os << " " << std::fixed << std::setw(w) << (*this)(i,j);
+            if ( i < 2 )
+                os << ";";
             else
-                os << "]";
+                os << " ]";
         }
         return os.str();
     }
 
     /// clear values that do not represent matrix elements
-    void clear_extra()
+    void clear_shadow()
     {
 #if ( BLD == 4 )
         val[3      ] = 0.0;
@@ -301,7 +309,7 @@ public:
     }
     
     /// maximum of all component's absolute values
-    real norm() const
+    real norm_inf() const
     {
         real res = fabs(val[0]);
         for ( unsigned i = 1; i < 3*BLD; ++i )
@@ -344,6 +352,7 @@ public:
     /** This methods uses a L*D*L^t factorization with:
      L = ( 1 0 0; a 1 0; b c 1 )
      D = ( u 0 0; 0 v 0; 0 0 w )
+     The result is a symetric matrix
      */
     int symmetricInverse()
     {
@@ -397,11 +406,10 @@ public:
     }
 
     /// true if matrix is symmetric
-    bool is_symmetric() const
+    real asymmetry() const
     {
-        return ( val[BLD] == val[1]
-                && val[BLD*2] == val[2]
-                && val[1+BLD*2] == val[2+BLD] );
+        return ( std::abs(val[BLD]-val[1])
+                + std::abs(val[BLD*2]-val[2]) + std::abs(val[1+BLD*2]-val[2+BLD]) );
     }
 
 #if MATRIX33_USES_AVX
@@ -454,9 +462,9 @@ public:
         vec4 s1 = mul4(load4(val+BLD  ), vec);
         vec4 s2 = mul4(load4(val+BLD*2), vec);
         vec4 s3 = setzero4();
-        vec4 xy = add4(unpacklo4(s0, s1), unpackhi4(s0, s1));
-        vec4 zt = add4(unpacklo4(s2, s3), unpackhi4(s2, s3));
-        return add4(permute2f128(xy, zt, 0x20), permute2f128(xy, zt, 0x31));
+        s0 = add4(unpacklo4(s0, s1), unpackhi4(s0, s1));
+        s1 = add4(unpacklo4(s2, s3), unpackhi4(s2, s3));
+        return add4(permute2f128(s0, s1, 0x20), permute2f128(s0, s1, 0x31));
     }
 #endif
     
@@ -867,7 +875,7 @@ public:
         val[2      ] += dir[2]*vec[0];
         val[0+BLD  ] += dir[0]*vec[1];
         val[1+BLD  ] += dir[1]*vec[1];
-        val[2+BLD  ] += dir[2]*vec[1],
+        val[2+BLD  ] += dir[2]*vec[1];
         val[0+BLD*2] += dir[0]*vec[2];
         val[1+BLD*2] += dir[1]*vec[2];
         val[2+BLD*2] += dir[2]*vec[2];
@@ -902,9 +910,9 @@ public:
         real X = axis.XX, Y = axis.YY, Z = axis.ZZ;
         real X2 = X + X, Y2 = Y + Y, Z2 = Z + Z;
         
-        return Matrix33(X * X2 - 1.0, X * Y2, X * Z2,
-                        Y * X2, Y * Y2 - 1.0, Y * Z2,
-                        Z * X2, Z * Y2, Z * Z2 - 1.0);
+        return symmetric(X * X2 - 1.0, X * Y2, X * Z2,
+                         Y * Y2 - 1.0, Y * Z2,
+                         Z * Z2 - 1.0);
     }
 
     /// rotation around `axis` (of norm 1) with angle set by cosinus and sinus values
@@ -976,16 +984,16 @@ public:
 };
 
 
-/// output matrix lines to std::ostream
-inline std::ostream& operator << (std::ostream& os, Matrix33 const& M)
+/// output a Matrix33
+inline std::ostream& operator << (std::ostream& os, Matrix33 const& mat)
 {
-    std::streamsize w = os.width();
+    int w = (int)os.width();
     os.width(1);
     os << "[";
     for ( int i = 0; i < 3; ++i )
     {
         for ( int j = 0; j < 3; ++j )
-            os << " " << std::fixed << std::setw(w) << M(i,j);
+            os << " " << std::fixed << std::setw(w) << mat(i,j);
         if ( i < 2 )
             os << ";";
         else

@@ -26,6 +26,15 @@ void SpaceSquare::resize(Glossary& opt)
             throw InvalidParameter("square:length[] must be >= 0");
         length_[d] = len;
     }
+#if ( DIM == 2 )
+    // that is for impersonating a 'cylinder' in 2D:
+    if ( length_[1] <= 0 )
+    {
+        real rad = 0;
+        if ( opt.set(rad, "radius") )
+            length_[1] = rad;
+    }
+#endif
 }
 
 
@@ -46,12 +55,12 @@ real SpaceSquare::volume() const
     return 2 * length_[0];
 }
 
-bool  SpaceSquare::inside(Vector const& w) const
+bool SpaceSquare::inside(Vector const& w) const
 {
     return fabs(w.XX) <= length_[0];
 }
 
-bool  SpaceSquare::allInside(Vector const& w, const real rad ) const
+bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
@@ -78,13 +87,13 @@ real SpaceSquare::volume() const
 }
 
 
-bool  SpaceSquare::inside(Vector const& w) const
+bool SpaceSquare::inside(Vector const& w) const
 {
     return fabs(w.XX) <= length_[0] and
            fabs(w.YY) <= length_[1];
 }
 
-bool  SpaceSquare::allInside(Vector const& w, const real rad ) const
+bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
@@ -105,14 +114,14 @@ real SpaceSquare::volume() const
     return 8 * length_[0] * length_[1] * length_[2];
 }
 
-bool  SpaceSquare::inside(Vector const& w) const
+bool SpaceSquare::inside(Vector const& w) const
 {
     return fabs(w.XX) <= length_[0] and
            fabs(w.YY) <= length_[1] and
            fabs(w.ZZ) <= length_[2];
 }
 
-bool  SpaceSquare::allInside(Vector const& w, const real rad ) const
+bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
@@ -239,11 +248,12 @@ void SpaceSquare::setInteraction(Vector const& pos, Mecapoint const& pe, real ra
 
 void SpaceSquare::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("square", 16);
+    out.writeUInt16(4);
     out.writeFloat(length_[0]);
     out.writeFloat(length_[1]);
     out.writeFloat(length_[2]);
+    out.writeFloat(0.f);
 }
 
 
@@ -257,7 +267,7 @@ void SpaceSquare::setLengths(const real len[])
 void SpaceSquare::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "square");
     setLengths(len);
 }
 

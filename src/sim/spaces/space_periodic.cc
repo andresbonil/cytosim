@@ -53,7 +53,7 @@ real SpacePeriodic::volume() const
     return 2.0 * length_[0];
 }
 
-bool  SpacePeriodic::inside(Vector const& point) const
+bool SpacePeriodic::inside(Vector const& point) const
 {
     return true;
 }
@@ -77,7 +77,7 @@ real SpacePeriodic::volume() const
     return 4.0 * length_[0] * length_[1];
 }
 
-bool  SpacePeriodic::inside(Vector const& point) const
+bool SpacePeriodic::inside(Vector const& point) const
 {
     return true;
 }
@@ -99,7 +99,7 @@ real SpacePeriodic::volume() const
     return 8.0 * length_[0] * length_[1] * length_[2];
 }
 
-bool  SpacePeriodic::inside(Vector const& point) const
+bool SpacePeriodic::inside(Vector const& point) const
 {
     return true;
 }
@@ -116,11 +116,12 @@ Vector SpacePeriodic::project(Vector const&) const
 
 void SpacePeriodic::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("periodic", 16);
+    out.writeUInt16(4);
     out.writeFloat(length_[0]);
     out.writeFloat(length_[1]);
     out.writeFloat(length_[2]);
+    out.writeFloat(0.f);
 }
 
 
@@ -135,7 +136,7 @@ void SpacePeriodic::setLengths(const real len[])
 void SpacePeriodic::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "periodic");
     setLengths(len);
 }
 

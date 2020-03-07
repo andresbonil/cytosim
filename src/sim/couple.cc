@@ -21,14 +21,11 @@ extern Modulo const* modulo;
 Couple::Couple(CoupleProp const* p, Vector const& w)
 : prop(p), cPos(w), cHand1(nullptr), cHand2(nullptr)
 {
-    if ( !p )
-        throw Exception("Null Couple::prop");
-
     cHand1 = prop->hand1_prop->newHand(this);
     cHand2 = prop->hand2_prop->newHand(this);
 
-    assert_true( cHand1 );
-    assert_true( cHand2 );
+    assert_true(cHand1);
+    assert_true(cHand2);
 }
 
 
@@ -43,44 +40,45 @@ Couple::~Couple()
     if ( linked() )
         objset()->remove(this);
     
-    if ( cHand1 )
-    {
-        delete(cHand1);
-        cHand1 = nullptr;
-    }
-    if ( cHand2 )
-    {
-        delete(cHand2);
-        cHand2 = nullptr;
-    }
-    
+    delete(cHand1);
+    cHand1 = nullptr;
+    delete(cHand2);
+    cHand2 = nullptr;
     prop = nullptr;
-}
-
-
-//------------------------------------------------------------------------------
-
-void Couple::setProperty(CoupleProp * p)
-{
-    if ( !p )
-        throw Exception("Null Couple::prop");
-    prop = p;
-    
-    if ( cHand1 && cHand1->prop != prop->hand1_prop )
-    {
-        delete(cHand1);
-        cHand1 = prop->hand1_prop->newHand(this);
-    }
-    
-    if ( cHand2 && cHand2->prop != prop->hand2_prop )
-    {
-        delete(cHand2);
-        cHand2 = prop->hand2_prop->newHand(this);
-    }
 }
 
 //------------------------------------------------------------------------------
 #pragma mark -
+
+/* category of link:
+ Links on the side of the filaments:
+     - Parallel
+     - Antiparallel
+     - X = none of the above
+ Links at the ends of the filaments:
+     - T
+     - V
+ by Jamie Li Rickman, ~2017
+ */
+int Couple::configuration(FiberEnd end, real len) const
+{
+    int e = (cHand1->abscissaFrom(end) < len) + (cHand2->abscissaFrom(end) < len);
+    switch ( e )
+    {
+        case 0:
+            if (cosAngle() > 0.5)
+                return 0; // P: angle < PI/3
+            else if (cosAngle() < -0.5)
+                return 1; // A: angle > 2PI/3
+            return 2; // X
+        case 1:
+            return 3; // T
+        case 2:
+            return 4; // V
+    }
+    return 5; //should not happen!
+}
+
 
 real Couple::stiffness() const
 {
@@ -104,7 +102,7 @@ void Couple::setInteractions(Meca & meca) const
  - attachment
  .
  */
-void Couple::stepFF(const FiberGrid& grid)
+void Couple::stepFF(Simul& sim)
 {
     diffuse();
     
@@ -133,12 +131,12 @@ void Couple::stepFF(const FiberGrid& grid)
      */
     if ( RNG.flip() )
     {
-        cHand1->stepUnattached(grid, cPos);
+        cHand1->stepUnattached(sim, cPos);
     }
     else
     {
         if ( !prop->trans_activated )
-            cHand2->stepUnattached(grid, cPos);
+            cHand2->stepUnattached(sim, cPos);
     }
 }
 
@@ -149,10 +147,10 @@ void Couple::stepFF(const FiberGrid& grid)
  - attached activity of cHand1
  .
  */
-void Couple::stepAF(const FiberGrid& grid)
+void Couple::stepAF(Simul& sim)
 {
     //we use cHand1->pos() first, because stepUnloaded() may detach cHand1
-    cHand2->stepUnattached(grid, cHand1->pos());
+    cHand2->stepUnattached(sim, cHand1->pos());
     cHand1->stepUnloaded();
 }
 
@@ -163,10 +161,10 @@ void Couple::stepAF(const FiberGrid& grid)
  - attached activity of cHand2
  .
  */
-void Couple::stepFA(const FiberGrid& grid)
+void Couple::stepFA(Simul& sim)
 {
     //we use cHand2->pos() first, because stepUnloaded() may detach cHand2
-    cHand1->stepUnattached(grid, cHand2->pos());
+    cHand1->stepUnattached(sim, cHand2->pos());
     cHand2->stepUnloaded();
 }
 

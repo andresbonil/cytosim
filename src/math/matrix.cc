@@ -15,7 +15,7 @@ real Matrix::value(const index_t x, const index_t y) const
         return *v;
 }
 
-real Matrix::norm() const
+real Matrix::norm_inf() const
 {
     const index_t Z = size();
     real result = 0;
@@ -41,13 +41,13 @@ bool Matrix::nonZero() const
     return false;
 }
 
-size_t Matrix::nbElements(index_t start, index_t end) const
+size_t Matrix::nbElements(index_t start, index_t stop) const
 {
-    assert_true( start <= end );
-    assert_true( end <= size_ );
+    assert_true( start <= stop );
+    assert_true( stop <= size_ );
     
     size_t result = 0;
-    for ( index_t jj = start; jj < end; ++jj )
+    for ( index_t jj = start; jj < stop; ++jj )
         for ( index_t ii = 0; ii < size_; ++ii )
             result += ( 0 != value( ii, jj ) );
     return result;

@@ -32,7 +32,7 @@ set hand nucleator
     binding = 5, 0.010
     unbinding = 0, inf
     activity = nucleate
-    nucleate = 1, filament, ( length = 1; orientation = inward; )
+    nucleate = 1, filament, ( length = 1; direction=inward; )
     hold_growing_end = 1
 }
 

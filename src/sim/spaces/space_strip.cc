@@ -29,6 +29,15 @@ void SpaceStrip::resize(Glossary& opt)
             throw InvalidParameter("square:length[] must be >= 0");
         length_[d] = len;
     }
+#if ( DIM == 2 )
+    // that is for impersonating a 'cylinderP' in 2D:
+    if ( length_[1] <= 0 )
+    {
+        real rad = 0;
+        if ( opt.set(rad, "radius") )
+            length_[1] = rad;
+    }
+#endif
     if ( length_[DIM-1] <= 0 )
         throw InvalidParameter("strip:length[DIM-1] must be > 0");
 }
@@ -60,7 +69,7 @@ real SpaceStrip::volume() const
     return 2.0 * length_[0];
 }
 
-bool  SpaceStrip::inside(Vector const& point) const
+bool SpaceStrip::inside(Vector const& point) const
 {
     if ( point[0] >  length_[0] ) return false;
     if ( point[0] < -length_[0] ) return false;
@@ -85,7 +94,7 @@ real SpaceStrip::volume() const
     return 4.0 * length_[0] * length_[1];
 }
 
-bool  SpaceStrip::inside(Vector const& point) const
+bool SpaceStrip::inside(Vector const& point) const
 {
     if ( point[1] >  length_[1] ) return false;
     if ( point[1] < -length_[1] ) return false;
@@ -109,7 +118,7 @@ real SpaceStrip::volume() const
     return 8.0 * length_[0] * length_[1] * length_[2];
 }
 
-bool  SpaceStrip::inside(Vector const& point) const
+bool SpaceStrip::inside(Vector const& point) const
 {
     if ( point[2] >  length_[2] ) return false;
     if ( point[2] < -length_[2] ) return false;
@@ -156,11 +165,12 @@ void SpaceStrip::setInteraction(Vector const& pos, Mecapoint const& pe, real rad
 
 void SpaceStrip::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
-    out.writeUInt16(3);
+    out.put_characters("strip", 16);
+    out.writeUInt16(4);
     out.writeFloat(length_[0]);
     out.writeFloat(length_[1]);
     out.writeFloat(length_[2]);
+    out.writeFloat(0.f);
 }
 
 
@@ -174,7 +184,7 @@ void SpaceStrip::setLengths(const real len[])
 void SpaceStrip::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "strip");
     setLengths(len);
 }
 

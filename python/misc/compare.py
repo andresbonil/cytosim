@@ -18,9 +18,9 @@ exe = "diff"
 diff="diff --side-by-side -W200 -p --suppress-common-lines"
 
 
+
 def spacer(info):
     """print a line of width size, with 'info' in the middle"""
-    import os
     rows, cols = os.popen('stty size', 'r').read().split()
     sys.stdout.write(chr(27)+"[36;2m"); sys.stdout.flush()
     print(info.center(int(cols), '-'))
@@ -31,7 +31,6 @@ def compareFiles(fileL, fileR):
     comp  = os.popen(diff+" -q "+fileL+" "+fileR)
     empty = ( len(comp.read()) == 0 )
     comp.close()
-    
     if not empty:
         if exe == 'diff':
             spacer('%s %s'% ( fileL, fileR ))
@@ -66,32 +65,43 @@ def interesting(file):
         or file.startswith('makefile') or file.startswith('.cym') )
 
 
-def process_dir(roots, dirnameL, files):
+def process_dir(roots, path, files):
     """compare files in the current directory"""
-    #print("dirname=%s  args=%s" % (dirnameL,args))
-    if 0 <= dirnameL.find('.svn'):
+    #print("path=%s  args=%s" % (path,files))
+    if path.endswith('.svn'):
         return
-    if 0 <= dirnameL.find('.git'):
+    if path.endswith('.git'):
         return
-    if 0 <= dirnameL.find('DerivedData'):
+    if 0 <= path.find('/.git/'):
         return
-    if 0 <= dirnameL.find('bin'):
+    if path == 'DerivedData':
         return
-    if 0 <= dirnameL.find('build'):
+    if path.startswith('bin'):
         return
-    dirnameR = dirnameL.replace(roots[0], roots[1])
-    spacer(dirnameL)
+    if path == 'build':
+        return
+    pathR = path.replace(roots[0], roots[1])
+    spacer(path)
     for file in files:
         if interesting(file):
-            compareFiles( dirnameL+"/"+file, dirnameR+"/"+file)
+            compareFiles( path+"/"+file, pathR+"/"+file)
 
 #------------------------------------------------------------------------
 
 def main(args):
+    """main"""
     global exe
+    if len(args) < 2:
+        print("Error: you must specify root directories!")
+        sys.exit()
     rootL=args[0].rstrip('/')
     rootR=args[1].rstrip('/')
-
+    if not os.path.isdir(rootL):
+        print("Error: `%s' is not a directory" % rootL)
+        sys.exit()
+    if not os.path.isdir(rootR):
+        print("Error: `%s' is not a directory" % rootR)
+        sys.exit()
     #parse command-line arguments:    
     for arg in args[2:]:
         if arg == 'opendiff':
@@ -99,10 +109,8 @@ def main(args):
         else:
             print("unknown argument '%s'" % arg)
             sys.exit()
-
-    if rootL == '' or rootR == '':
-        print('Error: you must specify root directories!')
-
+    # process directories:
+    print("Comparing %s and %s" % (rootL, rootR))
     for path, dirs, files in os.walk(rootL, topdown=False):
         process_dir([rootL, rootR], path, files)
 
@@ -111,5 +119,6 @@ if __name__ == "__main__":
         print(__doc__)
     else:
         main(sys.argv[1:])
+
 
 

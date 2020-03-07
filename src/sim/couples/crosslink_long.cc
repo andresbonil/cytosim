@@ -61,7 +61,11 @@ Vector CrosslinkLong::calcArm(const Interpolation & pt, Vector const& pos, real 
 
 //------------------------------------------------------------------------------
 
-Vector CrosslinkLong::posSide() const
+/*
+Note that, since `mArm` is calculated by setInteraction(),
+the result of sidePos() will be incorrect if 'solve=0'
+*/
+Vector CrosslinkLong::sidePos() const
 {
 #if ( DIM == 1 )
     
@@ -85,7 +89,7 @@ Vector CrosslinkLong::posSide() const
  */
 Vector CrosslinkLong::force() const
 {
-    Vector d = cHand2->pos() - CrosslinkLong::posSide();
+    Vector d = cHand2->pos() - CrosslinkLong::sidePos();
     
     //correct for periodic space:
     if ( modulo )

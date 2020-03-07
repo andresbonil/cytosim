@@ -31,7 +31,7 @@ protected:
 public:
     
     /// construct and associates with given Simul
-    Interface(Simul& s);
+    Interface(Simul&);
     
     //-------------------------------------------------------------------------------
     
@@ -40,12 +40,6 @@ public:
      It provides an opportunity to stop or to display the simulation world
      */
     virtual void hold() {}
-    
-    /// Parse a text containing cytosim commands
-    /**
-     This is defined in the derived class Parser
-     */
-    virtual void evaluate(std::string const&, std::string const& msg) = 0;
     
     //-------------------------------------------------------------------------------
     
@@ -56,7 +50,7 @@ public:
     void       execute_change(Property*, Glossary&);
 
     /// change values in Property called `name` as specified in Glossary
-    Property*  execute_change(std::string const& name, Glossary&);
+    Property*  execute_change(std::string const& name, Glossary&, bool strict=true);
     
     /// change values of all Property of category `cat`
     void       execute_change_all(std::string const& cat, Glossary&);
@@ -92,7 +86,7 @@ public:
     void       execute_report(std::string& file, std::string const& what, Glossary&);
     
     /// perform `cnt` simulation steps
-    void       execute_run(unsigned cnt, Glossary&);
+    void       execute_run(unsigned cnt, Glossary&, bool write_permission);
     
     /// perform `cnt` simulation steps, with no option
     void       execute_run(unsigned cnt);

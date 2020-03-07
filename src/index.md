@@ -22,5 +22,4 @@ Most source code is written in [C++11](https://en.wikipedia.org/wiki/C++11)
 # More code
 
 - [**cytomaster**](misc/cytomaster) : a program to control cytosim during installation
-- [**blank**](misc/blank) : a little GUI interface based on Cytosim's toolset
-- [**mechoui**](misc/mechoui) : a mesh displaying program
+- [**blank**](misc/blank) : a demo GUI interface based on Cytosim's toolset

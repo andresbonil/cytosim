@@ -44,8 +44,7 @@ real PicketLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
 
 /**
  Return a vector of norm `len`, perpendicular to the Fiber referenced by `pt` and aligned with the link.
- @todo update to match interSideLink3D when available
- */
+*/
 Vector PicketLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
 {
     Vector vec = pt.pos() - pos;
@@ -62,7 +61,12 @@ Vector PicketLong::calcArm(const Interpolation & pt, Vector const& pos, real len
 #endif
 
 //------------------------------------------------------------------------------
-Vector PicketLong::posSide() const
+
+/*
+ Note that, since `mArm` is calculated by setInteraction(),
+ the result of sidePos() will be incorrect if 'solve=0'
+ */
+Vector PicketLong::sidePos() const
 {
 #if ( DIM > 1 )
     return sHand->pos() + cross(mArm, sHand->dirFiber());
@@ -77,7 +81,7 @@ Vector PicketLong::posSide() const
 Vector PicketLong::force() const
 {
     assert_true( sHand->attached() );
-    Vector d = sPos - PicketLong::posSide();
+    Vector d = sPos - PicketLong::sidePos();
  
     if ( modulo )
         modulo->fold(d);

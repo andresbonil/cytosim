@@ -9,11 +9,6 @@
 #include "grid.h"
 //#include <vector>
 
-#ifdef DISPLAY
-#include "grid_display.h"
-#endif
-
-
 class Simul;
 class PropertyList;
 class FiberSegment;
@@ -109,21 +104,12 @@ public:
     /// Among the segments closer than grid:range, return the closest one
     FiberSegment closestSegment(Vector const&) const;
     
-    ///test the results of tryToAttach(), at a particular position
+    /// test the results of tryToAttach(), at a particular position
     void         testAttach(FILE *, Vector place, FiberSet const&, HandProp const*) const;
-    
-#ifdef DISPLAY
-    void draw() const
-    {
-        glPushAttrib(GL_LIGHTING_BIT);
-        glDisable(GL_LIGHTING);
-        glColor4f(0, 1, 1, 1);
-        glLineWidth(0.5);
-        drawEdges(fGrid);
-        glPopAttrib();
-    }
-#endif
- };
+
+    /// OpenGL display function
+    void         draw() const;
+};
 
 
 #endif

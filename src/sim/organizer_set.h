@@ -4,10 +4,11 @@
 #define ORGANIZER_SET_H
 
 #include "object_set.h"
-#include "organizer.h"
 
-class Simul;
+class Mecable;
+class Organizer;
 class Aster;
+class Simul;
 
 /// a list of Organizer (Aster, Nucleus, Bundle)
 class OrganizerSet : public ObjectSet
@@ -20,7 +21,7 @@ public:
     //--------------------------
     
     /// identifies the class
-    std::string title() const { return "organizer"; }
+    static std::string title() { return "organizer"; }
     
     /// create a new property of category `cat` for a class `name`
     Property *  newProperty(const std::string& cat, const std::string& name, Glossary&) const;
@@ -31,22 +32,22 @@ public:
     /// create a new object (used for reading trajectory file)
     Object *    newObject(ObjectTag, unsigned);
     
+    /// write all Objects to file
+    void        write(Outputter& out) const;
+        
+    /// print a summary of the content (nb of objects, class)
+    void        report(std::ostream& out) const;
+
     //--------------------------
 
     /// register Organizer
     void        add(Object *);
     
     /// first Organizer
-    Organizer * first() const
-    {
-        return static_cast<Organizer*>(nodes.front());
-    }
+    Organizer * first() const;
     
     /// find object with given ID
-    Organizer * findID(ObjectID n) const
-    {
-        return static_cast<Organizer*>(inventory.get(n));
-    }
+    Organizer * findID(ObjectID n) const;
     
     /// find Aster with given ID
     Aster *     findAster(ObjectID n) const;
@@ -60,8 +61,6 @@ public:
     /// Monte-Carlo simulation step for every Object
     void        step();
 
-    /// print a summary of the content (nb of objects, class)
-    void        report(std::ostream&) const;
 };
 
 

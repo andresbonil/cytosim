@@ -2,12 +2,12 @@
 
 #include "aster_prop.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "solid_prop.h"
 #include "fiber_prop.h"
 #include "glossary.h"
+#include "simul.h"
 
-//------------------------------------------------------------------------------
+
 void AsterProp::clear()
 {
     stiffness[0]    = -1;
@@ -56,11 +56,9 @@ void AsterProp::complete(Simul const& sim)
         sim.properties.find_or_die("fiber", fiber_type);
     }
  
-    fiber_prob = -std::expm1( -fiber_rate * sim.prop->time_step );
+    fiber_prob = -std::expm1( -fiber_rate * sim.time_step() );
 }
 
-
-//------------------------------------------------------------------------------
 
 void AsterProp::write_values(std::ostream& os) const
 {

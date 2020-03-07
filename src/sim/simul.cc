@@ -2,6 +2,7 @@
 
 #include "sim.h"
 #include "simul.h"
+#include "messages.h"
 #include "exceptions.h"
 #include "hand_prop.h"
 #include "simul_prop.h"
@@ -27,6 +28,8 @@ extern Modulo const* modulo;
 #include "space_cylinderP.h"
 #include "fiber.h"
 #include "event.h"
+#include "field.h"
+#include "parser.h"
 
 #include <csignal>
 
@@ -34,27 +37,27 @@ extern Modulo const* modulo;
 
 void out_of_memory_handler()
 {
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
-    write(STDERR_FILENO, "Cytosim: memory allocation failed", 33);
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "Cytosim: memory allocation failed", 33);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
     print_backtrace();
     _exit(1);
 }
 
 void termination_handler()
 {
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
-    write(STDERR_FILENO, "Cytosim: uncaught exception", 27);
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
+    (void) write(STDERR_FILENO, "Cytosim: uncaught exception", 27);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
     print_backtrace();
     abort();
 }
 
 void signal_handler(int sig)
 {
-    write(STDERR_FILENO, "\n* * * * *\n", 11);
-    psignal(sig, "Cytosim");
-    write(STDERR_FILENO, "* * * * *\n", 10);
+    (void) write(STDERR_FILENO, "\n* * * * *\n", 11);
+    psignal((unsigned)sig, "Cytosim");
+    (void) write(STDERR_FILENO, "* * * * *\n", 10);
     print_backtrace();
     _exit(sig);
 }
@@ -82,30 +85,8 @@ singles(*this), couples(*this), organizers(*this), events(*this)
 Simul::~Simul()
 {
     erase();
-    
-    if ( pMeca1D )
-        delete(pMeca1D);
-    if ( prop )
-        delete(prop);
-}
-
-//------------------------------------------------------------------------------
-#pragma mark -
-
-Space const* Simul::findSpace(std::string const& str) const
-{
-    if ( str == "first" )
-        return static_cast<Space*>(spaces.inventory.first());
-
-    if ( str == "last" )
-        return static_cast<Space*>(spaces.inventory.last());
-    
-    Property * sp = properties.find("space", str);
-    
-    if ( sp )
-        return spaces.findObject(sp);
-    else
-        return nullptr;
+    delete(pMeca1D);
+    delete(prop);
 }
 
 //------------------------------------------------------------------------------
@@ -136,6 +117,11 @@ void Simul::initialize(Glossary & glos)
 real Simul::time() const
 {
     return prop->time;
+}
+
+real Simul::time_step() const
+{
+    return prop->time_step;
 }
 
 void Simul::erase()
@@ -190,6 +176,16 @@ void Simul::foldPosition() const
 }
 
 
+/// @todo Simul::evaluate should use a Parser with limited rights
+void Simul::evaluate(std::string const& code)
+{
+    /*
+     The code is executed with all rights, but this should not be
+     when this is executed from `play`
+     */
+    Parser(*this, 1, 1, 1, 1, 1).evaluate(code);
+}
+
 //------------------------------------------------------------------------------
 #pragma mark -
 
@@ -216,10 +212,10 @@ Mecable* Simul::toMecable(Object * obj)
  */
 Mecable * Simul::findMecable(const std::string& arg) const
 {
-    Object  * obj = fibers.findObject(arg);
-    if (!obj) obj = solids.findObject(arg);
-    if (!obj) obj = spheres.findObject(arg);
-    if (!obj) obj = beads.findObject(arg);
+    Object  * obj = fibers.findObject(arg, fibers.title());
+    if (!obj) obj = solids.findObject(arg, solids.title());
+    if (!obj) obj = spheres.findObject(arg, spheres.title());
+    if (!obj) obj = beads.findObject(arg, beads.title());
     return static_cast<Mecable*>(obj);
 }
 
@@ -289,6 +285,22 @@ void Simul::mark(ObjectList const& objs, ObjectMark mrk)
 //------------------------------------------------------------------------------
 #pragma mark -
 
+Space const* Simul::findSpace(std::string const& str) const
+{
+    if ( str == "first" )
+        return static_cast<Space*>(spaces.inventory.first());
+
+    if ( str == "last" )
+        return static_cast<Space*>(spaces.inventory.last());
+    
+    Property * sp = properties.find("space", str);
+    
+    if ( sp )
+        return spaces.findObject(sp);
+    else
+        return nullptr;
+}
+
 /**
  This is used primarily to parse the configuration file,
  using full class name
@@ -296,20 +308,20 @@ void Simul::mark(ObjectList const& objs, ObjectMark mrk)
 ObjectSet * Simul::findSet(const std::string& cat)
 {
     //std::clog << "findSet("<<kind<<")"<<std::endl;
-    if ( cat == "space" )        return &spaces;
-    if ( cat == "field" )        return &fields;
-    if ( cat == "fiber" )        return &fibers;
-    if ( cat == "bead" )         return &beads;
-    if ( cat == "solid" )        return &solids;
-    if ( cat == "sphere" )       return &spheres;
-    if ( cat == "single" )       return &singles;
-    if ( cat == "couple" )       return &couples;
-    if ( cat == "organizer" )    return &organizers;
-    if ( cat == "aster" )        return &organizers;
-    if ( cat == "bundle" )       return &organizers;
-    if ( cat == "nucleus" )      return &organizers;
-    if ( cat == "fake" )         return &organizers;
-    if ( cat == "event" )        return &events;
+    if ( cat == spaces.title() )     return &spaces;
+    if ( cat == fields.title() )     return &fields;
+    if ( cat == fibers.title() )     return &fibers;
+    if ( cat == beads.title() )      return &beads;
+    if ( cat == solids.title() )     return &solids;
+    if ( cat == spheres.title() )    return &spheres;
+    if ( cat == singles.title() )    return &singles;
+    if ( cat == couples.title() )    return &couples;
+    if ( cat == organizers.title() ) return &organizers;
+    if ( cat == "aster" )            return &organizers;
+    if ( cat == "bundle" )           return &organizers;
+    if ( cat == "nucleus" )          return &organizers;
+    if ( cat == "fake" )             return &organizers;
+    if ( cat == events.title() )     return &events;
     return nullptr;
 }
 

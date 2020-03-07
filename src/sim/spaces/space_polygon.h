@@ -34,16 +34,16 @@ class SpacePolygon : public Space
 private:
 
     /// The 2D polygon object
-    Polygon           poly_;
+    Polygon     poly_;
         
     /// pre-calculated bounding box derived from poly_
-    Vector            inf_, sup_;
+    Vector      inf_, sup_;
     
-    /// Volume calculated from poly_
-    real              volume_;
+    /// Surface of polygon
+    real        surface_;
     
     /// half the total height in Z
-    real              height_;
+    real        height_;
 
     /// update
     void        update();
@@ -63,11 +63,14 @@ public:
     void        boundaries(Vector& inf, Vector& sup) const { inf=inf_; sup=sup_; }
     
     /// the volume inside
-    real        volume() const { return volume_; }
+    real        volume() const { return ( DIM>2 ? 2*height_ : 1 ) * surface_; }
     
     /// true if the point is inside the Space
     bool        inside(Vector const&) const;
     
+    /// a random position inside the volume
+    Vector      randomPlace() const;
+
     /// set `proj` as the point on the edge that is closest to `point`
     Vector      project(Vector const& pos) const;
 

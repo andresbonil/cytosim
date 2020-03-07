@@ -49,13 +49,13 @@ DynamicFiber::~DynamicFiber()
 #pragma mark -
 
 
-unsigned DynamicFiber::calculateStateM() const
+state_t DynamicFiber::calculateStateM() const
 { 
     return 4 - unitM[0] - 2 * unitM[1];
 }
 
 
-unsigned DynamicFiber::dynamicStateM() const
+state_t DynamicFiber::dynamicStateM() const
 {
     return STATE_WHITE;
     assert_true( mStateM == calculateStateM() );
@@ -63,7 +63,7 @@ unsigned DynamicFiber::dynamicStateM() const
 }
 
 
-void DynamicFiber::setDynamicStateM(unsigned s)
+void DynamicFiber::setDynamicStateM(state_t s)
 {
     if ( s < 1 || 4 < s )
         throw InvalidParameter("Invalid AssemblyState for DynamicFiber MINUS_END");
@@ -77,12 +77,6 @@ void DynamicFiber::setDynamicStateM(unsigned s)
         assert_true( 0==unitP[1] || unitP[1]==1 );
         assert_true( mStateM == calculateStateM() );
     }
-}
-
-
-real DynamicFiber::freshAssemblyM() const
-{
-    return mGrowthM;
 }
 
 
@@ -125,20 +119,20 @@ int DynamicFiber::stepMinusEnd()
  - STATE_RED for shrinkage
  .
  */
-unsigned DynamicFiber::calculateStateP() const
+state_t DynamicFiber::calculateStateP() const
 {
     return 4 - unitP[0] - 2 * unitP[1];
 }
 
 
-unsigned DynamicFiber::dynamicStateP() const
+state_t DynamicFiber::dynamicStateP() const
 {
     assert_true( mStateP == calculateStateP() );
     return mStateP;
 }
 
 
-void DynamicFiber::setDynamicStateP(unsigned s)
+void DynamicFiber::setDynamicStateP(state_t s)
 {
     if ( s < 1 || 4 < s )
         throw InvalidParameter("Invalid AssemblyState for DynamicFiber PLUS_END");
@@ -154,11 +148,6 @@ void DynamicFiber::setDynamicStateP(unsigned s)
     }
 }
 
-
-real DynamicFiber::freshAssemblyP() const
-{
-    return mGrowthP;
-}
 
 /**
  Using a modified Gillespie scheme with a variable rate.
@@ -253,7 +242,7 @@ int DynamicFiber::stepPlusEnd()
                     break;
 
                 case 2:
-                    // remove last unit, assuming hydrolysis already occured below
+                    // remove last unit, assuming hydrolysis already occurred below
                     unitP[0] = unitP[1];
                     unitP[1] = unitP[2];
                     unitP[2] = 0;

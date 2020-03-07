@@ -1,4 +1,5 @@
-# Cytosim was created by Francois Nedelec. Copyright 2007-2018 EMBL.
+# Cytosim was created by Francois Nedelec.
+# Copyright 2007-2017 EMBL; 2019-2020 Sainsbury Laboratory, Cambridge University
 
 
 #---------------- MACHINE = {mac, linux, cluster, cygwin, auto}
@@ -8,7 +9,7 @@ MACHINE := auto
 COMPILER := gcc
 
 #---------------- MODE = {F = Fast; D = Debug; P = Profiling; C = Coverage}
-MODE := D
+MODE := F
 
 #---------------- INTEL Math Kernel Library
 # If the Intel Math Kernel library is a free library providing BLAS+LAPACK,
@@ -61,9 +62,9 @@ endif
 #-------------------------------------------------------------------------------
 
 # common options for all C++ objects:
-CXXFLG := -std=gnu++11 -fno-rtti -Wredeclared-class-member -Wno-deprecated-declarations
-CXXFLG := -std=gnu++11 -fno-rtti -fopenmp #-g -fno-inline
-CXXFLG := -std=gnu++11 -fno-rtti
+CXXFLG := -std=gnu++14 -fno-rtti -Wredeclared-class-member -Wno-deprecated-declarations
+CXXFLG := -std=gnu++14 -fno-rtti -fopenmp #-g -fno-inline
+CXXFLG := -std=gnu++14 -fno-rtti
 
 # option concerning memory alignment:
 ALIGN  := -malign-double -falign-loops -falign-jumps -falign-functions
@@ -80,6 +81,8 @@ else
     LIBTOOL := ar -rcs
 endif
 
+
+#-------------------------------------------------------------------------------
 
 ifeq ($(COMPILER),gcc)
 
@@ -141,9 +144,9 @@ ifeq ($(MACHINE),mac)
 
     LINK   := -framework Accelerate
 
-    LINKGL := -framework GLUT -framework OpenGL -framework AGL
+    GRAFIX := -framework GLUT -framework OpenGL -framework AGL
     # Using brew's freeGLUT:
-    #LINKGL = -L/usr/local/Cellar/freeglut/3.0.0 -lglut -framework OpenGL
+    #GRAFIX := -L/usr/local/Cellar/freeglut/3.0.0 -lglut -framework OpenGL
     
     ifeq ($(HAS_PNG), 1)
 
@@ -195,7 +198,7 @@ ifeq ($(MACHINE),cluster)
     LINK   := /g/nedelec/lapack/liblapack.a /g/nedelec/lapack/librefblas.a -lgfortran -lpthread
 
     # linkage options for programs using graphics:
-    #LINKGL: =-L/usr/lib -L/usr/lib64 -lglut -lGL -lGLU -lXt -lX11
+    #GRAFIX := -L/usr/lib -L/usr/lib64 -lglut -lGL -lGLU -lXt -lX11
 
 endif
 
@@ -211,9 +214,11 @@ ifeq ($(MACHINE),linux)
     FlagsC := -O0 -fprofile-arcs -ftest-coverage
     FlagsF := -O3 -finline-functions $(ALIGN) $(FAST)
 
-    # specify the lib path:
-    USRLIB := /usr/lib
+    # specify the library path:
+    LIBDIR := /usr/lib
+    LIBDIR := /usr/lib/x86_64-linux-gnu
 
+    ############## BLAS/LAPACK Libraries ###############
     ### For 64bit Centos 5.8 March 2012:
     # Centos  blas: yum install blas-devel
     # Centos  lapack: yum install lapack-devel
@@ -221,12 +226,22 @@ ifeq ($(MACHINE),linux)
     # Ubuntu   blas : apt-get install libblas.dev
     # Ubuntu lapack : apt-get install liblapack.dev
 
-    #### For dynamic linking:
-    LINK := -L$(USRLIB) -llapack -lblas -lpthread
-    #### For static linking specify the objects directly:
-    LINK := -L$(USRLIB) $(USRLIB)/liblapack.so $(USRLIB)/libblas.so -lpthread
+    # trying to automatically detect BLAS library:
+    BLASLIB := $(wildcard /usr/lib/libblas.*) $(wildcard /usr/lib/*/libblas.*)
+    # extracting path for libraries:
+    BLADIR := $(word 1, $(dir $(BLASLIB)))
+    ifndef BLADIR
+       $(error Error: the path for the BLAS/LAPACK library `BLADIR` is undefined)
+    else
+       $(warning Using BLAS library in $(BLADIR))
+    endif
 
-    ### Install libraries needed for graphical executables:
+    #### For dynamic linking:
+    LINK := -L$(BLADIR) -llapack -lblas -lpthread
+    #### For static linking specify the objects directly:
+    #LINK := -L$(BLADIR) $(BLADIR)/liblapack.so $(BLADIR)/libblas.so -lpthread
+
+    ########### Install libraries needed for graphics ############
     # Centos freglut: yum install freeglut-devel
     # Centos libXi:   yum install libXi-devel
     # Centos libXmu:  yum install libXmu-devel
@@ -237,11 +252,11 @@ ifeq ($(MACHINE),linux)
 
     ### linkage options for programs using graphics:
     #   check for correct library libname.so otherwise give full path
-    LINKGL := -L$(USRLIB) -lglut -lGL -lGLU -lXt -lX11 -lGLEW
+    GRAFIX := -L$(LIBDIR) -lglut -lGL -lGLU -lXt -lX11 -lGLEW
 
     ifneq ($(HAS_PNG), 0)
 
-        LIB_PNG := $(USRLIB)/libpng.a $(USRLIB)/libz.a
+        LIB_PNG := $(LIBDIR)/libpng.a $(LIBDIR)/libz.a
         ING_PNG :=
 
     endif
@@ -264,7 +279,7 @@ ifeq ($(MACHINE),cygwin)
     ### Needs
     # blas:   yum install blas-devel
     # lapack: yum install lapack-devel
-    LINK := -L/usr/lib -L/bin -llapack -lblas -lpthread -lgfortran
+    LINK := -L/usr/lib -L/bin -llapack -lblas -lpthread
 
     ### linkage options for programs using graphics:
     ### Needs
@@ -272,7 +287,7 @@ ifeq ($(MACHINE),cygwin)
     ### libXi:   yum install libXi-devel
     ### libXmu:  yum install libXmu-devel
     ###  check for correct library yourlibname.so otherwise give full path
-    LINKGL := -L/usr/lib -lglut -lGL -lGLU -lXt -lX11 -lGLEW
+    GRAFIX := -L/usr/lib -lglut -lGL -lGLU -lXt -lX11 -lGLEW
 
     ifneq ($(HAS_PNG), 0)
 
@@ -301,7 +316,7 @@ ifeq ($(MACHINE),windows)
     FlagsF := -O3 -finline-functions -march=i686 -ffast-math $(ALIGN)
   
     LINK   := -llapack -lblas
-    LINKGL := -lglut32 -lglu32 -lopengl32
+    GRAFIX := -lglut32 -lglu32 -lopengl32
     BINEXT :=.exe
 
 endif
@@ -312,8 +327,10 @@ endif
 #------------------ linking with Intel Math Kernel Library ---------------------
 #-------------------------------------------------------------------------------
 
-# The Intel MKL provides LAPACK and BLAS implementations optimized for Intel chips
-
+# The Intel MKL provides BLAS/LAPACK libraries optimized for Intel's CPU
+# and it is free: https://software.intel.com/en-us/mkl
+# For help with the linking, check:
+# https://software.intel.com/en-us/articles/intel-mkl-link-line-advisor
 
 ifeq ($(HAS_MKL),1)
 
@@ -334,11 +351,11 @@ ifeq ($(HAS_MKL),2)
     # This are options for the compiler:
     MKLOPT := -m64 -I${MKLROOT}/include
 
-    # sequential static linking (newer GCC):
-    MKLLIB := -Wl,--start-group $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_sequential.a $(MKLDIR)/libmkl_core.a -Wl,--end-group
-
     # sequential static linking (older GCC):
     MKLLIB := $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_sequential.a $(MKLDIR)/libmkl_core.a
+
+    # sequential static linking (newer GCC):
+    MKLLIB := -Wl,--start-group $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_sequential.a $(MKLDIR)/libmkl_core.a -Wl,--end-group
 
     # threaded static linking:
     #MKLLIB := $(MKLDIR)/libmkl_intel_lp64.a $(MKLDIR)/libmkl_thread.a $(MKLDIR)/libmkl_core.a /opt/intel/lib/libiomp5.a

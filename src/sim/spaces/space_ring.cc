@@ -21,7 +21,7 @@ void SpaceRing::resize(Glossary& opt)
 {
     real len = length_, rad = radius_;
     
-    if ( opt.set(rad, "width") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
     if ( opt.set(len, "length") )
@@ -54,8 +54,8 @@ real  SpaceRing::volume() const
 Vector SpaceRing::randomPlace() const
 {
 #if ( DIM >= 3 )
-    Vector2 sec = Vector2::randB(radius_);
-    return Vector(length_*RNG.sreal(), sec.XX, sec.YY);
+    const Vector2 V = Vector2::randB(radius_);
+    return Vector(length_*RNG.sreal(), V.XX, V.YY);
 #elif ( DIM > 1 )
     return Vector(length_*RNG.sreal(), radius_*RNG.sreal());
 #else
@@ -65,27 +65,23 @@ Vector SpaceRing::randomPlace() const
 
 
 //------------------------------------------------------------------------------
-bool  SpaceRing::inside(Vector const& w) const
+bool SpaceRing::inside(Vector const& w) const
 {
-    if ( fabs(w.XX) > length_ )
-        return false;
-
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= radiusSqr_ );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( fabs(w.XX) <= length_  &&  RT <= radiusSqr_ );
 #else
     return false;
 #endif
 }
 
-bool  SpaceRing::allInside(Vector const& w, const real rad ) const
+bool SpaceRing::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
-    
-    if ( fabs(w.XX) + rad > length_ )
-        return false;
 
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= square(radius_-rad) );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( fabs(w.XX) + rad <= length_  &&  RT <= square(radius_-rad) );
 #else
     return false;
 #endif
@@ -167,7 +163,7 @@ void SpaceRing::setInteraction(Vector const& pos, Mecapoint const& pe, real rad,
 
 void SpaceRing::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("ring", 16);
     out.writeUInt16(2);
     out.writeFloat(length_);
     out.writeFloat(radius_);
@@ -185,7 +181,7 @@ void SpaceRing::setLengths(const real len[])
 void SpaceRing::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "ring");
     setLengths(len);
 }
 

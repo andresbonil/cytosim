@@ -1,6 +1,5 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
-#include "ansi_colors.h"
 #include "exceptions.h"
 #include "glossary.h"
 
@@ -11,32 +10,33 @@ std::string s;
 
 int main(int argc, char* argv[])
 {
-    Glossary glos;
+    Glossary arg;
     
+    if ( arg.read_strings(argc-1, argv+1) )
+        return EXIT_FAILURE;
+
     try {
-        // read command line arguments:
-        glos.read_strings(argc-1, argv+1);
         
         // read file if provided on command line:
         // the file name is recognized by its extension
         std::string str;
-        if ( glos.set(str, ".cym") )
-            glos.read_file(str);
+        if ( arg.set(str, ".cym") )
+            arg.read_file(str);
         
         // print content of Glossary:
-        printf("%lu keys:\n", glos.nb_keys());
-        glos.write(std::cout, "    > ");
+        printf("%lu keys:\n", arg.nb_keys());
+        arg.write(std::cout, "    > ");
         
         // extract values from Glossary:
-        if ( glos.set(i, "integer") )  printf("integer : %i\n", i);
-        if ( glos.set(f, "float") )    printf("float : %f\n", f);
-        if ( glos.set(s, "string") )   printf("string : %s\n", s.c_str());
+        if ( arg.set(i, "integer") )  printf("integer : %i\n", i);
+        if ( arg.set(f, "float") )    printf("float : %f\n", f);
+        if ( arg.set(s, "string") )   printf("string : %s\n", s.c_str());
         
         return EXIT_SUCCESS;
     }
     catch ( Exception& e )
     {
-        print_magenta(std::cout, "Error : "+e.message());
+        std::cout << "Error : " << e.what();
         return EXIT_FAILURE;
     }
 }

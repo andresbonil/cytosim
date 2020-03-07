@@ -4,14 +4,16 @@
 #include "stream_func.h"
 #include "simul_prop.h"
 #include "tokenizer.h"
+#include "messages.h"
 #include "glossary.h"
 #include "filepath.h"
 #include "tictoc.h"
 #include "simul.h"
+#include "event.h"
 #include "sim.h"
 #include <fstream>
 
-#include "../math/evaluator.cc"
+#include "evaluator.h"
 
 // Use the second definition to get some verbose reports:
 #define VLOG(ARG) ((void) 0)
@@ -42,7 +44,7 @@ Interface::Interface(Simul& s)
  */
 Property* Interface::execute_set(std::string const& cat, std::string const& name, Glossary& def)
 {
-    VLOG("-SET " << cat << " `" << name << "'\n");
+    VLOG("+SET " << cat << " `" << name << "'\n");
     
     /* mostly for historical reason, we do not allow for name that are class name,
     but this should also limit confusions in the config file */
@@ -89,15 +91,24 @@ void Interface::execute_change(Property * pp, Glossary& def)
 
 
 // in this form, 'name' designates the property name
-Property * Interface::execute_change(std::string const& name, Glossary& def)
+Property * Interface::execute_change(std::string const& name, Glossary& def, bool strict)
 {
     Property * pp = simul.findProperty(name);
     
     if ( pp )
+    {
+        VLOG("-CHANGE " << pp->category() << " `" << name << "'\n");
         execute_change(pp, def);
+    }
     else
-        throw InvalidSyntax("unknown property `"+name+"'");
-    
+    {
+        if ( strict )
+            throw InvalidSyntax("unknown property `"+name+"'");
+        else
+        {
+            VLOG("unknown change |" << name << "|\n");
+        }
+    }
     return pp;
 }
 
@@ -106,11 +117,11 @@ void Interface::execute_change_all(std::string const& cat, Glossary& def)
 {
     PropertyList plist = simul.findAllProperties(cat);
     
-    if ( plist.size() == 0 )
-        throw InvalidSyntax("could not find any property of class `"+cat+"'");
-    
     for ( Property * i : plist )
+    {
+        VLOG("+CHANGE " << i->category() << " `" << i->name() << "'\n");
         execute_change(i, def);
+    }
 }
 
 
@@ -135,8 +146,9 @@ bool has_trail(std::istream& is)
 void warn_trail(std::istream& is, std::string const& msg)
 {
     std::string str;
+    std::streampos pos = is.tellg();
     std::getline(is, str);
-    std::cerr << "Warning: ignored trailing `" << str << "' in: " << msg << "\n";
+    throw InvalidSyntax("unexpected `"+str+"' in `"+StreamFunc::get_line(is, pos)+"'");
 }
 
 /**
@@ -161,13 +173,15 @@ Isometry Interface::read_placement(Glossary& opt)
         if ( has_trail(iss) ) warn_trail(iss, "position = "+str);
     }
     else if ( spc )
+    {
         iso.mov = spc->randomPlace();
+    }
     
     // Rotation applied before the translation
     if ( opt.set(str, "orientation") )
     {
         std::istringstream iss(str);
-        iso.rot = Movable::readRotation(iss, iso.mov, spc);
+        iso.rot = Movable::readOrientation(iss, iso.mov, spc);
         if ( has_trail(iss) ) warn_trail(iss, "orientation = "+str);
     }
     else if ( opt.set(str, "direction") )
@@ -184,7 +198,7 @@ Isometry Interface::read_placement(Glossary& opt)
     if ( opt.set(str, "orientation", 1) )
     {
         std::istringstream iss(str);
-        Rotation rot = Movable::readRotation(iss, iso.mov, spc);
+        Rotation rot = Movable::readOrientation(iss, iso.mov, spc);
         if ( has_trail(iss) ) warn_trail(iss, "orientation = "+str);
         iso.rotate(rot);
     }
@@ -216,7 +230,7 @@ enum PlacementType { PLACE_NOT, PLACE_ANYWHERE, PLACE_INSIDE, PLACE_EDGE,
  By default, the specifications are relative to the last Space that was defined,
  but a different space can be specified as second argument of PLACEMENT.
  
- You can set the density of objects by setting `nb_trials=1`:
+ You can set the density of objects with `nb_trials=1`:
  
      new 100 grafted
      {
@@ -225,8 +239,8 @@ enum PlacementType { PLACE_NOT, PLACE_ANYWHERE, PLACE_INSIDE, PLACE_EDGE,
      }
  
  In this way an object will be created only if its randomly chosen position falls
- inside the Space, and the density will be exactly what is specified from the 
- `position` range (here 100/10*10 = 1).
+ inside the Space, and the density will thus be exactly what is specified from the
+ `position` range (here 100/10*10 = 1 object per squared micrometer).
  */
 Isometry Interface::find_placement(Glossary& opt, int placement)
 {
@@ -256,14 +270,14 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
         bool condition = true;
         if ( has_condition )
         {
-            Evaluator::variable_list vars = {{'X', iso.mov.x()}, {'Y', iso.mov.y()}, {'Z', iso.mov.z()},
-                                             {'R', iso.mov.norm()}, {'P', RNG.preal()}};
+            Evaluator evaluator{{'X', iso.mov.x()}, {'Y', iso.mov.y()}, {'Z', iso.mov.z()},
+                                {'R', iso.mov.norm()}, {'P', RNG.preal()}};
             try {
                 char const* ptr = condition_str.c_str();
-                condition = Evaluator::inequality(ptr, vars);
+                condition = evaluator.inequality(ptr);
             }
             catch( Exception& e ) {
-                e << "in `"+condition_str+"'";
+                e.message(e.message()+" in `"+condition_str+"'");
                 throw;
             }
         }
@@ -292,7 +306,8 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
         }
     }
     
-    Cytosim::warn << "placement failed" << std::endl;
+    //Cytosim::warn << "could not fulfill `position=" + opt.value("position", 0) + "'\n";
+    throw InvalidParameter("could not fulfill `position=" + opt.value("position", 0) + "'");
     iso.reset();
     return iso;
 }
@@ -384,7 +399,7 @@ ObjectList Interface::execute_new(std::string const& name, Glossary& opt)
     
     //hold();
 
-    VLOG("-NEW `" << name << "' made " << res.size() << " objects\n");
+    VLOG("+NEW `" << name << "' made " << res.size() << " objects\n");
     
     return res;
 }
@@ -498,8 +513,8 @@ public:
         }
         
         opt.set(mrk, "mark");
-        opt.set(st1, "state")    || opt.set(st1, "state1") || opt.set(st1, "stateP");
-        opt.set(st2, "state", 1) || opt.set(st2, "state2") || opt.set(st2, "stateM");
+        opt.set(st1, "state1") || opt.set(st1, "stateP") || opt.set(st1, "state");
+        opt.set(st2, "state2") || opt.set(st2, "stateM") || opt.set(st1, "state", 1);
     }
     
     /// return `true` if given object fulfills all the conditions specified
@@ -551,7 +566,14 @@ void Interface::execute_delete(std::string const& name, Glossary& opt, unsigned 
     else
         set = simul.findSet(name);
     if ( !set )
+    {
+        if ( name == "objects" )
+        {
+            simul.erase();     // deletes everything
+            return;
+        }
         throw InvalidSyntax("could not determine the class of `"+name+"'");
+    }
     
     Filter filter;
     filter.set(simul, pp, opt);
@@ -621,7 +643,7 @@ void Interface::execute_cut(std::string const& name, Glossary& opt)
     opt.set(n, "plane");
     opt.set(a, "plane", 1);
     
-    int stateP = STATE_RED, stateM = STATE_GREEN;
+    state_t stateP = STATE_RED, stateM = STATE_GREEN;
     opt.set(stateP, "new_end_state");
     opt.set(stateM, "new_end_state", 1);
     
@@ -715,9 +737,8 @@ void reportCPUtime(int frame, real simtime)
  `off`        | Objects are immobile.
  `on`         | The mechanics is solved fully (default).
  `auto`       | Same as 'on' but preconditionning method is set automatically.
- `horizontal` | Objects can move in the X-direction. The mechanics is solved partly.
- `flux`       | Fibers are translated at `flux_speed` according to their orientation.
- 
+ `horizontal` | The mechanics is solved only allowing motion in the X-direction. 
+  
  If set, `event` defines an event occuring at a rate specified by the positive real `RATE`.
  The action is defined by CODE, a string enclosed with parenthesis containing cytosim commands.
  This code will be executed at stochastic times with the specified rate.
@@ -736,15 +757,13 @@ void reportCPUtime(int frame, real simtime)
      }
  
  */
-void Interface::execute_run(unsigned nb_steps, Glossary& opt)
+void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
 {
-    unsigned     nb_frames  = 0;
-    std::string  code;
-    int          solve      = 1;
-    bool         prune      = true;
-    bool         binary     = true;
+    size_t nb_frames = 0;
+    int    solve     = 1;
+    bool   prune     = true;
+    bool   binary    = true;
     
-    bool has_code = opt.set(code, "nb_frames", 1);
 #ifdef BACKWARD_COMPATIBILITY
     // check if 'event' is specified within the 'run' command,
     // and convert to a registered Event object
@@ -769,16 +788,17 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
         case 3: solveFunc = &Simul::solveX;     break;
     }
 
-    opt.set(prune,  "prune");
-    opt.set(binary, "binary");
+    opt.set(prune,     "prune");
+    opt.set(binary,    "binary");
+    opt.set(nb_frames, "nb_frames");
     
-    unsigned int  frame = 1;
-    real          delta = nb_steps;
-    unsigned long check = nb_steps;
+    do_write &= ( nb_frames > 0 );
+
+    size_t frame = 1;
+    real   delta = (real)nb_steps;
+    size_t check = nb_steps;
     
     VLOG("+RUN START " << nb_steps << '\n');
-    
-    bool do_write = ( opt.set(nb_frames, "nb_frames") && nb_frames > 0 );
 
     if ( do_write )
     {
@@ -788,11 +808,8 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
             simul.writeObjects(TRAJECTORY, false, binary);
             simul.prop->clear_trajectory = false;
         }
-        if ( has_code )
-            evaluate(code, ", in run:code");
-
         delta = real(nb_steps) / real(nb_frames);
-        check = (int)delta;
+        check = delta;
     }
     
     simul.prepare();
@@ -807,18 +824,17 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt)
                 simul.relax();
                 simul.writeObjects(TRAJECTORY, true, binary);
                 reportCPUtime(frame, simul.time());
-                if ( has_code )
-                    evaluate(code, ", in run:write:code");
+                simul.unrelax();
             }
             if ( sss >= nb_steps )
                 break;
-            check = (int)( ++frame * delta );
+            check = ( ++frame * delta );
         }
 
-        simul.step();
-        (simul.*solveFunc)();
-        
         hold();
+        //fprintf(stderr, "> step %6i\n", sss);
+        (simul.*solveFunc)();
+        simul.step();
         ++sss;
     }
 #ifdef BACKWARD_COMPATIBILITY
@@ -841,9 +857,10 @@ void Interface::execute_run(unsigned nb_steps)
     
     for ( unsigned sss = 0; sss < nb_steps; ++sss )
     {
-        simul.step();
-        simul.solve();
         hold();
+        //fprintf(stderr, "> step %6i\n", sss);
+        simul.solve();
+        simul.step();
     }
     
     simul.relax();

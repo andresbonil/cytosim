@@ -148,7 +148,7 @@ Vector SpaceDice::project(Vector const& w) const
 
 void SpaceDice::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("dice", 16);
     out.writeUInt16(4);
     out.writeFloat(length_[0]);
     out.writeFloat(length_[1]);
@@ -169,7 +169,7 @@ void SpaceDice::setLengths(const real len[])
 void SpaceDice::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "dice");
     setLengths(len);
 }
 

@@ -74,7 +74,7 @@ void test_lapack(const int size)
     for ( int ii = 0; ii < size; ++ii )
     {
         for ( int jj = 0; jj < size; ++jj )
-            printf("%f ", mat[ii+size*jj]);
+            printf("%9.5f ", mat[ii+size*jj]);
         printf("\n");
     }
     

@@ -43,12 +43,12 @@ class Glossary;
  
  \par Origin:
  
- An abscissa is a curvilinear distance taken along the backbone, but using an
- origin makes this independent of the vertices. Thus even if the fiber lengthen
- from its ends, a position described by an abscissa will remain associated with
- the same local lattice site.
+ An abscissa is a curvilinear distance taken along the Fiber,
+ and the Chain provides an origin to make this independent of the vertices. 
+ Thus even if the fiber lengthen from its ends, a position described by an abscissa will
+ stay associated with the same local lattice site.
  
- Functions are provided to convert abscissa measured from different references,
+ Functions are provided in Chain to convert abscissa measured from different references,
  and to obtain positions of the fiber for a given abcissa.
 
  \par Derived classes:
@@ -56,6 +56,7 @@ class Glossary;
  The class FiberSite keeps track of its position using an abscissa from the origin,
  and all Hand objects are built from this class.
  The class Fiber keeps track of the FiberSite that are attached to itself.
+ 
 */
 class Chain : public Mecable
 {
@@ -93,6 +94,9 @@ protected:
     /// callback to signal that update is needed, to be called after a change in length
     void         postUpdate() { needUpdate = true; }
     
+    /// called if a Fiber tip has elongated or shortened
+    virtual void updateFiber() {}
+
     /// restore the distance between two points
     static void  reshape_two(const real*, real*, real cut);
 
@@ -118,26 +122,35 @@ public:
     
     /// Destructor
     ~Chain() {}
+    
+    /// Number of segments = nbPoints() - 1
+    unsigned     nbSegments()  const { return nPoints - 1; }
+    
+    /// Index of the last segment = nbPoints() - 2
+    unsigned     lastSegment() const { return nPoints - 2; }
 
     //---------------------
 
     /// set position of MINUS_END and direction (length and Nb of points are not modified)
     /** dir does not need to be normalized */
     void         setStraight(Vector const& pos, Vector const& dir);
-
-    /// set position of 'ref', direction and length of Fiber
-    void         setStraight(Vector const& pos, Vector const& dir, real len, FiberEnd ref);
     
-    /// import shape from the given array of size DIM*n_pts, and create a shape with `np` points
+    /// set position of 'ref', direction and length of Fiber
+    void         setStraight(Vector const& pos, Vector const& dir, real len);
+
+    /// move Fiber around to put 'ref' where the CENTER was
+    void         moveEnd(FiberEnd ref);
+    
+    /// set shape with `np` points from the given array of size DIM*n_pts
     void         setShape(const real pts[], unsigned n_pts, unsigned np);
 
-    /// set shape as a random walk of length `len` with the given persistence length
-    void         setEquilibrated(real len, real persistence_length);
+    /// set shape as a random walk with given parameters
+    void         setEquilibrated(real length, real persistence_length);
 
     /// change the current segmentation to force `length()==len` (normally not needed)
-    void         imposeLength(real len) { setSegmentation( len / ( nbPoints() - 1 )); fnAbscissaP = fnAbscissaM + len; }
-
-    /// return updated `normal` that is orthogonal to `d` (used for display)
+    void         imposeLength(real len) { setSegmentation(len/nbSegments()); fnAbscissaP = fnAbscissaM + len; }
+    
+    /// return updated `normal` that is orthogonal to `d` (used for fake 3D display)
     Vector3      adjustedNormal(Vector3 const& d) const;
     
     //---------------------
@@ -179,8 +192,10 @@ public:
     
     //---------------------
     
-    /// the total length of the Fiber, estimated from the segmentation and number of segment
-    //real         length()                const { return nbSegments() * fnCut; }
+    /// length of the Fiber, estimated from the segmentation and number of segments
+    real         length1()               const { return nPoints * fnCut - fnCut; }
+    
+    /// length of the Fiber, estimated from the difference of abscissa at the ends
     real         length()                const { return fnAbscissaP - fnAbscissaM; }
     
     /// the sum of the distance between vertices (used for debugging)
@@ -207,28 +222,31 @@ public:
 
     //---------------------
     
+    /// displace the ORIGIN of abscissa
+    void         setOrigin(real a) { fnAbscissaM = -a; fnAbscissaP = fnCut*nbSegments() - a; }
+
     /// signed distance from ORIGIN to MINUS_END (abscissa of MINUS_END)
-    real         abscissaM()             const { return fnAbscissaM; }
+    real         abscissaM() const { return fnAbscissaM; }
     
     /// abscissa of center, midway between MINUS_END and PLUS_END
     //real       abscissaC()             const { return fnAbscissaM + 0.5 * length(); }
-    real         abscissaC()             const { return 0.5 * (fnAbscissaM + fnAbscissaP); }
+    real         abscissaC() const { return 0.5 * (fnAbscissaM + fnAbscissaP); }
 
     /// signed distance from ORIGIN to PLUS_END (abscissa of PLUS_END)
     //real       abscissaP()             const { return fnAbscissaM + length(); }
-    real         abscissaP()             const { return fnAbscissaP; }
+    real         abscissaP() const { return fnAbscissaP; }
 
     /// signed distance from ORIGIN to vertex specified with index (or intermediate position)
     real         abscissaPoint(const real n) const { return fnAbscissaM + fnCut * n; }
 
     /// signed distance from the ORIGIN to the specified FiberEnd
-    real         abscissaEnd(FiberEnd end)  const;
+    real         abscissaEnd(FiberEnd end) const;
     
     /// converts distance from the specified FiberEnd, to abscissa from the ORIGIN
     real         abscissaFrom(real dis, FiberEnd ref) const;
     
-    /// return abscissa specified in opt[key]
-    real         someAbscissa(std::string const& key, Glossary& opt, real alpha) const;
+    /// return abscissa specified with `dis, ref, mod`
+    real         someAbscissa(real dis, FiberEnd ref, int mod, real alpha) const;
 
     //---------------------
 
@@ -256,6 +274,12 @@ public:
 
     /// position of PLUS_END
     Vector       posEndP() const { return Vector(pPos+DIM*(nPoints-1)); }
+    
+    /// external force acting on MINUS_END
+    Vector       netForceEndM() const { return netForce(0); }
+    
+    /// external force acting on PLUS_END
+    Vector       netForceEndP() const { return netForce(nPoints-1); }
 
     //---------------------
     
@@ -282,7 +306,7 @@ public:
     Vector       dir(real ab) const { return dirM(ab-fnAbscissaM); }
 
     /// normalized tangent vector to the fiber at given abscissa from given reference
-    Vector       dir(real ab, FiberEnd ref) const { return posM(abscissaFrom(ab, ref)); }
+    Vector       dir(real ab, FiberEnd ref) const { return dirM(abscissaFrom(ab, ref)); }
     
     /// normalized tangent vector to the fiber at given end
     Vector       dirEnd(FiberEnd end) const;
@@ -322,14 +346,14 @@ public:
     /// automatically select the number of points if needed, and resegment the fiber
     void         adjustSegmentation();
     
-    /// change all vertices from given array of coordinates
+    /// change all vertices to given array of coordinates
     void         getPoints(real const*);
-
+    
     /// restore the distance between successive vertices
     void         reshape() { getPoints(pPos); }
 
     /// invert polarity (swap PLUS end MINUS ends in place)
-    virtual void flipPolarity();
+    void         flipChainPolarity();
     
     //--------------------- Info
     
@@ -356,8 +380,8 @@ public:
 
     //--------------------- Growing/Shrinking
     
-    /// merge two fibers by attaching `fib` at the PLUS_END of `this`
-    void         join(Chain const* fib);
+    /// merge two fibers by attaching given Chain at the PLUS_END of `this`
+    void         join(Chain const*);
 
     /// increase/decrease length of Fiber by `delta`, at the MINUS_END
     void         growM(real delta);
@@ -384,10 +408,10 @@ public:
     void         adjustLength(real len, FiberEnd ref);
 
     /// Discard vertices in [ 0, P-1 ] and keep [ P, end ]
-    void         truncateM(unsigned p);
+    virtual void truncateM(unsigned p);
 
     /// Keep vertices [ 0, P ] and discard the others
-    void         truncateP(unsigned p);
+    virtual void truncateP(unsigned p);
 
     //---------------------
     

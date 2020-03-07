@@ -33,8 +33,13 @@ set fiber microtubule
     display = ( plus_end = 2 )
 }
 
+new event
+{
+    rate = 2
+    code = ( new microtubule { position=(rectangle 2 5); length=0.05; end_state=grow; } )
+}
+
 run 100000 system
 {
     nb_frames = 10
-    event = 2, ( new microtubule { position=(rectangle 2 5); length=0.05; end_state=grow; } )
 }

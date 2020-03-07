@@ -2,6 +2,7 @@
 
 set space cell
 {
+    dim = 2
     shape = periodic
 }
 

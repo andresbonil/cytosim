@@ -56,16 +56,16 @@ class ClassicFiber : public Fiber
 private:
     
     /// state of MINUS_END
-    AssemblyState  mStateM;
+    state_t    mStateM;
     
     /// length increment at MINUS_END during last time-step
-    real           mGrowthM;
+    real       mGrowthM;
 
     /// state of PLUS_END
-    AssemblyState  mStateP;
+    state_t    mStateP;
     
     /// length increment at PLUS_END during last time-step
-    real           mGrowthP;
+    real       mGrowthP;
      
 public:
     
@@ -81,10 +81,10 @@ public:
     //--------------------------------------------------------------------------
     
     /// return assembly/disassembly state of MINUS_END
-    unsigned    dynamicStateM() const { return mStateM; }
+    state_t     dynamicStateM() const { return mStateM; }
 
     /// return assembly/disassembly state of PLUS_END
-    unsigned    dynamicStateP() const { return mStateP; }
+    state_t     dynamicStateP() const { return mStateP; }
 
     
     /// length increment at MINUS_END during last time-step
@@ -95,10 +95,10 @@ public:
 
     
     /// change state of MINUS_END
-    void        setDynamicStateM(unsigned s);
+    void        setDynamicStateM(state_t s);
     
     /// change state of PLUS_END
-    void        setDynamicStateP(unsigned s);
+    void        setDynamicStateP(state_t s);
 
     /// monte-carlo step
     void        step();

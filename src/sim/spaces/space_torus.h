@@ -11,7 +11,7 @@
  
  Parameters:
      - `radius` = the main radius of the torus centerline
-     - `width`  = the diameter of the torus in its crosssections.
+     - `width`  = the diameter of the torus in its cross sections.
      .
 
  @ingroup SpaceGroup
@@ -30,7 +30,7 @@ private:
     void update() { bWidthSqr = square(bWidth); }
     
     /// project on the backbone
-    Vector project0(Vector const& pos) const;
+    Vector backbone(Vector const& pos) const;
     
 public:
         

@@ -43,7 +43,7 @@ public:
     /// property
     DuoProp const* prop;
     
-    /// create following the specifications in the DuoProp
+    /// constructor
     Duo(DuoProp const*, Vector const & w = Vector(0,0,0));
 
     /// destructor
@@ -53,13 +53,13 @@ public:
     bool    active() const { return mActive; }
     
     /// simulation step for a free Duo
-    void    stepFF(const FiberGrid&);
+    void    stepFF(Simul&);
     
     /// simulation step for a Duo attached by Hand1
-    void    stepAF(const FiberGrid&);
+    void    stepAF(Simul&);
     
     /// simulation step for a Duo attached by Hand2
-    void    stepFA(const FiberGrid&);
+    void    stepFA(Simul&);
     
     /// simulation step for a linking Duo
     void    stepAA();

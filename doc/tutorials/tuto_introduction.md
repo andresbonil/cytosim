@@ -320,7 +320,15 @@ Here, `position = 0 0 0` refers to the center of the *cell* and `orientation` in
 
 For cytoskeletal filaments, the dominating forces are usually the [Brownian motion](http://en.wikipedia.org/wiki/Brownian_motion), and the viscous drag induced by motion in the fluid. The parameter `viscosity` sets the [viscosity](http://en.wikipedia.org/wiki/Viscosity) of the surrounding fluid. In the units of the simulations, water has viscosity 0.001. The viscosity is here set to 1, which would be appropriate for simulating the cytoplasm inside the cell (what is exactly the viscosity of the cytoplasm is a tricky issue that we cannot discuss here).
 
-In the model, the drag is linear in the length of the microtubule. Longer ones are more difficult to move than shorter ones. The drag coefficient is calculated using a formula similar to Stoke's law, but which is derived for a cylinder instead of a sphere.
+In the model, the drag is linear in the length of the microtubule. Longer ones are more difficult to move than shorter ones. The drag coefficient is calculated using a formula similar to Stoke's law, but which was derived for a cylinder instead of a sphere:
+
+> Tirado and de la Torre. J. Chem. Phys 71(6) 1979  
+> https://doi.org/10.1063/1.438613  
+> Page 2584, Table 1, last column, last line for infinite aspect ratio  
+
+The translational drag coefficient is averaged over all possible configurations:
+ 
+     drag_cylinder = 3 * PI * viscosity * length / ( log(length/diameter) + 0.312 );
 
 Diffusion is calculated from the drag coefficient, using the [Einstein relation](http://en.wikipedia.org/wiki/Einstein_relation_%28kinetic_theory%29). The filament is diffusing both in translation and rotation, but this is usually quite slow. Temperature is set by kT, with 0.0042 corresponding to room temperature (kT ~ 4.2 pN.nm). 
 

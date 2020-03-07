@@ -6,9 +6,9 @@
 #include "classic_fiber_prop.h"
 #include "classic_fiber.h"
 #include "property_list.h"
-#include "simul_prop.h"
 #include "exceptions.h"
 #include "glossary.h"
+#include "simul.h"
 
 
 Fiber* ClassicFiberProp::newFiber() const
@@ -38,7 +38,8 @@ void ClassicFiberProp::clear()
     catastrophe_length  = 0;
 #endif
 #if NEW_CATASTROPHE_OUTSIDE
-    catastrophe_outside = false;
+    catastrophe_outside = 1;
+    catastrophe_space_ptr = nullptr;
 #endif
 }
 
@@ -57,17 +58,17 @@ void ClassicFiberProp::read(Glossary& glos)
     glos.set(rebirth_rate,             2, "rebirth_rate");
 
 #if NEW_LENGTH_DEPENDENT_CATASTROPHE
-    glos.set(catastrophe_length,       "catastrophe_length");
+    glos.set(catastrophe_length,    "catastrophe_length");
 #endif
 #if NEW_CATASTROPHE_OUTSIDE
-    glos.set(catastrophe_outside,      "catastrophe_outside");
+    glos.set(catastrophe_outside,   "catastrophe_outside");
+    glos.set(catastrophe_space,     "catastrophe_outside", 1);
 #endif
-
 
 #ifdef BACKWARD_COMPATIBILITY
     
     if ( glos.set(growing_force[0], "dynamic_force") )
-        Cytosim::warn << "fiber:dynamic_force was renamed growing_force" << std::endl;
+        Cytosim::warn << "fiber:dynamic_force was renamed growing_force\n";
 
     // change made 13 October 2014
     if ( glos.nb_values("growing_force") == 1 )
@@ -75,18 +76,18 @@ void ClassicFiberProp::read(Glossary& glos)
         real x = 0;
         if ( glos.peek(x, "catastrophe_rate", 1) && x > 0 )
         {
-            Cytosim::warn << "catastrophe_rate[1] was renamed catastrophe_rate_stalled[0]" << std::endl;
+            Cytosim::warn << "catastrophe_rate[1] was renamed catastrophe_rate_stalled[0]\n";
             catastrophe_rate_stalled[0] = x;
             catastrophe_rate[1] = 0;
         }
         if ( glos.peek(x, "growing_speed", 1) && x != 0 )
-            throw InvalidParameter("fiber:growing_speed[1] was renamed growing_off_speed[0]\n");
+            throw InvalidParameter("fiber:growing_speed[1] was renamed growing_off_speed[0]");
     }
 
     int f = 0;
     if ( glos.set(f, "fate", {{"none", 0}, {"destroy", 1}, {"rescue", 2}}))
     {
-        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`" << std::endl;
+        Cytosim::warn << "fiber:fate is deprecated: use `persistent` and `rebirth_rate`\n";
         persistent = ( f != 1 );
         rebirth_rate[0] = ( f == 2 ? INFINITY : 0 );
     }
@@ -103,29 +104,29 @@ void ClassicFiberProp::complete(Simul const& sim)
     {
         if ( growing_speed[i] < 0 )
             throw InvalidParameter("fiber:growing_speed should be >= 0");
-        growing_speed_dt[i] = growing_speed[i] * sim.prop->time_step;
+        growing_speed_dt[i] = growing_speed[i] * sim.time_step();
 
         if ( growing_off_speed[i] > 0 )
             throw InvalidParameter("growing_off_speed should be <= 0");
 
         if ( growing_speed[i] + growing_off_speed[i] < 0 )
             throw InvalidParameter("fiber:growing_speed+growing_off_speed should be >= 0");
-        growing_off_speed_dt[i] = growing_off_speed[i] * sim.prop->time_step;
+        growing_off_speed_dt[i] = growing_off_speed[i] * sim.time_step();
 
         if ( growing_force[i] <= 0 )
             throw InvalidParameter("fiber:growing_force should be > 0");
 
         if ( shrinking_speed[i] > 0 )
             throw InvalidParameter("fiber:shrinking_speed should be <= 0");
-        shrinking_speed_dt[i]  = shrinking_speed[i] * sim.prop->time_step;
+        shrinking_speed_dt[i]  = shrinking_speed[i] * sim.time_step();
 
         if ( catastrophe_rate[i] < 0 )
             throw InvalidParameter("fiber:catastrophe_rate should be >= 0");
-        catastrophe_rate_dt[i] = catastrophe_rate[i] * sim.prop->time_step;
+        catastrophe_rate_dt[i] = catastrophe_rate[i] * sim.time_step();
 
         if ( catastrophe_rate_stalled[i] < 0 )
             throw InvalidParameter("fiber:catastrophe_rate_stalled should be >= 0");
-        catastrophe_rate_stalled_dt[i] = catastrophe_rate_stalled[i] * sim.prop->time_step;
+        catastrophe_rate_stalled_dt[i] = catastrophe_rate_stalled[i] * sim.time_step();
 
         catastrophe_coef[i] = 0;
         
@@ -135,13 +136,13 @@ void ClassicFiberProp::complete(Simul const& sim)
                 throw InvalidParameter("fiber:catastrophe_rate_stalled must be greater than catastrophe_rate");
 
             if ( sim.ready()  &&  growing_speed[i] + growing_off_speed[i] <= 0 )
-                Cytosim::warn << "fiber:growing_speed + growing_off_speed <= 0" << std::endl;
+                Cytosim::warn << "fiber:growing_speed + growing_off_speed <= 0\n";
             
             if ( growing_speed[i] + growing_off_speed[i] <= 0 )
                 catastrophe_coef[i] = 0;
             else
                 catastrophe_coef[i] = ( catastrophe_rate_stalled[i]/catastrophe_rate[i] - 1.0 )
-                / ( ( growing_speed[i] + growing_off_speed[i] ) * sim.prop->time_step );
+                / ( ( growing_speed[i] + growing_off_speed[i] ) * sim.time_step() );
             
             if ( catastrophe_coef[i] < 0 )
                 throw InvalidParameter("inconsistent fiber:dynamic parameters");
@@ -149,12 +150,21 @@ void ClassicFiberProp::complete(Simul const& sim)
         
         if ( rescue_rate[i] < 0 )
             throw InvalidParameter("fiber:rescue_rate should be >= 0");
-        rescue_prob[i] = -std::expm1( -rescue_rate[i] * sim.prop->time_step );
+        rescue_prob[i] = -std::expm1( -rescue_rate[i] * sim.time_step() );
 
         if ( rebirth_rate[i] < 0 )
             throw InvalidParameter("fiber:rebirth_rate should be >= 0");
-        rebirth_prob[i] = -std::expm1( -rebirth_rate[i] * sim.prop->time_step );
+        rebirth_prob[i] = -std::expm1( -rebirth_rate[i] * sim.time_step() );
     }
+    
+#if NEW_CATASTROPHE_OUTSIDE
+    catastrophe_space_ptr = sim.findSpace(catastrophe_space);
+    
+    if ( catastrophe_space_ptr )
+        catastrophe_space = catastrophe_space_ptr->name();
+    else if ( sim.ready() )
+        throw InvalidParameter("A space must be defined as catastrophe_outside[1]");
+#endif
 }
 
 

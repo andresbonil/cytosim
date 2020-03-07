@@ -12,7 +12,7 @@ To enable this feature for Motor, set:
 For a motor that moves, the unbinding rate can depend on the motion of this motor.
 In cytosim, the rate is normally set per unit time, and it can also depend on force, as:
 
-	unbinding_probability1 = time_step * unbinding_rate * exp( force / unbinding_force )
+	unbinding_probability1 = time_step * unbinding_rate * exp(force/unbinding_force)
 
 (One can set `unbinding_force = inf` to have a constant detachment rate)
 Another term was added to make detachment proportional to the distance travelled by the motor:
@@ -29,7 +29,7 @@ The effect is most noticable if `unbinding_rate` is small. Specifically:
 
 	unbinding_rate << unbinding_density * unloaded_speed
 
-gives a catch-bond like behavior.
+gives an elementary catch-bond behavior.
 
 Please run `cym/motor_race.cym` to check the effect of different unbinding models.
 

@@ -20,7 +20,7 @@ int verbose = 1;
 
 void help(std::ostream& os)
 {
-    os << "Cytosim-reportF "<<DIM<<"D, file version %i\n" << Simul::currentFormatID << '\n';
+    os << "Cytosim-reportF "<<DIM<<"D, file version " << Simul::currentFormatID << '\n';
     os << "       generate reports/statistics about cytosim's objects\n";
     os << "\n";
     os << "Syntax:\n";
@@ -77,7 +77,8 @@ int main(int argc, char* argv[])
     std::string root = "report", str, what = argv[1];
     
     Glossary arg;
-    arg.read_strings(argc-2, argv+2);
+    if ( arg.read_strings(argc-2, argv+2) )
+        return EXIT_FAILURE;
     arg.set(input, ".cmo") || arg.set(input, "input");
     if ( arg.use_key("-") ) verbose = 0;
     arg.set(verbose, "verbose");

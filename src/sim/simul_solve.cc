@@ -67,7 +67,7 @@ real Simul::estimateStericRange() const
     }
     
     if ( ran < REAL_EPSILON )
-        PRINT_ONCE("Warning: could not estimate simul:steric_max_range automatically!\n");
+        LOG_ONCE("Warning: could not estimate simul:steric_max_range automatically!\n");
     
     return ran;
 }
@@ -232,7 +232,7 @@ void Simul::setInteractions(Meca & meca) const
     for ( Bead   * b=  beads.first(); b ; b=b->next() )
         meca.add(b);
     
-    meca.prepare(prop);
+    meca.prepare();
     
     // add interactions for all objects:
     
@@ -362,39 +362,68 @@ void Simul::solve_auto()
 }
 
 
-void Simul::apply() const
-{
-    sMeca.apply();
-}
-
-
 void Simul::computeForces() const
 {
     // we could use here an accessory Meca mec;
     try {
-        prop->complete(*this);
-        setInteractions(sMeca);
-        sMeca.computeForces();
+        if ( !ready() )
+        {
+            prop->complete(*this);
+            setInteractions(sMeca);
+            sMeca.computeForces();
+        }
+        else
+        {
+#if ( 0 )
+            /* if the simulation is running live, the force are already available
+            and we can check here that the result are similar */
+            fibers.first()->printTensions(std::clog);
+            setInteractions(sMeca);
+            sMeca.computeForces();
+            fibers.first()->printTensions(std::clog);
+            std::clog<<"\n";
+#endif
+        }
     }
     catch ( Exception & e )
     {
         std::clog << "cytosim could not compute the forces:\n";
-        std::clog << "   " << e.what() << std::endl;
+        std::clog << "   " << e.what() << '\n';
     }
 }
 
 
-void Simul::dump() const
+void Simul::dump(const char dirname[]) const
 {
     std::string cwd = FilePath::get_cwd();
-    const char path[] = "dump";
-    FilePath::make_dir(path);
-    FilePath::change_dir(path);
+    FilePath::make_dir(dirname);
+    FilePath::change_dir(dirname);
     sMeca.dump();
     FilePath::change_dir(cwd);
-    std::clog << "cytosim dumped a system of size " << sMeca.dimension() << "in " << path << std::endl;
+    fprintf(stderr, "Cytosim dumped its matrices in directory `%s'\n", dirname);
 }
 
+
+void Simul::saveSystem(const char dirname[]) const
+{
+    std::string cwd = FilePath::get_cwd();
+    FilePath::make_dir(dirname);
+    FilePath::change_dir(dirname);
+    FILE * f = fopen("matrix.mtx", "w");
+    if ( f && ~ferror(f) )
+    {
+        sMeca.saveMatrix(f, 0);
+        fclose(f);
+    }
+    f = fopen("rhs.mtx", "w");
+    if ( f && ~ferror(f) )
+    {
+        sMeca.saveRHS(f);
+        fclose(f);
+    }
+    fprintf(stderr, "Cytosim saved its matrix in `%s'\n", dirname);
+    FilePath::change_dir(cwd);
+}
 
 //==============================================================================
 //                              SOLVE-X 1D

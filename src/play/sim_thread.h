@@ -14,26 +14,26 @@ class SimThread : private Parser
     /// disabled default constructor
     SimThread();
     
-private:
+    /// for cleanup
+    friend void child_cleanup(void*);
     
-    /// Simulation object
-    Simul           simul;
+private:
 
     /// reader used to access frames in a trajectory file
-    FrameReader     reader;
+    FrameReader     reader_;
 
     
     /// callback invoked when the thread is halted
     void           (*hold_callback)(void);
     
     /// slave thread
-    pthread_t       mChild;
+    pthread_t       child_;
     
-    /// a flag reflecting if child thread is running or not
-    bool            mState;
+    /// a flag reflecting if the child thread is running or not
+    volatile bool   hasChild;
     
     /// a flag to indicate that child thread should terminate or restart
-    int             mFlag;
+    volatile int    mFlag;
     
     /// mutex protecting write access to simulation state
     pthread_mutex_t mMutex;
@@ -60,8 +60,8 @@ private:
     /// return list of Handles
     ObjectList    allHandles(SingleProp const*) const;
 
-    /// True if thread is 'mChild'
-    bool          isChild() const { return pthread_equal(pthread_self(), mChild); }
+    /// True if current thread is 'child'
+    bool          isChild() const { return pthread_equal(pthread_self(), child_); }
     
 public:
     
@@ -74,11 +74,17 @@ public:
     /// redefines Interface::hold(), will be called repeatedly during parsing
     void          hold();
     
-    /// print message to identify slave
+    /// return child process
+    pthread_t     child() { return child_; }
+    
+    /// print message to identify thread
     void          debug(const char *) const;
     
+    /// print message to identify thread
+    void          gubed(const char *) const;
+
     /// create a SimThread with given holding function callback
-    SimThread(void (*callback)(void));
+    SimThread(Simul&, void (*callback)(void));
     
     /// destructor
     ~SimThread();
@@ -98,38 +104,32 @@ public:
     int        wait()    { return pthread_cond_wait(&mCondition, &mMutex); }
     
     /// send signal to other threads
-    void       signal()  { if ( mState ) pthread_cond_signal(&mCondition); }
+    void       signal()  { if ( hasChild ) pthread_cond_signal(&mCondition); }
 
 #else
     
     /// lock access to the Simulation data
-    void       lock()    { pthread_mutex_lock(&mMutex); debug("lock"); }
+    void       lock()    {  debug("  lock..."); pthread_mutex_lock(&mMutex); debug("  locked!"); }
     
     /// unlock access to the Simulation data
-    void       unlock()  { pthread_mutex_unlock(&mMutex); debug("unlock"); }
+    void       unlock()  { pthread_mutex_unlock(&mMutex); gubed("  unlock"); }
     
     /// try to lock access to the Simulation data
-    int        trylock() { int R=pthread_mutex_trylock(&mMutex); debug(R?"trylock failed":"trylock"); return R; }
+    int        trylock() { int R=pthread_mutex_trylock(&mMutex); debug(R?"  failed trylock":"  trylock"); return R; }
     
-    /// wait for the condition to be
-    int        wait()    { debug(" wait"); return pthread_cond_wait(&mCondition, &mMutex); }
+    /// wait for the condition
+    int        wait()    { debug("unlock, wait"); int R=pthread_cond_wait(&mCondition, &mMutex); debug("wake, lock"); return R; }
     
     /// signal other thread to continue
-    void       signal()  { debug(" signal"); pthread_cond_signal(&mCondition); }
+    void       signal()  { debug("signal"); pthread_cond_signal(&mCondition); }
     
 #endif
-    
-    /// Simul reference
-    Simul&     sim() { return simul; }
     
     /// set how many 'hold()' are necessary to halt the thread
     void       period(unsigned int c) { mPeriod = c; }
     
     /// true if child thread is running
-    bool       alive() const { return mState; }
-    
-    /// terminate (slave) thread
-    void       terminate();
+    bool       alive() const { return hasChild; }
     
     /// start the thread that will run a simulation
     void       start();
@@ -159,7 +159,7 @@ public:
     void       reloadParameters(std::string const& file);
     
     /// execute given code
-    int        execute(std::string const&, std::string const&);
+    void       execute(std::string const&);
     
     /// export simulation Propertes and Objects to file
     void       exportObjects(bool binary);
@@ -169,25 +169,28 @@ public:
 
     
     /// open trajectory file for input
-    void       openFile(std::string const& name) { reader.openFile(name); }
+    void       openFile(std::string const& name) { reader_.openFile(name); }
     
     /// true if ready to read from file
-    bool       goodFile()  const { return reader.good(); }
+    bool       goodFile()     const { return reader_.good(); }
     
     /// status of file
-    int        eof()       const { return reader.eof(); }
+    int        eof()          const { return reader_.eof(); }
     
     /// rewind file
-    void       rewind()          { lock(); reader.rewind(); unlock(); }
- 
-    /// index of current frame
-    int        currFrame() const { return reader.currFrame(); }
+    void       rewind()             { lock(); reader_.rewind(); unlock(); }
     
     /// attempt to load specified frame from file (0 = first frame; -1 = last frame)
-    int        loadFrame(int f)  { lock(); int r=reader.loadFrame(simul, f); unlock(); return r; }
+    int        loadFrame(size_t f)  { lock(); int r=reader_.loadFrame(simul, f); unlock(); return r; }
 
     /// load next frame in file
-    int        loadNextFrame()   { lock(); int r=reader.loadNextFrame(simul); unlock(); return r; }
+    int        loadNextFrame()      { lock(); int r=reader_.loadNextFrame(simul); unlock(); return r; }
+    
+    /// attempt to load last frame from file
+    int        loadLastFrame()      { lock(); int r=reader_.loadLastFrame(simul); unlock(); return r; }
+
+    /// index of current frame
+    size_t     currentFrame() const { return reader_.currentFrame(); }
 
     
     /// return the Single that is manipulated by the User

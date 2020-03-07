@@ -23,14 +23,22 @@
 /// 2x2 matrix class with 4 'real' elements
 class alignas(32) Matrix22
 {
-public:
-
+private:
+        
     union {
         real val[4];
 #if MATRIX22_USES_AVX
         vec4 mat;
 #endif
     };
+
+    /// access to modifiable element by index
+    real& operator[](int i)       { return val[i]; }
+    
+    /// access element value by index
+    real  operator[](int i) const { return val[i]; }
+
+public:
     
     Matrix22() {}
     
@@ -101,9 +109,13 @@ public:
     /// dimensionality
     static int dimension() { return 2; }
     
-    /// leading dimension
-    static int stride() { return 2; }
-
+    /// human-readible identifier
+#if MATRIX22_USES_AVX
+    static std::string what() { return "4"; }
+#else
+    static std::string what() { return "2*2"; }
+#endif
+    
     /// set all elements to zero
     void reset()
     {
@@ -136,10 +148,6 @@ public:
     /// conversion to array of 'real'
     real* data()             { return val; }
     real* addr(int i, int j) { return val + ( i + 2*j ); }
-
-    /// access operator to elements by index
-    real& operator[](int i)       { return val[i]; }
-    real  operator[](int i) const { return val[i]; }
     
     /// access functions to element by line and column indices
     real& operator()(int i, int j)       { return val[i+2*j]; }
@@ -175,23 +183,24 @@ public:
         fprintf(f, "/ %9.3f %9.3f \\\n", val[0], val[2]);
         fprintf(f, "\\ %9.3f %9.3f /\n", val[1], val[3]);
     }
-    
+
     /// conversion to string
     std::string to_string(int w, int p) const
     {
-        std::ostringstream os("[ ");
+        std::ostringstream os;
         os.precision(p);
-        os << std::setw(w) << std::fixed << val[0] << " ";
-        os << std::setw(w) << std::fixed << val[2] << " | ";
-        os << std::setw(w) << std::fixed << val[1] << " ";
-        os << std::setw(w) << std::fixed << val[3] << " ]";
+        os << std::setw(2) << "[ ";
+        os << std::setw(w) << (*this)(0,0) << " ";
+        os << std::setw(w) << (*this)(0,1) << "; ";
+        os << std::setw(w) << (*this)(1,0) << " ";
+        os << std::setw(w) << (*this)(1,1) << " ]";
         return os.str();
     }
 
-    /// true if matrix is symmetric
-    bool is_symmetric() const
+    /// zero if matrix is symmetric
+    real asymmetry() const
     {
-        return ( val[1] == val[2] );
+        return std::abs(val[2]-val[1]);
     }
     
     /// scale all elements
@@ -302,7 +311,7 @@ public:
     }
     
     /// maximum of all component's absolute values
-    real norm() const
+    real norm_inf() const
     {
         real a = std::max(fabs(val[0]), fabs(val[1]));
         real b = std::max(fabs(val[2]), fabs(val[3]));
@@ -720,11 +729,10 @@ public:
     /// set a symmetric matrix: alpha * [ dir (x) transpose(dir) ]
     static Matrix22 outerProduct(Vector2 const& dir, real alpha)
     {
-        real wX = dir.XX * alpha;
-        real wY = dir.YY * alpha;
-        real xy = dir.XX * wY;
-        return Matrix22(dir.XX * wX, xy,
-                        xy, dir.YY * wY);
+        real XX = dir.XX * dir.XX;
+        real XY = dir.XX * dir.YY;
+        real YY = dir.YY * dir.YY;
+        return Matrix22(XX, XY, XY, YY) * alpha;
     }
     
     /// return outer product: [ dir (x) transpose(vec) ]
@@ -775,19 +783,21 @@ public:
     
     /// a random rotation chosen uniformly
     static Matrix22 randomRotation();
+    
+    /// a rotation of angle '+/- angle'
+    static Matrix22 randomRotation(real angle);
 
 };
 
-
-/// output matrix lines to std::ostream
-inline std::ostream& operator << (std::ostream& os, Matrix22 const& M)
+/// output a Matrix22
+inline std::ostream& operator << (std::ostream& os, Matrix22 const& mat)
 {
-    std::streamsize w = os.width();
+    int w = (int)os.width();
     os << std::setw(2) << "[ ";
-    os << std::setw(w) << M[0] << " ";
-    os << std::setw(w) << M[2] << "; ";
-    os << std::setw(w) << M[1] << " ";
-    os << std::setw(w) << M[3] << " ]";
+    os << std::setw(w) << mat(0,0) << " ";
+    os << std::setw(w) << mat(0,1) << "; ";
+    os << std::setw(w) << mat(1,0) << " ";
+    os << std::setw(w) << mat(1,1) << " ]";
     return os;
 }
 

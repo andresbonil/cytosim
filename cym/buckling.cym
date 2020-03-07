@@ -5,6 +5,7 @@ set simul system
 {
     time_step = 0.001
     viscosity = 0.01
+    kT = 0.001
 }
 
 set space cell
@@ -45,18 +46,8 @@ new filament
     length = 10
     position = 0 0 0
     orientation = 1 0 0
-}
-
-new link
-{
-    position = -4.5 0 0 
-    attach = fiber1, 0
-}
-
-new link
-{
-    position = +4.5 0 0 
-    attach = fiber1, 10
+    attach1 = link, 0,,, -4 0 0
+    attach2 = link, 10,,, 4 0 0
 }
 
 run 10000 system

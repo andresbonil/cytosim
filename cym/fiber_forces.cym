@@ -38,7 +38,7 @@ new filament
 {
     length = 5
     position = ( 0 0 0 )
-    orientation = horizontal
+    direction = X
 }
 
 run system

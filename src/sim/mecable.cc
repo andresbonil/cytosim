@@ -159,7 +159,7 @@ void Mecable::shiftPoints(const unsigned inx, const unsigned nbp)
 
 //------------------------------------------------------------------------------
 /**
- shifts ending-part of the array to indices starting at 0.
+ shifts array to keep only points within [p, last]
  */
 void Mecable::truncateM(const unsigned int p)
 {
@@ -174,7 +174,7 @@ void Mecable::truncateM(const unsigned int p)
 }
 
 /**
- erase higher indices of array
+ erase higher indices of array to keep [0, p]
  */
 void Mecable::truncateP(const unsigned int p)
 {
@@ -302,23 +302,19 @@ void Mecable::calculateMomentum(Vector& avg, Vector& sec, bool sub)
 void Mecable::foldPosition(Modulo const* s)
 {
     Vector off = s->offset(position());
-    if ( !off.null() )
+    if ( off.is_not_zero() )
         translate(-off);
 }
 
 
 bool Mecable::allInside(Space const* spc) const
 {
-    bool res = true;
     for ( unsigned ii = 0; ii < nPoints; ++ii )
     {
         if ( spc->outside(posP(ii)) )
-        {
-            res = false;
-            break;
-        }
+            return false;
     }
-    return res;
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -381,7 +377,7 @@ unsigned Mecable::point_index(std::string const& str, unsigned X)
     if ( str.size() > 5  &&  str.compare(0,5,"point") == 0 )
     {
         errno = 0;
-        unsigned i = (unsigned)strtoul(str.c_str()+5, nullptr, 10);
+        unsigned long i = strtoul(str.c_str()+5, nullptr, 10);
         if ( errno ) throw InvalidParameter("a point index must be specified, eg. `point1`");
         if ( i < 1 ) throw InvalidParameter("a point index must must be >= 1");
         if ( i > X ) throw InvalidParameter("point index is out of range");

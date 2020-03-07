@@ -324,9 +324,8 @@ void PointDisp::savePixelmap(GLubyte* bitmap, unsigned dim, unsigned id) const
 #endif
 
 
-void PointDisp::drawPixelmap(Vector const& pos, unsigned ii) const
+void PointDisp::drawPixelmap(unsigned ii) const
 {
-    gle::gleRasterPos(pos);
     //translate to center the bitmap:
     glBitmap(0,0,0,0,mOffs,mOffs,nullptr);
 #if POINTDISP_USES_PIXEL_BUFFERS
@@ -434,50 +433,6 @@ void PointDisp::makePixelmaps(GLfloat uFactor, unsigned sampling)
     glPopAttrib();
 }
 
-#else
-
-/// draw inactive state
-void PointDisp::drawI(Vector const& pos) const
-{
-    if ( perceptible )
-    {
-        glPushMatrix();
-        gle::gleTranslate(pos);
-        gle::gleScale(realSize);
-        color2.load();
-        gle::gleDisc();
-        glPopMatrix();
-    }
-}
-
-/// draw active state, unattached
-void PointDisp::drawF(Vector const& pos) const
-{
-    if ( perceptible )
-    {
-        glPushMatrix();
-        gle::gleTranslate(pos);
-        gle::gleScale(realSize);
-        color2.load();
-        strokeA();
-        glPopMatrix();
-    }
-}
-
-/// draw active state, attached
-void PointDisp::drawA(Vector const& pos) const
-{
-    if ( perceptible )
-    {
-        glPushMatrix();
-        gle::gleTranslate(pos);
-        gle::gleScale(realSize);
-        color.load();
-        strokeA();
-        glPopMatrix();
-    }
-}
-
 #endif
 
 
@@ -521,7 +476,7 @@ void PointDisp::read(Glossary& glos)
     // set 'color2' as a darker tone of 'color':
     if ( glos.set(color,   "color") )
         color2 = color.alpha(0.5);
-    glos.set(color2,       "color", 1);
+    glos.set(color2,       "color", 1) || glos.set(color2, "back_color");
     glos.set(coloring,     "coloring");
     
     // if 'size' is specified, width is set accordingly:
@@ -529,7 +484,7 @@ void PointDisp::read(Glossary& glos)
         width = 2 * size / 3;
 
     // alternative syntax:
-    glos.set(size,         "size");
+    glos.set(size,         "point_size");
 #ifdef BACKWARD_COMPATIBILITY
     glos.set(size,         "points");
     glos.set(shape,        "points", 1);

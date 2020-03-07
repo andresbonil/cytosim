@@ -25,6 +25,12 @@ Matrix11 Matrix11::randomRotation()
 }
 
 
+Matrix11 Matrix11::randomRotation(real)
+{
+    return Matrix11(RNG.sflip());
+}
+
+
 Matrix11 Matrix11::rotationToVector(const Vector1& vec)
 {
     return Matrix11(std::copysign(1, vec.XX));

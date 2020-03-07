@@ -213,7 +213,7 @@ void MatrixOfBlocks::vecMul( const real* X, real* Y )  const
 }
 
 //------------------------------------------------------------------------------
-real MatrixOfBlocks::norm() const
+real MatrixOfBlocks::norm_inf() const
 {
     real mx = 0;
     for ( unsigned int bb=0; bb < block_cnt; ++bb )
@@ -221,7 +221,7 @@ real MatrixOfBlocks::norm() const
         real* X = block_[bb];
         index_t m = block_size[bb];
         for ( index_t ii = 0; ii < m*m; ++ii )
-            if ( X[ii] > mx ) mx = X[ii];
+            mx = std::max(mx, X[ii]);
     }
     return mx;
 }

@@ -147,7 +147,7 @@ ObjectList Sphere::build(Glossary & opt, Simul& sim)
     unsigned inp = 1, inx = 0, nbp = 1;
 
     if ( opt.has_key("point0") )
-        throw InvalidParameter("points start at index 1 (use `point1`, `point2`, etc.)");
+        throw InvalidParameter("point indices start at 1 (use `point1`, `point2`, etc.)");
 
     // interpret each instruction as a command to add points:
     std::string var = "point1";
@@ -197,7 +197,7 @@ ObjectList Sphere::build(Glossary & opt, Simul& sim)
     // attach Singles distributed over the surface points:
     inx = 0;
     while ( opt.set(str, "attach", inx++) )
-        res.append(sim.singles.makeWrists(this, nbRefPts, nbSurfacePoints(), str));
+        res.append(sim.singles.makeWrists(this, nbRefPoints, nbSurfacePoints(), str));
 
     
     // final verification of the number of points:
@@ -305,10 +305,10 @@ void Sphere::setDragCoefficientPiston()
     real eps = ( thickness - rad ) / rad;
     
     if ( eps <= 0 )
-        throw InvalidParameter("Error: piston formula yield invalid value");
+        throw InvalidParameter("Error: piston formula yields invalid value");
 
     if ( eps > 1 )
-        throw InvalidParameter("Error: piston formula yield invalid value");
+        throw InvalidParameter("Error: piston formula yields invalid value");
 
     spDrag    = 9*M_PI*M_PI * prop->viscosity * rad * M_SQRT2 / ( 4 * pow(eps,2.5) );
     spDragRot = 2*M_PI*M_PI * prop->viscosity * rad * rad * rad * sqrt(2.0/eps);
@@ -385,7 +385,7 @@ real Sphere::addBrownianForces(real const* rnd, real sc, real* res) const
      Add random forces to the surface points, and calculate the resulting force
      and momentum in F and T. They will be subtracted from the reference points.
      */
-    for ( unsigned p = nbRefPts; p < nPoints; ++p )
+    for ( unsigned p = nbRefPoints; p < nPoints; ++p )
     {
         real * rhs = res + DIM * p;
         real * pos = pPos + DIM * p;
@@ -414,7 +414,7 @@ real Sphere::addBrownianForces(real const* rnd, real sc, real* res) const
     T /= - ( DIM - 1 ) * spRadius * spRadius;
     Vector R = cross(Vector(cx,cy,cz), T);
 
-    for ( unsigned p = 1; p < nbRefPts; ++p )
+    for ( unsigned p = 1; p < nbRefPoints; ++p )
     {
         real * rhs = res + DIM * p;
         real const* pos = pPos + DIM * p;
@@ -457,7 +457,7 @@ void Sphere::orthogonalize(unsigned i)
     const unsigned iz = 1 + (i+2)%3;
     
     Vector cen(pPos);
-    assert_true( nPoints >= nbRefPts );
+    assert_true( nPoints >= nbRefPoints );
     
     // reduce to the center of mass an normalize
     Vector tmpX = posP(ix) - cen;
@@ -510,7 +510,7 @@ void Sphere::reshape()
 
 //this is unsafe, don't use the sphere in 1D!
 void Sphere::makeProjection() { ABORT_NOW("Sphere is not implemented in 1D"); }
-void Sphere::setSpeedsFromForces(const real* X, real, real* Y) const {}
+void Sphere::projectForces(const real* X, real* Y) const {}
 
 #else
 
@@ -519,11 +519,11 @@ void Sphere::setSpeedsFromForces(const real* X, real, real* Y) const {}
  */
 void Sphere::makeProjection()
 {
-    assert_true( nPoints >= nbRefPts );
+    assert_true( nPoints >= nbRefPoints );
     
     // calculate radial vectors from center:
     real curv = 1.0 / spRadius;
-    for ( unsigned p = nbRefPts; p < nPoints; ++p )
+    for ( unsigned p = nbRefPoints; p < nPoints; ++p )
     {
         real * ppp = sRad + DIM * p;
         real * pos = pPos + DIM * p;
@@ -534,7 +534,7 @@ void Sphere::makeProjection()
 
 
 // The function should set Y <- sc * mobility * X.
-void Sphere::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Sphere::projectForces(const real* X, real* Y) const
 {
     // total force:
     Vector F(0,0,0);
@@ -566,13 +566,13 @@ void Sphere::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
     Vector cen(pPos);
 
     T -= cross(cen, F);       // reduce the torque to the center of mass
-    T *= alpha/spDragRot;     // multiply by the mobility and maybe time_step
-    F  = F*(alpha/spDrag) + cross(cen, T);
+    T *= 1.0/spDragRot;       // multiply by the mobility
+    F  = F*(1.0/spDrag) + cross(cen, T);
     
     //scale by point mobility:
-    real mob = alpha * prop->point_mobility;
+    real mob = prop->point_mobility;
 
-    for ( unsigned p = 0; p < nbRefPts; ++p )
+    for ( unsigned p = 0; p < nbRefPoints; ++p )
     {
         real * yyy = Y + DIM * p;
         real * pos = pPos + DIM * p;
@@ -588,7 +588,7 @@ void Sphere::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
 #endif
     }
     
-    for ( unsigned p = nbRefPts; p < nPoints; ++p )
+    for ( unsigned p = nbRefPoints; p < nPoints; ++p )
     {
         real * yyy = Y + DIM * p;
         real * pos = pPos + DIM * p;

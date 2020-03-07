@@ -85,13 +85,13 @@ void CoupleSet::prepare(PropertyList const& properties)
 }
 
 
-void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
+void CoupleSet::step()
 {
     // use alternative attachment strategy:
     if ( uni )
     {
         uniCollect();
-        uniAttach(fibers);
+        uniAttach(simul.fibers);
     }
 
     /*
@@ -141,15 +141,15 @@ void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     if ( faOdd )
     {
         nxt = obj->next();
-        obj->stepFA(fgrid);
+        obj->stepFA(simul);
         obj = nxt;
     }
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepFA(fgrid);
+        obj->stepFA(simul);
         obj = nxt->next();
-        nxt->stepFA(fgrid);
+        nxt->stepFA(simul);
     }
 
     obj = afHead;
@@ -157,15 +157,15 @@ void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     if ( afOdd )
     {
         nxt = obj->next();
-        obj->stepAF(fgrid);
+        obj->stepAF(simul);
         obj = nxt;
     }
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepAF(fgrid);
+        obj->stepAF(simul);
         obj = nxt->next();
-        nxt->stepAF(fgrid);
+        nxt->stepAF(simul);
     }
     
     //std::clog << "CoupleSet::step : FF " << ffList.size() << " head " << ffHead << std::endl;
@@ -175,15 +175,15 @@ void CoupleSet::step(FiberSet const& fibers, FiberGrid const& fgrid)
     if ( ffOdd )
     {
         nxt = obj->next();
-        obj->stepFF(fgrid);
+        obj->stepFF(simul);
         obj = nxt;
     }
     while ( obj )
     {
         nxt = obj->next();
-        obj->stepFF(fgrid);
+        obj->stepFF(simul);
         obj = nxt->next();
-        nxt->stepFF(fgrid);
+        nxt->stepFF(simul);
     }
 }
 
@@ -481,25 +481,25 @@ void CoupleSet::thaw()
 void CoupleSet::writeAA(Outputter& out) const
 {
     out.put_line("\n#section couple AA", out.binary());
-    ObjectSet::write(aaList, out);
+    writeNodes(out, aaList);
 }
 
 void CoupleSet::writeAF(Outputter& out) const
 {
     out.put_line("\n#section couple AF", out.binary());
-    ObjectSet::write(afList, out);
+    writeNodes(out, afList);
 }
 
 void CoupleSet::writeFA(Outputter& out) const
 {
     out.put_line("\n#section couple FA", out.binary());
-    ObjectSet::write(faList, out);
+    writeNodes(out, faList);
 }
 
 void CoupleSet::writeFF(Outputter& out) const
 {
     out.put_line("\n#section couple FF", out.binary());
-    ObjectSet::write(ffList, out);
+    writeNodes(out, ffList);
 }
 
 void CoupleSet::write(Outputter& out) const
@@ -519,17 +519,17 @@ void CoupleSet::report(std::ostream& os) const
 {
     if ( size() > 0 )
     {
-        os << title() << "\n";
+        os << '\n' << title();
         PropertyList plist = simul.properties.find_all(title());
         for ( Property * i : plist )
         {
             CoupleProp * p = static_cast<CoupleProp*>(i);
             unsigned cnt = count(match_property, p);
-            os << std::setw(10) << cnt << " " << p->name();
-            os << " ( " << p->hand1 << " | " << p->hand2 << " )\n";
+            os << '\n' << std::setw(10) << cnt << " " << p->name();
+            os << " ( " << p->hand1 << " | " << p->hand2 << " )";
         }
         if ( plist.size() > 1 )
-            os << std::setw(10) << size() << " total\n";
+            os << '\n' << std::setw(10) << size() << " total";
     }
 }
 
@@ -712,8 +712,8 @@ void CoupleSet::uniAttach(FiberSet const& fibers)
         avg += s;
         var += s*s;
     }
-    avg /= cnt;
-    var = var/cnt - avg * avg;
+    avg /= (real)cnt;
+    var = var/(real)cnt - avg * avg;
     printf("UNI-FIBER-SITES(1)  avg = %9.2f   var = %9.2f\n", avg, var);
     
 #endif
@@ -770,21 +770,18 @@ void CoupleSet::uniAttach(FiberSet const& fibers)
  */
 bool CoupleSet::uniPrepare(PropertyList const& properties)
 {
-    unsigned inx = 0;
     bool res = false;
+    unsigned last = 0;
     
     for ( Property const* i : properties.find_all("couple") )
     {
         CoupleProp const * p = static_cast<CoupleProp const*>(i);
-        if ( p->fast_diffusion )
-            res = true;
-        
-        if ( p->number() > inx )
-            inx = p->number();
+        res |= p->fast_diffusion;
+        last = std::max(last, p->number());
     }
     
     if ( res )
-        uniLists.resize(inx+1);
+        uniLists.resize(last+1);
     
     return res;
 }

@@ -1,11 +1,12 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 #include "dim.h"
 #include "sim.h"
+#include "messages.h"
 #include "exceptions.h"
 #include "glossary.h"
-#include "simul_prop.h"
 #include "walker_prop.h"
 #include "walker.h"
+#include "simul.h"
 
 
 Hand * WalkerProp::newHand(HandMonitor* m) const
@@ -21,6 +22,8 @@ void WalkerProp::clear()
     stall_force       = 0;
     unloaded_speed    = 0;
     unbinding_chance  = 0;
+    walking_rate_dt   = 0;
+    var_rate_dt       = 0;
 }
 
 
@@ -33,16 +36,14 @@ void WalkerProp::read(Glossary& glos)
 #ifdef BACKWARD_COMPATIBILITY
     glos.set(unloaded_speed,   "max_speed");
 #endif
-    glos.set(unbinding_chance, "unbinding_chance");
-    //alternative syntax:
-    glos.set(unbinding_chance, "unbinding", 2);
+    glos.set(unbinding_chance, "unbinding_chance") || glos.set(unbinding_chance, "unbinding", 2);
     
     if ( glos.has_key("dangling_chance") )
-        Cytosim::warn << "please use `hold_growing_end` instead of `dangling_chance`\n";
+        Cytosim::warn << "use `hold_growing_end` instead of `dangling_chance`\n";
     
 #ifdef BACKWARD_COMPATIBILITY
     if ( glos.set(hold_growing_end,  "hold_fiber") )
-        Cytosim::warn << "you should use hand:hold_growing_end instead of hand:hold_fiber" << std::endl;
+        Cytosim::warn << "you should use hand:hold_growing_end instead of hand:hold_fiber\n";
 #endif
 }
 
@@ -60,9 +61,8 @@ void WalkerProp::complete(Simul const& sim)
     if ( unbinding_chance > 1 )
         throw InvalidParameter("walker:unbinding_chance must be <= 1");
     
-    stepping_rate     = fabs(unloaded_speed) / step_size;
-    stepping_rate_dt  = sim.prop->time_step * stepping_rate;
-    var_rate_dt       = std::copysign(stepping_rate_dt/stall_force, unloaded_speed);
+    walking_rate_dt = sim.time_step() * fabs(unloaded_speed) / step_size;
+    var_rate_dt     = std::copysign(walking_rate_dt/stall_force, unloaded_speed);
 }
 
 
@@ -79,7 +79,7 @@ void WalkerProp::checkStiffness(real stiff, real len, real mul, real kT) const
     {
         Cytosim::warn << "simulating `" << name() << "' may fail as:\n"\
         << PREF << "time_step * stiffness * unloaded_speed / stall_force = " << ef << '\n'\
-        << PREF << "-> reduce time_step (really)" << std::endl;
+        << PREF << "-> reduce time_step (really)\n";
         //throw InvalidParameter(oss.str());
     }
     
@@ -92,7 +92,7 @@ void WalkerProp::checkStiffness(real stiff, real len, real mul, real kT) const
     {
         Cytosim::warn << "The stall force of `" << name() << "' is too small:\n"\
         << PREF << "DIM * kT * stiffness > stall_force\n"\
-        << PREF << "-> reduce stiffness or increase stall_force" << std::endl;
+        << PREF << "-> reduce stiffness or increase stall_force\n";
     }
     
     /*
@@ -104,7 +104,7 @@ void WalkerProp::checkStiffness(real stiff, real len, real mul, real kT) const
     {
         Cytosim::warn << "The efficiency of `" << name() << "' is low because\n"\
         << PREF << "stiffness * unloaded_speed / unbinding_rate << stall_force\n"\
-        << PREF << "ratio = " << ef << std::endl;
+        << PREF << "ratio = " << ef << "\n";
     }
     
     
@@ -112,7 +112,7 @@ void WalkerProp::checkStiffness(real stiff, real len, real mul, real kT) const
      Compare the force reached in one step with the stall force
      */
     if ( fabs( step_size * stiff ) > 0.5 * stall_force )
-        Cytosim::warn << "attention:  stiffness * digit:step > stall_force / 2" << std::endl;
+        Cytosim::warn << "attention:  stiffness * digit:step > stall_force / 2\n";
 #endif
 }
 

@@ -48,9 +48,14 @@ new 5 filament
     plus_end = grow
 }
 
+new event
+{
+   rate = 0.5
+   code = ( new filament { length=0.012; plus_end=grow; } )
+}
+
 run 40000 system
 {
     nb_frames = 100
-    event = 0.5, ( new filament { length=0.012; plus_end=grow; } )
 }
 

@@ -2,7 +2,9 @@
 
 #include "fiber_set.h"
 #include "fiber_segment.h"
+#include "tokenizer.h"
 #include "iowrapper.h"
+#include "messages.h"
 #include "glossary.h"
 #include "fiber_prop.h"
 #include "growing_fiber_prop.h"
@@ -21,7 +23,7 @@
  @defgroup FiberGroup Fiber and related
  @ingroup ObjectGroup
  @ingroup NewObject
- @brief The default Fiber is of fixed length, but derived class can change length.
+ @brief The Fiber has fixed length, but derived classes can change length.
 
  A fiber is a filament of constant length.
  Derived classes are available, where different models of how length may change
@@ -67,27 +69,6 @@ Property* FiberSet::newProperty(const std::string& cat, const std::string& nom, 
     return nullptr;
 }
 
-
-/**
- Split string `arg` into an integer, a space, and the remaining string.
- Any space after the integer is discarded. `arg` is truncated.
- */
-bool splitNumber(std::string& arg, unsigned& num)
-{
-    char const* ptr = arg.c_str();
-    char * end;
-    errno = 0;
-    unsigned long var = strtoul(ptr, &end, 10);
-    if ( !errno && end > ptr && isspace(*end) )
-    {
-        num = (unsigned)var;
-        while ( isspace(*end) )
-            ++end;
-        arg.erase(0, end-ptr);
-        return true;
-    }
-    return false;
-}
 
 /**
  The initialization options depend on the type of fiber: Fiber, DynamicFiber, ClassicFiber, etc.
@@ -154,8 +135,8 @@ ObjectList FiberSet::newObjects(const std::string& name, Glossary& opt)
     //can add Singles or Couples to the Fiber:
     while ( opt.set(spe, var) )
     {
-        unsigned cnt = 1;
-        splitNumber(spe, cnt);
+        size_t cnt = 1;
+        Tokenizer::split_integer(cnt, spe);
         
         // search for Single and Couple:
         SingleProp * sip = static_cast<SingleProp*>(simul.properties.find("single", spe));
@@ -166,9 +147,18 @@ ObjectList FiberSet::newObjects(const std::string& name, Glossary& opt)
         if ( !sip && !cop )
             throw InvalidParameter("could not find fiber:attach single/couple `"+spe+"'");
         
-        for ( unsigned n = 0; n < cnt; ++n )
+        // variables defining an abscissa:
+        int mod = 7;
+        real abs = 0;
+        FiberEnd ref = ORIGIN;
+        if ( opt.set(abs, var, 1) )
+            mod = 0;
+        opt.set(ref, var, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
+        opt.set(mod, var, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}, {"regular", 3}});
+
+        for ( size_t n = 0; n < cnt; ++n )
         {
-            FiberSite fs(fib, fib->someAbscissa(var, opt, n/real(cnt-1)));
+            FiberSite fs(fib, fib->someAbscissa(abs, ref, mod, n/std::max(1UL, cnt-1)));
             Object * cs = nullptr;
             Hand * h = nullptr;
             if ( sip )
@@ -222,6 +212,16 @@ Object * FiberSet::newObject(const ObjectTag tag, unsigned num)
         return obj;
     }
     return nullptr;
+}
+
+
+void FiberSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ void FiberSet::step()
 /**
  Cut all Fibers along the plane defined by n.pos + a = 0.
  */
-void FiberSet::planarCut(Vector const& n, const real a, int stateP, int stateM)
+void FiberSet::planarCut(Vector const& n, const real a, state_t stateP, state_t stateM)
 {
     /*
      We must ensure here that each Fiber is processed only once.
@@ -297,7 +297,7 @@ void FiberSet::planarCut(Vector const& n, const real a, int stateP, int stateM)
 /**
  Cut given Fibers along the plane defined by n.pos + a = 0.
  */
-void FiberSet::planarCut(ObjectList& objs, Vector const& n, const real a, int stateP, int stateM)
+void FiberSet::planarCut(ObjectList& objs, Vector const& n, const real a, state_t stateP, state_t stateM)
 {
     for ( Object * i : objs )
     {
@@ -434,7 +434,7 @@ FiberSite FiberSet::randomSite(FiberProp * arg) const
             abs += fib->length();
 
     if ( abs == 0 )
-        throw InvalidParameter("randomSite() called with no fibers!");
+        throw InvalidParameter("found no fibers of requested class");
 
     abs *= RNG.preal();
     
@@ -473,7 +473,7 @@ FiberSite FiberSet::someSite(std::string const& key, Glossary& opt) const
             return randomSite();
         else
         {
-            Fiber* fib = Fiber::toFiber(findObject(str));
+            Fiber* fib = Fiber::toFiber(findObject(str, title()));
             
             if ( !fib )
             {
@@ -487,7 +487,16 @@ FiberSite FiberSet::someSite(std::string const& key, Glossary& opt) const
                 throw InvalidParameter("Could not find fiber specified for attachment");
             }
             
-            return FiberSite(fib, fib->someAbscissa(key, opt, 1.0));
+            // variables defining an abscissa:
+            int mod = 7;
+            real abs = 0;
+            FiberEnd ref = ORIGIN;
+            if ( opt.set(abs, key, 1) )
+                mod = 0;
+            opt.set(ref, key, 2, {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}});
+            opt.set(mod, key, 3, {{"off", 0}, {"uniform", 1}, {"exponential", 2}});
+
+            return FiberSite(fib, fib->someAbscissa(abs, ref, mod, 1.0));
         }
     }
     throw InvalidParameter("unrecognized site specification");
@@ -550,11 +559,36 @@ void FiberSet::newFiberSitesM(Array<FiberSite>& res, const real spread) const
 }
 
 
-void FiberSet::flipAllFibers()
+void FiberSet::flipFiberPolarity()
 {
     for ( Fiber* fib=first(); fib; fib=fib->next() )
-        fib->flipPolarity();
+    {
+        fib->flipChainPolarity();
+        fib->flipHandsPolarity();
+    }
 }
+
+
+/**
+ After reading from file, the fiber structure need to be updated,
+ as well as the Hands bound to them.
+ */
+void FiberSet::prune(ObjectFlag f)
+{
+    for (Fiber* fib=first(), *n; fib; fib=n)
+    {
+        n = fib->next();
+        if ( fib->flag() == f )
+            delete(fib);
+        else
+        {
+            fib->updateFiber();
+            fib->resetLattice();
+            fib->flag(0);
+        }
+    }
+}
+
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -1087,13 +1121,15 @@ void FiberSet::infoBendingEnergy(ObjectList const& objs,
 }
 
 /**
- Sum tension of all segments intersecting the plane defined by <em> n.pos + a = 0 </em>
+ Sum tensions of all fiber segments intersecting the plane defined by
+      <em> n.pos + a = 0 </em>
+ (the vector `n` defines the direction orthogonal to the plane)
  
  The intersecting segments are determined by testing all Fibers.
  The tension dipole along a segment is obtained from the Lagrange multiplier 
  associated with the length of this segment. It is positive if the segment is stretched.
  The magnitude of the dipole is multiplied by the cosine of the angle measured between 
- the segment and the plane normal, yielding components that can be summed.
+ the segment and the plane normal, yielding axial components that can be summed.
  
  @return cnt = number of segments intersecting the plane
  @return ten = sum of tension in these segments
@@ -1171,27 +1207,5 @@ void FiberSet::infoRadius(unsigned& cnt, real& rad, FiberEnd end) const
     }
     if ( cnt )
         rad = r / cnt;
-}
-
-
-void FiberSet::infoLattice(real& len, unsigned& cnt, real& sm, real& mn, real& mx, bool mode) const
-{
-    len = 0;
-    cnt = 0;
-    sm = 0;
-    mn = INFINITY;
-    mx = 0;
-    
-#if FIBER_HAS_LATTICE
-    for ( Fiber const* fib=first(); fib; fib=fib->next() )
-    {
-        FiberLattice const& lat = fib->lattice();
-        if ( lat.ready() )
-        {
-            len += fib->length();
-            fib->infoLattice(lat, cnt, sm, mn, mx, mode);
-        }
-    }
-#endif
 }
 

@@ -132,10 +132,10 @@ void Bead::setDragCoefficient()
 /**
  The projection is trivial
  */
-void Bead::setSpeedsFromForces(const real* X, const real alpha, real* Y) const
+void Bead::projectForces(const real* X, real* Y) const
 {
     assert_true( paDrag > 0 );
-    real s = alpha / paDrag;
+    real s = 1.0 / paDrag;
     for ( int d = 0; d < DIM; ++d )
         Y[d] = s * X[d];
 }

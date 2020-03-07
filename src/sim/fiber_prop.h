@@ -6,9 +6,9 @@
 #include "real.h"
 #include "property.h"
 #include "common.h"
-#include "field.h"
 #include "sim.h"
 
+class Field;
 class Fiber;
 class FiberDisp;
 class SingleProp;
@@ -95,9 +95,6 @@ public:
      */
     real         segmentation;
     
-    /// length or initial-length for dynamic fibers
-    real         length;
-    
     /// Minimum length (this limits the length in some cases)
     real         min_length;
     
@@ -180,22 +177,6 @@ public:
     /// unit length associated with Lattice
     real         lattice_unit;
     
-    /// if true, the quantities in the lattice can cut the fiber
-    int          lattice_cut_fiber;
-
-    /// flux speed of substance on Lattice (speed<0 is MINUS_END directed)
-    real         lattice_flux_speed;
-    
-    /// loading rate of substance from Field to Lattice
-    /**
-     This is a binding rate per unit time and per unit length of Fiber.
-     Binding is proportional to the concentration of substance in the field.
-     */
-    real         lattice_binding_rate;
-
-    /// unloading rate of substance from Lattice to Field (unit is 1/second)
-    real         lattice_unbinding_rate;
-    
     /// flag controlling the forces exerted by Space on fiber points
     /**
      Possible values:
@@ -238,9 +219,6 @@ public:
     
     /// extra radius of attractive steric interaction (also known as `steric[2]`)
     real         steric_range;
-    
-    /// name of field
-    std::string  field;
     
     /// type of glue (interaction between fiber PLUS_END and Space)
     /**
@@ -301,17 +279,11 @@ public:
     
     /// pointer to actual confinement Space, derived from `confine_space`
     Space const* confine_space_ptr;
-    
-    /// derived variable: pointer to associated Field
-    Field *      field_ptr;
 
 protected:
     
     /// maximum speed of shrinkage
     real    max_chewing_speed_dt;
-
-    /// local copy of SimulProp::time_step
-    real    time_step;
     
     /// fraction of unpolymerized monomers in [0, 1]
     real    free_polymer;

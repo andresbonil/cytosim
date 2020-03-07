@@ -29,7 +29,7 @@ set fiber microtubule
 {
     rigidity = 20
     segmentation = 0.5
-    display = ( line=3,2; speckles=7,1; end_length=0,1; end_size=5,5 )
+    display = ( line=3,2; speckles=7,1; end_size=5,5 )
 }
 
 set hand kinesin

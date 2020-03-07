@@ -2,8 +2,9 @@
 
 #include "field_prop.h"
 #include "property_list.h"
-#include "simul_prop.h"
+#include "messages.h"
 #include "glossary.h"
+#include "simul.h"
 #include "dim.h"
 
 //------------------------------------------------------------------------------
@@ -50,7 +51,7 @@ void FieldProp::read(Glossary& glos)
     glos.set(decay_rate,         "decay_rate");
     
     if ( glos.has_key("bind_fibers") )
-        Cytosim::warn << "field::bind_fibers is obsolete, use fiber:lattice_binding_rate" << std::endl;
+        Cytosim::warn << "field::bind_fibers is obsolete, use fiber:lattice_binding_rate\n";
 
     glos.set(transport_strength, "transport", 0);
     glos.set(transport_length,   "transport", 1);
@@ -71,12 +72,12 @@ void FieldProp::read(Glossary& glos)
 //------------------------------------------------------------------------------
 void FieldProp::complete(Simul const& sim)
 {
-    time_step = sim.prop->time_step;
+    time_step = sim.time_step();
     
     confine_space_ptr = sim.findSpace(confine_space);
     
     if ( confine_space_ptr )
-        confine_space = confine_space_ptr->property()->name();
+        confine_space = confine_space_ptr->name();
 
     if ( sim.ready()  &&  !confine_space_ptr )
         throw InvalidParameter("A Space must be created before the field");
@@ -93,8 +94,8 @@ void FieldProp::complete(Simul const& sim)
     if ( sim.ready()  &&  theta > 0.5 )
     {
         InvalidParameter e("field:diffusion is too fast\n");
-        e << "The CFL condition ( diffusion * time_step / step^2 ) must be below 1/2,\n";
-        e << "  and it is " << theta << "\n";
+        e << "The CFL condition ( diffusion * time_step / step^2 ) must be below 1/2,";
+        e << "\n  but it is " + std::to_string(theta) + "\n";
         throw e;
     }
 

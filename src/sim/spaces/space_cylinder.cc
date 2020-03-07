@@ -21,7 +21,7 @@ void SpaceCylinder::resize(Glossary& opt)
 {
     real len = length_, rad = radius_;
     
-    if ( opt.set(rad, "width") )
+    if ( opt.set(rad, "diameter") )
         rad *= 0.5;
     else opt.set(rad, "radius");
     if ( opt.set(len, "length") )
@@ -53,13 +53,11 @@ real SpaceCylinder::volume() const
 
 bool SpaceCylinder::inside(Vector const& w) const
 {
-    if ( fabs(w.XX) > length_ )
-        return false;
-    
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= radius_ * radius_ );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( fabs(w.XX) < length_  &&  RT <= radius_ * radius_ );
 #elif ( DIM > 1 )
-    return ( fabs(w.YY) <= radius_ );
+    return ( fabs(w.XX) < length_  &&  fabs(w.YY) <= radius_ );
 #else
     return false;
 #endif
@@ -69,14 +67,11 @@ bool SpaceCylinder::inside(Vector const& w) const
 bool SpaceCylinder::allInside(Vector const& w, const real rad) const
 {
     assert_true( rad >= 0 );
-    
-    if ( fabs(w.XX) + rad > length_ )
-        return false;
-    
 #if ( DIM > 2 )
-    return ( w.YY*w.YY + w.ZZ*w.ZZ <= square(radius_-rad) );
+    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    return ( fabs(w.XX) + rad < length_  &&  RT <= square(radius_-rad) );
 #elif ( DIM > 1 )
-    return ( fabs(w.YY) <= radius_-rad );
+    return ( fabs(w.XX) + rad < length_  &&  fabs(w.YY) <= radius_-rad );
 #else
     return false;
 #endif
@@ -86,8 +81,8 @@ bool SpaceCylinder::allInside(Vector const& w, const real rad) const
 Vector SpaceCylinder::randomPlace() const
 {
 #if ( DIM >= 3 )
-    Vector2 sec = Vector2::randB(radius_);
-    return Vector(length_*RNG.sreal(), sec.XX, sec.YY);
+    const Vector2 V = Vector2::randB(radius_);
+    return Vector(length_*RNG.sreal(), V.XX, V.YY);
 #elif ( DIM > 1 )
     return Vector(length_*RNG.sreal(), radius_*RNG.sreal());
 #else
@@ -146,7 +141,7 @@ void SpaceCylinder::setInteraction(Vector const& pos, Mecapoint const& pe, Meca 
 {
     bool cap = ( fabs(pos.XX) > len );
     bool cyl = false;
-    real p = std::copysign(len, pos.XX);
+    real X = std::copysign(len, pos.XX);
     
 #if ( DIM > 2 )
     
@@ -160,7 +155,7 @@ void SpaceCylinder::setInteraction(Vector const& pos, Mecapoint const& pe, Meca 
     else if ( ! cap )
     {
         // inside cylinder in YZ plane and also inside in X:
-        if ( fabs( pos.XX - p ) > rad - sqrt(dis) )
+        if ( dis > square( rad - fabs(pos.XX-X) ) )
             cyl = true;
         else
             cap = true;
@@ -172,7 +167,7 @@ void SpaceCylinder::setInteraction(Vector const& pos, Mecapoint const& pe, Meca 
     {
         const index_t inx = DIM * pe.matIndex();
         meca.mC(inx, inx) -= stiff;
-        meca.base(inx)    += stiff * p;
+        meca.base(inx)    += stiff * X;
     }
   
     if ( cyl )
@@ -206,7 +201,7 @@ void SpaceCylinder::setInteraction(Vector const& pos, Mecapoint const& pe,
 
 void SpaceCylinder::write(Outputter& out) const
 {
-    out.put_line(" "+prop->shape+" ");
+    out.put_characters("cylinder", 16);
     out.writeUInt16(2);
     out.writeFloat(length_);
     out.writeFloat(radius_);
@@ -222,7 +217,7 @@ void SpaceCylinder::setLengths(const real len[])
 void SpaceCylinder::read(Inputter& in, Simul&, ObjectTag)
 {
     real len[8] = { 0 };
-    read_data(in, len);
+    read_data(in, len, "cylinder");
     setLengths(len);
 }
 

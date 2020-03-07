@@ -110,7 +110,7 @@ new 150 filament
 {
     position = ( rectangle 2 2 )
     length = 5
-    orientation = horizontal
+    direction = X
     plus_end = grow
 }
 

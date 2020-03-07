@@ -136,7 +136,8 @@ void Field::prepare()
 }
 
 
-#pragma mark -
+//------------------------------------------------------------------------------
+#pragma mark - Diffusion
 
 
 void Field::diffuseX(real * field, real c)
@@ -417,7 +418,7 @@ void Field::step(FiberSet& fibers)
 #endif
     
     
-#if ( 1 ) // disabled features below
+#if ( 0 ) // disabled features below
 
     Array<FiberSite> loc(1024);
     
@@ -453,7 +454,7 @@ void Field::step(FiberSet& fibers)
     // this is deprecated in favor of fiber:lattice_cut_fiber
     if ( prop->cut_fibers )
     {
-        PRINT_ONCE("!!!! Field severs fibers\n");
+        LOG_ONCE("!!!! Field severs fibers\n");
         const real spread = 0.5 / prop->time_step;
         const real fac = spread * prop->time_step / cellVolume();
         
@@ -470,11 +471,108 @@ void Field::step(FiberSet& fibers)
     
     if ( prop->chew_fibers )
     {
-        PRINT_ONCE("!!!! Field chews PLUS_END\n");
+        LOG_ONCE("!!!! Field chews PLUS_END\n");
         const real fac = -prop->time_step / cellVolume();
         for ( Fiber * fib = fibers.first(); fib ; fib = fib->next() )
             fib->growP(fac*cell(fib->posEndP()));
     }
 #endif
 }
+
+//------------------------------------------------------------------------------
+#pragma mark - Display
+
+#ifdef DISPLAY
+    
+    class FieldDisplayParameters
+    {
+    public:
+        FieldDisplayParameters()
+        {
+            amp = 0;
+            spc = nullptr;
+        }
+        
+        /// amplification for color
+        real amp;
+        
+        /// Space for cropping
+        Space const* spc;
+    };
+    
+    
+    static bool field_set_color(void* arg, FieldGrid::value_type const& val, Vector const& pos)
+    {
+        FieldDisplayParameters * fdp = static_cast<FieldDisplayParameters*>(arg);
+        if ( fdp->spc && ! fdp->spc->inside(pos) )
+            return false;
+        val.setColor(fdp->amp);
+        return true;
+    }
+    
+    
+    /// openGL display function
+    void Field::draw() const
+    {
+        FieldDisplayParameters fdp;
+        fdp.amp = 1.0 / ( prop->display_scale * mGrid.cellVolume() );
+        fdp.spc = nullptr;
+        
+        glPushAttrib(GL_ENABLE_BIT);
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        drawValues(mGrid, field_set_color, &fdp);
+        if ( 0 )
+        {
+            glColor4f(1, 0, 1, 1);
+            glLineWidth(0.5);
+            drawEdges(mGrid);
+        }
+        glPopAttrib();
+    }
+    
+    
+    /// openGL display function
+    /**
+     display all cells that are inside field:confine_space
+     */
+    void Field::draw(bool all, Vector3 const& dir, const real pos) const
+    {
+        FieldDisplayParameters fdp;
+        fdp.amp = 1.0 / ( prop->display_scale * mGrid.cellVolume() );
+        if ( all )
+            fdp.spc = nullptr;
+        else
+            fdp.spc = prop->confine_space_ptr;
+        
+        //glPushAttrib(GL_ENABLE_BIT|GL_POLYGON_BIT);
+        glPushAttrib(GL_ENABLE_BIT);
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        //glLineWidth(1);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#if ( DIM >= 3 )
+        drawValues(mGrid, field_set_color, &fdp, dir, pos);
+#else
+        drawValues(mGrid, field_set_color, &fdp);
+#endif
+        glPopAttrib();
+    }
+
+#else
+
+void Field::draw() const
+{
+    LOG_ONCE("no field:draw()\n");
+}
+
+void Field::draw(bool all, Vector3 const& dir, const real pos) const
+{
+    LOG_ONCE("no field:draw()\n");
+}
+
+#endif
 

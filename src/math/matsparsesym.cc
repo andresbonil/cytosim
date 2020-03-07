@@ -62,7 +62,7 @@ void MatrixSparseSymmetric::deallocate()
 {
     if ( col_ )
     {
-        for ( size_t  ii = 0; ii < allocated_; ++ii )
+        for ( size_t ii = 0; ii < allocated_; ++ii )
             delete[] col_[ii];
         delete[] col_;       col_      = nullptr;
         delete[] col_size_;  col_size_ = nullptr;
@@ -265,13 +265,13 @@ int MatrixSparseSymmetric::bad() const
 }
 
 
-size_t MatrixSparseSymmetric::nbElements(index_t start, index_t end) const
+size_t MatrixSparseSymmetric::nbElements(index_t start, index_t stop) const
 {
-    assert_true( start <= end );
-    assert_true( end <= size_ );
+    assert_true( start <= stop );
+    assert_true( stop <= size_ );
     //all allocated elements are counted, even if zero
     size_t cnt = 0;
-    for ( index_t jj = start; jj < end; ++jj )
+    for ( index_t jj = start; jj < stop; ++jj )
         cnt += col_size_[jj];
     return cnt;
 }
@@ -282,7 +282,7 @@ size_t MatrixSparseSymmetric::nbElements(index_t start, index_t end) const
 std::string MatrixSparseSymmetric::what() const
 {
     std::ostringstream msg;
-    msg << "MSS (" << nbElements() << ")";
+    msg << "MSS " << nbElements();
     return msg.str();
 }
 

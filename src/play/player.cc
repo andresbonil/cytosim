@@ -15,7 +15,7 @@ using glApp::flashText;
 
 
 Player::Player()
-: DP("*"), PP("*"), thread(glApp::postRedisplay), simul(thread.sim()), mDisplay(nullptr)
+: disp("*"), prop("*"), thread(simul, glApp::postRedisplay), mDisplay(nullptr)
 {
 }
 
@@ -37,19 +37,14 @@ void Player::clear()
 //------------------------------------------------------------------------------
 #pragma mark - I/O
 
-void Player::loadFrame(int f)
-{
-    thread.loadFrame(f);
-}
-
 
 void Player::previousFrame()
 {
-    if ( thread.currFrame() > 0 )
-        thread.loadFrame(thread.currFrame()-1);
+    if ( thread.currentFrame() > 0 )
+        thread.loadFrame(thread.currentFrame()-1);
     else {
-        if ( PP.loop )
-            thread.loadFrame(-1);
+        if ( prop.loop )
+            thread.loadLastFrame();
         else
             stop();
     }
@@ -64,9 +59,9 @@ void Player::nextFrame()
     {
         if ( thread.loadNextFrame() )
         {
-            if ( PP.exit_at_eof )
+            if ( prop.exit_at_eof )
                 exit(EXIT_SUCCESS);
-            if ( PP.loop )
+            if ( prop.loop )
                 thread.loadFrame(0);
             else
             {
@@ -77,7 +72,7 @@ void Player::nextFrame()
     }
     catch( Exception & e )
     {
-        flashText("Error:\n %s", e.what());
+        flashText("Error:\n %s", e.msg());
         if ( thread.eof() )
             stop();
     }
@@ -101,12 +96,12 @@ void Player::rewind()
 
 bool Player::startPlayback()
 {
-    if ( thread.goodFile()  &&  PP.play != 1  && !goLive )
+    if ( thread.goodFile()  &&  prop.play != 1  && !goLive )
     {
         //rewind file if its end was reached:
         if ( thread.eof() )
             thread.rewind();
-        PP.play = 1;
+        prop.play = 1;
         return true;
     }
     return false;
@@ -115,13 +110,13 @@ bool Player::startPlayback()
 
 bool Player::startBackward()
 {
-    if ( PP.play != -1 )
+    if ( prop.play != -1 )
     {
-        if ( thread.currFrame() == 0 )
-            thread.loadFrame(-1);
+        if ( thread.currentFrame() == 0 )
+            thread.loadLastFrame();
         else
             flashText("Play reverse");
-        PP.play = -1;
+        prop.play = -1;
         return true;
     }
     return false;
@@ -130,19 +125,19 @@ bool Player::startBackward()
 
 void Player::accelerate()
 {
-    PP.delay /= 2;
+    prop.delay /= 2;
     //the delay should be compatible with graphic refresh rates:
     const unsigned int min_delay = 1;
-    if ( PP.delay < min_delay )
+    if ( prop.delay < min_delay )
     {
-        PP.delay = min_delay;
+        prop.delay = min_delay;
         if ( goLive )
-            flashText("Delay is %i ms! use 'A' to jump frames", PP.delay);
+            flashText("Delay is %i ms! use 'A' to jump frames", prop.delay);
         else
-            flashText("Delay is %i ms!", PP.delay);
+            flashText("Delay is %i ms!", prop.delay);
     }
     else {
-        flashText("Delay %i ms", PP.delay);
+        flashText("Delay %i ms", prop.delay);
     }
 }
 
@@ -150,8 +145,8 @@ void Player::accelerate()
 void Player::stop()
 {
     goLive = 0;
-    PP.play = 0;
-    PP.save_images = 0;
+    prop.play = 0;
+    prop.save_images = 0;
 }
 
 
@@ -161,7 +156,7 @@ void Player::startstop()
         goLive = !goLive;
     else if ( thread.goodFile() )
     {
-        if ( !PP.play )
+        if ( !prop.play )
             startPlayback();
         else
             stop();
@@ -187,7 +182,7 @@ void Player::restart()
         thread.start();
     }
     catch( Exception & e ) {
-        flashText("Error: %s", e.what());
+        flashText("Error: %s", e.msg());
     }
 }
 
@@ -262,7 +257,7 @@ FiberDisp * Player::firstFiberDisp()
  Write global parameters that control the display:
  - GlappProp
  - DisplayProp
- - PlayProp
+ - PlayerProp
  .
  */
 void Player::writePlayParameters(std::ostream& os, bool prune) const
@@ -273,9 +268,9 @@ void Player::writePlayParameters(std::ostream& os, bool prune) const
         View& view = glApp::currentView();
         view.write_values_diff(os, prune);
     }
-    DP.write_values_diff(os, prune);
+    disp.write_values_diff(os, prune);
     //output parameters for the main view:
-    PP.write_values_diff(os, prune);
+    prop.write_values_diff(os, prune);
     os << "}\n";
 }
 
@@ -283,7 +278,7 @@ void Player::writePlayParameters(std::ostream& os, bool prune) const
  Write all the parameters that control the display:
  - GlappProp
  - DisplayProp
- - PlayProp
+ - PlayerProp
  - ObjectDisp
  .
  */

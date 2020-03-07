@@ -5,6 +5,7 @@
 #include "exceptions.h"
 #include "random.h"
 #include "modulo.h"
+#include "space.h"
 #include "meca.h"
 
 extern Modulo const* modulo;
@@ -31,7 +32,7 @@ Crosslink::~Crosslink()
  - attachment
  .
  */
-void Crosslink::stepFF(const FiberGrid& grid)
+void Crosslink::stepFF(Simul& sim)
 {
     diffuse();
     
@@ -43,8 +44,8 @@ void Crosslink::stepFF(const FiberGrid& grid)
         modulo->fold(cPos);
     
     // activity:
-    cHand1->stepUnattached(grid, cPos);
-    cHand2->stepUnattached(grid, cPos);
+    cHand1->stepUnattached(sim, cPos);
+    cHand2->stepUnattached(sim, cPos);
 }
 
 

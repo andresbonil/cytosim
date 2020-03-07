@@ -5,6 +5,26 @@
 #include "iowrapper.h"
 #include "glossary.h"
 #include "simul.h"
+#include "field.h"
+
+
+// first object
+Field * FieldSet::first() const
+{
+    return static_cast<Field*>(nodes.front());
+}
+
+// find object
+Field * FieldSet::findObject(Property const* p) const
+{
+    return static_cast<Field*>(ObjectSet::findObject(p));
+}
+
+// return pointer to the Object of given ID, or zero if not found
+Field * FieldSet::findID(ObjectID n) const
+{
+    return static_cast<Field*>(inventory.get(n));
+}
 
 //------------------------------------------------------------------------------
 
@@ -24,7 +44,7 @@ void FieldSet::step()
     {
         if ( f->hasField() )
         {
-            PRINT_ONCE("!!!! Field is active\n");
+            LOG_ONCE("!!!! Field is active\n");
             f->step(simul.fibers);
         }
     }
@@ -96,3 +116,14 @@ ObjectList FieldSet::newObjects(const std::string& name, Glossary& opt)
     res.push_back(obj);
     return res;
 }
+
+
+void FieldSet::write(Outputter& out) const
+{
+    if ( size() > 0 )
+    {
+        out.put_line("\n#section "+title(), out.binary());
+        writeNodes(out, nodes);
+    }
+}
+

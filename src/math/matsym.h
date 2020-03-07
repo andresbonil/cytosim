@@ -48,7 +48,7 @@ public:
     
     
     /// constructor from an existing array
-    MatrixSymmetric(int s)
+    MatrixSymmetric(index_t s)
     {
         resize(s);
         msLDD = s;
@@ -58,7 +58,7 @@ public:
     }
 
     /// constructor from an existing array
-    MatrixSymmetric(int s, real* array, int ldd)
+    MatrixSymmetric(index_t s, real* array, int ldd)
     {
         resize(s);
         msLDD = ldd;
@@ -100,7 +100,7 @@ public:
     bool nonZero() const;
     
     /// number of element which are non-zero
-    size_t nbElements(index_t start, index_t end) const;
+    size_t nbElements(index_t start, index_t stop) const;
     
     /// returns a string which a description of the type of matrix
     std::string what() const;

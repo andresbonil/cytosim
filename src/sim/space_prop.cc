@@ -89,7 +89,7 @@ Space * SpaceProp::newSpace() const
     if ( s=="banana" )                         return new SpaceBanana(this);
     if ( s=="torus" )                          return new SpaceTorus(this);
     if ( s=="dice" )                           return new SpaceDice(this);
-    if ( s=="strip" || s=="half_periodic" )    return new SpaceStrip(this);
+    if ( s=="strip" || s=="semi_periodic" )    return new SpaceStrip(this);
     if ( s=="periodic" )                       return new SpacePeriodic(this);
     if ( s=="ellipse" || s=="ellipsoid" )      return new SpaceEllipse(this);
 #if ( DIM >= 3 )
@@ -106,10 +106,11 @@ Space * SpaceProp::newSpace() const
 #endif
     if ( s=="ring" )                           return new SpaceRing(this);
     
-#if ( 1 )
+#if ( 0 )
     std::cerr << "Warning: substituting unbounded Space for unknown `"+s+"'\n";
     return new Space(this);
 #endif
+    throw InvalidParameter("unknown space:shape `"+s+"'");
     return nullptr;
 }
 
@@ -121,7 +122,7 @@ Space * SpaceProp::newSpace(Glossary& opt) const
     if ( spc )
     {
 #ifdef BACKWARD_COMPATIBILITY
-        std::string str = dimensions;
+        std::string str = dimensions_;
         if ( str.size() || opt.set(str, "dimensions") )
         {
             std::stringstream iss(str);
@@ -164,7 +165,7 @@ void SpaceProp::read(Glossary& glos)
     if ( glos.set(shape, "shape") )
     {
 #ifdef BACKWARD_COMPATIBILITY
-        glos.set(dimensions, "dimensions");
+        glos.set(dimensions_, "dimensions");
     }
     else
     {
@@ -173,8 +174,8 @@ void SpaceProp::read(Glossary& glos)
         {
             std::stringstream iss(str);
             iss >> shape >> std::ws;
-            std::getline(iss, dimensions);
-            if ( dimensions.empty() )
+            std::getline(iss, dimensions_);
+            if ( dimensions_.empty() )
                 throw InvalidParameter("space:geometry should contains dimensions");
         }
 #endif

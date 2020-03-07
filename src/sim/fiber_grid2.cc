@@ -18,7 +18,7 @@ SegmentVector allSegments;
 
 unsigned FiberGrid::setGrid(Space const*, real)
 {
-    PRINT_ONCE("Cytosim is using a crude method to localize fibers!\n");
+    LOG_ONCE("Cytosim is using a crude method to localize fibers!\n");
     return 0;
 }
 
@@ -32,6 +32,7 @@ void FiberGrid::paintGrid(const Fiber * first, const Fiber * last)
             allSegments.push_back(FiberSegment(f,s));
     }
 }
+
 
 void FiberGrid::createCells()
 {
@@ -51,7 +52,7 @@ void FiberGrid::tryToAttach(Vector const& place, Hand& ha) const
     // test all segments:
     for ( FiberSegment const& seg : allSegments )
     {
-        if ( RNG.test(ha.prop->binding_rate_prob) )
+        if ( RNG.test(ha.prop->binding_prob) )
         {
             real dis = INFINITY;
             // Compute the distance from the hand to the rod, and abscissa of projection:
@@ -64,11 +65,11 @@ void FiberGrid::tryToAttach(Vector const& place, Hand& ha) const
             if ( dis < ha.prop->binding_range_sqr )
             {
                 Fiber * fib = const_cast<Fiber*>(seg.fiber());
-                FiberSite bind(fib, seg.abscissa1()+abs);
+                FiberSite pos(fib, seg.abscissa1()+abs);
                 
-                if ( ha.attachmentAllowed(bind) )
+                if ( ha.attachmentAllowed(pos) )
                 {
-                    ha.attach(bind);
+                    ha.attach(pos);
                     return;
                 }
             }

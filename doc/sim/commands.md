@@ -269,11 +269,11 @@ Examples:
  The SPACE must be the name of an existing Space.
  Only 'inside' and 'outside' are valid specifications.
 
- To delete all Couple called NAME that are not bound:
+ To delete all Couples called NAME that are not bound:
  
-     delete all NAME { state = 0, 0; }
+     delete all NAME { state1 = 0; state2 = 0; }
  
- To delete all Couple TYPE that are not crosslinking, use two calls:
+ To delete all Couples called NAME that are not crosslinking, use two calls:
  
      delete all NAME { state1 = 0; }
      delete all NAME { state2 = 0; }

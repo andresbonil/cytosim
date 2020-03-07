@@ -361,12 +361,10 @@ void Display3::drawFiberLines(Fiber const& fib) const
     
     if ( disp->line_style == 1 )
     {
-        fib.disp->color.load_front();
-        disp->back_color.load_back();
 #if ( 1 )
         drawJoinedFiberLines(fib, true, true, rad, 0, fib.lastSegment(), set_color_not, 1.0);
 #else
-        // this is the basic rendering where segments may overlap:
+        // this is a basic rendering where tubes would not join properly:
         drawCap(fib.prop->disp->line_caps, fib.posEndM(), -fib.dirEndM(), rad);
         for ( unsigned s = 0; s < fib.nbSegments(); ++s )
             gleTube(fib.posP(s), fib.posP(s+1), rad, gleTube2B);
@@ -375,67 +373,56 @@ void Display3::drawFiberLines(Fiber const& fib) const
     }
     else if ( disp->line_style == 2 )
     {
-        disp->back_color.load_back();
         real beta = 1.0 / disp->tension_scale;
         drawJoinedFiberLines(fib, true, true, rad, 0, fib.lastSegment(), set_color_tension, beta);
     }
     else if ( disp->line_style == 3 )
     {
-        disp->back_color.load_back();
         drawJoinedFiberLines(fib, true, true, rad, 0, fib.lastSegment(), set_color_curvature, 1.0);
     }
     else if ( disp->line_style == 4 )
     {
-        disp->back_color.load_back();
         drawJoinedFiberLines(fib, true, true, rad, 0, fib.lastSegment(), set_color_direction, 1.0);
     }
 }
 
 
-void Display3::drawFiberLinesM(Fiber const& fib, real len, real width) const
+// this is for display with transparency:
+void Display3::drawFiberLinesT(Fiber const& fib, unsigned i) const
 {
-    if ( len > 0 )
-    {
-        real rad = width * sFactor;
-        unsigned inx = fib.clampedIndexM(len);
-        real cut = fib.segmentation() * inx;
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(-1.0, -1.0);
-        if ( 0 < inx )
-        {
-            drawJoinedFiberLines(fib, 1, 0, rad, 0, inx, set_color_not, 1.0);
-            drawFiberSegment(fib, 0, 0, rad, cut, len);
-        }
-        else
-        {
-            drawFiberSegment(fib, 1, 0, rad, 0, len);
-        }
-        glDisable(GL_POLYGON_OFFSET_FILL);
-    }
-}
+    FiberDisp const*const disp = fib.prop->disp;
+    const real rad = disp->line_width * sFactor;
+ 
+    fib.disp->color.load_both();
 
-
-void Display3::drawFiberLinesP(Fiber const& fib, real len, real width) const
-{
-    if ( 0 < len )
+    Vector A = fib.posP(i);
+    Vector B = fib.posP(i+1);
+    
+    if ( i == 0 )
     {
-        real rad = width * sFactor;
-        real abs = fib.length() - len;
-        unsigned inx = 1 + fib.clampedIndexM(abs);
-        real cut = fib.segmentation() * inx;
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glPolygonOffset(-1.0, -1.0);
-        if ( inx < fib.lastSegment() )
-        {
-            drawFiberSegment(fib, 0, 0, rad, abs, cut);
-            drawJoinedFiberLines(fib, 0, 1, rad, inx, fib.lastSegment(), set_color_not, 1.0);
-        }
-        else
-        {
-            drawFiberSegment(fib, 0, 1, rad, abs, fib.length());
-        }
-        glDisable(GL_POLYGON_OFFSET_FILL);
+        drawCap(fib.prop->disp->line_caps, A, normalize(A-B), rad);
+        setClipPlane(GL_CLIP_PLANE5, normalize(B-A), A);
     }
+    else
+    {
+        setClipPlane(GL_CLIP_PLANE5, normalize(B-fib.posP(i-1)), A);
+    }
+    
+    if ( i == fib.lastSegment() )
+    {
+        drawCap(fib.prop->disp->line_caps, B, normalize(B-A), rad);
+        setClipPlane(GL_CLIP_PLANE4, normalize(A-B), B);
+    }
+    else
+    {
+        setClipPlane(GL_CLIP_PLANE4, normalize(A-fib.posP(i+2)), B);
+    }
+    
+    glEnable(GL_CLIP_PLANE5);
+    glEnable(GL_CLIP_PLANE4);
+    gleTube(A, B, rad, gleLongTube2B);
+    glDisable(GL_CLIP_PLANE4);
+    glDisable(GL_CLIP_PLANE5);
 }
 
 
@@ -471,9 +458,10 @@ void set_rainbow_lattice(Fiber const& fib, long ix, real scale)
 }
 
 
-void Display3::drawFiberLattice(Fiber const& fib, FiberLattice const& lat, real width,
+void Display3::drawFiberLattice(Fiber const& fib, real width,
                                  void (*set_color)(Fiber const&, long, real)) const
 {
+    FiberLattice const& lat = *fib.drawableLattice();
     glPushAttrib(GL_LIGHTING_BIT|GL_ENABLE_BIT);
     GLfloat blk[] = { 0.0, 0.0, 0.0, 1.0 };
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,  blk);
@@ -514,19 +502,19 @@ void Display3::drawFiberLattice(Fiber const& fib, FiberLattice const& lat, real 
 }
 
 
-void Display3::drawFiberLattice1(Fiber const& fib, FiberLattice const& lat, real width) const
+void Display3::drawFiberLattice1(Fiber const& fib, real width) const
 {
-    drawFiberLattice(fib, lat, width, set_color_lattice);
+    drawFiberLattice(fib, width, set_color_lattice);
 }
 
-void Display3::drawFiberLattice2(Fiber const& fib, FiberLattice const& lat, real width) const
+void Display3::drawFiberLattice2(Fiber const& fib, real width) const
 {
-    drawFiberLattice(fib, lat, width, set_rainbow_lattice);
+    drawFiberLattice(fib, width, set_rainbow_lattice);
 }
 
-void Display3::drawFiberLatticeEdges(Fiber const& fib, FiberLattice const& lat, real width) const
+void Display3::drawFiberLatticeEdges(Fiber const& fib, real width) const
 {
-    drawFiberLattice(fib, lat, width, set_color_alternate);
+    drawFiberLattice(fib, width, set_color_alternate);
 }
 
 //------------------------------------------------------------------------------
@@ -554,7 +542,7 @@ void Display3::drawFiberMinusEnd(Fiber const& fib, int style, real size) const
                 gleObject(fib.posEndM(), width, gleSphere2B);
                 break;
             case 2:
-                gleObject(fib.posEndM(), -fib.dirEndM(), width, gleConeB);
+                gleObject(fib.posEndM(), -fib.dirEndM(), width, gleLongConeB);
                 break;
             case 3:
                 gleObject(fib.posEndM(), -fib.dirEndM(), width, gleCylinderB);
@@ -591,7 +579,7 @@ void Display3::drawFiberPlusEnd(Fiber const& fib, int style, real size) const
                 gleObject(fib.posEndP(), width, gleSphere2B);
                 break;
             case 2:
-                gleObject(fib.posEndP(), fib.dirEndP(), width, gleConeB);
+                gleObject(fib.posEndP(), fib.dirEndP(), width, gleLongConeB);
                 break;
             case 3:
                 gleObject(fib.posEndP(), fib.dirEndP(), width, gleCylinderB);
@@ -818,7 +806,7 @@ void Display3::drawSphere(Sphere const& obj)
     {
         bodyColor(disp, obj.signature());
         drawPoint(obj.posP(0), disp);
-        for ( unsigned ii = obj.nbRefPoints(); ii < obj.nbPoints(); ++ii )
+        for ( unsigned ii = obj.nbRefPoints; ii < obj.nbPoints(); ++ii )
             drawPoint(obj.posP(ii), disp);
     }
 
@@ -826,7 +814,7 @@ void Display3::drawSphere(Sphere const& obj)
     if ( disp->size > 0  &&  disp->style & 8 )
     {
         bodyColor(disp, obj.signature());
-        for ( unsigned ii = 1; ii < obj.nbRefPoints(); ii++ )
+        for ( unsigned ii = 1; ii < obj.nbRefPoints; ii++ )
             drawPoint(obj.posP(ii), disp);
     }
 }
@@ -879,7 +867,7 @@ void Display3::drawSphereT(Sphere const& obj)
 
 void Display3::drawOrganizer(Organizer const& obj) const
 {
-    const PointDisp * disp = obj.disp();
+    PointDisp const* disp = obj.disp();
     
     if ( !disp )
         return;
@@ -1046,8 +1034,8 @@ void Display3::drawCoupleB(Couple const* cx) const
     Vector p2 = cx->posHand2();
     if ( modulo ) modulo->fold(p2, p1);
     
-    Vector dir = p2 - p1;
-    real dns = dir.normSqr();
+    Vector dif = p2 - p1;
+    real dns = dif.normSqr();
     
 #if ( 1 )
     if ( dns > 1e-6 )
@@ -1056,9 +1044,8 @@ void Display3::drawCoupleB(Couple const* cx) const
         // position the heads at the surface of the filaments:
         const real rad1 = cx->fiber1()->prop->disp->line_width;
         const real rad2 = cx->fiber2()->prop->disp->line_width;
-        p1 += dir * ( rad1 * dns );
-        if ( pd1 == pd2 )
-        p2 -= dir * ( rad2 * dns );
+        p1 += dif * std::min((real)0.5, rad1*dns);
+        p2 -= dif * std::min((real)0.5, rad2*dns);
     }
 #endif
     
@@ -1079,7 +1066,7 @@ void Display3::drawCoupleB(Couple const* cx) const
         glEnable(GL_CLIP_PLANE5);
         if ( pd1->visible )
         {
-            setClipPlane(GL_CLIP_PLANE5, -dir, mid);
+            setClipPlane(GL_CLIP_PLANE5, -dif, mid);
             pd1->color.load_front();
             gleTube(p1, p2, pd1->width*sFactor, gleTube1B);
             drawHand(p1, pd1);
@@ -1087,7 +1074,7 @@ void Display3::drawCoupleB(Couple const* cx) const
         
         if ( pd2->visible )
         {
-            setClipPlane(GL_CLIP_PLANE5,  dir, mid);
+            setClipPlane(GL_CLIP_PLANE5,  dif, mid);
             pd2->color.load_front();
             gleTube(p2, p1, pd2->width*sFactor, gleTube1B);
             drawHand(p2, pd2);

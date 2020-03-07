@@ -22,10 +22,16 @@ namespace StreamFunc
     /// print the line of `istream` indicating the position `pos`, with a marker underline
     void mark_line(std::ostream&, std::istream&, std::streampos pos, const char prefix[]);
     
+    /// print a line of `istream` indicating the current input position
+    void mark_line(std::ostream&, std::istream&);
+
     /// same as `mark_line()`, but output is returned as a string
     std::string marked_line(std::istream&, std::streampos, const char prefix[]);
     
     
+    /// extract line containing given `pos'
+    std::string get_line(std::istream&, std::streampos pos);
+
     /// extract the lines located between `start` and `end`, with line numbers
     void print_lines(std::ostream&, std::istream&, std::streampos start, std::streampos end);
     
@@ -34,7 +40,7 @@ namespace StreamFunc
     
     
     /// return line number corresponding to `pos` (or current position if not specified)
-    unsigned line_number(std::istream&, std::streampos pos = -1);
+    size_t line_number(std::istream&, std::streampos pos = -1);
 
     /// replace all occurences of `fnd` by `rep` in `src`. Returns number of replacements done
     int  find_and_replace(std::string & src, std::string const& fnd, std::string const& rep);

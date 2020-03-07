@@ -2,11 +2,13 @@
 
 #include "sim.h"
 #include "parser.h"
+#include "messages.h"
 #include "tokenizer.h"
 #include "glossary.h"
 #include "filepath.h"
 #include "stream_func.h"
 #include "simul_prop.h"
+#include "simul.h"
 #include <fstream>
 
 
@@ -18,24 +20,16 @@
 //------------------------------------------------------------------------------
 /**
  The permission of the parser are:
- - allow_change: existing Property or Object can be modified
- - allow_set: new Properties can be created
- - allow_new: new Object can be created
- - allow_write: can write to disc
+ - do_set: new Properties can be created
+ - do_change: existing Property or Object can be modified
+ - do_new: new Object can be created
+ - do_run: can perform simulation steps
+ - do_write: can write to disc
  .
  */
-Parser::Parser(Simul& s, bool ds, bool dc, bool dn, bool dr, bool dw)
-: Interface(s), do_set(ds), do_change(dc), do_new(dn), do_run(dr), do_write(dw)
+Parser::Parser(Simul& arg, bool s, bool c, bool n, bool r, bool w)
+: Interface(arg), do_set(s), do_change(c), do_new(n), do_run(r), do_write(w)
 {
-    spos = 0;
-    //std::clog << " set " << ds << " change " << dc << " new " << dn << " run " << dr << " write " << dw << "\n";
-}
-
-
-void Parser::show_lines(std::istream& is, std::streampos pos)
-{
-    std::cerr << "in\n";
-    StreamFunc::print_lines(std::cerr, is, pos, is.tellg());
 }
 
 
@@ -75,13 +69,16 @@ void Parser::show_lines(std::istream& is, std::streampos pos)
 
 void Parser::parse_set(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     std::string cat = Tokenizer::get_symbol(is);
     std::string name, para, blok;
     
 #ifdef BACKWARD_COMPATIBILITY
-    // Read formats anterior to 3.11.2017 ('set hand 2 kinesin')
-    unsigned inx = 0;
-    Tokenizer::get_integer(is, inx);
+    {
+        // Read formats anterior to 3.11.2017 ('set hand 2 kinesin')
+        unsigned inx = 0;
+        Tokenizer::get_integer(is, inx);
+    }
 #endif
     
     Glossary opt;
@@ -91,18 +88,15 @@ void Parser::parse_set(std::istream& is)
     
     if ( simul.isPropertyClass(cat) && !spec )
     {
-        /* in this form, 'set' defines a new Property
+        /* in this form:
          set CLASS NAME { PARAMETER = VALUE }
+         define a new Property
          */
         name = Tokenizer::get_symbol(is);
-        blok = Tokenizer::get_block(is, '{');
-        
-        if ( blok.empty() )
-            throw InvalidSyntax("unexpected syntax");
+        blok = Tokenizer::get_block(is, '{', true);
 
         if ( do_set )
         {
-            VLOG("+DEF |" << cat << "|" << name << "|\n");
             opt.read(blok);
             pp = execute_set(cat, name, opt);
             
@@ -123,6 +117,8 @@ void Parser::parse_set(std::istream& is)
             // adjust the name of the 'simul' property:
             if ( simul.prop->name() == "undefined" )
                 simul.prop->rename(name);
+            else if ( simul.prop->name() != name )
+                throw InvalidSyntax("only one `simul' can be defined");
             VLOG(" simul is named `" << name << "'\n");
             opt.read(blok);
             execute_change(name, opt);
@@ -130,7 +126,6 @@ void Parser::parse_set(std::istream& is)
         else if ( do_change )
         {
             opt.read(blok);
-            VLOG(" SET |" << name << "|\n");
             execute_change(name, opt);
         }
     }
@@ -162,10 +157,7 @@ void Parser::parse_set(std::istream& is)
         }
         
         // set NAME { PARAMETER = VALUE }
-        blok = Tokenizer::get_block(is, '{');
-        
-        if ( blok.empty() )
-            throw InvalidSyntax("unexpected syntax");
+        blok = Tokenizer::get_block(is, '{', true);
         
         if ( do_change )
         {
@@ -174,23 +166,17 @@ void Parser::parse_set(std::istream& is)
             else
                 opt.define(para, blok);
 
-            VLOG(" SET |" << name << "|\n");
-            execute_change(name, opt);
+            pp = execute_change(name, opt);
         }
         else if ( para == "display" )
         {
             opt.define(para, blok);
-            pp = simul.findProperty(name);
-            if ( ! opt.empty() && pp )
-            {
-                VLOG("-SET |" << pp->category() << "|" << name << "|" << para << "|\n");
-                pp->read(opt);
-            }
+            execute_change(name, opt, false);
         }
     }
 
     if ( pp && opt.warnings(std::cerr) )
-        show_lines(is, spos);
+        StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
 }
 
 //------------------------------------------------------------------------------
@@ -229,6 +215,7 @@ Examples:
 
 void Parser::parse_change(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     bool change_all = false;
     
     std::string name = Tokenizer::get_symbol(is);
@@ -279,32 +266,31 @@ void Parser::parse_change(std::istream& is)
     }
 
     //change NAME { VALUE }
-    std::string blok = Tokenizer::get_block(is, '{');
+    std::string blok = Tokenizer::get_block(is, '{', true);
     
-    if ( blok.empty() )
-        throw InvalidSyntax("unexpected syntax");
-    
+    Glossary opt;
     if ( do_change )
     {
-        Glossary opt;
-        
         if ( para.empty() )
             opt.read(blok);
         else
             opt.define(para, blok);
         
         if ( change_all )
-        {
-            VLOG("+CHG |" << name << "|" << para << "|\n");
             execute_change_all(name, opt);
-        }
         else
-        {
-            VLOG("-CHG |" << name << "|" << para << "|\n");
             execute_change(name, opt);
-        }
-        if ( opt.warnings(std::cerr, ~0) )
-            show_lines(is, spos);
+ 
+        if ( opt.warnings(std::cerr, ~0U) )
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+    }
+    else if ( para == "display" )
+    {
+        opt.define("display", blok);
+        if ( change_all )
+            execute_change_all(name, opt);
+        else
+            execute_change(name, opt, false);
     }
 }
 
@@ -351,6 +337,7 @@ void Parser::parse_change(std::istream& is)
 
 void Parser::parse_new(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     Glossary opt;
     unsigned cnt = 1;
     Tokenizer::get_integer(is, cnt);
@@ -368,6 +355,7 @@ void Parser::parse_new(std::istream& is)
 
     // Syntax sugar: () specify only position
     std::string blok = Tokenizer::get_block(is, '(');
+    
     if ( blok.empty() )
     {
         blok = Tokenizer::get_block(is, '{');
@@ -381,12 +369,10 @@ void Parser::parse_new(std::istream& is)
     {
         if ( opt.nb_keys() == 0 )
         {
-            VLOG("-NEW |" << name << "|\n");
             execute_new(name, cnt);
         }
         else
         {
-            VLOG("+NEW |" << name << "|\n");
             size_t nb_objects = simul.nbObjects();
             
             // syntax sugar, to specify the position of the Fiber ends
@@ -401,8 +387,6 @@ void Parser::parse_new(std::istream& is)
             }
 
             // distribute objects regularly between two points:
-            if ( opt.has_key("distribute") )
-                throw InvalidParameter("please use `range' instead of 'distribute'");
             if ( opt.has_key("range") )
             {
                 Vector A, B;
@@ -410,10 +394,18 @@ void Parser::parse_new(std::istream& is)
                     throw InvalidParameter("two vectors need to be defined by `range'");
                 if ( opt.has_key("position") )
                     throw InvalidParameter("cannot specify `position' if `range' is defined");
-                Vector dAB = ( B - A ) / ( ( cnt > 1 ) ? cnt - 1 : 2 );
-                for ( unsigned n = 0; n < cnt; ++n )
+                if ( cnt > 1 )
                 {
-                    opt.define("position", 0, A + n * dAB);
+                    Vector dAB = ( B - A ) / real(cnt-1);
+                    for ( unsigned n = 0; n < cnt; ++n )
+                    {
+                        opt.define("position", 0, A + n * dAB);
+                        execute_new(name, opt);
+                    }
+                }
+                else
+                {
+                    opt.define("position", 0, 0.5*(A+B));
                     execute_new(name, opt);
                 }
             }
@@ -439,8 +431,8 @@ void Parser::parse_new(std::istream& is)
             if ( opt.has_key("display") )
                 throw InvalidParameter("display parameters should be specified within `set'");
             
-            if ( opt.warnings(std::cerr, ~0) )
-                show_lines(is, spos);
+            if ( opt.warnings(std::cerr, ~0U) )
+                StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
         }
     }
 }
@@ -494,12 +486,12 @@ void Parser::parse_new(std::istream& is)
  The SPACE must be the name of an existing Space.
  Only 'inside' and 'outside' are valid specifications.
 
- To delete all Couple called NAME that are not bound:
+ To delete all Couples called NAME that are not bound:
  
-     delete all NAME { state = 0, 0; }
- 
- To delete all Couple TYPE that are not crosslinking, use two calls:
- 
+     delete all NAME { state1 = 0; state2 = 0; }
+
+ To delete all Couples called NAME that are not crosslinking, use two calls:
+
      delete all NAME { state1 = 0; }
      delete all NAME { state2 = 0; }
  
@@ -507,6 +499,7 @@ void Parser::parse_new(std::istream& is)
 
 void Parser::parse_delete(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     unsigned cnt = 1;
     bool has_cnt = Tokenizer::get_integer(is, cnt);
     std::string name = Tokenizer::get_symbol(is);
@@ -521,7 +514,7 @@ void Parser::parse_delete(std::istream& is)
 #endif
     if ( !has_cnt  &&  name == "all" )
     {
-        cnt = ~0; // this is very large
+        cnt = ~0U; // this is very large
         name = Tokenizer::get_symbol(is);
     }
     std::string blok = Tokenizer::get_block(is, '{');
@@ -531,7 +524,7 @@ void Parser::parse_delete(std::istream& is)
         Glossary opt(blok);
         execute_delete(name, opt, cnt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -559,7 +552,8 @@ void Parser::parse_delete(std::istream& is)
 
 void Parser::parse_mark(std::istream& is)
 {
-    unsigned cnt = -1;
+    std::streampos ipos = is.tellg();
+    unsigned cnt = 0;
     bool has_cnt = Tokenizer::get_integer(is, cnt);
     std::string name = Tokenizer::get_symbol(is);
 #ifdef BACKWARD_COMPATIBILITY
@@ -580,7 +574,7 @@ void Parser::parse_mark(std::istream& is)
         Glossary opt(blok);
         execute_mark(name, opt, cnt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -598,37 +592,33 @@ void Parser::parse_mark(std::istream& is)
         plane = VECTOR, REAL
      }
 
- NAME can be '*' to cut all fibers.
  The plane is specified by a normal vector `n` (VECTOR) and a scalar `a` (REAL).
  The plane is defined by <em> n.pos + a = 0 </em>
  */
 
 void Parser::parse_cut(std::istream& is)
 {    
-    std::string name = Tokenizer::get_token(is);
+    std::streampos ipos = is.tellg();
+    std::string str = Tokenizer::get_token(is);
  
-    if ( name == "all" )
+    if ( str == "all" )
     {
-        std::string str = Tokenizer::get_symbol(is);
-        if ( str != "fiber" )
+        if ( Tokenizer::get_symbol(is) != "fiber" )
             throw InvalidParameter("only 'fiber' can be cut");
     }
-    else if ( name == "fiber" )
+    else if ( str == "fiber" )
     {
-        name = Tokenizer::get_symbol(is);
+        str = Tokenizer::get_symbol(is);
     }
     
-    std::string blok = Tokenizer::get_block(is, '{');
-
-    if ( blok.empty() )
-        throw InvalidSyntax("missing block after `cut'");
+    std::string blok = Tokenizer::get_block(is, '{', true);
     
     if ( do_run )
     {
         Glossary opt(blok);
-        execute_cut(name, opt);
+        execute_cut(str, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -640,6 +630,7 @@ void Parser::parse_cut(std::istream& is)
  */
 void Parser::parse_run(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     unsigned cnt = 1;
     bool has_cnt = Tokenizer::get_integer(is, cnt);
     std::string name = Tokenizer::get_symbol(is);
@@ -689,23 +680,20 @@ void Parser::parse_run(std::istream& is)
                 {
                     if ( span <= 0 )
                         throw InvalidParameter("duration must be >= 0'");
-                    cnt = (unsigned)ceil(span/simul.prop->time_step);
+                    cnt = (unsigned)ceil(span/simul.time_step());
                 }
             }
         }
         else if ( opt.has_key("nb_steps") )
             throw InvalidSyntax("the number of steps was specified twice");
         
-        if ( ! do_write )
-            opt.clear("nb_frames");
-        
         if ( opt.empty() )
             execute_run(cnt);
         else
-            execute_run(cnt, opt);
+            execute_run(cnt, opt, do_write);
 
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -719,14 +707,15 @@ void Parser::parse_run(std::istream& is)
      }
  
  By default, `required = 1`, and execution will terminate if the file is not found.
- If `required=0`, the file will be executed if it is found, but execution will continue
- in any case.
+ However, if `required=0`, the file will be executed if it is found, but execution
+ will continue otherwise.
  
- \todo: able to specify do_set and do_new for command 'include' 
+ \todo: able to specify `do_set` and `do_new` for command 'read'
 */
 
 void Parser::parse_read(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     bool required = true;
     std::string file = Tokenizer::get_filename(is);
     
@@ -739,21 +728,17 @@ void Parser::parse_read(std::istream& is)
         Glossary opt(blok);
         opt.set(required, "required");
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
     
-    std::ifstream fis(file.c_str(), std::ifstream::in);
-    if ( ! fis.fail() )
-    {
-        VLOG("-READ " << file << "\n");
-        evaluate(fis, "in `"+file+"'");
-    }
+    if ( FilePath::is_file(file) )
+        readConfig(file);
     else
     {
         if ( required )
             throw InvalidSyntax("could not open file `"+file+"'");
         else
-            Cytosim::warn << "could not open file `" << file << std::endl;
+            Cytosim::warn << "could not open file `" << file << "\n";
     }
 }
 
@@ -792,6 +777,7 @@ void Parser::parse_read(std::istream& is)
 
 void Parser::parse_import(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     std::string what = Tokenizer::get_token(is);
     std::string file = Tokenizer::get_filename(is);
     
@@ -808,9 +794,10 @@ void Parser::parse_import(std::istream& is)
         Glossary opt(blok);
         execute_import(file, what, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
+
 
 /**
  Export state to file. The general syntax is:
@@ -839,6 +826,7 @@ void Parser::parse_import(std::istream& is)
 
 void Parser::parse_export(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     std::string what = Tokenizer::get_token(is);
     std::string file = Tokenizer::get_filename(is);
     
@@ -847,7 +835,6 @@ void Parser::parse_export(std::istream& is)
     
     if ( file.empty() )
         throw InvalidSyntax("missing/invalid file name (use `export all FILENAME')");
-    
 
     std::string blok = Tokenizer::get_block(is, '{');
     
@@ -856,7 +843,7 @@ void Parser::parse_export(std::istream& is)
         Glossary opt(blok);
         execute_export(file, what, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -883,11 +870,12 @@ void Parser::parse_export(std::istream& is)
      report parameters parameters.cmo { append=0 }
      report fiber:length fibers_length.txt
  
- Note that this command is disabled for `play`.
+ Note that writing to a file is normally disabled for `play`.
  */
 
 void Parser::parse_report(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     std::string what = Tokenizer::get_symbols(is);
     std::string file = Tokenizer::get_filename(is);
 
@@ -901,7 +889,7 @@ void Parser::parse_report(std::istream& is)
         Glossary opt(blok);
         execute_report(file, what, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -918,6 +906,7 @@ void Parser::parse_report(std::istream& is)
  */
 void Parser::parse_call(std::istream& is)
 {
+    std::streampos ipos = is.tellg();
     std::string str = Tokenizer::get_symbol(is);
     
     if ( str.empty() )
@@ -930,7 +919,7 @@ void Parser::parse_call(std::istream& is)
         Glossary opt(blok);
         execute_call(str, opt);
         if ( opt.warnings(std::cerr) )
-            show_lines(is, spos);
+            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
     }
 }
 
@@ -947,13 +936,13 @@ void Parser::parse_repeat(std::istream& is)
     unsigned cnt = 1;
     
     if ( ! Tokenizer::get_integer(is, cnt) )
-        throw InvalidSyntax("missing integer number after 'repeat'");
+        throw InvalidSyntax("expected positive integer after 'repeat'");
 
     std::string code = Tokenizer::get_block(is, '{');
     
     for ( unsigned c = 0; c < cnt; ++c )
     {
-        evaluate(code, ", inside `repeat'");
+        evaluate(code);
     }
 }
 
@@ -996,13 +985,13 @@ void Parser::parse_for(std::istream& is)
     
     std::string code = Tokenizer::get_block(is, '{');
     
-    for ( unsigned int c = start; c < end; ++c )
+    for ( size_t c = start; c < end; ++c )
     {
         std::string sub = code;
         // substitute Variable name for this iteration:
         StreamFunc::find_and_replace(sub, var, std::to_string(c));
-        //we use a fresh stream and Parser for each instance:
-        Parser(*this).evaluate(sub, ", inside `for'");
+        // execute code:
+        evaluate(sub);
         //hold();
     }
 }
@@ -1031,207 +1020,200 @@ void Parser::parse_end(std::istream& is)
      */
 }
 
+
+/**
+ Dump system in binary MATLAB format
+ 
+     dump DIRECTORY_NAME
+ 
+ */
+void Parser::parse_dump(std::istream& is)
+{
+    std::string str = Tokenizer::get_token(is);
+    if ( str.empty() )
+        throw InvalidSyntax("missing directory name after 'dump'");
+
+    if ( do_write && do_run )
+        simul.dump(str.c_str());
+}
+
+
+/**
+ Save system matrix and right-hand-side vector in text format
+ 
+     save DIRECTORY_NAME
+ 
+ */
+void Parser::parse_save(std::istream& is)
+{
+    std::string str = Tokenizer::get_token(is);
+    if ( str.empty() )
+        throw InvalidSyntax("missing directory name after 'save'");
+
+    if ( do_write && do_run )
+        simul.saveSystem(str.c_str());
+}
+
+
 //------------------------------------------------------------------------------
 #pragma mark -
 
 /**
- The configuration file should contain a succession of commands.
- 
- Most of them follow the same syntax:
- 
-     COMMAND CLASS OBJECT_NAME
-     {
-         PARAMETER = VALUE1, VALUE2, ...;
-         ...
-     }
-
- Where `COMMAND` is the name of the command, `CLASS` is an predefined class name,
- and `OBJECT_NAME` can be chosen by the user. The name of the Parameters and
- their possible values is different for each class.
- 
- Essential commands:
- 
- Command        | Effect                                                 |
- ---------------|---------------------------------------------------------
- `set`          | Create a new Property, and set its parameter values
- `new`          | Create objects of a certain Property
- `run`          | Simulate the system to advance in time
- 
- Additional commands:
- 
- Command        | Effect                                                 |
- ---------------|---------------------------------------------------------
- `change`       | Change parameter values in an existing Property
- `read`         | Read another file and excutes the commands it contains
- `delete`       | Delete objects from the simulation
- `import`       | Import objects from a trajectory file
- `export`       | Export all simulated objects to a file
- `report`       | generate file or text with formatted information
-
- Other commands:
- 
- Command        | Effect                                                 |
- ---------------|---------------------------------------------------------
- `mark`         | Mark objects
- `cut`          | Cut fibers along a plane
- `repeat`       | Execute code a number of times
- `for`          | Execute code a number of times (disabled)
- `end`          | Terminates simulation
- `call`         | Call a custom function
-
+ Read and execute the next command to be found in the stream.
+ Returns:
+ - 0 if successfull
+ - 1 if file is exhausted, or has error
+ - 2 if 'end' was found.
+ Thus parsing should be repeated while the return value is 0.
  */
-void Parser::evaluate(std::istream& is)
+int Parser::evaluate_one(std::istream& is)
 {
-    std::string tok;
-
-    while ( is.good() )
+    std::string tok = Tokenizer::get_token(is, true);
+    
+    if ( is.fail() )
+        return 1;
+    
+    // empty lines
+    if ( tok.length() < 1 || isspace(tok[0]) )
+        return 0;
+    
+    // matlab-style comments (%{ })
+    if ( tok[0] == '%' )
     {
-        do {
-            spos = is.tellg();
-            tok = Tokenizer::get_token(is);
-            if ( is.fail() ) return;
-        } while ( tok.length() < 1 || isspace(tok[0]) );
-        
-        
-        // skip matlab-style comments (%{ })
-        if ( tok[0] == '%' )
-        {
-            int c = is.get();
-            if ( c == '{' )
-                Tokenizer::get_block_text(is, 0, '}');
-            else
-                Tokenizer::get_line(is);
-            continue;
-        }
-        
-        /*
-         skip C-style comments:
-         - single-line comment start with '/' and '/'
-         - multi-line comments start with '/' and '*'
-         */
-        if ( tok[0] == '/' )
-        {
-            int c = is.get();
-            if ( '/' == c )
-                Tokenizer::get_line(is);
-            else if ( '*' == c )
-                Tokenizer::get_until(is, "*/");
-            else
-                throw InvalidSyntax("unexpected token after / `"+tok+"'");
-            continue;
-        }
-        
-        //StreamFunc::print_lines(std::clog, is, spos, spos);
-        
-        if ( tok == "set" )
-            parse_set(is);
-        else if ( tok == "change" )
-            parse_change(is);
-        else if ( tok == "new" || tok == "add" )
-            parse_new(is);
-        else if ( tok == "delete" )
-            parse_delete(is);
-        else if ( tok == "mark" )
-            parse_mark(is);
-        else if ( tok == "run" )
-            parse_run(is);
-        else if ( tok == "read" )
-            parse_read(is);
-#ifdef BACKWARD_COMPATIBILITY
-        else if ( tok == "include" )
-            parse_read(is);
-#endif
-        else if ( tok == "cut" )
-            parse_cut(is);
-        else if ( tok == "report" )
-            parse_report(is);
-#ifdef BACKWARD_COMPATIBILITY
-        else if ( tok == "write" )
-            parse_report(is);
-#endif
-        else if ( tok == "import" )
-            parse_import(is);
-        else if ( tok == "export" )
-            parse_export(is);
-        else if ( tok == "call" )
-            parse_call(is);
-        else if ( tok == "repeat" )
-            parse_repeat(is);
-        else if ( tok == "skip" )
-            Tokenizer::get_block(is, '{');
-        else if ( tok == "for" )
-            parse_for(is);
-#if ( 0 )
-        else if ( tok == "restart" )
-        {
-            static int cnt = 32;
-            if ( do_run && --cnt > 0 )
-            {
-                simul.erase();
-                is.clear();
-                is.seekg(0);
-            }
-        }
-#endif
-        else if ( tok == "end" )
-            return;//parse_end(is);
-        else if ( tok == ";" )
-            continue;
-        else if ( tok == "dump" )
-        {
-            if ( do_write && do_run )
-                simul.dump();
-        }
-        else {
-            throw InvalidSyntax("unknown command `"+tok+"'");
-        }
-        //hold();
+        int c = is.get();
+        if ( c == '{' )
+            Tokenizer::get_block_text(is, 0, '}');
+        else
+            Tokenizer::get_line(is);
+        return 0;
     }
+    
+    /*
+     skip C-style comments:
+     - single-line comment start with '/' and '/'
+     - multi-line comments start with '/' and '*'
+     */
+    if ( tok[0] == '/' )
+    {
+        int c = is.get();
+        if ( '/' == c )
+            Tokenizer::get_line(is);
+        else if ( '*' == c )
+            Tokenizer::get_until(is, "*/");
+        else
+            throw InvalidSyntax("unexpected token after / `"+tok+"'");
+        return 0;
+    }
+    
+    //if (spos) StreamFunc::print_lines(std::clog, is, *spos, *spos);
+    
+    if ( tok == "set" )
+        parse_set(is);
+    else if ( tok == "change" )
+        parse_change(is);
+    else if ( tok == "new" || tok == "add" )
+        parse_new(is);
+    else if ( tok == "delete" )
+        parse_delete(is);
+    else if ( tok == "mark" )
+        parse_mark(is);
+    else if ( tok == "run" )
+        parse_run(is);
+    else if ( tok == "read" )
+        parse_read(is);
+#ifdef BACKWARD_COMPATIBILITY
+    else if ( tok == "include" )
+        parse_read(is);
+#endif
+    else if ( tok == "cut" )
+        parse_cut(is);
+    else if ( tok == "report" )
+        parse_report(is);
+#ifdef BACKWARD_COMPATIBILITY
+    else if ( tok == "write" )
+        parse_report(is);
+#endif
+    else if ( tok == "import" )
+        parse_import(is);
+    else if ( tok == "export" )
+        parse_export(is);
+    else if ( tok == "call" )
+        parse_call(is);
+    else if ( tok == "repeat" )
+        parse_repeat(is);
+    else if ( tok == "skip" )
+        Tokenizer::get_block(is, '{');
+    else if ( tok == "for" )
+        parse_for(is);
+    else if ( tok == "restart" )
+    {
+        // reset simulation and rewind config file
+        simul.erase();
+        is.clear();
+        is.seekg(0);
+        return 0;
+    }
+    else if ( tok == "end" )
+        return 2; //parse_end(is);
+    else if ( tok == ";" )
+        return 0;
+    else if ( tok == "dump" )
+        parse_dump(is);
+    else if ( tok == "save" )
+        parse_save(is);
+    else {
+        throw InvalidSyntax("unexpected command `"+tok+"'");
+    }
+    return 0;
 }
 
 
-void Parser::evaluate(std::istream& is, std::string const& msg)
+void Parser::evaluate(std::istream& is)
 {
-    std::streampos saved = spos;
+    std::streampos ipos(0);
     try {
-        evaluate(is);
+        while ( is.good() )
+        {
+            ipos = is.tellg();
+            if ( evaluate_one(is) )
+                return;
+        }
     }
     catch( Exception & e )
     {
-        e << msg + ":\n";
-        e << StreamFunc::get_lines(is, spos, is.tellg());
-        spos = saved;
+        e << StreamFunc::get_lines(is, ipos, is.tellg());
         throw;
     }
-    spos = saved;
 }
 
 
-void Parser::evaluate(std::string const& code, std::string const& msg)
+void Parser::evaluate(std::string const& code)
 {
-    std::istringstream iss(code);
-    evaluate(iss, msg);
+    std::istringstream is(code);
+    evaluate(is);
 }
 
 
-int Parser::readConfig(std::string const& file)
+void Parser::readConfig(std::string const& filename)
 {
-    std::ifstream is(file.c_str(), std::ifstream::in);
-    if ( is.good() )
-    {
-        VLOG("-----------  Cytosim reads " << file);
-        VLOG("  ( set " << do_set << "  change " << do_change << "  new " << do_new);
-        VLOG("  run " << do_run << "  write " << do_write << " )\n");
-        
-        evaluate(is, "in `"+file+"'");
-        return 0;
+    std::ifstream is(filename.c_str(), std::ifstream::in);
+    if ( !is.good() )
+        throw InvalidIO("could not find or read `"+filename+"'");
+    VLOG("--Parse `" << filename << "'  set " << do_set << "  change " << do_change);
+    VLOG("  new " << do_new << "  run " << do_run << "  write " << do_write << "\n");
+    evaluate(is);
+}
+
+
+void Parser::readConfig()
+{
+    try {
+        readConfig(simul.prop->config_file);
     }
-    return 1;
-}
-
-
-int Parser::readConfig()
-{
-    return readConfig(simul.prop->config_file);
+    catch ( InvalidIO& e ) {
+        if ( simul.prop->config_file == "config.cym" )
+            throw InvalidIO("You must specify a config file");
+        throw;
+    }
 }
 

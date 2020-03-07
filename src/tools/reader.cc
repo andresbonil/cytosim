@@ -48,14 +48,15 @@ void instructions(std::ostream& os = std::cout)
 
 int main(int argc, char* argv[])
 {
-    int frame;
     Simul simul;
-    char user[1024] = "\0";
     FrameReader reader;
     Glossary arg;
-    
-    arg.read_strings(argc-1, argv+1);
-    
+    char cmd[1024] = "\0";
+    size_t frm = 0;
+
+    if ( arg.read_strings(argc-1, argv+1) )
+        return EXIT_FAILURE;
+
     if ( arg.use_key("help") )
     {
         help(std::cout);
@@ -92,33 +93,32 @@ int main(int argc, char* argv[])
     printf("Reader: enter (h) for help\n");
     while ( true )
     {
-        if ( reader.currFrame() < 0 )
-            printf("Reader: Empty buffer\n");
-        else
-        {
-            printf("Reader: Frame %i in buffer\n", reader.currFrame());
-            simul.reportInventory(std::cout);
-        }
+        printf("Frame %li, time %f", reader.currentFrame(), simul.time());
+        simul.reportInventory(std::cout);
         
-        printf("Reader: ");
-        fgets(user, sizeof(user), stdin);
+        printf("\n? ");
+        fgets(cmd, sizeof(cmd), stdin);
         
-        if ( isdigit( user[0] ))
+        if ( isdigit(cmd[0]))
         {
-            if ( 1 == sscanf(user, "%i", &frame ) )
+            char * end;
+            frm = strtoul(cmd, &end, 10);
+            if ( errno )
+                printf("Reader: error reading: %s\n", cmd);
+            else if ( end > cmd )
             {
                 try {
-                    if ( 0 != reader.loadFrame(simul, frame) )
+                    if ( 0 != reader.loadFrame(simul, frm) )
                         printf("Reader: frame not found: ");
                 }
                 catch( Exception & e ) {
-                    printf("Reader: excetion in `read` %i: %s\n", frame, e.what());
+                    printf("Reader: exception in `read` %lu: %s\n", frm, e.msg());
                 }
             }
         }
         else
         {
-            switch( user[0] )
+            switch( cmd[0] )
             {
                 case '\n':
                 case 'n':
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
                         if ( err ) printf("Reader error with `next`: %i\n", err);
                     }
                     catch( Exception & e ) {
-                        printf("Reader: exception in `next`: %s\n", e.what());
+                        printf("Reader: exception in `next`: %s\n", e.msg());
                     }
                     break;
                     

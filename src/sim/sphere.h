@@ -21,8 +21,8 @@ class Wrist;
  - mobile points on the surface.
  .
 
- nbRefPts 'fixed' points provide a reference frame for the sphere:
- nbRefPts=2 in 2D and  nbRefPts=4 in 3D.
+ A set of 'fixed' points provide a reference frame for the sphere:
+ nbRefPoints = 2 in 2D and 4 in 3D.
 
  The sphere can move as a solid body by rotation and translation.
  In addition, the surface-points can move on the surface. This motion includes
@@ -37,10 +37,7 @@ class Sphere : public Mecable
 public:
     
     /// number of reference points, including center: 1, 2, 4 for DIM = 1, 2 and 3
-    static constexpr unsigned nbRefPts = DIM+(DIM==3);
-
-    /// number of reference points
-    static unsigned  nbRefPoints() { return nbRefPts; }
+    static constexpr unsigned nbRefPoints = DIM+(DIM==3);
 
 private:
     
@@ -65,7 +62,7 @@ public:
     /// create but do not initialize
     Sphere(SphereProp const*);
 
-    /// create and initialize following the specifications of SphereProp
+    /// constructor
     Sphere(SphereProp const*, real radius);
     
     /// Copy constructor
@@ -131,7 +128,7 @@ public:
     unsigned    addSurfacePoint(Vector const&);
     
     /// number of points on the surface
-    unsigned    nbSurfacePoints() const { return nPoints - nbRefPts; }
+    unsigned    nbSurfacePoints() const { return nPoints - nbRefPoints; }
     
     /// initialize according to options given in Glossary
     ObjectList  build(Glossary&, Simul&);
@@ -142,7 +139,7 @@ public:
     void        makeProjection();
     
     /// calculate speed of points in Y, for the forces given in X, scaled by sc
-    void        setSpeedsFromForces(const real* X, real, real* Y) const;
+    void        projectForces(const real* X, real* Y) const;
     
     //--------------------------------------------------------------------------
     

@@ -25,13 +25,18 @@ Property::~Property()
 /**
  parse string `str` to set values of the property.
 */
-void Property::read_string(std::string& str)
+void Property::read_string(std::string const& str, std::string const& msg)
 {
     if ( str.size() > 0 )
     {
-        //std::clog << " Property::read_string(" << str << ") for " << name() << "\n";
-        Glossary glos(str);
-        read(glos);
+        //std::clog << "reading " << msg << "=(" << str << ")\n";
+        try {
+            Glossary glos(str);
+            read(glos);
+            glos.warnings(std::cerr, 1, msg);
+        } catch(Exception & e) {
+            std::clog << msg << ": " << e.what() << std::endl;
+        }
     }
 }
 
@@ -102,18 +107,31 @@ bool Property::modified() const
        key = values
        ...
      }
- 
+or
+     set name display
+     {
+       property_number = INTEGER
+       key = values
+       ...
+     }
+
  */
 void Property::write(std::ostream& os, const bool prune) const
 {
-    os << "\nset " << category();
-    os << " " << name_ << '\n';
-    os << "{\n";
+    /* Check for compound category, eg 'fiber:display'  */
+    std::string cat = category();
+    std::string::size_type pos = cat.find(':');
+    if ( pos != std::string::npos )
+        os << "\nset " << name_ << ' ' << cat.substr(pos+1);
+    else
+        os << "\nset " << category() << ' ' << name_;
+    os << "\n{\n";
     if ( number() > 0 )
         write_value(os, "property_number", number_);
     write_values_diff(os, prune);
     os << "}\n";
 }
+
 
 std::ostream& operator << (std::ostream& os, const Property& p)
 {

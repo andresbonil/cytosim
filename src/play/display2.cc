@@ -294,7 +294,7 @@ void Display2::drawSphere(Sphere const& obj)
     {
         bodyColor(disp, obj.signature());
         drawPoint(obj.posP(0), disp);
-        for ( unsigned ii = obj.nbRefPoints(); ii < obj.nbPoints(); ii++ )
+        for ( unsigned ii = obj.nbRefPoints; ii < obj.nbPoints(); ii++ )
             drawPoint(obj.posP(ii), disp);
     }
     
@@ -302,7 +302,7 @@ void Display2::drawSphere(Sphere const& obj)
     if ( disp->style & 8  &&  disp->perceptible )
     {
         bodyColor(disp, obj.signature());
-        for ( unsigned ii = 1; ii < obj.nbRefPoints(); ii++ )
+        for ( unsigned ii = 1; ii < obj.nbRefPoints; ii++ )
             drawPoint(obj.posP(ii), disp);
     }
 }
@@ -352,7 +352,7 @@ void Display2::drawSphereT(Sphere const& obj)
 //------------------------------------------------------------------------------
 void Display2::drawOrganizer(Organizer const& obj) const
 {
-    const PointDisp * disp = obj.disp();
+    PointDisp const* disp = obj.disp();
     
     if ( !disp )
         return;
@@ -447,7 +447,7 @@ inline void drawVertex(Vector const& pos, const Fiber * fib, const PointDisp* di
 }
 
 
-inline void drawVertex2(Vector const& pos, const Fiber * fib, const PointDisp* disp)
+inline void drawVertex2(Vector const& pos, Fiber const* fib, PointDisp const* disp)
 {
     if ( disp->perceptible && fib->disp->visible )
     {
@@ -456,7 +456,7 @@ inline void drawVertex2(Vector const& pos, const Fiber * fib, const PointDisp* d
     }
 }
 
-inline void drawLink(Vector const& a, const Fiber * fib, const PointDisp* disp, Vector const& b)
+inline void drawLink(Vector const& a, Fiber const* fib, PointDisp const* disp, Vector const& b)
 {
     if ( disp->visible && fib->disp->visible )
     {

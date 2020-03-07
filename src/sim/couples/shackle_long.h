@@ -27,13 +27,13 @@ class ShackleLong : public Shackle
     
 public:
     
-    /// create following the specifications in the CoupleProp
+    /// constructor
     ShackleLong(ShackleProp const*, Vector const & w = Vector(0,0,0));
     
     //--------------------------------------------------------------------------
     
     /// position on the side of fiber1 used for sideInteractions
-    Vector  posSide() const;
+    Vector  sidePos() const;
 
     /// force between hands
     Vector  force() const;

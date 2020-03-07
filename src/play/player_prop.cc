@@ -1,10 +1,11 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
-#include "play_prop.h"
+
+#include "player_prop.h"
 #include "glossary.h"
 #include "saveimage.h"
 
-//------------------------------------------------------------------------------
-void PlayProp::clear()
+
+void PlayerProp::clear()
 {
     play         = 0;
     loop         = 0;
@@ -33,8 +34,7 @@ void PlayProp::clear()
 }
 
 
-//------------------------------------------------------------------------------
-void PlayProp::read(Glossary& glos)
+void PlayerProp::read(Glossary& glos)
 {
     glos.set(play,         "play");
     glos.set(loop,         "loop");
@@ -62,9 +62,7 @@ void PlayProp::read(Glossary& glos)
 }
 
 
-//------------------------------------------------------------------------------
-
-void PlayProp::write_values(std::ostream& os) const
+void PlayerProp::write_values(std::ostream& os) const
 {
     write_value(os, "play",   play);
     write_value(os, "loop",   loop);
@@ -85,7 +83,7 @@ void PlayProp::write_values(std::ostream& os) const
 
 //------------------------------------------------------------------------------
 
-void PlayProp::toggleReport(bool alt)
+void PlayerProp::toggleReport(bool alt)
 {
     report_index = ( report_index + 1 ) % 7;
     
@@ -96,7 +94,7 @@ void PlayProp::toggleReport(bool alt)
             case 0: report = "";                   break;
             case 1: report = "inventory";          break;
             case 2: report = "platelet";           break;
-            case 3: report = "fiber:lattice";      break;
+            case 3: report = "fiber:lattice_density;field"; break;
             case 4: report = "fiber:segment";      break;
             case 5: report = "fiber:cluster";      break;
             case 6: report = "fiber:age";          break;

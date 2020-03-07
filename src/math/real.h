@@ -16,6 +16,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdint>
+#include <new>
 
 /**
  It is possible to select double or single precision throughout Cytosim
@@ -51,10 +52,10 @@ inline size_t chunk_real(size_t s)
     return ( s + chunk - 1 ) & ~( chunk - 1 );
 }
 
-/// check memory alignement of a pointer
+/// check memory alignement of a pointer for AVX load/store
 inline void check_alignment(void * ptr)
 {
-    uintptr_t a = ((uintptr_t)ptr & 63);
+    uintptr_t a = ((uintptr_t)ptr & 31);
     if ( a )
         fprintf(stderr, "missaligned pointer %p (%lu)\n", ptr, a);
 }
@@ -66,7 +67,8 @@ inline real* new_real(size_t size)
 {
     void* ptr = nullptr;
     // we align to 4 doubles (of size 8 bytes), hence 32 bytes
-    posix_memalign(&ptr, 32, size*sizeof(real));
+    if ( posix_memalign(&ptr, 32, size*sizeof(real)) )
+        throw std::bad_alloc();
     //printf("new_real(%lu)  %lu\n", size, ((uintptr_t)ptr&63));
     return (real*)ptr;
 }
@@ -82,26 +84,18 @@ inline void free_real(void * ptr)
 /// copy `size` real scalars from `src` to `dst`
 inline void copy_real(size_t size, real const* src, real * dst)
 {
-#if ( 0 )
-    memcpy(dst, src, size*sizeof(real));
-#else
     //#pragma vector unaligned
     for ( size_t u = 0; u < size; ++u )
         dst[u] = src[u];
-#endif
 }
 
 
 /// set `size` values of the array `ptr` to 0 (zero).
 inline void zero_real(size_t size, real * ptr)
 {
-#if ( 1 )
-    memset(ptr, 0, size*sizeof(real));
-#else
     #pragma vector unaligned
     for ( size_t u = 0; u < size; ++u )
         ptr[u] = 0.0;
-#endif
 }
 
 

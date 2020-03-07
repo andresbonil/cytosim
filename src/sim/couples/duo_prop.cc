@@ -1,15 +1,15 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 #include "dim.h"
+#include "common.h"
 #include "messages.h"
 #include "exceptions.h"
 #include "glossary.h"
-#include "common.h"
-#include "simul_prop.h"
 #include "property_list.h"
 #include "duo_prop.h"
 #include "duo.h"
 #include "duo_long.h"
+#include "simul.h"
 
 
 /**
@@ -69,7 +69,7 @@ void DuoProp::complete(Simul const& sim)
     if ( deactivation_rate < 0 )
         throw InvalidParameter("deactivation_rate should be >= 0");
     
-    deactivation_rate_dt = deactivation_rate * sim.prop->time_step;
+    deactivation_rate_dt = deactivation_rate * sim.time_step();
 }
 
 

@@ -52,7 +52,7 @@ public:
     void   makeFiber(Simul&, Vector pos, std::string const&, Glossary&);
     
     /// simulate when is not attached
-    void   stepUnattached(const FiberGrid&, Vector const& pos);
+    void   stepUnattached(Simul&, Vector const& pos);
 
     /// simulate when `this` is attached but not under load
     void   stepUnloaded();

@@ -38,7 +38,7 @@ set fiber microtubule
 
 new 5000 microtubule
 {
-    orientation=horizontal;
+    direction=X;
     position = inside, spindle
     length=2;
 }

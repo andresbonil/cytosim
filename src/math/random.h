@@ -6,16 +6,16 @@
 #include <cmath>
 
 #ifndef REAL_H
-#include "real.h"
+#  include "real.h"
 #endif
 
 #define SFMT_MEXP 19937
 
 #include "SFMT.h"
 
-#define TWO_POWER_MINUS_32 0x1p-32
-#define TWO_POWER_MINUS_31 0x1p-31
-#define TWO_POWER_MINUS_64 0x1p-64
+constexpr real TWO_POWER_MINUS_31 = 0x1p-31;
+constexpr real TWO_POWER_MINUS_32 = 0x1p-32;
+constexpr real TWO_POWER_MINUS_64 = 0x1p-64;
 
 
 /// Random Number Generator
@@ -118,54 +118,29 @@ public:
     /// access to immutable state vector
     uint32_t const* data() { return twister_.state[0].u; }
 
-    /// signed integer in [-2^31+1,2^31-1];
+    /// signed integer in [-2^31+1, 2^31-1];
     int32_t  sint()  { return RAND32(); }
 
-    /// unsigned integer in [0,2^32-1]
+    /// unsigned integer in [0, 2^32-1]
     uint32_t pint()  { return URAND32(); }
     
-#if ( 0 )
+    /// unsigned integer in [0, 2^64-1]
+    int64_t  slong() { return RAND64(); }
+
+    /// unsigned integer in [0, 2^64-1]
+    uint64_t plong() { return URAND64(); }
+
     /// unsigned integer in [0,n-1] for n < 2^32
     uint32_t pint(const uint32_t& n)  { return uint32_t(URAND32()*TWO_POWER_MINUS_32*n); }
 
     /// unsigned integer in [0,n-1] for n < 2^64
     uint64_t plong(const uint64_t& n) { return uint32_t(URAND64()*TWO_POWER_MINUS_64*n); }
-#else
-    /// unsigned integer in [0,n-1] for n < 2^32, Daniel Lemire's method
-    uint32_t pint(const uint32_t& n)  { return (uint32_t)(((uint64_t)URAND32() * (uint64_t)n) >> 32); }
-
-    /// unsigned integer in [0,n-1] for n < 2^32, Daniel Lemire's fair method
-    uint32_t pint_fair(const uint32_t& range)
-    {
-        uint64_t multiresult = (uint64_t)URAND32() * (uint64_t)range;
-        uint32_t leftover = (uint32_t) multiresult;
-        if ( leftover < range )
-        {
-            uint32_t threshold = -range % range;
-            while ( leftover < threshold )
-            {
-                multiresult = (uint64_t)URAND32() * (uint64_t)range;
-                leftover = (uint32_t) multiresult;
-            }
-        }
-        return multiresult >> 32;
-    }
-    
-    /// unsigned integer in [0,n-1] for n < 2^64, Daniel Lemire's method
-    uint64_t plong(const uint64_t& p) {
-#ifdef __SIZEOF_INT128__ // then we know we have 128-bit integers
-        return (uint64_t)(((__uint128_t)URAND64() * (__uint128_t)p) >> 64);
-#else
-        return URAND64() % p; // fallback
-#endif
-    }
-#endif
  
     /// integer in [0,n] for n < 2^32, (slow) bitwise algorithm
     uint32_t  pint_slow(uint32_t n);
     
     /// a random unsigned integer with exactly `b` bit equal to `1`
-    uint32_t  number_of_bits(int b);
+    uint32_t  distributed_bits(int b);
 
     /// integer in [0 N], with probabilities given in ratio[] of size N, with sum(ratio)>0
     uint32_t  pint_ratio(uint32_t n, const int ratio[]);
@@ -197,6 +172,9 @@ public:
     
     /// returns -1  or  1 with equal chance
     int  flipsign()       { return (int)( URAND32() & 2U ) - 1; }
+    
+    /// returns 1 with probability P and -1 with probability 1-P
+    int  flipsign(real p) { return 2*(int)test(p) - 1; }
 
     /// True with probability 1/8
     bool flip_8th()       { return URAND32() < 1<<29; }
@@ -226,7 +204,7 @@ public:
     real sreal()                 { return RAND32() * TWO_POWER_MINUS_31; }
     
     /// signed real number in ]-1/2, 1/2[, boundaries excluded
-    real sreal_half()            { return RAND32() * TWO_POWER_MINUS_32; }
+    real shalf()                 { return RAND32() * TWO_POWER_MINUS_32; }
     
     /// returns -1.0 or 1.0 with equal chance
     real sflip()                 { return std::copysign(1.0, RAND32()); }
@@ -301,10 +279,10 @@ public:
     template <typename T> 
     void shuffle(T val[], uint32_t size)
     {
-        int  jj = size, kk;
+        uint32_t jj = size, kk;
         while ( jj > 1 )
         {
-            kk = URAND32() % jj;
+            kk = pint(jj);
             --jj;
             T tmp   = val[jj];
             val[jj] = val[kk];
@@ -313,7 +291,8 @@ public:
     }
 };
 
-// declaration of a global object:
+
+/// declaring a global Random Number Generator
 extern Random RNG;
 
 /**

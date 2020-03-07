@@ -52,12 +52,12 @@ public:
     /**
      Set this parameter to specify the fiber radius and point size in real units.
 
-     `point_size` and `line_width` are normally set in pixels, but if `point_value` is set,
-     then the specifications are understood in multiples of `point_value`,
-     which itself is given simulation units (aka. real distance).
+     `point_size` and `line_width` are usually set in pixels, but if `point_value` is set,
+     these specifications are interpreted as multiples of `point_value`,
+     which itself is given in simulation unit (i.e. real distance).
      
-     For example, if you set `line_width=5` and `point_value=0.005`,
-     the fibers will be displayed with a diameter of 0.025.
+     For example, if you set `line_width=5` and `point_value=0.01`,
+     the fibers will be displayed with a diameter of 0.050 (i.e. 50 nanometers).
      
      <em> default = 0 </em>
      */
@@ -70,7 +70,7 @@ public:
     unsigned       single_select;
     
     /// flag to display Meca's links
-    bool           meca_links;
+    bool           draw_links;
 
     /// @}
 
