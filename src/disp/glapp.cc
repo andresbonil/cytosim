@@ -409,30 +409,29 @@ void glApp::setROI(Vector3 a, Vector3 b)
 
 void glApp::help(std::ostream& os)
 {
-    os << "                           Mouse Controls\n";
+    os << "                       Mouse Controls\n";
     os << "\n";
-    os << " The display can be changed with mouse click-and-drag, and the outcome,\n";
-    os << " depends on the current 'mode' which is changed by pressing the TAB key:\n";
-    os << "         Rotate                                          (3D only)\n";
-    os << "         Translate in XY\n";
-    os << "         Action                             (click to grab fibers)\n";
-    os << "         Translate in XZ                                 (3D only)\n";
-    os << "         Spin                               (Rotation in XY plane)\n";
-    os << "         Zoom  (Click in central part of window, and drag outward)\n";
-    os << "         Select/move region-of-interest\n";
+    os << " The display can be manipulated with click-and-drag movements,\n";
+    os << " depending on the current `mode' selected by pressing `TAB':\n";
+    os << "      Rotate                                     (3D only)\n";
+    os << "      Translate in XY     (plane of the camera front lens)\n";
+    os << "      Active                        (click to grab fibers)\n";
+    os << "      Translate in XZ          (away/closer to the camera)\n";
+    os << "      Spin & Zoom                   (Rotation in XY plane)\n";
+    os << "      Select/Move region-of-interest\n";
     os << "\n";
-    os << "  In the default mode, you can SHIFT-CLICK to grab the filaments!\n";
+    os << "  In the default mode, a SHIFT-CLICK can grab the filaments\n";
     os << "  A Menu is accessed by a right click\n";
-    os << "  Optionally, you might be able to zoom in/out with the mouse-wheel\n";
+    os << "  You might perhaps be able to zoom in/out with the mouse wheel\n";
     os << "\n";
-    os << "                           Keyboard Controls\n\n";
-    os << " + -         Zoom in and out; hold SHIFT for fine motion\n";
-    os << " arrow keys  Translate in XY; hold SHIFT for fine motion\n";
+    os << "                       Keyboard Controls\n\n";
+    os << " + -         Zoom in and out; hold SHIFT for finer motion\n";
+    os << " arrow keys  Translate; hold SHIFT for finer motion; hold ALT for rotation\n";
     os << " z           Reset view and refresh display\n";
     os << " h           Hide/show help\n";
-    os << " b           Show/hide a 10 um scale bar\n";
-    os << " f           Toggle fullscreen mode\n";
-    os << " y           Save PNG image\n";
+    os << " b x         Show/hide a 10 um scale bar; Show/hide axes\n";
+    os << " f ESC       Toggle fullscreen mode; exit full screen mode\n";
+    os << " y           Save PPM/PNG image\n";
 }
 
 
@@ -506,7 +505,7 @@ void glApp::processNormalKey(unsigned char c, int, int)
             break;
         
         
-        case 'n':
+        case 'v':
             if ( mDIM == 3 )
             {
                 view.slice = ( view.slice + 1 ) % 4;
