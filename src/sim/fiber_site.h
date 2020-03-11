@@ -14,16 +14,16 @@
  The key variable is a pointer to a Fiber, `fbFiber`, which can be NULL for instance
  if the state is `unattached`.
  
- In the `attached` state, the precise location on the Fiber is recorded using the
- curvilinear abscissa `fbAbs`, measured along the fiber, from a reference
+ In the `attached` state, the precise location on the Fiber is recorded using
+ the curvilinear abscissa `fbAbs`, measured along the fiber, from a reference
  that is fixed on the Fiber, called the Fiber's origin. This origin is virtual
- and may reside outside the Fiber ends.
+ and may reside outside the fiber ends.
  
- Importantly, the value of abscissa is independent from the vertices used to
+ In this way, the value of abscissa is independent from the vertices used to
  represent the Fiber's position, and also unaffected by assembly/disassembly
  at the tips of the Fiber.
  
- The `FiberSite` also support discrete binding, if the Fiber have a Lattice,
+ The `FiberSite` also support discrete binding, if the Fiber has a Lattice,
  and in this case uses an integer `fbSite` to keep track of the position.
  
  A `FiberSite` uses Interpolation to calculate its position in space.
@@ -85,14 +85,14 @@ public:
     /// index of Lattice's site
     lati_t        site()    const { return fbSite; }
     
-    /// set FiberLattice pointer at site `s` and abscissa `a`
-    void engageLattice(FiberLattice* l, lati_t s, real a)
+    /// set FiberSite at index `s` with an abscissa `off` within the site
+    void engageLattice(FiberLattice* l, lati_t s, real off)
     {
         fbLattice = l;
         fbSite    = s;
-        fbAbs     = a;
-        //assert_true(fbFiber->abscissaM() < a + REAL_EPSILON);
-        //assert_true(a < fbFiber->abscissaP() + REAL_EPSILON);
+        fbAbs     = l->unit() * s + off;
+        //assert_true(fbFiber->abscissaM() < fbAbs + REAL_EPSILON);
+        //assert_true(fbAbs < fbFiber->abscissaP() + REAL_EPSILON);
     }
 
 #else
