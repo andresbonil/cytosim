@@ -46,11 +46,8 @@ Property* Interface::execute_set(std::string const& cat, std::string const& name
 {
     VLOG("+SET " << cat << " `" << name << "'\n");
     
-    /* mostly for historical reason, we do not allow for name that are class name,
-    but this should also limit confusions in the config file */
-    
-    if ( simul.isPropertyClass(name) )
-        throw InvalidSyntax("property name `"+name+"' is a reserved keyword");
+    /* We do not allow for using the class name to name a property,
+    as this should create confusion in the config file */
     
     Property* pp = simul.newProperty(cat, name, def);
     
