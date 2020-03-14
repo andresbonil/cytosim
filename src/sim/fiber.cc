@@ -1353,7 +1353,7 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
             fnBirthTime = in.readFloat();
 #endif
 
-        if ( length() + REAL_EPSILON < prop->min_length )
+        if ( length() + 128*FLT_EPSILON < prop->min_length )
         {
             Cytosim::log << "Warning: fiber length < fiber:min_length";
             Cytosim::log << " ( " << length() << " < " << prop->min_length << " )" << std::endl;
