@@ -67,7 +67,6 @@ void displayLive(View& view, int mag)
         player.prepareDisplay(view, mag);
         player.displayCytosim();
         thread.unlock();
-        glFinish();
     }
     else
     {
@@ -388,9 +387,9 @@ int main(int argc, char* argv[])
         buildMenus();
         glutAttachMenu(GLUT_RIGHT_BUTTON);
         glutMenuStatusFunc(menuCallback);
-        glutTimerFunc(100, timerCallback, 0);
         if ( glApp::isFullScreen() )
             glutFullScreen();
+        glutTimerFunc(500, timerCallback, 0);
     }
     catch ( Exception & e )
     {
@@ -401,10 +400,9 @@ int main(int argc, char* argv[])
     
     if ( player.goLive )
     {
+        thread.period(prop.period);
         try
         {
-            thread.period(prop.period);
-            
             if ( has_frame )
                 thread.extend();
             else
