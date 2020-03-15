@@ -22,10 +22,10 @@ PlayerProp&  prop = player.prop;
 DisplayProp& disp = player.disp;
 
 /// enable to create a player for command-line-only offscreen rendering
-//#define HEADLESS_PLAYER
+#define HEADLESS_PLAYER 0
 
-#ifdef HEADLESS_PLAYER
-void helpKeys(std::ostream& os) {}
+#if HEADLESS_PLAYER
+void helpKeys(std::ostream& os) { os << "This is a headless display\n"; }
 #else
 #  include "glut.h"
 #  include "glapp.h"
@@ -83,7 +83,6 @@ void displayOffscreen(View & view, int mag)
 {
     //std::clog << "displayOffscreen " << glApp::views.size() << '\n';
     player.displayScene(view, mag);
-    glFinish();
 }
 
 
@@ -200,7 +199,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     
-#ifdef HEADLESS_PLAYER
+#if HEADLESS_PLAYER
     View view("*");
     view.setDisplayFunc(displayOffscreen);
 #else
@@ -367,7 +366,7 @@ int main(int argc, char* argv[])
     arg.warnings(std::cerr);
 
     //--------- initialize Window system and create Window
-#ifndef HEADLESS_PLAYER
+#if ( HEADLESS_PLAYER == 0 )
 
 #ifdef __APPLE__
     glutInit(&argc, argv);
@@ -397,7 +396,7 @@ int main(int argc, char* argv[])
         glutMenuStatusFunc(menuCallback);
         if ( glApp::isFullScreen() )
             glutFullScreen();
-        glutTimerFunc(100, timerCallback, 0);
+        glutTimerFunc(200, timerCallback, 0);
     }
     catch ( Exception & e )
     {
