@@ -40,9 +40,6 @@ public:
     /// BACKWARD_COMPATIBILITY
     std::string  dimensions_;
     
-    /// equal to time_step / viscosity
-    real         mobility_dt, mobility_rot_dt;
-    
     /// derived variable: flag to indicate that `display` has a new value
     bool         display_fresh;
 

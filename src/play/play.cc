@@ -21,6 +21,8 @@ Simul&      simul = player.simul;
 PlayerProp&  prop = player.prop;
 DisplayProp& disp = player.disp;
 
+void displayLive(View& view, int mag);
+
 /// enable to create a player for command-line-only offscreen rendering
 #define HEADLESS_PLAYER 0
 
@@ -130,7 +132,9 @@ int main(int argc, char* argv[])
     int magnify = 1;
     Glossary arg;
     
-    Cytosim::all_silent();
+    Cytosim::out.silent();
+    Cytosim::log.silent();
+    
     std::atexit(goodbye);
 
     if ( arg.read_strings(argc-1, argv+1) )
@@ -182,11 +186,11 @@ int main(int argc, char* argv[])
         FilePath::change_dir(arg.value("directory", 0));
         //std::clog << "Cytosim working directory is " << FilePath::get_cwd() << '\n';
     }
-
-    // can specify a frame index to be loaded:
+    
+    // The user can specify a frame index to be loaded:
     size_t frm = 0;
     bool has_frame = false;
-    
+
     try
     {
         has_frame = arg.set(frm, "frame");
@@ -321,7 +325,7 @@ int main(int argc, char* argv[])
 
         if ( mode == OFFSCREEN_IMAGE )
         {
-            unsigned inx = 0;
+            size_t inx = 0;
             // it is possible to specify multiple frame indices:
             do {
                 thread.loadFrame(frm);

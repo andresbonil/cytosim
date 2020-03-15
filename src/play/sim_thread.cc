@@ -94,7 +94,7 @@ void SimThread::run()
     }
     catch( Exception & e ) {
         simul.relax();
-        std::cerr << "\nError: " << e.what() << std::endl;
+        std::cerr << "\nError: " << e.what() << '\n';
         //flashText("Error: the simulation died");
     }
     hold_callback();
@@ -278,7 +278,7 @@ SingleProp * SimThread::makeHandleProperty(real range)
 
     SingleProp * sip = new SingleProp("user_single");
     sip->hand = "user_hand";
-    sip->stiffness = 1000;
+    sip->stiffness = 2000;
     sip->complete(simul);
     simul.properties.deposit(sip);
     
