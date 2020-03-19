@@ -156,7 +156,7 @@ void Single::setInteractions(Meca & meca) const
 void Single::write(Outputter& out) const
 {
     sHand->write(out);
-    out.writeFloatVector(sPos, DIM);
+    out.writeFloats(sPos, DIM);
 }
 
 
@@ -164,7 +164,7 @@ void Single::read(Inputter& in, Simul& sim, ObjectTag tag)
 {
     const bool s = attached();
     sHand->read(in, sim);
-    in.readFloatVector(sPos, DIM);
+    in.readFloats(sPos, DIM);
     
     /*
      Because the SingleSet has 2 lists where Single are stored depending

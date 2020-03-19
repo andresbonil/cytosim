@@ -116,14 +116,14 @@ public:
     double    readDouble();
     
     /// Reads one vector, returning D coordinates in the array of size D
-    void      readFloatVector(float[], unsigned D);
+    void      readFloats(float[], unsigned D);
     /// Reads one vector, returning D coordinates in the array of size D
-    void      readFloatVector(double[], unsigned D);
+    void      readFloats(double[], unsigned D);
     
     /// Reads `n` vector, returning D coordinates for each, in the array of size n*D
-    void      readFloatVector(float[], unsigned n, unsigned D);
+    void      readFloats(float[], size_t n, unsigned D);
     /// Reads `n` vector, returning D coordinates for each, in the array of size n*D
-    void      readFloatVector(double[], unsigned n, unsigned D);
+    void      readFloats(double[], size_t n, unsigned D);
 
 };
 
@@ -167,7 +167,7 @@ public:
     void    writeSoftNewline();
     
     /// Inserts `N` space(s), but only in text output mode
-    void    writeSoftSpace(int N = 1);
+    void    writeSoftSpace(size_t N = 1);
     
     /// Write integer on 1 byte 
     void    writeInt8(int, char before=' ');
@@ -191,14 +191,14 @@ public:
     void    writeFloat(double x) { writeFloat((float)x); }
 
     /// Write `n` values using 4 bytes each
-    void    writeFloatVector(const float*, unsigned n, char before=0);
+    void    writeFloats(const float*, size_t n, char before=0);
     /// Write `n` values using 4 bytes each (converted to float)
-    void    writeFloatVector(const double*, unsigned n, char before=0);
+    void    writeFloats(const double*, size_t n, char before=0);
 
     /// Write value on 8 bytes
     void    writeDouble(double);
     /// Write `n` values using 8 bytes each
-    void    writeDoubleVector(const double*, unsigned n, char before=0);
+    void    writeDoubles(const double*, size_t n, char before=0);
 
     int     writeChar(int c, int b)
     {
