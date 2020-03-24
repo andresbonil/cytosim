@@ -71,7 +71,6 @@
 		BB19FEF712F352A400ACEA12 /* inventoried.h in Headers */ = {isa = PBXBuildFile; fileRef = BB19FEF312F352A400ACEA12 /* inventoried.h */; };
 		BB19FEF812F352A400ACEA12 /* inventory.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB19FEF412F352A400ACEA12 /* inventory.cc */; };
 		BB19FEF912F352A400ACEA12 /* inventory.h in Headers */ = {isa = PBXBuildFile; fileRef = BB19FEF512F352A400ACEA12 /* inventory.h */; };
-		BB1D4B5A16B86B320087CC48 /* quartic_solver.h in Headers */ = {isa = PBXBuildFile; fileRef = BB1D4B5916B86B320087CC48 /* quartic_solver.h */; };
 		BB1F0BBF0653D5F4003F4957 /* exceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73587505B98DA3006956D5 /* exceptions.h */; };
 		BB1F0BC20653D5F5003F4957 /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73587A05B98DA3006956D5 /* messages.h */; };
 		BB1F0BC80653D5F6003F4957 /* iowrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = BB73587D05B98DA3006956D5 /* iowrapper.h */; };
@@ -1138,7 +1137,6 @@
 		BB73591105B98DA3006956D5 /* test_rasterizer.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = test_rasterizer.cc; path = src/test/test_rasterizer.cc; sourceTree = SOURCE_ROOT; };
 		BB73591405B98DA3006956D5 /* test_solve.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = test_solve.cc; path = src/test/test_solve.cc; sourceTree = SOURCE_ROOT; };
 		BB73591705B98DA3006956D5 /* test_sphere.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = test_sphere.cc; path = src/test/test_sphere.cc; sourceTree = SOURCE_ROOT; };
-		BB749D621793620500B43298 /* test_quartic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_quartic.cc; sourceTree = "<group>"; };
 		BB749D641793645C00B43298 /* polygon.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon.cc; path = src/math/polygon.cc; sourceTree = SOURCE_ROOT; };
 		BB749D651793645D00B43298 /* polygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = polygon.h; path = src/math/polygon.h; sourceTree = SOURCE_ROOT; };
 		BB74F41F232024AB0019D68E /* byteswap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = byteswap.h; sourceTree = "<group>"; };
@@ -2160,7 +2158,6 @@
 				BB73590A05B98DA3006956D5 /* test_opengl.cc */,
 				BBC91299204EC2DC00219DC5 /* test_pipe.cc */,
 				BB9A56010A74E9E40069E362 /* test_platonic.cc */,
-				BB749D621793620500B43298 /* test_quartic.cc */,
 				BB73590F05B98DA3006956D5 /* test_quaternion.cc */,
 				BB73591005B98DA3006956D5 /* test_random.cc */,
 				BB73591105B98DA3006956D5 /* test_rasterizer.cc */,
@@ -2985,7 +2982,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB692132233D349E00F528D2 /* random_vector.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3743,10 +3739,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB692134233D34C300F528D2 /* SFMT.c in Sources */,
-				BB692135233D350300F528D2 /* platonic.cc in Sources */,
-				BB692136233D351900F528D2 /* vector3.cc in Sources */,
-				BBE82A68233D1A5E00BE44DF /* random.cc in Sources */,
 				BB7C2B8505F94000002C69A9 /* test_rasterizer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3839,7 +3831,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BBB750840D15CFCA00B79171 /* exceptions.cc in Sources */,
 				BB88388D10B48EC400A4028F /* modulo.cc in Sources */,
 				BB88388F10B48EC400A4028F /* space_prop.cc in Sources */,
 				BB88389110B48EC400A4028F /* space.cc in Sources */,
