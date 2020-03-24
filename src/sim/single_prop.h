@@ -74,6 +74,12 @@ public:
 
      */
     int          fast_diffusion;
+#define FAST_DIFFUSION_RESERVOIR 1
+
+#ifdef FAST_DIFFUSION_RESERVOIR
+    /// Number of singles added to the reservoir everytime the fSet is empty.
+    int         reservoir_add;
+#endif
     
 #if NEW_MOBILE_SINGLE
     /// constant drift

@@ -21,7 +21,7 @@ class LineDisp;
 
 
 /// Flag to associate a Lattice to the Fiber {0, 1}
-#define FIBER_HAS_LATTICE 0
+#define FIBER_HAS_LATTICE 1
 
 /// Lattice composed of integers, appropriate for discrete occupancy
 typedef Lattice<uint64_t> FiberLattice;

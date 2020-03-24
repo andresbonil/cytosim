@@ -89,6 +89,9 @@ void SingleProp::clear()
     //confine_stiffness = 0;
     confine_space     = "first";
     confine_space_ptr = nullptr;
+    #ifdef FAST_DIFFUSION_RESERVOIR
+    reservoir_add =0;
+    #endif
 }
 
 
@@ -118,7 +121,11 @@ void SingleProp::read(Glossary& glos)
         throw InvalidParameter(name()+":confine[1] is ignored");
     
     glos.set(confine_space,  "confine", 2);
-
+    
+#ifdef FAST_DIFFUSION_RESERVOIR
+    glos.set(reservoir_add,"reservoir_add");
+#endif
+    
 #ifdef BACKWARD_COMPATIBILITY
     if ( confine_space == "current" )
         confine_space = "last";
@@ -180,6 +187,12 @@ void SingleProp::complete(Simul const& sim)
             throw InvalidParameter("hand:binding_range must be >= single:length");
             //Cytosim::warn << "Attachment cannot occur because single:length > hand:binding_range\n";
     }
+#ifdef FAST_DIFFUSION_RESERVOIR
+    if (fast_diffusion && reservoir_add<1)
+    {
+        throw InvalidParameter("If using fast_diffusion with the FAST_DIFFUSION_RESERVOIR mode, `reservoir_add` must be set and bigger than 0");
+    }
+#endif
 }
 
 
@@ -197,6 +210,10 @@ void SingleProp::write_values(std::ostream& os) const
 #endif
     write_value(os, "confine",        confine, 0, confine_space);
     write_value(os, "activity",       activity);
+#ifdef FAST_DIFFUSION_RESERVOIR
+    write_value(os, "reservoir_add",       reservoir_add);
+#endif
+    
 }
 
 

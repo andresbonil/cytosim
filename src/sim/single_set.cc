@@ -476,10 +476,17 @@ void SingleSet::removeWrists(Object const* arg)
  */
 void SingleSet::uniAttach(Array<FiberSite>& loc, SingleReserveList& reserve)
 {
+    // Here the reserve cannot be empty, so we store the property in case we need to refill
+    SingleProp const* p = reserve.back()->prop;
+    
     for ( FiberSite & i : loc )
     {
         if ( reserve.empty() )
+#if FAST_DIFFUSION_RESERVOIR
+            refillReserve(reserve, p);
+#else
             return;
+#endif
         Single * s = reserve.back();
         Hand const* h = s->hand();
         
@@ -566,8 +573,17 @@ void SingleSet::uniAttach(FiberSet const& fibers)
     Array<FiberSite> loc(1024);
     
     // uniform attachment for the reserves:
+    int list_index=0;
+    
     for ( SingleReserveList & reserve : uniLists )
     {
+        #if FAST_DIFFUSION_RESERVOIR
+        // Index 0 is always empty
+        if (list_index && reserve.empty())
+        {
+            refillReserve(reserve,uniSinglePropList[list_index]);
+        }
+        #endif
         if ( !reserve.empty() )
         {
             SingleProp const* p = reserve.back()->prop;
@@ -582,12 +598,17 @@ void SingleSet::uniAttach(FiberSet const& fibers)
             }
             else
             {
+#if FAST_DIFFUSION_RESERVOIR
+                real dis = 1./p->hand_prop->binding_prob;
+#else
                 real dis = vol / ( cnt * p->hand_prop->bindingSectionProb() );
+#endif
                 fibers.uniFiberSites(loc, dis);
             }
             
             uniAttach(loc, reserve);
         }
+        list_index++;
     }
 }
 
@@ -603,12 +624,22 @@ bool SingleSet::uniPrepare(PropertyList const& properties)
 {
     bool res = false;
     unsigned last = 0;
-
+    
+#if FAST_DIFFUSION_RESERVOIR
+    uniSinglePropList.clear();
+    // To match the fact that the vector uniLists indexing is 1-based, since the smallest
+    // p->number() is 1 and not zero.
+    uniSinglePropList.push_back(nullptr);
+#endif
+    
     for ( Property const* i : properties.find_all("single") )
     {
         SingleProp const* p = static_cast<SingleProp const*>(i);
         res |= p->fast_diffusion;
         last = std::max(last, p->number());
+#if FAST_DIFFUSION_RESERVOIR
+        uniSinglePropList.push_back(p);
+#endif
     }
     
     if ( res )
@@ -636,3 +667,14 @@ void SingleSet::uniRelax()
     }
 }
 
+#if FAST_DIFFUSION_RESERVOIR
+void SingleSet::refillReserve(SingleReserveList & reserve, SingleProp const* p )
+{
+    for (int i=0; i<p->reservoir_add; i++) {
+        Single *s = p->newSingle();
+        inventory.assign(s);
+        reserve.push_back(s);
+    }
+}
+
+#endif

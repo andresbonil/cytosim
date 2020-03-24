@@ -44,6 +44,14 @@ private:
     /// uniLists[p] contains the Single with ( property()->number() == p ) that are diffusing
     SingleReserve uniLists;
     
+#ifdef FAST_DIFFUSION_RESERVOIR
+    /// vector containing the properties associated with SingleReserve positions
+    std::vector<SingleProp const*> uniSinglePropList;
+    
+    /// Refill a reserve with the same number of singles as when the singleset was created.
+    void refillReserve(SingleReserveList & reserve, SingleProp const*);
+#endif
+    
     /// flag to enable couple:fast_diffusion attachment algorithm
     bool          uni;
     

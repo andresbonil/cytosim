@@ -90,7 +90,7 @@ ifeq ($(COMPILER),gcc)
 # You can use g++-8 to support Intel OMP directives
     CXX      := g++ -Wfatal-errors -Wno-deprecated-declarations
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops #-floop-optimize2 -ftree-vectorize -mavx2 -mfma
-    FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops -march=native -ffp-contract=fast
+    FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops -march=native -ffp-contract=fast -mavx2
 
     DEBUG    :=-g3 -ggdb
     COVERAGE :=-fprofile-arcs -ftest-coverage
