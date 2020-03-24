@@ -452,10 +452,12 @@ void FiberProp::complete(Simul const& sim)
     // Adjust the segmentation of all Fibers with this FiberProp:
     for ( Fiber* fib = sim.fibers.first(); fib; fib=fib->next() )
     {
-        if ( fib->property() == this  &&  fib->segmentation() != segmentation )
+        if ( fib->property() == this  &&  fib->targetSegmentation() != segmentation )
         {
             fib->segmentation(segmentation);
+            fib->adjustSegmentation();
             fib->updateFiber();
+            fib->reshape();
         }
     }
 #endif

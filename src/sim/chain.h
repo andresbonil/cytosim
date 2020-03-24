@@ -330,9 +330,12 @@ public:
     Vector       avgDirection() const { return normalize(posEndP()-posEndM()); }
     
     //--------------------- Segmentation / discrete representation
-    
-    /// set desired segmentation (the length of the segments might be different)
+
+    /// set desired segmentation
     void         segmentation(real c) { assert_true(c>0); fnSegmentation = c; }
+    
+    /// return desired segmentation (this is not the length of the segments)
+    real         targetSegmentation() const { return fnSegmentation; }
     
     /// the current segment length (distance between successive vertices)
     real         segmentation() const { return fnCut; }
