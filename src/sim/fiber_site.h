@@ -30,8 +30,6 @@
 */
 class FiberSite
 {
-    //friend class Hand;
-
 private:
     
     /// the interpolation on the Fiber's vertices
