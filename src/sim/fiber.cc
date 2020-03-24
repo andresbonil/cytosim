@@ -1126,7 +1126,7 @@ void Fiber::infoLattice(real& len, unsigned& cnt, real& sm, real& mn, real& mx) 
 FiberLattice const* Fiber::drawableLattice() const
 {
 #if FIBER_HAS_LATTICE
-    return &digitLattice;
+    return &frLattice;
 #else
     return nullptr;
 #endif
