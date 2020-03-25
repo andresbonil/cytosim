@@ -172,7 +172,7 @@ public:
     void            setInteractions(Meca&) const;
 
     /// display Meca's links
-    void            drawLinks();
+    void            drawLinks() const;
     
     /// call foldPosition() for all objects (implements periodic boundary conditions)
     void            foldPosition() const;

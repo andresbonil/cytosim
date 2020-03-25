@@ -268,12 +268,10 @@ void Player::displayCytosim()
             glLineWidth(4);
             glPointSize(8);
             glEnable(GL_LINE_STIPPLE);
-            const_cast<Simul&>(simul).drawLinks();
+            simul.drawLinks();
             glDisable(GL_LINE_STIPPLE);
             glPopAttrib();
             gle::gleReportErrors(stderr, "Simul::drawLinks()");
-#else
-            std::cerr << "Cannot display Links since DRAW_MECA_LINKS was disabled\n";
 #endif
         }
     }
