@@ -203,7 +203,7 @@ void FiberGrid::paintGrid(const Fiber * first, const Fiber * last, real range)
         PaintJob job;
         job.grid = &fGrid;
         Vector P, Q = fib->posP(0);
-        const real S = fib->segmentation();
+        const real iPQ = 1.0 / fib->segmentation();
 
         for ( unsigned n = 1; n < fib->nbPoints(); ++n )
         {
@@ -211,17 +211,13 @@ void FiberGrid::paintGrid(const Fiber * first, const Fiber * last, real range)
             Q = fib->posP(n);
             job.segment.set(fib, n-1);
 
-#if ( 0 )
-            if ( (P-Q).normSqr() > 4*S*S )
-                throw InvalidParameter("Erroneous filament segmentation");
-#endif
 #if   ( DIM == 1 )
             Rasterizer::paintFatLine1D(paint, &job, P, Q, width, offset, deltas);
 #elif ( DIM == 2 )
-            Rasterizer::paintFatLine2D(paint, &job, P, Q, S, width, offset, deltas);
+            Rasterizer::paintFatLine2D(paint, &job, P, Q, iPQ, width, offset, deltas);
 #else
-            //Rasterizer::paintHexLine3D(paint, &job, P, Q, S, width, offset, deltas);
-            Rasterizer::paintFatLine3D(paint, &job, P, Q, S, width, offset, deltas);
+            //Rasterizer::paintHexLine3D(paint, &job, P, Q, iPQ, width, offset, deltas);
+            Rasterizer::paintFatLine3D(paint, &job, P, Q, iPQ, width, offset, deltas);
             //Rasterizer::paintBox3D(paint, &job, P, Q, width, offset, deltas);
 #endif
         }

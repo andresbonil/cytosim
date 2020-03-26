@@ -15,8 +15,8 @@
 extern bool rasterizer_draws;
 
 const int size = 50;
-const unsigned MAX = 16;
-unsigned n_pts = 2;
+const size_t MAX = 16;
+size_t n_pts = 2;
 
 real radius = 10;
 Vector shift(0, 0, 0);
@@ -33,7 +33,7 @@ int hit[2*size+1][2*size+1];
 
 void newPoints()
 {
-    for ( unsigned i = 0; i < MAX ; ++i )
+    for ( size_t i = 0; i < MAX ; ++i )
         pts[i] = (size-1) * Vector::randS();
 }
 
@@ -91,14 +91,14 @@ void paintDraw(int x_inf, int x_sup, int y, int z, void*)
 
 void rasterize(Vector P, Vector Q, void (paint)(int, int, int, int, void*))
 {
-    real len = ( P - Q ).norm();
+    real iPQ = 1.0 / ( P - Q ).norm();
 #if ( DIM == 2 )
-    Rasterizer::paintFatLine2D(paint, nullptr, P, Q, len, radius, shift, delta);
-    //Rasterizer::paintFatLine2D(paint, nullptr, P, Q, len, radius);
+    Rasterizer::paintFatLine2D(paint, nullptr, P, Q, iPQ, radius, shift, delta);
+    //Rasterizer::paintFatLine2D(paint, nullptr, P, Q, iPQ, radius);
     //Rasterizer::paintBox2D(paint, nullptr, P, Q, radius, shift, delta);
 #elif ( DIM == 3 )
-    //Rasterizer::paintHexLine3D(paint, nullptr, P, Q, len, radius, shift, delta);
-    Rasterizer::paintFatLine3D(paint, nullptr, P, Q, len, radius, shift, delta);
+    //Rasterizer::paintHexLine3D(paint, nullptr, P, Q, iPQ, radius, shift, delta);
+    Rasterizer::paintFatLine3D(paint, nullptr, P, Q, iPQ, radius, shift, delta);
     //Rasterizer::paintBox3D(paint, nullptr, P, Q, radius, shift, delta);
 #endif
 }
@@ -193,8 +193,8 @@ void processNormalKey(unsigned char c, int x=0, int y=0)
         case '0':
             glApp::resetView();
             break;
-        case 'p': if ( n_pts+1 < MAX ) ++n_pts; break;
-        case 'o': if ( n_pts > 2 ) --n_pts; break;
+        case 'p': n_pts = std::min(n_pts+1, MAX); break;
+        case 'o': n_pts = std::max(n_pts-1, (size_t)1); break;
         case 'r':
             manyTest();
             break;
@@ -247,7 +247,7 @@ void display(View&, int)
     glPointSize(16);
     glBegin(GL_POINTS);
     glColor3f(0, 0, 1);
-    for ( unsigned i = 0; i < n_pts ; ++i )
+    for ( size_t i = 0; i < n_pts ; ++i )
     {
 #if ( DIM == 3 )
         glVertex3d(pts[i].XX, pts[i].YY, pts[i].ZZ);
@@ -261,8 +261,8 @@ void display(View&, int)
     if ( n_pts > 2 )
     {
         glLineWidth(1);
-        unsigned int nb = Rasterizer::convexHull2D(n_pts, pts);
-        Rasterizer::paintPolygon2D(paintDraw, 0, nb, pts, 0);
+        size_t nb = Rasterizer::convexHull2D(n_pts, pts);
+        Rasterizer::paintPolygon2D(paintDraw, nullptr, nb, pts, 0);
         
         // draw convex-hull
         glLineWidth(2);
@@ -270,7 +270,7 @@ void display(View&, int)
         glBegin(GL_LINE_LOOP);
         glVertex2d(pts[0].XX, pts[0].YY);
         glColor3f(0, 0, 1);
-        for ( unsigned i = 1; i < nb ; ++i )
+        for ( size_t i = 1; i < nb ; ++i )
            glVertex2d(pts[i].XX, pts[i].YY);
         glVertex2d(pts[0].XX, pts[0].YY);
         glEnd();
@@ -299,21 +299,21 @@ void display(View&, int)
 
 /* 
  This only work if rasterizer does not issue openGL commands */
-void speedTest(unsigned long cnt)
+void speedTest(size_t cnt)
 {
     clearHits();
     
-    for ( unsigned n = 1; n < n_pts; ++n )
+    for ( size_t n = 1; n < n_pts; ++n )
     {
         Vector P = pts[n-1];
         Vector Q = pts[n];
-        real len = ( P - Q ).norm();
-        for ( unsigned long ii = 0; ii < cnt; ++ii )
+        real iPQ = 1.0 / ( P - Q ).norm();
+        for ( size_t c = 0; c < cnt; ++c )
         {
 #if ( DIM == 2 )
-            Rasterizer::paintFatLine2D(paintHit, nullptr, P, Q, len, radius, shift, delta);
+            Rasterizer::paintFatLine2D(paintHit, nullptr, P, Q, iPQ, radius, shift, delta);
 #elif ( DIM == 3 )
-            Rasterizer::paintFatLine3D(paintHit, nullptr, P, Q, len, radius, shift, delta);
+            Rasterizer::paintFatLine3D(paintHit, nullptr, P, Q, iPQ, radius, shift, delta);
 #endif
         }
     }
@@ -327,12 +327,12 @@ int main(int argc, char* argv[])
     newPoints();
     if ( argc > 1 )
     {
-        rasterizer_draws = 0;
+        rasterizer_draws = false;
         speedTest(strtoul(argv[1], nullptr, 10));
     }
     else
     {
-        rasterizer_draws = 1;
+        rasterizer_draws = true;
         glutInit(&argc, argv);
         glApp::setDimensionality(3);
         glApp::attachMenu(GLUT_RIGHT_BUTTON);

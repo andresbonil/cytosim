@@ -6,12 +6,12 @@
 #include <cmath>
 
 /**
- DISPLAY is defined for compiling test_rasterizer.cc,
- adding support for visual output
+ DISPLAY enables some code useful for visual debugging,
+ and should be defined for compiling test_rasterizer.cc
  */
 #ifdef DISPLAY
 #  include "opengl.h"
-bool rasterizer_draws = true;
+bool rasterizer_draws = false;
 #endif
 
 //==============================================================================
@@ -46,7 +46,7 @@ void Rasterizer::paintFatLine1D(void (*paint)(int, int, int, int, void*), void *
 #pragma mark - 2D
 
 void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void * arg,
-                                const unsigned int n_pts, const Vector2 pts[],
+                                const size_t n_pts, const Vector2 pts[],
                                 const int zz)
 {
 #ifdef DISPLAY
@@ -55,7 +55,7 @@ void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void *
         glLineWidth(1);
         glColor3f(0.0, 0.0, 1.0);
         glBegin(GL_LINE_LOOP);
-        for ( unsigned n = 0; n < n_pts; ++n )
+        for ( size_t n = 0; n < n_pts; ++n )
             glVertex3d(pts[n].XX, pts[n].YY, zz);
         glEnd();
 
@@ -67,8 +67,8 @@ void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void *
     }
 #endif
     
-    int iR = 0;
-    int iL = n_pts;
+    size_t iR = 0;
+    size_t iL = n_pts;
     
     Vector2 R = pts[0];
     Vector2 L = pts[0];
@@ -132,8 +132,11 @@ void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void *
 }
 
 
+/*
+ pts[] is an anti-clockwise polygon, starting with the point of lowest Y.
+ */
 void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void * arg,
-                                const unsigned int n_pts, const Vertex2 pts[],
+                                const size_t n_pts, const Vertex2 pts[],
                                 const int zz)
 {
 #ifdef DISPLAY
@@ -142,7 +145,7 @@ void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void *
         glLineWidth(1);
         glColor3f(0.0, 0.0, 1.0);
         glBegin(GL_LINE_LOOP);
-        for ( unsigned n = 0; n < n_pts; ++n )
+        for ( size_t n = 0; n < n_pts; ++n )
             glVertex3d(pts[n].XX, pts[n].YY, zz);
         glEnd();
         
@@ -157,12 +160,12 @@ void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void *
 #if ( 0 )
     // print polygon:
     std::clog << std::endl << zz << " ";
-    for ( unsigned n = 0; n < n_pts; ++n )
+    for ( size_t n = 0; n < n_pts; ++n )
         pts[n].print(std::clog);
 #endif
     
-    int iR = 0;
-    int iL = n_pts;
+    size_t iR = 0;
+    size_t iL = n_pts;
 
     Vertex2 R = pts[0];
     Vertex2 L = pts[0];
@@ -225,10 +228,10 @@ void Rasterizer::paintPolygon2D(void (*paint)(int, int, int, int, void*), void *
 
 
 void Rasterizer::paintFatLine2D(void (*paint)(int, int, int, int, void*), void * arg,
-                                const Vector2& P, const Vector2& Q, const real length,
+                                const Vector2& P, const Vector2& Q, const real iPQ,
                                 const real radius)
 {
-    Vector2 PQ = ( radius / length ) * ( Q - P );
+    Vector2 PQ = ( radius * iPQ ) * ( Q - P );
     
     Vector2 A = PQ + Vector2(PQ.YY, -PQ.XX);
     Vector2 B = PQ + Vector2(-PQ.YY, PQ.XX);
@@ -276,10 +279,10 @@ void Rasterizer::paintFatLine2D(void (*paint)(int, int, int, int, void*), void *
 
 
 void Rasterizer::paintFatLine2D(void (*paint)(int, int, int, int, void*), void * arg,
-                                const Vector2& P, const Vector2& Q, const real length,
+                                const Vector2& P, const Vector2& Q, const real iPQ,
                                 const real radius, const Vector2& offset, const Vector2& delta )
 {
-    Vector2 PQ = ( radius / length ) * ( Q - P );
+    Vector2 PQ = ( radius * iPQ ) * ( Q - P );
     
     Vector2 A = PQ + Vector2(PQ.YY, -PQ.XX);
     Vector2 B = PQ + Vector2(-PQ.YY, PQ.XX);
@@ -360,20 +363,18 @@ void Rasterizer::paintBox2D(void (*paint)(int, int, int, int, void*), void * arg
 #pragma mark - 3D
 
 
-/// function for qsort: compares the Z component of the two points
+/// function for qsort: compares the Z component of two points
 int Rasterizer::compareVertex3(const void * a, const void * b)
 {
-    Vertex3 const* va = (Vertex3 const*)(a);
-    Vertex3 const* vb = (Vertex3 const*)(b);
+    real az = ((Vertex3 const*)(a))->ZZ;
+    real bz = ((Vertex3 const*)(b))->ZZ;
     
-    if ( va->ZZ > vb->ZZ ) return  1;
-    if ( va->ZZ < vb->ZZ ) return -1;
-    return 0;
+    return ( az > bz ) - ( bz > az );
 }
 
 
 void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void * arg,
-                                const unsigned n_pts, Vertex3 pts[])
+                                const size_t n_pts, Vertex3 pts[])
 {
     assert_true( n_pts > 1 );
     
@@ -408,10 +409,10 @@ void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void *
     
     //we can normally only cross four sides of a parallelogram in 3D
     //but in some degenerate cases, it can be more
-    const unsigned max = 16;
+    const size_t max = 16;
     Vertex2 xy[max];
     
-    unsigned above = 0;
+    size_t above = 0;
     int zz  = (int) ceil( pts[0].ZZ );
     
     while ( ++above < n_pts )
@@ -431,11 +432,11 @@ void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void *
         int zzn = (int)ceil( pts[above].ZZ );
         
         //number of edges crossing the plane at Z=zz;
-        unsigned nbl = 0;
+        size_t nbl = 0;
         //set-up all the lines, which join any point below the plane
         //to any point above the plane, being a edge of the solid polygon:
-        for ( unsigned ii = 0;     ii < above; ++ii )
-        for ( unsigned jj = above; jj < n_pts; ++jj )
+        for ( size_t ii = 0;     ii < above; ++ii )
+        for ( size_t jj = above; jj < n_pts; ++jj )
         {
             //test if [ii, jj] are joined:
             if ( pts[ii].UU  &  pts[jj].UU )
@@ -458,7 +459,7 @@ void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void *
         // the edges of the convex solid polygon should not intersect,
         // so we can take the convex hull only once here:
         bool need_hull = true;
-        unsigned nbp; //number of points in the hull.
+        size_t nbp; //number of points in the hull.
         
         for ( ; zz < zzn; ++zz )
         {
@@ -476,7 +477,7 @@ void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void *
             paintPolygon2D(paint, arg, nbp, xy, zz);
             
             //update the coordinates according to the slopes, for the next zz:
-            for ( unsigned ii = 0; ii < nbl; ++ii )
+            for ( size_t ii = 0; ii < nbl; ++ii )
                 xy[ii].move();
         }
     }
@@ -484,19 +485,19 @@ void Rasterizer::paintPolygon3D(void (*paint)(int, int, int, int, void*), void *
 
 
 void Rasterizer::paintFatLine3D(void (*paint)(int, int, int, int, void*), void * arg,
-                                const Vector3& P, const Vector3& Q, real length,
+                                const Vector3& P, const Vector3& Q, const real iPQ,
                                 const real radius, const Vector3& offset, const Vector3& delta )
 {
     real radius2 = radius * M_SQRT2;
-    Vector3 PQ = ( Q - P ) / length;
+    Vector3 PQ = ( Q - P ) * iPQ;
     Vector3 A, B;
     
-    //std::clog << std::scientific << PQ.norm() << "\n";
     // make an orthogonal basis with norm = radius:
 #if ( 1 )
+    //std::clog << std::scientific << PQ.normSqr() << '\n';
     PQ.orthonormal(A, B);
-    A  *= radius2;
-    B  *= radius2;
+    A *= radius2;
+    B *= radius2;
 #else
     A = PQ.orthogonal(radius2);
     B = cross(PQ, A);
@@ -538,32 +539,32 @@ void Rasterizer::paintFatLine3D(void (*paint)(int, int, int, int, void*), void *
 /**
  Paint a cylinder of Hexagonal base.
  The hexagon covering the unit disc has vertices:
- A (  0, -2*a )
- B (  b,   -a )
- C (  b,    a )
- D (  0,  2*a ) = -A
- E ( -b,    a ) = -B
- F ( -b,   -a ) = -C
+     A (  0, -2*a )
+     B (  b,   -a )
+     C (  b,    a )
+     D (  0,  2*a ) = -A
+     E ( -b,    a ) = -B
+     F ( -b,   -a ) = -C
  with b = sqrt(3) * a
- b = 1
- a = 1 / sqrt(3)
+     b = 1
+     a = 1 / sqrt(3)
  */
 void Rasterizer::paintHexLine3D(void (*paint)(int, int, int, int, void*), void * arg,
-                                const Vector3& P, const Vector3& Q, const real length,
+                                const Vector3& P, const Vector3& Q, const real iPQ,
                                 const real radius, const Vector3& offset, const Vector3& delta)
 {
     Vector3 A, B, C;
-    Vector3 PQ = ( Q - P ) / length;
+    Vector3 PQ = ( Q - P ) * iPQ;
     
     PQ.orthonormal(A, C);
     
     // normalize vectors to norm = radius:
-    const real alpha = 2.0 / sqrt(3);
+    constexpr real alpha = 1.1547005383792517; // = 2.0 / sqrt(3);
     
     PQ *= radius;
 
     // build the vertices of the Hexagon
-    A  *= radius * alpha;
+    A *= radius * alpha;
     B  = C * radius + A * 0.5;
     C  = B - A;
     
