@@ -1150,7 +1150,7 @@ void Meca::computeForces()
         real * ttt = vTMP + DIM * mec->matIndex();
         
         // add bending rigidity:
-#if ( DIM > 1 ) && !RIGIDITY_IN_MATRIX
+#if ( DIM > 1 )
         real * xxx = vPTS + DIM * mec->matIndex();
         mec->addRigidity(xxx, ttt);
 #endif
@@ -1894,9 +1894,6 @@ void Meca::dump() const
  */
 void Meca::dumpSparse()
 {
-#if !RIGIDITY_IN_MATRIX
-    std::clog << "incorrect dump since RIGIDITY_IN_MATRIX is not defined\n";
-#endif
     std::clog << "dumping matrices in binary format\n";
     
     unsigned ms = 0;
