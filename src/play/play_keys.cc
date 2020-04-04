@@ -562,12 +562,13 @@ void helpKeys(std::ostream& os)
     os << "\n";
     os << "   SPACE       Start-stop animation or replay\n";
     os << "   < >         Show previous; show next frame ( , . also works)\n";
-    os << "   u i o p     Play reverse; stop; play slower; play faster\n";
+    os << "   O s o p     Play reverse; stop; play slower; play faster\n";
     os << "   z           Rewind to first frame / Restart live simulation\n";
     os << "   ALT-SPACE   Reset view (i.e. zoom, translation, rotation)\n";
     os << "   f F         Toggle full-screen mode; maximize window size\n";
     os << "   i v b       Invert colors; toggle slice view; toggle scale bar\n";
     os << "   l L         Read parameter file; Print display parameters\n";
+    os << "   r R         Report various informations on display window\n";
 #if ENABLE_WRITE
     os << "   y Y         Save current image; Play and save all images\n";
 #endif
