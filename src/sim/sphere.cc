@@ -258,14 +258,16 @@ void Sphere::resize(const real R)
 }
 
 /**
- the mobility is that of a sphere in an infinite fluid:
- Stokes law:
+ the mobility is that of a sphere in an infinite fluid (Stokes law):
  
- mu_translation = 6 * PI * viscosity * radius
- dposition/dt   = mu_trans * force
+ Translation:
+     dposition/dtime = mu_T * force
+     mu_T = 6 * PI * viscosity * radius
  
- mu_rotation = 8 * PI * viscosity * radius^3
- dangle/dt   = mu_rotation * torque
+ Rotation:
+     dangle/dtime = mu_R * torque
+     mu_R = 8 * PI * viscosity * radius^3
+ 
  */
 void Sphere::setDragCoefficientStokes()
 {

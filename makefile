@@ -45,9 +45,7 @@ SRCDIR  := $(SRCDIR1) $(SRCDIR2)
 
 CODE_VERSION = $(shell git rev-parse --short HEAD || echo unknown)
 
-COMPILER_VERSION = $(word 1, $(CXX)) $(shell $(word 1, $(CXX)) -dumpversion)
-
-INFO = -D'CODE_VERSION="$(CODE_VERSION)"' -D'COMPILER_VERSION="$(COMPILER_VERSION)"'
+INFO = -D'CODE_VERSION="$(CODE_VERSION)"'
 
 #-------------------------make's search paths-----------------------------------
 
