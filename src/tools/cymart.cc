@@ -43,7 +43,6 @@ void help(std::ostream& os)
     os << "Select `style=filament` or `style=actin` or `style=microtubule`.\n";
     os << "Each frame of the trajectory file is sent to a separate file.\n";
     os << "By default these files are plain ASCII text files\n";
-    std::cout << "   DIM = " << DIM << '\n';
 }
 
 

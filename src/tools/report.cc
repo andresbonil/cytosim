@@ -132,7 +132,6 @@ int main(int argc, char* argv[])
     {
         splash(std::cout);
         print_version(std::cout);
-        std::cout << "    DIM = " << DIM << '\n';
         return EXIT_SUCCESS;
     }
     
