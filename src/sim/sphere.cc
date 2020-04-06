@@ -258,7 +258,7 @@ void Sphere::resize(const real R)
 }
 
 /**
- the mobility is that of a sphere in an infinite fluid (Stokes law):
+ The mobility is that of a sphere in an infinite fluid (Stokes law):
  
  Translation:
      dposition/dtime = mu_T * force

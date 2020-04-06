@@ -136,11 +136,11 @@ public:
      */
     real         hydrodynamic_radius[2];
 
-    /// if true, the mobility of a cylinder moving near a plane will be used
+    /// if true, calculate mobility for a cylinder moving near a immobile planar surface
     /**
      You can select between two possible formulas to calculate viscous drag coefficient:
 
-         if ( fiber:surface_effect )
+         if ( fiber:drag_model )
              drag = dragCoefficientSurface();
          else
              drag = dragCoefficientVolume();
@@ -150,10 +150,10 @@ public:
      <hr>
      @copydetails Fiber::dragCoefficientSurface
      */
-    bool         surface_effect;
+    int          drag_model;
     
-    /// distance of fluid between slide and cylinder surface (set as `surface_effect[1]`)
-    real         cylinder_height;
+    /// distance of fluid between immobile surface and cylinder (set as `drag_model[1]`)
+    real         drag_gap;
 
     
     /// can be set to control which Hands may bind

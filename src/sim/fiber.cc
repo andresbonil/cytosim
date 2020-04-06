@@ -560,7 +560,7 @@ real Fiber::dragCoefficientVolume()
     if ( lenc < prop->hydrodynamic_radius[0] )
         lenc = prop->hydrodynamic_radius[0];
     
-    //Stoke's for a sphere:
+    //Stokes' for a sphere:
     assert_true( prop->hydrodynamic_radius[0] > 0 );
     real drag_sphere = 6 * prop->hydrodynamic_radius[0];
     
@@ -614,8 +614,8 @@ real Fiber::dragCoefficientVolume()
 
 
 /**
- dragCoefficientSurface() uses a formula calculated by F. Gittes in:\n
- > Hunt et al. Biophysical Journal (1994) v 67 pp 766-781
+ dragCoefficientSurface() uses a formula calculated by F. Gittes in:
+ > Hunt et al. Biophysical Journal (1994) v 67 pp 766-781  
  > http://dx.doi.org/10.1016/S0006-3495(94)80537-5
  
  It applies to a cylinder moving parallel to its axis and near an immobile surface:
@@ -648,11 +648,11 @@ real Fiber::dragCoefficientSurface()
 {
     real len = length();
     
-    if ( prop->cylinder_height <= 0 )
-        throw InvalidParameter("fiber:surface_effect[1] (height above surface) must set and > 0!");
+    if ( prop->drag_gap <= 0 )
+        throw InvalidParameter("fiber:drag_model[1] (height above surface) must set and > 0!");
     
     // use the higher drag: perpendicular to the cylinder (factor 2)
-    real drag = 2 * M_PI * prop->viscosity * len / acosh( 1 + prop->cylinder_height/prop->hydrodynamic_radius[0] );
+    real drag = 2 * M_PI * prop->viscosity * len / acosh( 1 + prop->drag_gap/prop->hydrodynamic_radius[0] );
     
     //Cytosim::log("Drag coefficient of Fiber near a planar surface = %.1e\n", drag);
     //Cytosim::log << "Drag coefficient of Fiber near a planar surface = " << drag << std::endl;
@@ -664,7 +664,7 @@ real Fiber::dragCoefficientSurface()
 /**
  Calculate drag coefficient from two possible formulas
 
-     if ( fiber:surface_effect )
+     if ( fiber:drag_model )
         drag = dragCoefficientSurface();
      else
         drag = dragCoefficientVolume();
@@ -674,7 +674,7 @@ void Fiber::setDragCoefficient()
 {
     real drag;
     
-    if ( prop->surface_effect )
+    if ( prop->drag_model )
     {
         drag = dragCoefficientSurface();
 #if ( 0 )

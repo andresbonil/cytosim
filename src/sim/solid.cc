@@ -865,14 +865,18 @@ real Solid::dragCoefficient() const
 
 
 /**
-This sets the total drag coefficients for translation and rotation
- Stokes relations:
- Translation:
-   muT = 6 * M_PI * viscosity * radius;
-   d(position)/dt = force / muT
- Rotation:
-   muR = 8 * M_PI * viscosity * radius^3
-   d(angle)/dt = torque / muR
+The mobility is that of a set of spheres in an infinite fluid (Stokes law):
+
+Translation:
+    dposition/dtime = mu_T * force
+    mu_T = 6 * PI * viscosity * radius
+
+Rotation:
+    dangle/dtime = mu_R * torque
+    mu_R = 8 * PI * viscosity * radius^3
+
+ This sums up the drag of the sphere, ignoring any hydrodynamic interaction.
+ Thus drag will generally be overestimated.
  */
 void Solid::setDragCoefficient()
 {

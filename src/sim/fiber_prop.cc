@@ -253,8 +253,8 @@ void FiberProp::clear()
     viscosity           = -1;
     hydrodynamic_radius[0] = 0.0125;  // radius of a Microtubule
     hydrodynamic_radius[1] = 5;
-    surface_effect      = false;
-    cylinder_height     = 0;
+    drag_model          = false;
+    drag_gap            = 0;
     
     binding_key         = ~0U;  //all bits at 1
 
@@ -312,19 +312,20 @@ void FiberProp::read(Glossary& glos)
     if ( glos.set(ds, "delete_stub") )
     {
         persistent = !ds;
-        if ( ds )
-            Cytosim::warn << "use `persistent=0` instead of `delete_stub=1`\n";
-        else
-            Cytosim::warn << "use `persistent=1` instead of `delete_stub=0`\n";
+        Cytosim::warn << "use `persistent="<<!ds<<"' instead of `delete_stub="<<ds<<"'\n";
     }
 #endif
     
     glos.set(viscosity,         "viscosity");
     glos.set(hydrodynamic_radius, 2, "hydrodynamic_radius");
-    glos.set(surface_effect,    "surface_effect");
-    glos.set(cylinder_height,   "surface_effect", 1);
-    
-    glos.set(binding_key,       "binding_key");
+#ifdef BACKWARD_COMPATIBILITY
+    glos.set(drag_model,   "surface_effect");
+    glos.set(drag_gap,     "surface_effect", 1);
+#endif
+    glos.set(drag_model,   "drag_model");
+    glos.set(drag_gap,     "drag_model", 1);
+
+    glos.set(binding_key,  "binding_key");
     
     glos.set(lattice,           "lattice");
     glos.set(lattice_unit,      "lattice", 1);
@@ -510,7 +511,7 @@ void FiberProp::write_values(std::ostream& os) const
     write_value(os, "persistent",          persistent);
     write_value(os, "viscosity",           viscosity);
     write_value(os, "hydrodynamic_radius", hydrodynamic_radius, 2);
-    write_value(os, "surface_effect",      surface_effect, cylinder_height);
+    write_value(os, "drag_model",          drag_model, drag_gap);
 #if OLD_SQUEEZE_FORCE
     write_value(os, "squeeze",             squeeze, squeeze_force, squeeze_range);
 #endif

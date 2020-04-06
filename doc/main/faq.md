@@ -509,7 +509,7 @@ Yes, it should be a faster, because the diffusion of free couple is not simulate
 **I am using a Solid consisting of spheres of different sizes that are fixed together to make a complex shape. The viscosity of the simulation space is 1 Pa.S. What is the drag coefficient of my object?**
 </summary>
 
-The drag coefficient, for translation and rotation, are calculated considering all the spheres, assuming that Stokes’s law applies to each of them, and that there is no hydrodynamic interactions.
+The drag coefficient, for translation and rotation, are calculated considering all the spheres, assuming that Stokes’ law applies to each of them, and that there is no hydrodynamic interactions.
 
 The translation drag coefficient is thus simply the sum of the bead’s translation drag coefficients. The rotation coefficient further depends on the spatial distribution of the beads. If spheres are more distant, the object is harder to rotate.
 
