@@ -519,8 +519,8 @@ Clift R, Grace JR, Weber ME. Bubbles, drops, and particles: Courier Corporation;
 
 /**
  dragCoefficientVolume() calculates the mobility for the entire fiber,
- considering that the cylinder is straight and moving in a infinite fluid.
- fiber:hydrodynamic_radius[1] is a hydrodynamic cutoff that makes the
+ considering that the cylinder is straight and moving in an infinite fluid.
+ fiber:drag_length is a hydrodynamic cutoff that makes the
  drag coefficient proportional to length beyond the cutoff.
  
  The drag is determined by the viscosity and the length and diameter of the
@@ -551,18 +551,13 @@ real Fiber::dragCoefficientVolume()
     assert_true( len > 0 );
     
     // hydrodynamic cut-off on length:
-    real lenc = len;
-    assert_true( prop->hydrodynamic_radius[1] > 0 );
+    assert_true( prop->drag_length > REAL_EPSILON );
+    real lenc = std::min(len, prop->drag_length);
+    lenc = std::max(lenc, prop->drag_radius);
     
-    if ( lenc > prop->hydrodynamic_radius[1] )
-        lenc = prop->hydrodynamic_radius[1];
-    
-    if ( lenc < prop->hydrodynamic_radius[0] )
-        lenc = prop->hydrodynamic_radius[0];
-    
-    //Stokes' for a sphere:
-    assert_true( prop->hydrodynamic_radius[0] > 0 );
-    real drag_sphere = 6 * prop->hydrodynamic_radius[0];
+    // Stokes' law for a sphere:
+    assert_true( prop->drag_radius > 0 );
+    real drag_sphere = 6 * prop->drag_radius;
     
     constexpr real pref = 3;
 
@@ -581,9 +576,9 @@ real Fiber::dragCoefficientVolume()
      */
     
     // length below which the formula is not valid:
-    real min_len = exp( 1 + log(prop->hydrodynamic_radius[0]) );
+    real min_len = exp( 1 + log(prop->drag_radius) );
 
-    real drag_cylinder = pref * len / log( lenc / prop->hydrodynamic_radius[0] );
+    real drag_cylinder = pref * len / log( lenc / prop->drag_radius );
 #else
     /*
      Tirado and de la Torre. J. Chem. Phys 71(6) 1979
@@ -592,10 +587,11 @@ real Fiber::dragCoefficientVolume()
      (Page 2584, Table 1, last column, last line for infinite aspect ratio)
      */
     
-    // length below which the formula is not valid:
-    real min_len = exp( 1 - 0.32 + log(2*prop->hydrodynamic_radius[0]) );
-
-    real drag_cylinder = pref * len / ( log( 0.5 * lenc / prop->hydrodynamic_radius[0] ) + 0.32 );
+    // length below which the formula is not valid anymore ( ~ 3.94 * radius )
+    // this corresponds to the minimun point of `drag_cylinder`
+    real min_len = 2 * prop->drag_radius * exp(1.0-0.32);
+    
+    real drag_cylinder = pref * len / ( log(0.5*lenc/prop->drag_radius) + 0.32 );
 #endif
 
     real drag = drag_sphere;
@@ -652,7 +648,7 @@ real Fiber::dragCoefficientSurface()
         throw InvalidParameter("fiber:drag_model[1] (height above surface) must set and > 0!");
     
     // use the higher drag: perpendicular to the cylinder (factor 2)
-    real drag = 2 * M_PI * prop->viscosity * len / acosh( 1 + prop->drag_gap/prop->hydrodynamic_radius[0] );
+    real drag = 2 * M_PI * prop->viscosity * len / acosh( 1 + prop->drag_gap/prop->drag_radius );
     
     //Cytosim::log("Drag coefficient of Fiber near a planar surface = %.1e\n", drag);
     //Cytosim::log << "Drag coefficient of Fiber near a planar surface = " << drag << std::endl;

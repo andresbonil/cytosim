@@ -251,8 +251,8 @@ void FiberProp::clear()
     persistent          = false;
 
     viscosity           = -1;
-    hydrodynamic_radius[0] = 0.0125;  // radius of a Microtubule
-    hydrodynamic_radius[1] = 5;
+    drag_radius         = 0.0125;  // radius of a Microtubule
+    drag_length         = 5;
     drag_model          = false;
     drag_gap            = 0;
     
@@ -316,14 +316,17 @@ void FiberProp::read(Glossary& glos)
     }
 #endif
     
-    glos.set(viscosity,         "viscosity");
-    glos.set(hydrodynamic_radius, 2, "hydrodynamic_radius");
+    glos.set(viscosity,    "viscosity");
+    glos.set(drag_radius,  "drag_radius");
+    glos.set(drag_length,  "drag_length");
+    glos.set(drag_model,   "drag_model");
+    glos.set(drag_gap,     "drag_model", 1);
 #ifdef BACKWARD_COMPATIBILITY
+    glos.set(drag_radius,  "hydrodynamic_radius");
+    glos.set(drag_length,  "hydrodynamic_radius", 1);
     glos.set(drag_model,   "surface_effect");
     glos.set(drag_gap,     "surface_effect", 1);
 #endif
-    glos.set(drag_model,   "drag_model");
-    glos.set(drag_gap,     "drag_model", 1);
 
     glos.set(binding_key,  "binding_key");
     
@@ -466,11 +469,11 @@ void FiberProp::complete(Simul const& sim)
     if ( steric && steric_radius <= 0 )
         throw InvalidParameter("fiber:steric[1] (radius) must be specified and > 0");
     
-    if ( hydrodynamic_radius[0] <= 0 )
-        throw InvalidParameter("fiber:hydrodynamic_radius[0] must be > 0");
+    if ( drag_radius <= 0 )
+        throw InvalidParameter("fiber:drag_radius must be > 0");
     
-    if ( hydrodynamic_radius[1] <= 0 )
-        throw InvalidParameter("fiber:hydrodynamic_radius[1] must be > 0");
+    if ( drag_length <= 0 )
+        throw InvalidParameter("fiber:drag_length must be > 0");
 
 #if OLD_SQUEEZE_FORCE
     if ( max_chewing_speed < 0 )
@@ -510,7 +513,8 @@ void FiberProp::write_values(std::ostream& os) const
     write_value(os, "total_polymer",       total_polymer);
     write_value(os, "persistent",          persistent);
     write_value(os, "viscosity",           viscosity);
-    write_value(os, "hydrodynamic_radius", hydrodynamic_radius, 2);
+    write_value(os, "drag_radius",         drag_radius);
+    write_value(os, "drag_length",         drag_length);
     write_value(os, "drag_model",          drag_model, drag_gap);
 #if OLD_SQUEEZE_FORCE
     write_value(os, "squeeze",             squeeze, squeeze_force, squeeze_range);

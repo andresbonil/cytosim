@@ -127,14 +127,11 @@ public:
      */
     real         viscosity;
     
-    /// radius used to calculate mobility
-    /**
-     These length are used in the formula for the mobility of a cylinder:
-     - hydrodynamic_radius[0] corresponds to the radius of the fiber
-     - hydrodynamic_radius[1] is a cut-off for the length of the fiber
-     .
-     */
-    real         hydrodynamic_radius[2];
+    /// radius used to calculate mobility, corresponding to the radius of the fiber
+    real         drag_radius;
+    
+    /// cut-off on the length of the fiber, above which drag is proportional to length
+    real         drag_length;
 
     /// if true, calculate mobility for a cylinder moving near a immobile planar surface
     /**

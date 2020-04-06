@@ -28,7 +28,7 @@ set fiber actin
     rigidity = 0.1
     segmentation = 0.05
     confine = inside, 1000
-    hydrodynamic_radius = 0.0035
+    drag_radius = 0.0035
 
     activity = grow
     growing_speed = 0.275
