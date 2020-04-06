@@ -259,7 +259,7 @@ Fiber* Fiber::severPoint(unsigned int pti)
     
     resetLattice();
     fib->resetLattice();
-
+    
     return fib;
 }
 
@@ -498,7 +498,7 @@ void Fiber::join(Fiber * fib)
  From "Random Walks in Biology" by HC. Berg, Princeton University Press,
  drag coefficients for an ellipsoid are,
 
-     drag_transverse = 2*drag_parallel = 4*PI*L*visc / log(length/radius)
+     drag_transverse = 2*drag_parallel = 4*PI*length*visc / log(length/radius)
 
  We should average the mobility coefficients:  speed = mu * f
      mu_X = mu_parallel   = 2 * mu
@@ -509,47 +509,15 @@ void Fiber::join(Fiber * fib)
  drag_averaged = 3*PI*length*viscosity / log(length/radius)
 
 APPROXIMATE FORMULA FOR ELLIPSOIDAL PARTICLE
-Clift R, Grace JR, Weber ME. Bubbles, drops, and particles: Courier Corporation; 2005.
+ > Clift R, Grace JR, Weber ME. Bubbles, drops, and particles
+ > Courier Corporation; 2005.
 
      aspect = length / diameter;
      drag = 3.0 * M_PI * viscosity * diameter * ( 3 + 2 * length/diameter ) / 5.0;
 
  */
-
-
-/**
- dragCoefficientVolume() calculates the mobility for the entire fiber,
- considering that the cylinder is straight and moving in an infinite fluid.
- fiber:drag_length is a hydrodynamic cutoff that makes the
- drag coefficient proportional to length beyond the cutoff.
- 
- The drag is determined by the viscosity and the length and diameter of the
- filament. The aspect ratio is defined by:
-
-    shape = length / diameter;
-
-The formula for a cylinder were calculated numerically in:
-> Tirado and de la Torre. J. Chem. Phys 71(6) 1979
-> http://doi.org/10.1063/1.438613
-> Page 2584, Table 1, last column, last line for infinite aspect ratio
-
-The translational drag coefficient is averaged over all possible configurations:
-
-    drag_cylinder = 3 * PI * viscosity * length / ( log(shape) + 0.312 );
-
-If the length is shorter than the diameter, the formula above fails and may
-even give negative result. Hence we also calculate the drag of a sphere with
-the same radius as the cylinder:
-
-    drag_sphere = 6 * PI * viscosity * radius
-
-We use the maximum value between 'drag_sphere' and 'drag_cylinder'.
-*/
-real Fiber::dragCoefficientVolume()
+real Fiber::dragCoefficientEllipsoid(const real len, FiberProp const* prop)
 {
-    real len = length();
-    assert_true( len > 0 );
-    
     // hydrodynamic cut-off on length:
     assert_true( prop->drag_length > REAL_EPSILON );
     real lenc = std::min(len, prop->drag_length);
@@ -557,42 +525,80 @@ real Fiber::dragCoefficientVolume()
     
     // Stokes' law for a sphere:
     assert_true( prop->drag_radius > 0 );
-    real drag_sphere = 6 * prop->drag_radius;
-    
-    constexpr real pref = 3;
-
-#if ( 0 )
-    /*
-     For an ellipsoid,
-     drag_transverse = 2*drag_parallel = 4*PI*L*visc / log(length/radius)
-     We should average the mobility coefficients:  speed = mu * f
-           mu_X = mu_parallel   = 2 * mu
-           mu_Y = mu_transverse = mu
-           mu_Z = mu_transverse = mu
-     Hence:
-           mu_averaged = ( mu + mu + 2*mu ) / 3 = 4/3 * mu.
-     drag_averaged = 3*PI*length*viscosity / log(length/radius)
-     See for example "Random Walks in Biology" by HC. Berg, Princeton University Press.
-     */
+    const real drag_sphere = 6 * prop->drag_radius;
     
     // length below which the formula is not valid:
-    real min_len = exp( 1 + log(prop->drag_radius) );
+    const real min_len = exp( 1 + log(prop->drag_radius) );
 
-    real drag_cylinder = pref * len / log( lenc / prop->drag_radius );
-#else
-    /*
-     Tirado and de la Torre. J. Chem. Phys 71(6) 1979
-     give the averaged translational friction coefficient for a cylinder:
-     3*PI*length*viscosity / ( log(length/diameter) + 0.32 )
-     (Page 2584, Table 1, last column, last line for infinite aspect ratio)
-     */
+    const real drag_ellipsoid = 3 * len / log( lenc / prop->drag_radius );
+
+    real drag = drag_sphere;
+    
+    if ( len > min_len )
+    {
+        // use largest drag coefficient
+        drag = std::max(drag_ellipsoid, drag_sphere);
+    }
+
+    return M_PI * prop->viscosity * drag;
+}
+
+
+
+/** 
+ dragCoefficientCylinder() calculates the mobility for the entire fiber,
+ considering that the cylinder is straight and moving in an infinite fluid.
+ fiber:drag_length is a hydrodynamic cutoff that makes the
+ drag coefficient proportional to length beyond the cutoff.
+ 
+ The drag is determined by the viscosity and the length and diameter of the
+ filament. The aspect ratio is defined by:
+ 
+     shape = length / diameter;
+
+ The formula for a cylinder were calculated numerically in:
+ > Tirado and de la Torre. J. Chem. Phys 71(6) 1979
+ > http://doi.org/10.1063/1.438613
+ > Page 2584, Table 1, last column, last line for infinite aspect ratio
+
+ The translational drag coefficient is averaged over all possible configurations:
+ 
+       drag_cylinder = 3 * PI * viscosity * length / ( log(shape) + 0.312 );
+ 
+ If the length is shorter than the diameter, the formula above fails and may
+ even give negative result. Hence we also calculate the drag of a sphere with
+ the same radius as the cylinder:
+
+       drag_sphere = 6 * PI * viscosity * radius
+
+ We use the maximum value between 'drag_sphere' and 'drag_cylinder'.
+ */
+/*
+ Ct =  0.312 + 0.565/shape - 0.100/(shape*shape);
+
+ The rotational diffusion coefficient is given by:
+ > Tirado and de la Torre. J. Chem. Phys 73(4) 1980
+ 
+     Cr = -0.662 + 0.917/aspect - 0.050/(shape*shape);
+     drag_rotation = 1/3*M_PI*viscosity*length^3 / ( log(shape) + Cr )
+
+ */
+real Fiber::dragCoefficientCylinder(const real len, FiberProp const* prop)
+{
+    // hydrodynamic cut-off on length:
+    assert_true( prop->drag_length > REAL_EPSILON );
+    real lenc = std::min(len, prop->drag_length);
+    lenc = std::max(lenc, prop->drag_radius);
+    
+    // Stokes' law for a sphere:
+    assert_true( prop->drag_radius > 0 );
+    const real drag_sphere = 6 * prop->drag_radius;
     
     // length below which the formula is not valid anymore ( ~ 3.94 * radius )
     // this corresponds to the minimun point of `drag_cylinder`
-    real min_len = 2 * prop->drag_radius * exp(1.0-0.32);
+    const real min_len = 2 * prop->drag_radius * exp(1.0-0.32);
     
-    real drag_cylinder = pref * len / ( log(0.5*lenc/prop->drag_radius) + 0.32 );
-#endif
+    const real drag_cylinder = 3 * len / ( log(0.5*lenc/prop->drag_radius) + 0.32 );
 
     real drag = drag_sphere;
     
@@ -601,9 +607,6 @@ real Fiber::dragCoefficientVolume()
         // use largest drag coefficient
         drag = std::max(drag_cylinder, drag_sphere);
     }
-    
-    //Cytosim::log("Drag coefficient of Fiber in infinite fluid = %.1e\n", drag);
-    //Cytosim::log << "Fiber L = " << len << "  bulk_drag = " << drag << std::endl;
 
     return M_PI * prop->viscosity * drag;
 }
@@ -640,54 +643,52 @@ real Fiber::dragCoefficientVolume()
  > The slow motion of a cylinder next to a plane wall.
  > Jeffrey, D.J. & Onishi, Y. (1981) Quant. J. Mech. Appl. Math. 34, 129-137.
 */
-real Fiber::dragCoefficientSurface()
+real Fiber::dragCoefficientSurface(const real len, FiberProp const* prop)
 {
-    real len = length();
-    
     if ( prop->drag_gap <= 0 )
         throw InvalidParameter("fiber:drag_model[1] (height above surface) must set and > 0!");
     
     // use the higher drag: perpendicular to the cylinder (factor 2)
-    real drag = 2 * M_PI * prop->viscosity * len / acosh( 1 + prop->drag_gap/prop->drag_radius );
-    
-    //Cytosim::log("Drag coefficient of Fiber near a planar surface = %.1e\n", drag);
-    //Cytosim::log << "Drag coefficient of Fiber near a planar surface = " << drag << std::endl;
+    real drag = 2 * len / acosh( 1 + prop->drag_gap/prop->drag_radius );
 
-    return drag;
+    return M_PI * prop->viscosity * drag;
 }
 
 
 /**
- Calculate drag coefficient from two possible formulas
+ Calculate drag coefficient by calling one of the other function:
 
-     if ( fiber:drag_model )
-        drag = dragCoefficientSurface();
-     else
-        drag = dragCoefficientVolume();
+        dragCoefficientSurface();
+        dragCoefficientEllipsoid();
+        dragCoefficientCylinder();
 
  */
 void Fiber::setDragCoefficient()
 {
+    const real len = length();
+    assert_true( len > 0 );
+    
     real drag;
     
     if ( prop->drag_model )
     {
-        drag = dragCoefficientSurface();
+        drag = dragCoefficientSurface(len, prop);
 #if ( 0 )
-        real d = dragCoefficientVolume();
+        real d = dragCoefficientCylinder(len, prop);
         Cytosim::log << "Drag coefficient of Fiber near a planar surface amplified by " << drag/d << std::endl;
 #endif
     }
     else
-        drag = dragCoefficientVolume();
+        drag = dragCoefficientCylinder(len, prop);
 
     //the forces are distributed equally on all points, hence we multiply by nPoints
     assert_true( nPoints > 0 );
     rfPointMobility = nPoints / drag;
     
 #if ( 0 )
-    Cytosim::log << "Fiber L = " << std::setw(7) << length();
-    Cytosim::log << " drag = " << drag << " point_mobility " << rfPointMobility << std::endl;
+    std::ostream& os = std::cerr; //Cytosim::log;
+    os << "Fiber " << prop->name() << "  L = " << std::setw(7) << length();
+    os << "  has  drag " << drag << "    point_mobility " << rfPointMobility << std::endl;
 #endif
 }
 
