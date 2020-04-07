@@ -212,9 +212,6 @@ public:
     /// returns -a or a with equal chance
     real sflip(real a)           { return std::copysign(a, RAND32()); }
 
-    /// returns the sign of `a` if `a != 0` and -1 or +1 randomly, otherwise
-    real sign_exc(real a)        { return std::copysign(1.0, (a==0)?RAND32():a); }
-
     /// non-zero real number in ]0,1]
     real preal_exc()             { return URAND32() * TWO_POWER_MINUS_32 + TWO_POWER_MINUS_32; }
     

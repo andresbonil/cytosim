@@ -37,7 +37,7 @@ real PicketLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
     Vector vec = pt.pos() - pos;
     if ( modulo )
         modulo->fold(vec);
-    return len * RNG.sign_exc( cross(vec, pt.diff()) );
+    return std::copysign(len, cross(vec, pt.diff()) );
 }
 
 #elif ( DIM >= 3 )
