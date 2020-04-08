@@ -64,7 +64,7 @@ bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
-    return rad-w.XX <= length_[0] and w.XX+rad <= length_[0];
+    return std::max(rad-w.XX, w.XX+rad) <= length_[0];
 }
 
 Vector SpaceSquare::project(Vector const& w) const
@@ -89,7 +89,7 @@ real SpaceSquare::volume() const
 
 bool SpaceSquare::inside(Vector const& w) const
 {
-    return fabs(w.XX) <= length_[0] and
+    return fabs(w.XX) <= length_[0] &
            fabs(w.YY) <= length_[1];
 }
 
@@ -97,8 +97,8 @@ bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
-    return rad-w.XX <= length_[0] and w.XX+rad <= length_[0] and
-           rad-w.YY <= length_[1] and w.YY+rad <= length_[1];
+    return std::max(rad-w.XX, w.XX+rad) <= length_[0] &
+           std::max(rad-w.YY, w.YY+rad) <= length_[1];
 }
 
 #endif
@@ -116,8 +116,8 @@ real SpaceSquare::volume() const
 
 bool SpaceSquare::inside(Vector const& w) const
 {
-    return fabs(w.XX) <= length_[0] and
-           fabs(w.YY) <= length_[1] and
+    return fabs(w.XX) <= length_[0] &
+           fabs(w.YY) <= length_[1] &
            fabs(w.ZZ) <= length_[2];
 }
 
@@ -125,9 +125,9 @@ bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 {
     assert_true( rad >= 0 );
     
-    return rad-w.XX <= length_[0] and w.XX+rad <= length_[0] and
-           rad-w.YY <= length_[1] and w.YY+rad <= length_[1] and
-           rad-w.ZZ <= length_[2] and w.ZZ+rad <= length_[2];
+    return std::max(rad-w.XX, w.XX+rad) <= length_[0] &
+           std::max(rad-w.YY, w.YY+rad) <= length_[1] &
+           std::max(rad-w.ZZ, w.ZZ+rad) <= length_[2];
 }
 #endif
 
@@ -136,46 +136,49 @@ bool SpaceSquare::allInside(Vector const& w, const real rad ) const
 Vector SpaceSquare::project(Vector const& w) const
 {
     Vector p = w;
+    bool in = true;
     
     if ( fabs(p.XX) > length_[0] )
     {
         p.XX = std::copysign(length_[0], p.XX);
-        return p;
+        in = false;
     }
     if ( fabs(p.YY) > length_[1] )
     {
         p.YY = std::copysign(length_[1], p.YY);
-        return p;
+        in = false;
     }
 #if ( DIM > 2 )
     if ( fabs(p.ZZ) > length_[2] )
     {
         p.ZZ = std::copysign(length_[2], p.ZZ);
-        return p;
+        in = false;
     }
 #endif
 
-    // find the dimensionality corresponding to the closest face
-    real d0 = length_[0] - fabs(w.XX);
-    real d1 = length_[1] - fabs(w.YY);
+    if ( in )
+    {
+        // find the dimensionality corresponding to the closest face
+        real d0 = length_[0] - fabs(w.XX);
+        real d1 = length_[1] - fabs(w.YY);
 #if ( DIM > 2 )
-    real d2 = length_[2] - fabs(w.ZZ);
-    if ( d2 < d1 )
-    {
-        if ( d0 < d2 )
-            p.XX = std::copysign(length_[0], w.XX);
+        real d2 = length_[2] - fabs(w.ZZ);
+        if ( d2 < d1 )
+        {
+            if ( d0 < d2 )
+                p.XX = std::copysign(length_[0], w.XX);
+            else
+                p.ZZ = std::copysign(length_[2], w.ZZ);
+        }
         else
-            p.ZZ = std::copysign(length_[2], w.ZZ);
-    }
-    else
 #endif
-    {
-        if ( d0 < d1 )
-            p.XX = std::copysign(length_[0], w.XX);
-        else
-            p.YY = std::copysign(length_[1], w.YY);
+        {
+            if ( d0 < d1 )
+                p.XX = std::copysign(length_[0], w.XX);
+            else
+                p.YY = std::copysign(length_[1], w.YY);
+        }
     }
-    
     return p;
 }
 #endif

@@ -155,7 +155,7 @@ void PointDisp::strokeA() const
     if ( symbol )
     {
         glScalef(1.0f/80, 1.0f/80, 1);
-        /*  glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, C) stokes
+        /*  glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, C)
          character C of width ~104.76 units, and ~150 unit high max
          The translation brings it near the center. */
         if ( islower(symbol) )

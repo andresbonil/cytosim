@@ -13,7 +13,7 @@ template< typename FLOAT >
 FLOAT grained(FLOAT x, int inc)
 {
     const FLOAT grain = (FLOAT)0.25;
-    FLOAT dx = inc * ( 1 + ( x >= 4 ) + 2 * ( x >= 16 ) + 4 * ( x >= 16 ) );
+    FLOAT dx = inc * ( 1 + ( x >= 4 ) + 2 * ( x >= 16 ) + 4 * ( x >= 32 ) );
     FLOAT nx = grain * std::round( x / grain + dx );
     return std::max(abs(inc)*grain, nx);
 }
@@ -193,10 +193,10 @@ void changeSingleSelect()
     unsigned int & select = disp.single_select;
     switch( select )
     {
-        case 3:   select = 0;    flashText("single:select=0: hidden");      break;
-        case 0:   select = 2;    flashText("single:select=2: bound only");  break;
-        case 2:   select = 1;    flashText("single:select=1: free only");   break;
-        default:  select = 3;    flashText("single:select=3: all");         break;
+        case 3:  select = 0; flashText("single:select=0: hidden");      break;
+        case 0:  select = 2; flashText("single:select=2: bound only");  break;
+        case 2:  select = 1; flashText("single:select=1: free only");   break;
+        default: select = 3; flashText("single:select=3: all");         break;
     }
 }
 
@@ -206,11 +206,11 @@ void changeCoupleSelect()
     unsigned int & select = disp.couple_select;
     switch( select )
     {
-        case 7:   select = 0;    flashText("couple:select=0: hidden");        break;
-        case 0:   select = 2;    flashText("couple:select=2: bound only");    break;
-        case 2:   select = 4;    flashText("couple:select=4: bridging only"); break;
-        case 4:   select = 1;    flashText("couple:select=1: free only");     break;
-        default:  select = 7;    flashText("couple:select=7: all");           break;
+        case 7:  select = 0; flashText("couple:select=0: hidden");        break;
+        case 0:  select = 2; flashText("couple:select=2: bound only");    break;
+        case 2:  select = 4; flashText("couple:select=4: bridging only"); break;
+        case 4:  select = 1; flashText("couple:select=1: free only");     break;
+        default: select = 7; flashText("couple:select=7: all");           break;
     }
 }
 
@@ -248,13 +248,13 @@ void changeExclude(FiberDisp* p, int val)
     
     switch ( p->exclude )
     {
-        case 0: flashText("All fibers");                break;
-        case 1: flashText("Right-pointing fibers");     break;
-        case 2: flashText("Left-pointing fibers");      break;
-        case 3: flashText("No fibers");                 break;
-        case 4: flashText("Counter-clockwise fibers");  break;
-        case 8: flashText("Clockwise fibers");          break;
-        case 12: flashText("No fibers");                break;
+        case 0:  flashText("All fibers");                break;
+        case 1:  flashText("Right-pointing fibers");     break;
+        case 2:  flashText("Left-pointing fibers");      break;
+        case 3:  flashText("No fibers");                 break;
+        case 4:  flashText("Counter-clockwise fibers");  break;
+        case 8:  flashText("Clockwise fibers");          break;
+        case 12: flashText("No fibers");                 break;
     }
 }
 
@@ -562,19 +562,29 @@ void helpKeys(std::ostream& os)
     os << "\n";
     os << "   SPACE       Start-stop animation or replay\n";
     os << "   < >         Show previous; show next frame ( , . also works)\n";
-    os << "   u i o p     Play reverse; stop; play slower; play faster\n";
+    os << "   O s o p     Play reverse; stop; play slower; play faster\n";
     os << "   z           Rewind to first frame / Restart live simulation\n";
     os << "   ALT-SPACE   Reset view (i.e. zoom, translation, rotation)\n";
     os << "   f F         Toggle full-screen mode; maximize window size\n";
+    os << "   i v b       Invert colors; toggle slice view; toggle scale bar\n";
+    os << "   l L         Read parameter file; Print display parameters\n";
+    os << "   r R         Report various informations on display window\n";
+#if ENABLE_WRITE
+    os << "   y Y         Save current image; Play and save all images\n";
+#endif
+    os << "\nSimulation\n";
+    os << "   a s         Start live mode; Perform one simulation step and stop\n";
+    os << "   A a         Double period (num. steps per display); reset period\n";
+    os << "   g G         Delete all mouse-controlled handles; release handle\n";
     os << "\nFibers\n";
     os << "   `           Address another type of fibers for modifications\n";
     os << "   1           Change display: line / color-coded tension / hide\n";
-    os << "   2 3         Decrease; Increase line width (ALT: point size)\n";
+    os << "   2 3         Decrease; increase line width (ALT: point size)\n";
     os << "   !           Change display of tips: off / plus / both / minus\n";
     os << "   @ #         Decrease; increase fiber_end display size\n";
-    os << "   4 $         Change speckle display; change lattice style\n";
-    os << "   c d         Coloring, hide Right/left-pointing\n";
-    os << "   q Q         Hide a fraction of the fibers; change mask value\n";
+    os << "   4 $         Change speckle display; change lattice display\n";
+    os << "   c d         Toggle fiber coloring; hide Right/left-pointing\n";
+    os << "   m M         Mask a fraction of the fibers; change mask value\n";
     os << "   w e         decrease/increase tension/lattice/explode scale\n";
     os << "   t T         Toggle auto-tracking: 't':nematic; 'T':polar mode\n";
     os << "\nBeads - Solids - Spheres\n";
@@ -586,16 +596,6 @@ void helpKeys(std::ostream& os)
     os << "   0           Toggle the visibility flags of Hands\n";
     os << "   8 9         Decrease; Increase point size of visible Hands\n";
     os << "   ALT-8 ALT-9 Decrease; Increase line width of visible Hands\n";
-    os << "\nSimulation\n";
-    os << "   a s         Start live mode; Perform one simulation step and stop\n";
-    os << "   A a         Double period (num. of steps per display); reset period\n";
-    os << "   g G         Delete all mouse-controlled hands; Release current hand\n";
-    os << "\nInput/Output\n";
-    os << "   r           Read parameter file and update simulation\n";
-    os << "   R           Write display parameters to terminal\n";
-#if ENABLE_WRITE
-    os << "   y Y         Save current image; Play and save all images in file\n";
-#endif
 }
 
 
@@ -648,7 +648,7 @@ void processKey(unsigned char key)
 
         //------------------------- Global controls ----------------------------
         
-        case 'r': {
+        case 'l': {
             try {
                 std::string file = simul.prop->config_file;
                 thread.reloadParameters(file);
@@ -659,7 +659,7 @@ void processKey(unsigned char key)
             }
         } break;
 
-        case 'R':
+        case 'L':
         {
             if ( altKeyDown )
                 thread.writeProperties(std::cout, true);
@@ -723,26 +723,26 @@ void processKey(unsigned char key)
             flashText("period = 1");
             break;
             
-        case 'G':
-            thread.releaseHandle();
-            break;
-            
         case 'g':
             thread.deleteHandles();
             flashText("Deleted mouse-controled handles");
             break;
-                    
-        case 'u': {
+            
+        case 'G':
+            thread.releaseHandle();
+            break;
+            
+        case 'i': {
             ViewProp& vp = glApp::currentView();
             vp.back_color = vp.back_color.inverted();
             vp.front_color = vp.front_color.inverted();
         } break;
 
-        case 'i':
+        case 'r':
             prop.toggleReport(0);
             break;
             
-        case 'I':
+        case 'R':
             prop.toggleReport(1);
             break;
 
@@ -830,18 +830,18 @@ void processKey(unsigned char key)
         case 'e':
             setFiberDisp(player.allVisibleFiberDisp(), changeScale, 1);
             break;
-
-        case 'Q':
-            setFiberDisp(player.allVisibleFiberDisp(), changeMask, 0);
-            break;
             
-        case 'q':
+        case 'm':
             if ( altKeyDown )
                 setFiberDisp(player.allVisibleFiberDisp(), setMask, 0);
             else
                 setFiberDisp(player.allVisibleFiberDisp(), changeMask, 1);
             break;
 
+        case 'M':
+            setFiberDisp(player.allVisibleFiberDisp(), changeMask, 0);
+            break;
+            
         case 'c':
             setFiberDisp(player.allVisibleFiberDisp(), changeColoring, 0);
             break;

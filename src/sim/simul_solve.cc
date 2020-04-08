@@ -285,6 +285,30 @@ void Simul::setInteractions(Meca & meca) const
         meca.addForce(Mecapoint(sph, 2), +force);
     }
 #endif
+
+#if ( 0 )
+    // add steric interaction between a sphere and all fibers
+    Sphere * sol = spheres.first();
+    if ( sol )
+    {
+        const Vector cen = sol->posPoint(0);
+        const real rad = sol->radius();
+        const real rad2 = square(rad);
+        const real stiff = prop->steric_stiffness_push[0];
+
+        for ( Fiber * fib = fibers.first(); fib; fib = fib->next() )
+        {
+            for ( unsigned n = 0; n < fib->nbSegments(); ++n )
+            {
+                FiberSegment seg(fib, n);
+                real dis = INFINITY;
+                real abs = seg.projectPoint(cen, dis);
+                if ( dis < rad2 )
+                    meca.addSideLink(Interpolation(seg, abs), Mecapoint(sol, 0), rad, stiff);
+            }
+        }
+    }
+#endif
 }
 
 

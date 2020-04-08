@@ -127,33 +127,30 @@ public:
      */
     real         viscosity;
     
-    /// radius used to calculate mobility
-    /**
-     These length are used in the formula for the mobility of a cylinder:
-     - hydrodynamic_radius[0] corresponds to the radius of the fiber
-     - hydrodynamic_radius[1] is a cut-off for the length of the fiber
-     .
-     */
-    real         hydrodynamic_radius[2];
+    /// radius used to calculate mobility, corresponding to the radius of the fiber
+    real         drag_radius;
+    
+    /// cut-off on the length of the fiber, above which drag is proportional to length
+    real         drag_length;
 
-    /// if true, the mobility of a cylinder moving near a plane will be used
+    /// if true, calculate mobility for a cylinder moving near a immobile planar surface
     /**
      You can select between two possible formulas to calculate viscous drag coefficient:
 
-         if ( fiber:surface_effect )
+         if ( fiber:drag_model )
              drag = dragCoefficientSurface();
          else
-             drag = dragCoefficientVolume();
+             drag = dragCoefficientCylinder();
 
      <hr>
-     @copydetails Fiber::dragCoefficientVolume
+     @copydetails Fiber::dragCoefficientCylinder
      <hr>
      @copydetails Fiber::dragCoefficientSurface
      */
-    bool         surface_effect;
+    int          drag_model;
     
-    /// distance of fluid between slide and cylinder surface (set as `surface_effect[1]`)
-    real         cylinder_height;
+    /// distance of fluid between immobile surface and cylinder (set as `drag_model[1]`)
+    real         drag_gap;
 
     
     /// can be set to control which Hands may bind

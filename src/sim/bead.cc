@@ -145,7 +145,7 @@ void Bead::projectForces(const real* X, real* Y) const
 
 void Bead::write(Outputter& out) const
 {
-    out.writeFloatVector(position(), DIM, '\n');
+    out.writeFloats(position(), DIM, '\n');
     out.writeSoftSpace(2);
     out.writeFloat(paRadius);
 }
@@ -154,7 +154,7 @@ void Bead::write(Outputter& out) const
 void Bead::read(Inputter& in, Simul&, ObjectTag)
 {
     Vector pos;
-    in.readFloatVector(pos, DIM);
+    in.readFloats(pos, DIM);
     setPoint(0, pos);
     real r = in.readFloat();
     resize(r);

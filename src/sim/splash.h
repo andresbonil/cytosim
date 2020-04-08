@@ -19,20 +19,8 @@ inline void splash(std::ostream& os)
 /// print general info about the program
 inline void print_version(std::ostream& os)
 {
-    os << "    Precision: " << sizeof(real) << " bytes, " << REAL_EPSILON;
-    
-#ifdef FIBER_HAS_LATTICE
-    os << "    Fiber Lattice " << FIBER_HAS_LATTICE << "\n";
-#endif
-    
-    os << "    Built on " <<__DATE__<< " at " <<__TIME__;
-    
-#ifdef COMPILER_VERSION
-    os << " with " << COMPILER_VERSION << "\n";
-#else
-    os << " with unknown compiler\n";
-#endif
-    //os << "    C++ version " << __cplusplus << "\n";
+    os << "    Precision: " << sizeof(real) << " bytes, " << REAL_EPSILON << "\n";
+    os << "    Built on " <<__DATE__<< " at " <<__TIME__<< " with " <<__VERSION__<< "\n";
     
 #ifdef CODE_VERSION
     os << "    Code version " << CODE_VERSION;
@@ -44,6 +32,10 @@ inline void print_version(std::ostream& os)
     os << " (no assertions)\n";
 #else
     os << " with assertions\n";
+#endif
+
+#ifdef FIBER_HAS_LATTICE
+    os << "    Fiber Lattice " << FIBER_HAS_LATTICE << "\n";
 #endif
 }
 

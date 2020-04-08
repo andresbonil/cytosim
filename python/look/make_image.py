@@ -18,9 +18,9 @@ Syntax:
 Options are specified as 'option=value', without space around the '=' sign.
 Existing options and their values:
 
-    format       png, ppm                 File format (default = 'png')
-    output       file-name                Name of file (default = image.png)
-    lazy         0 or 1 (default=1)       Skip files already present
+    format    png, ppm             file format (default = 'png')
+    output    file-name            name of file (default = image.png)
+    lazy      0 or 1 (default=1)   bail out if output file exists
 
 Examples: 
 

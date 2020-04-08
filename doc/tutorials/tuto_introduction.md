@@ -320,7 +320,7 @@ Here, `position = 0 0 0` refers to the center of the *cell* and `orientation` in
 
 For cytoskeletal filaments, the dominating forces are usually the [Brownian motion](http://en.wikipedia.org/wiki/Brownian_motion), and the viscous drag induced by motion in the fluid. The parameter `viscosity` sets the [viscosity](http://en.wikipedia.org/wiki/Viscosity) of the surrounding fluid. In the units of the simulations, water has viscosity 0.001. The viscosity is here set to 1, which would be appropriate for simulating the cytoplasm inside the cell (what is exactly the viscosity of the cytoplasm is a tricky issue that we cannot discuss here).
 
-In the model, the drag is linear in the length of the microtubule. Longer ones are more difficult to move than shorter ones. The drag coefficient is calculated using a formula similar to Stoke's law, but which was derived for a cylinder instead of a sphere:
+In the model, the drag is linear in the length of the microtubule. Longer ones are more difficult to move than shorter ones. The drag coefficient is calculated using a formula similar to Stokes' law, but which was derived for a cylinder instead of a sphere:
 
 > Tirado and de la Torre. J. Chem. Phys 71(6) 1979  
 > https://doi.org/10.1063/1.438613  

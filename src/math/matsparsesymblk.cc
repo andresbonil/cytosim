@@ -19,8 +19,8 @@ MatrixSparseSymmetricBlock::MatrixSparseSymmetricBlock()
     allocated_ = 0;
     column_    = nullptr;
     
-    col_next_  = new index_t[1];
-    col_next_[0] = 0;
+    next_  = new index_t[1];
+    next_[0] = 0;
 }
 
 
@@ -48,8 +48,10 @@ void MatrixSparseSymmetricBlock::allocate(size_t alc)
         column_    = col_new;
         allocated_ = alc;
         
-        delete[] col_next_;
-        col_next_ = new index_t[allocated_+1];
+        delete[] next_;
+        next_ = new index_t[alc+1];
+        for ( size_t n = 0; n <= alc; ++n )
+            next_[n] = n;
     }
 }
 
@@ -57,9 +59,9 @@ void MatrixSparseSymmetricBlock::allocate(size_t alc)
 void MatrixSparseSymmetricBlock::deallocate()
 {
     delete[] column_;
-    delete[] col_next_;
-    column_   = nullptr;
-    col_next_ = nullptr;
+    delete[] next_;
+    column_ = nullptr;
+    next_   = nullptr;
     allocated_ = 0;
 }
 
@@ -427,7 +429,7 @@ void MatrixSparseSymmetricBlock::printColumns(std::ostream& os)
     for ( index_t jj = 0; jj < size_; ++jj )
     {
         os << "\n   " << jj << "   " << column_[jj].size_;
-        os << " " << col_next_[jj];
+        os << " next " << next_[jj];
     }
     std::endl(os);
 }
@@ -511,7 +513,7 @@ size_t newElements(MatrixSparseSymmetricBlock::Element*& ptr, size_t size)
 
 void MatrixSparseSymmetricBlock::prepareForMultiply(int)
 {
-    col_next_[size_] = size_;
+    next_[size_] = size_;
     
     if ( size_ > 0 )
     {
@@ -521,19 +523,19 @@ void MatrixSparseSymmetricBlock::prepareForMultiply(int)
         {
             if ( column_[inx].size_ > 0 )
                 nxt = inx;
-            col_next_[inx] = nxt;
+            next_[inx] = nxt;
         }
         if ( column_[0].size_ > 0 )
-            col_next_[0] = 0;
+            next_[0] = 0;
         else
-            col_next_[0] = nxt;
+            next_[0] = nxt;
     }
     
     //unsigned cnt = 0;
     size_t tmp_size = 0;
     Element * tmp = nullptr;
 
-    for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[0]; jj < size_; jj = next_[jj+1] )
     {
         Column & col = column_[jj];
         //std::clog << "MSSB column " << jj << " has " << col.size_ << " elements\n";
@@ -1152,7 +1154,7 @@ void MatrixSparseSymmetricBlock::vecMulAdd(const real* X, real* Y, index_t start
     assert_true( start <= end );
     assert_true( end <= size_ );
 #if ( 1 )
-    for ( index_t jj = col_next_[start]; jj < end; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[start]; jj < end; jj = next_[jj+1] )
 #else
     for ( index_t jj = start; jj < end; jj += BLOCK_SIZE )
         if ( column_[jj].size_ > 0 )
@@ -1175,7 +1177,7 @@ void MatrixSparseSymmetricBlock::vecMulAdd(const real* X, real* Y, index_t start
 // multiplication of a vector: Y = Y + M * X
 void MatrixSparseSymmetricBlock::vecMulAdd_ALT(const real* X, real* Y) const
 {
-    for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[0]; jj < size_; jj = next_[jj+1] )
     {
         //std::clog << "MatrixSparseSymmetricBlock column " << jj << "  " << size_ << " \n";
 #if ( BLOCK_SIZE == 1 )
@@ -1199,7 +1201,7 @@ void MatrixSparseSymmetricBlock::vecMulAdd_TIME(const real* X, real* Y) const
     unsigned long cnt = 0, col = 0;
     unsigned long long time = __rdtsc();
 #endif
-    for ( index_t jj = col_next_[0]; jj < size_; jj = col_next_[jj+1] )
+    for ( index_t jj = next_[0]; jj < size_; jj = next_[jj+1] )
     {
 #if TIME_PRINTOUT
         col++;

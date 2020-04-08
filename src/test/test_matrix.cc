@@ -436,9 +436,7 @@ int compare_int(const void* i, const void* j) { return ( *(int*)i > *(int*)j ); 
 
 int main( int argc, char* argv[] )
 {
-#ifdef COMPILER_VERSION
-    printf("Compiled with %s\n", COMPILER_VERSION);
-#endif
+    printf("Matrix test and timing code --- %s\n", __VERSION__);
 
     RNG.seed();
     if ( 0 )

@@ -85,7 +85,9 @@ void MatrixSparseSymmetric1::allocate(size_t alc)
         
 #if MATRIX1_USES_COLNEXT
         delete[] next_;
-        next_ = new index_t[allocated_+1];
+        next_ = new index_t[alc+1];
+        for ( size_t n = 0; n <= alc; ++n )
+            next_[n] = n;
 #endif
     }
 }
@@ -457,7 +459,7 @@ void MatrixSparseSymmetric1::printColumns(std::ostream& os)
     {
         os << "\n   " << jj << "   " << col_size_[jj];
 #if MATRIX1_USES_COLNEXT
-        os << " " << next_[jj];
+        os << " next " << next_[jj];
 #endif
     }
     std::endl(os);

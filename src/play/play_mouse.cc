@@ -73,7 +73,6 @@ void timerCallback(const int value)
         if ( prop.save_images && 0 == thread.trylock() )
         {
             player.displayScene(glApp::views[1], 1.0);
-            glFinish();
             player.saveView("image", prop.image_index++);
             thread.unlock();
         }
@@ -85,7 +84,6 @@ void timerCallback(const int value)
         if ( prop.save_images )
         {
             player.displayScene(glApp::views[1], 1.0);
-            glFinish();
             player.saveView("movie", thread.currentFrame());
         }
 
@@ -103,7 +101,7 @@ void timerCallback(const int value)
             glApp::postRedisplay();
     }
     else
-        millisec = 100;
+        millisec = 200;
     
     glutTimerFunc(millisec, timerCallback, 2);
 }

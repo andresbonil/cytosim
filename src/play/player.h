@@ -38,7 +38,7 @@ public:
     /// a flag for live simulation
     bool         goLive;
     
-    /// the Display object
+    /// the current Display object
     Display  *   mDisplay;
     
     //---------------------------------COMMANDS---------------------------------
@@ -117,7 +117,7 @@ public:
     //-----------------------------DISPLAY--------------------------------------
   
     /// initialize display with given style
-    void setStyle(int);
+    void setStyle(unsigned);
 
     /// build message that appears on top
     std::string buildReport(std::string) const;
@@ -144,7 +144,7 @@ public:
     /// display cytosim state and message
     void displayCytosim();
     
-    /// display function calls displayCytosim
+    /// display function calling displayCytosim
     void displayScene(View&, int mag);
     
     /// export current viewport to a graphic file

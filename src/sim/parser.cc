@@ -86,7 +86,26 @@ void Parser::parse_set(std::istream& is)
 
     bool spec = ( is.peek() == ':' );
     
-    if ( simul.isPropertyClass(cat) && !spec )
+    if ( cat == "simul" )
+    {
+        name = Tokenizer::get_symbol(is);
+        blok = Tokenizer::get_block(is, '{', true);
+
+        if ( do_change )
+        {
+            opt.read(blok);
+            execute_change(simul.prop, opt);
+            simul.rename(name);
+        }
+#ifdef BACKWARD_COMPATIBILITY
+        else if ( name == "display" )
+        {
+            opt.define(name, blok);
+            execute_change(simul.prop, opt);
+        }
+#endif
+    }
+    else if ( simul.isPropertyClass(cat) && !spec )
     {
         /* in this form:
          set CLASS NAME { PARAMETER = VALUE }
@@ -112,21 +131,10 @@ void Parser::parse_set(std::istream& is)
                     throw InvalidSyntax("Property number missmatch");
             }
         }
-        else if ( cat == "simul" )
-        {
-            // adjust the name of the 'simul' property:
-            if ( simul.prop->name() == "undefined" )
-                simul.prop->rename(name);
-            else if ( simul.prop->name() != name )
-                throw InvalidSyntax("only one `simul' can be defined");
-            VLOG(" simul is named `" << name << "'\n");
-            opt.read(blok);
-            execute_change(name, opt);
-        }
         else if ( do_change )
         {
             opt.read(blok);
-            execute_change(name, opt);
+            execute_change(name, opt, false);
         }
     }
     else
@@ -165,8 +173,7 @@ void Parser::parse_set(std::istream& is)
                 opt.read(blok);
             else
                 opt.define(para, blok);
-
-            pp = execute_change(name, opt);
+            pp = execute_change(name, opt, false);
         }
         else if ( para == "display" )
         {

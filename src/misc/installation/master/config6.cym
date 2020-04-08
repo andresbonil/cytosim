@@ -40,7 +40,7 @@ set fiber actin
     steric = 1, 0.004  % should be greater than 0.0035 nm
     segmentation = 0.0055   % 0.0055 is 2 monomers
     confine = inside, 50000, cylinder
-    hydrodynamic_radius = 0.004
+    drag_radius = 0.004
     lattice = 1, 0.00275
 
     activity = grow

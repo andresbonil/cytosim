@@ -120,9 +120,6 @@ void SpaceDisc::setInteraction(Vector const& pos, Mecapoint const& pe, real rad,
 
 void SpaceDisc::step()
 {
-    real dr = prop->mobility_dt * force_;
-    //std::clog << "SpaceDisc:  radius " << std::setw(12) << radius_ << " force " << force_ << " delta_radius " << dr << "\n";
-    radius_ += dr;
 }
 
 //------------------------------------------------------------------------------

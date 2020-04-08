@@ -1618,7 +1618,7 @@ void Chain::read(Inputter& in, Simul& sim, ObjectTag tag)
 
     fnAbscissaP = fnAbscissaM + len;
 
-    // resegment if the sementation parameter has changed:
+    // resegment if the parameter has changed:
     if ( fnSegmentation != seg )
         adjustSegmentation();
     

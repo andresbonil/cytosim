@@ -46,28 +46,31 @@ Procedure:
 Options are specified as 'option=value', without space around the '=' sign.
 Existing options and their values:
 
-    format       mp4, mov            Movie file format (default = 'mp4')
-    codec        mpeg4, h264         if format='mp4'   (default = 'mpeg4')
-                 png, h263, h264     if format='mov'   (default = 'png')
-    rate         integer             Images per second (default = 12)
-    quality      integer             MPEG4: subjective quality: 1=great, 4=good
-                                     Quicktime: data rate (eg. 64)
+    format    mp4, mov            movie file format (default = 'mp4')
+    codec     mpeg4, h264, h265   if format='mp4'   (default = 'mpeg4')
+              png, h263, h264     if format='mov'   (default = 'png')
+    rate      integer             images per second (default = 12)
+    quality   integer (default=3) subjective quality for MPEG4: 1=great, 4=good
+                                  data rate for Quicktime (eg. 64)
     
-    cleanup      0 or 1 (default=1)  Remove temporary images (default = 1)
-    lazy         0 or 1 (default=1)  Skip files already present
+    cleanup   0 or 1 (default=1)  remove temporary files (default = 1)
+    lazy      0 or 1 (default=1)  bail out if output file exists
 
 Examples:
 
     make_movie.py 'play window_size=512,256' format=mp4 run*
     make_movie.py '~/bin/play3 zoom=2' format=mp4 run*
     make_movie.py images format=mov
+    make_movie.py imgs codec=265
 
 History:
-    Created by F. Nedelec, 14/12/2007
+    Created by F. Nedelec, 14.12.2007
     Improved by Beat Rupp, March 2010
     Revised on March 19 2011 and Sept-Nov 2012 by F. Nedelec.
     F. Nedelec, 10.2013: images are created in sub-directories
-    F. Nedelec, 12.2013, 9.2014, 04.2016: cleanup
+    F. Nedelec, 12.2013, 9.2014, 04.2016, 15.03.2020
+    
+    https://ffmpeg.org/ffmpeg.html
 """
 
 try:
@@ -179,21 +182,27 @@ def getImageSize(file):
 
 def makeMovieMPEG(output):
     """
-        create movie.mp4 from PNG or PPM files in the current directory using ffmpeg
+        create movie.mp4 from PNG or PPM files in the current directory
+        This entirely relies on ffmpeg
     """
-    if codec == 'h264':
-        vcod = 'libx264'
-    else:
-        vcod = 'mpeg4'
-    format = 'png'
-    images = getImages(format)
+    image_pat = image_dir+'/image%04d.png'
+    images = getImages('png')
     if not images:
         #print('looking for PPM images')
-        format = 'ppm'
+        image_pat = image_dir+'/image%04d.ppm'
         images = getImages(format)
     if not images:
         raise IOError("no suitable images found")
-    args = ['ffmpeg', '-v', 'quiet', '-r', '%i'%rate, '-i', image_dir+'/image%04d.'+format, '-vcodec', vcod, '-q:v', quality, output]
+    # build arguments for 'ffmpeg':
+    args = ['ffmpeg', '-v', 'quiet', '-r', '%i'%rate, '-i', image_pat]
+    if codec == 'h265':
+        args.extend(['-vcodec', 'libx265', '-tag:v', 'hvc1'])
+    elif codec == 'h264':
+        args.extend(['-vcodec', 'libx264'])
+    else:
+        args.extend(['-vcodec', 'mpeg4'])
+    args.extend(['-pix_fmt', 'yuv420p', '-q:v', quality, output])
+    print(' '.join(args))
     val = subprocess.call(args) #, stdout=None,stderr=None)
     if val:
         raise IOError("`ffmpeg` failed with value %i\n  %s\n" % (val, ' '.join(args)))
@@ -232,18 +241,18 @@ def makeMovieQT(output):
     if not os.path.isfile(mov):
         err.write(prefix+"could not make Quicktime movie\n")
         return ''
-    qt_export  = '~/bin/qt_export'
+    args = ['~/bin/qt_export', '--audio=0', '--datarate='+quality]
     if not os.path.isfile(qt_export):
         err.write(prefix+"missing `qt_export' executable\n")
         os.rename(mov, output)
         return output
     if codec == 'h263':
-        cmd = [qt_export, '--audio=0', '--datarate='+quality, '--video=h263,%i,100'%rate, mov, output]
+        args.extend(['--video=h263,%i,100'%rate, mov, output])
     elif codec == 'h264':
-        cmd = [qt_export, '--audio=0', '--datarate='+quality, '--video=avc1,%i,100'%rate, mov, output]
+        args.extend(['--video=avc1,%i,100'%rate, mov, output])
     else:
         raise IOError("codec `%s' not supported" % codec)
-    subprocess.call(cmd)
+    subprocess.call(args)
     os.remove(mov)
     err.write(prefix+"created movie with datarate = %s\n" % quality)
     return output
@@ -350,7 +359,12 @@ def main(args):
                 if format == 'mov':
                     quality = '256'
             elif key=='codec':
-                codec = value
+                if value = '264':
+                    codec = 'h264'
+                elif value = '265':
+                    codec = 'h265'
+                else:
+                    codec = value
             elif key=='quality':
                 quality = value
             elif key=='lazy':

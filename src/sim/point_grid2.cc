@@ -488,7 +488,7 @@ void PointGrid::setInteractions(Meca& meca, PointGridParam const& pam,
             checkPL(meca, pam, *jj, *ii);
         
         for ( FatSegment* kk = fll2.begin(); kk < fll2.end(); ++kk )
-            if ( !adjacent(ii->seg, jj->seg) )
+            if ( !adjacent(ii->seg, kk->seg) )
                 checkLL(meca, pam, *ii, *kk);
     }
 }

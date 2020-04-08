@@ -72,7 +72,9 @@ void MatrixSparseSymmetric2::allocate(size_t alc)
         
 #if MATRIX2_OPTIMIZED_MULTIPLY
         delete[] next_;
-        next_ = new index_t[allocated_+1];
+        next_ = new index_t[alc+1];
+        for ( size_t n = 0; n <= alc; ++n )
+            next_[n] = n;
 #endif
     }
 }
@@ -364,7 +366,7 @@ void MatrixSparseSymmetric2::printColumns(std::ostream& os)
     {
         os << "\n   " << jj << "   " << col_size_[jj];
 #if MATRIX2_OPTIMIZED_MULTIPLY
-        os << " " << next_[jj];
+        os << " next " << next_[jj];
 #endif
     }
     std::endl(os);

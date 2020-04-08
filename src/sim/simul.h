@@ -172,7 +172,7 @@ public:
     void            setInteractions(Meca&) const;
 
     /// display Meca's links
-    void            drawLinks();
+    void            drawLinks() const;
     
     /// call foldPosition() for all objects (implements periodic boundary conditions)
     void            foldPosition() const;
@@ -237,10 +237,15 @@ public:
     /// return first Space with given name
     Space const*    findSpace(std::string const& name) const;
     
+    //---------------------------- PROPERTIES ----------------------------------
+
+    /// change the name of the simulation
+    void            rename(std::string const&);
+    
     /// read an Object reference and return the corresponding Object (`tag` is set)
     Object*         readReference(Inputter&, ObjectTag& tag);
 
-    /// check if `name` corresponds to a property class (eg. `simul`)
+    /// check if `name` corresponds to a property class, but excluding 'simul'
     bool            isPropertyClass(const std::string& name) const;
     
     /// return existing property of given class and name, or return zero

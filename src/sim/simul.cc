@@ -361,11 +361,21 @@ ObjectSet * Simul::findSetT(const ObjectTag tag)
 //------------------------------------------------------------------------------
 #pragma mark -
 
+/* There can only be one SimulProp and it is already created */
+void Simul::rename(std::string const& arg)
+{
+    if ( prop->name() == "undefined" )
+    {
+        prop->rename(arg);
+        //std::clog << "Simul is named `" << arg << "'\n";
+    }
+    else if ( prop->name() != arg )
+        throw InvalidSyntax("only one `simul' can be defined");
+}
+
+
 bool Simul::isPropertyClass(const std::string& name) const
 {
-    if ( name == "simul" )
-        return true;
-    
     if ( name == "hand" )
         return true;
     
@@ -466,10 +476,8 @@ Property* Simul::newProperty(const std::string& cat, const std::string& nom, Glo
 {
     if ( cat == "simul" )
     {
-        /* There can only be one SimulProp and it is already created */
         assert_true(prop);
-        prop->rename(nom);
-        //std::clog << "Simul is named `" << nom << "'\n";
+        rename(nom);
         return prop;
     }
     

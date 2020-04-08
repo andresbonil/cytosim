@@ -233,7 +233,7 @@ void test_load()
     show(n, "permute4(broadcast2)");
     show(interleave4(u), "interleave4");
     show(cat4(u,u), "cat4");
-    show(_mm256_set_m128d(u,u),    "set_m128d");
+    //show(_mm256_set_m128d(u,u),    "set_m128d");
     show(insertf128(cast4(u),u,1), "insertf128");
     show(permute4(cat4(u,u), 0b1100), "permute4(cat4, 0b1100)");
     
