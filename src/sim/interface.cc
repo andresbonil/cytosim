@@ -770,7 +770,7 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
         event = new Event();
         opt.set(event->rate, "event");
         opt.set(event->activity, "event", 1);
-        event->reset(simul.time());
+        event->reload(simul.time());
         simul.events.add(event);
     }
 #endif
