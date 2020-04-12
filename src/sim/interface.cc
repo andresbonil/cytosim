@@ -584,7 +584,7 @@ void Interface::execute_delete(std::string const& name, Glossary& opt, unsigned 
     
     if ( cnt == 1 )
     {
-        simul.erase(objs.random_pick());
+        simul.erase(objs.pick_one());
     }
     else
     {

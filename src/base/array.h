@@ -582,13 +582,6 @@ public:
             shuffle32();
 #endif
     }
-    
-    /// return a randomly picked object in the array
-    VAL& random_pick()
-    {
-        return val_[RNG.plong(nbo_)];
-    }
-
 };
 
 
