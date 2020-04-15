@@ -32,7 +32,7 @@ class Meca;
  .
  
  The default Couple has:
- - a zero resting length (it uses Meca:interLink())
+ - a zero resting length (it uses Meca:addLink())
  - no specificity
  .
 

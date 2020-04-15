@@ -98,7 +98,7 @@ Vector Interpolation4::position() const
 }
 
 
-void Interpolation4::interLink(Meca & meca, Interpolation const& arg, const real stiffness) const
+void Interpolation4::addLink(Meca& meca, Interpolation const& arg, const real weight) const
 {
     unsigned off = mec_->matIndex() + ref_;
     unsigned pts[] = { off, off+1, off+2, off+3 };
@@ -108,22 +108,22 @@ void Interpolation4::interLink(Meca & meca, Interpolation const& arg, const real
         case 0:
             break;
         case 1:
-            meca.addLink1(arg, off, stiffness);
+            meca.addLink1(arg, off, weight);
             break;
         case 2:
-            meca.addLink2(arg, pts, coef_, stiffness);
+            meca.addLink2(arg, pts, coef_, weight);
             break;
         case 3:
-            meca.addLink3(arg, pts, coef_, stiffness);
+            meca.addLink3(arg, pts, coef_, weight);
             break;
         case 4:
-            meca.addLink4(arg, pts, coef_, stiffness);
+            meca.addLink4(arg, pts, coef_, weight);
         break;
     }
 }
 
 
-void Interpolation4::interLink(Meca & meca, Mecapoint const& arg, const real stiffness) const
+void Interpolation4::addLink(Meca& meca, Mecapoint const& arg, const real weight) const
 {
     unsigned off = mec_->matIndex() + ref_;
     unsigned pts[] = { off, off+1, off+2, off+3 };
@@ -133,16 +133,16 @@ void Interpolation4::interLink(Meca & meca, Mecapoint const& arg, const real sti
         case 0:
             break;
         case 1:
-            meca.addLink(arg, Mecapoint(mec_, ref_), stiffness);
+            meca.addLink(arg, Mecapoint(mec_, ref_), weight);
             break;
         case 2:
-            meca.addLink2(arg, pts, coef_, stiffness);
+            meca.addLink2(arg, pts, coef_, weight);
             break;
         case 3:
-            meca.addLink3(arg, pts, coef_, stiffness);
+            meca.addLink3(arg, pts, coef_, weight);
             break;
         case 4:
-            meca.addLink4(arg, pts, coef_, stiffness);
+            meca.addLink4(arg, pts, coef_, weight);
         break;
     }
 }
