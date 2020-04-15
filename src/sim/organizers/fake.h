@@ -32,9 +32,6 @@ private:
     
     /// connections
     std::vector<Mecapoint> asterPoints, solidPoints;
-    
-    /// find aster
-    Aster *    findAster(std::string const&, Simul&);
 
 public:
     
