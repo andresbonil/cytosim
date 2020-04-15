@@ -94,14 +94,14 @@ void FiberSite::write(Outputter& out) const
 #if FIBER_HAS_LATTICE
         if ( fbLattice )
         {
-            fbFiber->writeReference(out, Fiber::TAG_LATTICE);
+            Object::writeReference(out, Fiber::TAG_LATTICE, fbFiber->identity());
             // in older format, `fbAbs` was written here
             out.writeInt32(fbSite);
         }
         else
 #endif
         {
-            fbFiber->writeReference(out);
+            Object::writeReference(out, fbFiber);
             out.writeFloat(fbAbs);
         }
     }

@@ -126,7 +126,7 @@ void Simul::writeObjects(std::string const& name, bool append, bool binary) cons
 /**
  The Object is not modified
  */
-Object * Simul::readReference(Inputter& in, ObjectTag & tag)
+Object * Simul::readReference(Inputter& in, ObjectTag& tag)
 {
     int c = 0;
     do

@@ -134,7 +134,7 @@ Aster::~Aster()
 }
 
 //------------------------------------------------------------------------------
-#pragma mark -
+#pragma mark - Build
 
 /**
  @defgroup NewAster How to create an Aster
@@ -539,7 +539,7 @@ void Aster::placeAnchors(Glossary & opt, size_t origin, size_t nbf)
 
 
 //------------------------------------------------------------------------------
-#pragma mark -
+#pragma mark - I/O
 
 void Aster::write(Outputter& out) const
 {
@@ -613,7 +613,7 @@ void Aster::read(Inputter& in, Simul& sim, ObjectTag tag)
 
 
 //------------------------------------------------------------------------------
-#pragma mark -
+#pragma mark - Display
 
 Vector Aster::posLink1(size_t inx) const
 {

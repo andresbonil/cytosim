@@ -150,7 +150,7 @@ void Interpolation4::addLink(Meca& meca, Mecapoint const& arg, const real weight
 
 void Interpolation4::write(Outputter& out) const
 {
-    mec_->writeReference(out);
+    Object::writeReference(out, mec_);
     out.writeUInt16(ref_);
     for ( int d = 1; d < 4; ++d )
         out.writeFloat(coef_[d]);

@@ -109,24 +109,22 @@ std::string Object::reference() const
  The ascii based format always the same.
  All formats are read by Simul::readReference()
  */
-void Object::writeReference(Outputter& out, ObjectTag g) const
+void Object::writeReference(Outputter& out, ObjectTag g, ObjectID id)
 {
-    assert_true( property() );
-    assert_true( property()->number() > 0 );
-    assert_true( identity() > 0 );
+    assert_true( id > 0 );
 
-    if ( identity() > 65535 )
+    if ( id > 65535 )
     {
         // long format (5 bytes)
         // set the highest bit of the byte, which is not used by ASCII codes
         out.writeChar(g, 128);
-        out.writeUInt32(identity(), 0);
+        out.writeUInt32(id, 0);
     }
     else
     {
         // short format (3 bytes)
         out.put_char(g);
-        out.writeUInt16(identity(), 0);
+        out.writeUInt16(id, 0);
     }
 }
 
@@ -134,6 +132,15 @@ void Object::writeReference(Outputter& out, ObjectTag g) const
 void Object::writeNullReference(Outputter& out)
 {
     out.put_char(TAG);
+}
+
+
+void Object::writeReference(Outputter& out, Object const* i)
+{
+    if ( i )
+        writeReference(out, i->tag(), i->identity());
+    else
+        writeNullReference(out);
 }
 
 
