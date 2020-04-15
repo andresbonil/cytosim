@@ -203,7 +203,7 @@ public:
     void         equilibrate(FiberSet const&, PropertyList const&);
     
     /// distribute all free Couples on filament intersections
-    void         connect(FiberSet const&, PropertyList const&);
+    void         bindToIntersections(FiberSet const&, PropertyList const&);
     
     /// prepare for step()
     void         prepare(PropertyList const& properties);

@@ -1018,7 +1018,7 @@ void CoupleSet::equilibrate(FiberSet const& fibers, PropertyList const& properti
 /**
  This takes all the Free Couple and attach them at the intersection points of the network of filaments
  */
-void CoupleSet::connect(FiberSet const& fibers, PropertyList const& properties)
+void CoupleSet::bindToIntersections(FiberSet const& fibers, PropertyList const& properties)
 {
     // calculate maximum range of Hands
     real range = 0;
@@ -1035,18 +1035,18 @@ void CoupleSet::connect(FiberSet const& fibers, PropertyList const& properties)
     // get all crosspoints within this range:
     Array<FiberSite> loc1(1024), loc2(1024);
     fibers.allIntersections(loc1, loc2, range);
-    const size_t nb_crossings = loc1.size();
-    assert_true(nb_crossings == loc2.size());
+    const size_t nbc = loc1.size();
+    assert_true(nbc == loc2.size());
     
-    //std::clog << nb_crossings << " intersections at range " << range << "\n";
+    //std::clog << nbc << " intersections at range " << range << "\n";
 
-    if ( nb_crossings > 0 )
+    if ( nbc > 0 )
     {
         Couple * c = firstFF(), * nxt;
         while ( c )
         {
             nxt = c->next();
-            size_t p = RNG.plong(nb_crossings);
+            size_t p = RNG.pint(nbc);
             c->attach1(loc1[p]);
             c->attach2(loc2[p]);
             c = nxt;

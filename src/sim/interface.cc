@@ -1017,7 +1017,7 @@ void Interface::execute_call(std::string& str, Glossary& opt)
     if ( str == "equilibrate" )
         simul.couples.equilibrate(simul.fibers, simul.properties);
     else if ( str == "connect" )
-        simul.couples.connect(simul.fibers, simul.properties);
+        simul.couples.bindToIntersections(simul.fibers, simul.properties);
     else if ( str == "custom0" )
         simul.custom0(opt);
     else if ( str == "custom1" )
