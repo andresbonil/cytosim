@@ -21,7 +21,6 @@ Bead::Bead(BeadProp const* p, Vector pos, real rad)
 {
     setNbPoints(1);
     setPoint(0, pos);
-    setDragCoefficient();
 }
 
 

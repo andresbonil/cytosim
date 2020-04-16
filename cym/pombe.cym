@@ -54,7 +54,7 @@ set bundle bunch
 
 set nucleus noyau
 {
-    stiffness  = 200
+    stiffness = 200
 }
 
 new cell
@@ -65,14 +65,14 @@ new cell
 
 new noyau
 {
-    sphere     = envelope
-    bundles    = 4, bunch, (fibers=2, microtubule, (length=0.5; plus_end=grow;))
-    radius     = 1.1
-    position   = 3.5 0 0
+    sphere    = envelope
+    bundles   = 4, bunch, (fibers=2, microtubule, (length=0.5; plus_end=grow;))
+    radius    = 1.1
+    position  = 3.5 0 0
 }
 
 run system
 {
-    nb_steps   = 50000
-    nb_frames  = 100
+    nb_steps  = 50000
+    nb_frames = 100
 }

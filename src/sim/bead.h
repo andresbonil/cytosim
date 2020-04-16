@@ -70,7 +70,7 @@ public:
     real        radiusSqr()            const { return paRadius * paRadius; }
     
     /// set the radius of the Bead
-    void        resize(real R)               { assert_true(R>0); paRadius = R; setDragCoefficient(); }
+    void        resize(real R)               { assert_true(R>0); paRadius = R; }
     
     /// the volume of the bead
     real        volume() const;
@@ -83,12 +83,8 @@ public:
     /// the total drag-coefficient of object (force = drag * speed)
     real        dragCoefficient()      const { return paDrag; }
 
-    /// sets the mobility (called at every step)
-    /**
-     setDragCoefficient() is called when the Bead is created,
-     or when it is resized, and nothing needs to be done here.
-     */
-    void        prepareMecable() {}
+    /// sets the mobility
+    void        prepareMecable() { setDragCoefficient(); }
     
     /// calculates the speed of points in Y, for the forces given in X
     void        projectForces(const real* X, real* Y) const;
