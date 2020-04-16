@@ -6,6 +6,7 @@
 #include "real.h"
 #include "cblas.h"
 
+/// Iterative methods to solve a system of linear equations
 namespace LinearSolvers
 {
     /// interface for a linear system
