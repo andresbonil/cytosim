@@ -171,8 +171,9 @@
 		BB5D4CA212BCBE2900A1312F /* parser.h in Headers */ = {isa = PBXBuildFile; fileRef = BB5D4CA012BCBE2900A1312F /* parser.h */; };
 		BB60C6A10B6022FE00596D88 /* fiber_grid.h in Headers */ = {isa = PBXBuildFile; fileRef = BB60C69F0B6022FE00596D88 /* fiber_grid.h */; };
 		BB60C86C0B60353300596D88 /* fiber_grid.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB60C6A00B6022FE00596D88 /* fiber_grid.cc */; };
-		BB61B7F019B7622800B1F4F6 /* ansi_colors.h in Headers */ = {isa = PBXBuildFile; fileRef = BB61B7EF19B7622800B1F4F6 /* ansi_colors.h */; };
-		BB61B7F219B7626A00B1F4F6 /* ansi_colors.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB61B7F119B7626A00B1F4F6 /* ansi_colors.cc */; };
+		BB61B7F019B7622800B1F4F6 /* print_color.h in Headers */ = {isa = PBXBuildFile; fileRef = BB61B7EF19B7622800B1F4F6 /* print_color.h */; };
+		BB61B7F219B7626A00B1F4F6 /* print_color.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB61B7F119B7626A00B1F4F6 /* print_color.cc */; };
+		BB61CA8416D6310100A0F6A5 /* linear_solvers.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB2185620B4084CC00B75436 /* linear_solvers.cc */; };
 		BB6403F705FBC2F400DF7BFF /* libcytosim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB51BD1405FA5FAA00D4869F /* libcytosim.a */; };
 		BB6403FA05FBC2F900DF7BFF /* libcytobase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB51BC5C05FA559800D4869F /* libcytobase.a */; };
 		BB64041A05FBC59200DF7BFF /* frametool.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB77D6FB05F12F16001C0596 /* frametool.cc */; };
@@ -1003,8 +1004,8 @@
 		BB5D4CA012BCBE2900A1312F /* parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parser.h; sourceTree = "<group>"; };
 		BB60C69F0B6022FE00596D88 /* fiber_grid.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = fiber_grid.h; path = src/sim/fiber_grid.h; sourceTree = SOURCE_ROOT; };
 		BB60C6A00B6022FE00596D88 /* fiber_grid.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = fiber_grid.cc; path = src/sim/fiber_grid.cc; sourceTree = SOURCE_ROOT; };
-		BB61B7EF19B7622800B1F4F6 /* ansi_colors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ansi_colors.h; sourceTree = "<group>"; };
-		BB61B7F119B7626A00B1F4F6 /* ansi_colors.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ansi_colors.cc; sourceTree = "<group>"; };
+		BB61B7EF19B7622800B1F4F6 /* print_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = print_color.h; sourceTree = "<group>"; };
+		BB61B7F119B7626A00B1F4F6 /* print_color.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = print_color.cc; sourceTree = "<group>"; };
 		BB6403D805FBC28C00DF7BFF /* sieve */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sieve; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB64041505FBC58500DF7BFF /* frametool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = frametool; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB6485EB2057FD1B005F2CD1 /* allocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = allocator.h; path = src/math/allocator.h; sourceTree = SOURCE_ROOT; };
@@ -1978,8 +1979,8 @@
 				BBA5E5810E8EBA620009F6D0 /* tictoc.cc */,
 				BBEF3A85118318AE000F2EED /* backtrace.h */,
 				BBEF3A86118318AE000F2EED /* backtrace.cc */,
-				BB61B7EF19B7622800B1F4F6 /* ansi_colors.h */,
-				BB61B7F119B7626A00B1F4F6 /* ansi_colors.cc */,
+				BB61B7EF19B7622800B1F4F6 /* print_color.h */,
+				BB61B7F119B7626A00B1F4F6 /* print_color.cc */,
 			);
 			name = misc;
 			sourceTree = "<group>";
@@ -2710,7 +2711,7 @@
 				BBEF3A87118318AE000F2EED /* backtrace.h in Headers */,
 				BB65DBEC11AD53AC005DD116 /* filepath.h in Headers */,
 				BB7085EA1285A2CA00D8D79A /* stream_func.h in Headers */,
-				BB61B7F019B7622800B1F4F6 /* ansi_colors.h in Headers */,
+				BB61B7F019B7622800B1F4F6 /* print_color.h in Headers */,
 				BB19FEF712F352A400ACEA12 /* inventoried.h in Headers */,
 				BB19FEF912F352A400ACEA12 /* inventory.h in Headers */,
 				BB6E52CF15D206DF00946BFF /* buddy.h in Headers */,
@@ -3465,7 +3466,7 @@
 				BB50D0D90FFA30CD00278580 /* property.cc in Sources */,
 				BB50D6140FFAE51900278580 /* tokenizer.cc in Sources */,
 				BBE8E70310C19D1B006527D4 /* exceptions.cc in Sources */,
-				BB61B7F219B7626A00B1F4F6 /* ansi_colors.cc in Sources */,
+				BB61B7F219B7626A00B1F4F6 /* print_color.cc in Sources */,
 				BBEF3A88118318AE000F2EED /* backtrace.cc in Sources */,
 				BB65DBEB11AD53AC005DD116 /* filepath.cc in Sources */,
 				BB7085E91285A2CA00D8D79A /* stream_func.cc in Sources */,

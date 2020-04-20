@@ -3,7 +3,7 @@
 #include "glossary.h"
 #include "tokenizer.h"
 #include "stream_func.h"
-#include "ansi_colors.h"
+#include "print_color.h"
 #include "filepath.h"
 #include <fstream>
 #include <cctype>

@@ -41,7 +41,7 @@ test_matrix: test_matrix.cc matsparsesymblk.o matsparsesym.o matsparsesym1.o mat
 	$(DONE)
 vpath test_matrix bin
 
-test_glos: test_glos.cc glossary.o filepath.o tokenizer.o stream_func.o exceptions.o backtrace.o ansi_colors.o | bin
+test_glos: test_glos.cc glossary.o filepath.o tokenizer.o stream_func.o exceptions.o backtrace.o print_color.o | bin
 	$(COMPILE) -Isrc/base -Isrc/math $(OBJECTS) $(LINK) -o bin/$@
 	$(DONE)
 vpath test_glos bin

@@ -5,7 +5,7 @@
 #include "messages.h"
 #include "glossary.h"
 #include "exceptions.h"
-#include "ansi_colors.h"
+#include "print_color.h"
 #include "filepath.h"
 #include "splash.h"
 #include "tictoc.h"

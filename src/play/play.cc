@@ -7,7 +7,7 @@
 #include "saveimage.h"
 #include "filepath.h"
 #include "splash.h"
-#include "ansi_colors.h"
+#include "print_color.h"
 
 #include "opengl.h"
 #include "player.h"

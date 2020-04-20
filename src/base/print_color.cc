@@ -2,12 +2,14 @@
 // Created by Francois Nedelec on 03/09/2014.
 
 
-#include "ansi_colors.h"
+#include "print_color.h"
 #include <cstdio>
 #include <cstdlib>
 
 
 #if ( 1 )
+
+// using ANSI escape sequence for UNIX-based systems
 
 #define KNRM  "\x1B[0m"
 #define KBLD  "\x1B[1m"

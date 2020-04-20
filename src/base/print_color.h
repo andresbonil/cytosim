@@ -1,6 +1,13 @@
-// Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
-// Created by Francois Nedelec on 03/09/2014.
+// Cytosim was created by Francois Nedelec. Copyright Cambridge University 2020
+// FJN 03.09.2014.
 
+/**
+ This defines functions to print text in color on terminals that support it
+ It is based on the original ANSI specification that defined 8 standard colors:
+ https://en.wikipedia.org/wiki/ANSI_escape_code
+ 
+ This can be disabled in `print_color.cc`
+ */
 
 #include <iostream>
 

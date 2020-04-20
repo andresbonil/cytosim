@@ -5,6 +5,7 @@
 #include "modulo.h"
 #include "glossary.h"
 #include "simul_prop.h"
+#include "print_color.h"
 #include "display1.h"
 #include "display2.h"
 #include "display3.h"
