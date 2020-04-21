@@ -8,9 +8,8 @@
 #include "node_list.h"
 #include "common.h"
 #include "fiber.h"
+#include "classic_fiber_prop.h"
 
-
-class ClassicFiberProp;
 
 
 /// A Fiber with a standard two-state model of dynamic instability at the PLUS_END
@@ -65,6 +64,11 @@ private:
     
     /// length increment at PLUS_END during last time-step
     real       mGrowthP;
+
+#if NEW_CATASTROPHE_TIP_MOTORS
+    /// length that the fiber had when it was created or rescued
+    real       length_rescue;
+#endif
      
 public:
     

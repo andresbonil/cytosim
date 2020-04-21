@@ -41,6 +41,10 @@ void ClassicFiberProp::clear()
     catastrophe_outside = 1;
     catastrophe_space_ptr = nullptr;
 #endif
+#if NEW_CATASTROPHE_TIP_MOTORS
+    catastrophe_Lm = 0.;
+    catastrophe_Lt = 0.;
+#endif
 }
 
 
@@ -64,7 +68,10 @@ void ClassicFiberProp::read(Glossary& glos)
     glos.set(catastrophe_outside,   "catastrophe_outside");
     glos.set(catastrophe_space,     "catastrophe_outside", 1);
 #endif
-
+#if NEW_CATASTROPHE_TIP_MOTORS
+    glos.set(catastrophe_Lm,   "catastrophe_Lm");
+    glos.set(catastrophe_Lt,     "catastrophe_Lt");
+#endif
 #ifdef BACKWARD_COMPATIBILITY
     
     if ( glos.set(growing_force[0], "dynamic_force") )
@@ -165,6 +172,10 @@ void ClassicFiberProp::complete(Simul const& sim)
     else if ( sim.ready() )
         throw InvalidParameter("A space must be defined as catastrophe_outside[1]");
 #endif
+#if NEW_CATASTROPHE_TIP_MOTORS
+    catastrophe_psi = catastrophe_Lm/(catastrophe_Lm-catastrophe_Lt);
+#endif
+
 }
 
 
@@ -185,6 +196,10 @@ void ClassicFiberProp::write_values(std::ostream& os) const
 #endif
 #if NEW_CATASTROPHE_OUTSIDE
     write_value(os, "catastrophe_outside",      catastrophe_outside);
+#endif
+#if NEW_CATASTROPHE_TIP_MOTORS
+    write_value(os, "catastrophe_Lm",      catastrophe_Lm);
+    write_value(os, "catastrophe_Lt",      catastrophe_Lt);
 #endif
 }
 

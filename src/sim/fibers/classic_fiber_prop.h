@@ -12,6 +12,8 @@
 /// Enables support for an option that induces catastrophe if the PLUS_END is outside
 #define NEW_CATASTROPHE_OUTSIDE 0
 
+/// Enables support for an option that induces catastrophe following the accumulation of motors in time at the tip of a microtubule following the model of Tischer et al. 2010
+#define NEW_CATASTROPHE_TIP_MOTORS 1
 
 /// additional Property for ClassicFiber
 /**
@@ -125,6 +127,28 @@ public:
     
 #endif
     
+#if NEW_CATASTROPHE_TIP_MOTORS
+    
+    /// Switch to enable the length-dependent catastrophe rate based on the model of Tischer et al. 2010 for the yeast anaphase.
+    /**
+    If this is defined, the catastrophe rate will depend on the difference of length of the fiber from the moment it started to grow (length()-length_at_rescue). We choose this assumption because the catastrophy rate in the anaphase spindle increases as the microtubule grows, but it seems to depend only on the time the microtubule has grown, and not on the length of the spindle, suggesting that kinesin-8 molecules are recruited either at the midzone, or after the midzone.
+
+        catastrophe_rate_real = catastrophe_rate * (1.-psi*exp(-L/Lm)-(1.-psi)*exp(-L/Lt))
+        psi = Lm/(Lm-Lt)
+        Lm: (v_m/k_u) -> Run length of the motor: velocity of the motor divided by unbinding rate of the motor
+        Lt: v_g/beta -> Growth speed of the microtubule divided by unbinding rate of the motor at the tip.
+        catastrophe_rate: Represents the catastrophe rate of a microtubule of infinite length
+        
+    */
+    
+    /// Run length of the motor: velocity of the motor divided by unbinding rate of the motor (Lm= v_m/k_u)
+    real catastrophe_Lm;
+    
+    /// Growth speed of the microtubule divided by unbinding rate of the motor at the tip (Lt= v_g/beta)
+    real catastrophe_Lt;
+    
+#endif
+    
     /// Rate of stochastic switching from disassembly to assembly
     real    rescue_rate[2];
     
@@ -142,6 +166,7 @@ private:
     real    catastrophe_rate_stalled_dt[2];
     real    catastrophe_coef[2];
     real    rescue_prob[2], rebirth_prob[2];
+    real    catastrophe_psi;
     
 #if NEW_CATASTROPHE_OUTSIDE
     /// pointer to actual Space used for `catastrophe_outside`

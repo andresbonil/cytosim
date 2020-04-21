@@ -3,7 +3,6 @@
 #include "dim.h"
 #include "assert_macro.h"
 #include "classic_fiber.h"
-#include "classic_fiber_prop.h"
 #include "exceptions.h"
 #include "iowrapper.h"
 #include "messages.h"
@@ -19,6 +18,9 @@ ClassicFiber::ClassicFiber(ClassicFiberProp const* p) : Fiber(p), prop(p)
     mStateP  = STATE_WHITE;
     mGrowthM = 0;
     mGrowthP = 0;
+#if NEW_CATASTROPHE_TIP_MOTORS
+    length_rescue = 0;
+#endif
 }
 
 
@@ -39,6 +41,11 @@ void ClassicFiber::setDynamicStateM(state_t s)
 
 void ClassicFiber::setDynamicStateP(state_t s)
 {
+#if NEW_CATASTROPHE_TIP_MOTORS
+    // This will be called if the fiber is created with a given length and growing
+    if ( s==STATE_GREEN)
+        length_rescue = length();
+#endif
     if ( s==STATE_WHITE || s==STATE_GREEN || s==STATE_RED )
         mStateP = s;
     else
@@ -49,9 +56,9 @@ void ClassicFiber::setDynamicStateP(state_t s)
 //------------------------------------------------------------------------------
 #pragma mark -
 
-/** 
+/**
  The catastrophe rate depends on the growth rate of the corresponding tip,
- which is itself reduced by antagonistic force. 
+ which is itself reduced by antagonistic force.
  The correspondance is : 1/rate = a + b * growthSpeed.
  
  For no force on the growing tip: rate = catastrophe_rate * time_step
@@ -95,7 +102,9 @@ void ClassicFiber::step()
         mGrowthM = prop->shrinking_speed_dt[M];
         
         if ( RNG.test(prop->rescue_prob[M]) )
+        {
             mStateM = STATE_GREEN;
+        }
     }
     
     
@@ -141,6 +150,16 @@ void ClassicFiber::step()
             cata *= length() / prop->catastrophe_length;
         }
 #endif
+#if NEW_CATASTROPHE_TIP_MOTORS
+        LOG_ONCE("Using length-dependent catastrophe rate based on Tischer et al. 2010\n");
+        if (prop->catastrophe_Lm>0){
+            real L = len-length_rescue;
+            real Lm = prop->catastrophe_Lm;
+            real Lt = prop->catastrophe_Lt;
+            real psi =prop->catastrophe_psi;
+            cata*=(1.-psi*exp(-L/Lm)-(1.-psi)*exp(-L/Lt));
+        }
+#endif
         
         if ( RNG.test(cata) )
             mStateP = STATE_RED;
@@ -150,7 +169,12 @@ void ClassicFiber::step()
         mGrowthP = prop->shrinking_speed_dt[P];
         
         if ( RNG.test(prop->rescue_prob[P]) )
-            mStateP = STATE_GREEN;
+        {
+            mStateM = STATE_GREEN;
+#if NEW_CATASTROPHE_TIP_MOTORS
+            length_rescue = len;
+#endif
+        }
     }
     
     real inc = mGrowthP + mGrowthM;
@@ -168,7 +192,12 @@ void ClassicFiber::step()
             mStateM = STATE_GREEN;
     
         if ( mStateP == STATE_RED && RNG.test(prop->rebirth_prob[P]) )
-            mStateP = STATE_GREEN;
+        {
+            mStateM = STATE_GREEN;
+#if NEW_CATASTROPHE_TIP_MOTORS
+            length_rescue = len;
+#endif
+        }
     }
     else if ( len + inc < prop->max_length )
     {
