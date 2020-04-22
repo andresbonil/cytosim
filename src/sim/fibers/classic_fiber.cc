@@ -193,7 +193,7 @@ void ClassicFiber::step()
     
         if ( mStateP == STATE_RED && RNG.test(prop->rebirth_prob[P]) )
         {
-            mStateM = STATE_GREEN;
+            mStateP = STATE_GREEN;
 #if NEW_CATASTROPHE_TIP_MOTORS
             length_rescue = len;
 #endif
