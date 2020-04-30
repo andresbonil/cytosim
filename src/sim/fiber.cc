@@ -943,6 +943,42 @@ void Fiber::sortHands() const
     }
 }
 
+real comp_abscissa2(const Hand* a, const Hand* b)
+{
+    return a->abscissa()<b->abscissa();
+}
+
+void Fiber::sortHands2() const
+{
+    size_t cnt = nbHands();
+    if ( cnt > 1 )
+    {
+        std::vector<Hand *> tmp(cnt);
+        
+        size_t i = 0;
+        Hand * n = handListFront;
+        
+        while ( n )
+        {
+            tmp[i++] = n;
+            n = n->next();
+        }
+        sort(tmp.begin(),tmp.end(),comp_abscissa2);
+        
+        n = tmp[0];
+        handListFront = n;
+        n->prev(nullptr);
+        for ( i = 1; i < cnt; ++i )
+        {
+            n->next(tmp[i]);
+            tmp[i]->prev(n);
+            n = tmp[i];
+        }
+        n->next(nullptr);
+        handListBack = n;
+    }
+}
+
 
 unsigned Fiber::nbHands() const
 {
@@ -1005,6 +1041,56 @@ unsigned Fiber::nbHandsNearEnd(const real len, const FiberEnd ref) const
     }
     //printf("nbHandsNearEnd(%8.2f) = %u\n", len, res);
     return res;
+}
+
+real Fiber::handQuantile(unsigned int property_num,real quant, bool bridging_only, int & nb_neighbours) const
+{
+    assert_true(quant<=1 && quant>=0)
+    std::vector<int> neighbours;
+    nb_neighbours=0;
+    
+    // Sort the Hands
+    sortHands2();
+    
+    // We count the hands with the right property id
+    unsigned res = 0;
+    for ( Hand const* ha = handListFront; ha; ha = ha->next() )
+    {
+        // If bridging_only specified count only if the hand is bridging
+        if (ha->property()->number()==property_num && bridging_only ? ha->interactionStiffness()>0 : true)
+            res++ ;
+    }
+    
+    // If none is found return the abscissa of the plus end
+    if (res==0)
+    {
+        return abscissaP();
+    }
+    
+    // Define the number of hands to find before we return the abscissa
+    unsigned int target_count = round(res*quant);
+    
+    res = 0;
+    for ( Hand const* ha = handListFront; ha; ha = ha->next() )
+    {
+        if (ha->property()->number()==property_num && bridging_only ? ha->interactionStiffness()>0 : true)
+        {
+            ++res;
+            // If the neighbour fiber was not found, we add it
+            if (nb_neighbours && std::count(neighbours.begin(), neighbours.end(), ha->otherHand()->fiber()->identity()))
+            {
+                neighbours.push_back(ha->otherHand()->fiber()->identity());
+            }
+            if (res>=target_count)
+            {
+                nb_neighbours=neighbours.size();
+                return ha->abscissa();
+            }
+        }
+    }
+    
+    std::cerr << "Error in Fiber::handQuantile" << '\n';
+    
 }
 
 //------------------------------------------------------------------------------

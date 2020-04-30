@@ -403,7 +403,9 @@ public:
     
     /// print positions of interection between two fibers
     void      reportFiberIntersections(std::ostream&, Glossary&) const;
-
+    
+    /// print the quantiles of the hands
+    void      reportFiberQuantiles(std::ostream&,Glossary&, bool bridging_only) const;
 
     /// print Organizer positions
     void      reportOrganizer(std::ostream&) const;

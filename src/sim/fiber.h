@@ -235,6 +235,9 @@ public:
     /// sort Hands by order of increasing abscissa
     void           sortHands() const;
     
+    /// sort Hands using a vector
+    void           sortHands2() const;
+    
     /// return Hand bound to this fiber (use ->next() to access all other Hands)
     Hand *         firstHand() const { return handListFront; }
    
@@ -249,6 +252,9 @@ public:
     
     /// number of Hands attached at a distance less than 'len' from the specified FiberEnd
     unsigned       nbHandsNearEnd(real len, FiberEnd end) const;
+    
+    /// Starting from minus end, returns the abscissa that contains a given percentage of the total hands of a certain class (identified by property_number). If bridging_only, also returns the number of fibers bridged to the current fiber through couples
+    real           handQuantile(unsigned int property_number, real quant, bool bridging_only, int & nb_neighbours) const;
     
     //--------------------------------------------------------------------------
 #if FIBER_HAS_LATTICE

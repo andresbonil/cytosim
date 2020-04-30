@@ -238,7 +238,11 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
             return reportFiberLattice(out, false);
         if ( what == "lattice_density" )
             return reportFiberLattice(out, true);
-
+        if ( what == "quantile" )
+            return reportFiberQuantiles(out,opt, false);
+        if ( what == "quantile_bridge" )
+            return reportFiberQuantiles(out,opt, true);
+        
         throw InvalidSyntax("I only know fiber: position, end, point, moment, speckle, sample, segment, dynamic, length, distribution, tension, force, cluster, age, energy, hand, link");
     }
     if ( who == "bead" )
@@ -891,6 +895,28 @@ void Simul::reportFiberMoments(std::ostream& out) const
     }
 }
 
+// Report the quantiles
+void Simul::reportFiberQuantiles(std::ostream& out,Glossary& opt, bool bridging_only) const
+{
+    std::string target_hand;
+    opt.set(target_hand,"hand");
+    unsigned prop_id=findProperty(target_hand)->number();
+    
+    out << COM << "class" << SEP << "identity";
+    out << SEP << "q0.25" << SEP << "q0.5" << SEP << "q0.75";
+    
+    int nb_neighbours=0;
+    
+    // list fibers in the order of the inventory:
+    for ( Fiber const* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
+    {
+        out << LIN << fib->prop->number();
+        out << SEP << fib->identity();
+        out << SEP << fib->handQuantile(prop_id, 0.25, bridging_only, nb_neighbours);
+        out << SEP << fib->handQuantile(prop_id, 0.5, bridging_only, nb_neighbours);
+        out << SEP << fib->handQuantile(prop_id, 0.75, bridging_only, nb_neighbours);
+    }
+}
 
 //------------------------------------------------------------------------------
 #pragma mark - Fiber forces
