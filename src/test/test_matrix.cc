@@ -432,7 +432,12 @@ void testMatrixBlock(const int size, const int fill)
     delete[] iny;
 }
 
-int compare_int(const void* i, const void* j) { return ( *(int*)i > *(int*)j ); }
+int compareInt(const void* p, const void* q)
+{
+    size_t i = *static_cast<size_t const*>(p);
+    size_t j = *static_cast<size_t const*>(q);
+    return ( i > j ) - ( j > i );
+}
 
 int main( int argc, char* argv[] )
 {
@@ -504,7 +509,7 @@ int main( int argc, char* argv[] )
         //testMatrices(DIM*17, 23);
         int dim[5] = { 0 };
         for ( int i = 0; i < 5; ++i ) dim[i] = RNG.pint(1<<(i+7));
-        qsort(dim, 5, sizeof(int), compare_int);
+        qsort(dim, 5, sizeof(int), compareInt);
         for ( int i = 0; i < 5; ++i )
             testMatrices(DIM*dim[i], RNG.pint(dim[i]*dim[i]));
     }

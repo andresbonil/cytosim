@@ -460,14 +460,12 @@ public:
 
 
 /// function for qsort, comparing line indices
-int compareElement(const void * p, const void * q)
+int compareMSSBElement(const void * p, const void * q)
 {
-    MatrixSparseSymmetricBlock::Element const* a = (MatrixSparseSymmetricBlock::Element const*)(p);
-    MatrixSparseSymmetricBlock::Element const* b = (MatrixSparseSymmetricBlock::Element const*)(q);
-    
-    if ( a->inx > b->inx ) return  1;
-    if ( a->inx < b->inx ) return -1;
-    return 0;
+    int a = static_cast<MatrixSparseSymmetricBlock::Element const*>(p)->inx;
+    int b = static_cast<MatrixSparseSymmetricBlock::Element const*>(q)->inx;
+
+    return ( a > b ) - ( b > a );
 }
 
 /**
@@ -483,7 +481,7 @@ void MatrixSparseSymmetricBlock::Column::sort(Element*& tmp, size_t tmp_size)
     }
     
     //std::clog << "sizeof(Element) " << sizeof(Element) << "\n";
-    qsort(tmp+1, size_-1, sizeof(Element), &compareElement);
+    qsort(tmp+1, size_-1, sizeof(Element), &compareMSSBElement);
     
     for ( unsigned i = 1; i < size_; ++i )
     {
