@@ -1576,7 +1576,7 @@ void Meca::addSideLink2D(const Interpolation & pta,
             vBAS[ii0+1] += epsw * offx;
             vBAS[ii1  ] += ca2w * offx;
             vBAS[ii1+1] -= epsw * offx;
-            vBAS[ii2  ] += offx;
+            vBAS[ii2  ] += weight * offx;
         }
         real offy = off.YY;
         if ( offy != 0 )
@@ -1585,7 +1585,7 @@ void Meca::addSideLink2D(const Interpolation & pta,
             vBAS[ii0+1] += ca1w * offy;
             vBAS[ii1  ] += epsw * offy;
             vBAS[ii1+1] += ca2w * offy;
-            vBAS[ii2+1] += offy;
+            vBAS[ii2+1] += weight * offy;
         }
     }
 }
