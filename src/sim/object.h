@@ -73,6 +73,12 @@ public:
 
     /// write a reference that identifies the Object uniquely
     static void writeReference(Outputter&, Object const*);
+    
+    /// write header to object data, using provided tag
+    void        writeHeader(Outputter&, ObjectTag tag) const;
+    
+    /// read header
+    static void readHeader(Inputter& in, bool fat, unsigned& ix, ObjectID& id, ObjectMark& mk);
 
 public:
     
@@ -116,10 +122,7 @@ public:
 
     /// concatenation of [ tag(), property()->number(), identity() ] in plain ascii
     std::string     reference() const;
-
-    /// write header to object data, but using the provided Tag
-    void            writeHeader(Outputter&, ObjectTag tag) const;
-
+    
     //--------------------------
 
     /// get mark

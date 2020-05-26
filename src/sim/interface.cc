@@ -884,13 +884,14 @@ void Interface::execute_run(unsigned nb_steps)
  */
 void Interface::execute_import(std::string const& file, std::string const& what, Glossary& opt)
 {
-    ObjectSet * selected = nullptr;
+    // we could use the 'tag' to select a certain class of object
+    ObjectSet * subset = nullptr;
     
     if ( what != "all" && what != "objects" )
     {
-        selected = simul.findSet(what);
-        if ( !selected )
-            throw InvalidIO("expected class specifier (i.e. import all)");
+        subset = simul.findSet(what);
+        if ( !subset )
+            throw InvalidIO("expected class specifier (eg. `import all FILE' or `import fiber FILE')");
     }
 
     Inputter in(DIM, file.c_str(), true);
@@ -911,11 +912,11 @@ void Interface::execute_import(std::string const& file, std::string const& what,
         if ( append )
         {
             real t = simul.prop->time;
-            simul.loadObjects(in, selected);
+            simul.loadObjects(in, subset);
             simul.prop->time = t;
         }
         else
-            simul.reloadObjects(in, selected);
+            simul.reloadObjects(in, subset);
         if ( cnt >= frm )
             break;
         ++cnt;

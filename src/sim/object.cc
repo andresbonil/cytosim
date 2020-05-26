@@ -160,8 +160,7 @@ Writes the info that is common to all objects to file
      - 4 bytes for the mark
      .
  .
- The ascii based format is always the same.
- This header is read by ObjectSet::readObject()
+ The ascii based format is invariant.
  */
 void Object::writeHeader(Outputter& out, ObjectTag g) const
 {
@@ -182,6 +181,59 @@ void Object::writeHeader(Outputter& out, ObjectTag g) const
         out.writeUInt16(identity(), ':');
     }
 }
+
+
+void Object::readHeader(Inputter& in, bool fat, unsigned& ix, ObjectID& id, ObjectMark& mk)
+{
+    if ( in.binary() )
+    {
+        // read header in binary format
+        if ( fat )
+        {
+            ix = in.readUInt16();
+            id = in.readUInt32();
+#ifdef BACKWARD_COMPATIBILITY
+            if ( in.formatID() < 34 )
+                ;
+            else if ( in.formatID() < 39 )
+                mk = in.readUInt16();
+            else
+#endif
+            mk = in.readUInt32();
+        }
+        else
+        {
+            ix = in.readUInt8();
+            id = in.readUInt16();
+        }
+    }
+    else
+    {
+        // read header in text format
+        FILE * file = in.file();
+        if ( 1 != fscanf(file, "%u", &ix) )
+            throw InvalidIO("invalid Object header");
+        if ( in.get_char() != ':' )
+            throw InvalidIO("invalid Object header");
+        if ( 1 != fscanf(file, "%u", &id) )
+            throw InvalidIO("invalid Object header");
+        int c = in.get_char();
+        if ( c == ':' )
+        {
+            if ( 1 != fscanf(file, "%lu", &mk) )
+            throw InvalidIO("invalid Object header");
+        }
+        else
+            in.unget(c);
+    }
+#ifdef BACKWARD_COMPATIBILITY
+    if ( in.formatID() < 45 )
+        ++ix;
+#endif
+    if ( id == 0 )
+        throw InvalidIO("Invalid ObjectID referenced in file");
+}
+
 
 
 /// print a list of objects
