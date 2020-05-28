@@ -4,6 +4,7 @@
 
 #include "assert_macro.h"
 #include <fstream>
+#include <iomanip>
 
 #ifndef REAL_H
     #include "real.h"
