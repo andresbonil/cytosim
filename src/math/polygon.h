@@ -38,7 +38,17 @@ public:
         {
             return ( xx == p.xx  &&  yy == p.yy );
         }
-    };
+        
+        /// print
+        void write(std::ostream& os) const
+        {
+            const int w = (int)os.width();
+            os << "Point2D(";
+            os << " " << std::fixed << std::setw(w) << xx;
+            os << " " << std::fixed << std::setw(w) << yy;
+            os << "}";
+        }
+     };
     
     /// list of points. The array is allocated to hold index = 1+npts_
     Point2D* pts_;
