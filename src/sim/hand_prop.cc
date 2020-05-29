@@ -15,6 +15,7 @@
 
 #include "motor_prop.h"
 #include "walker_prop.h"
+#include "wanderer_prop.h"
 #include "slider_prop.h"
 #include "nucleator_prop.h"
 #include "regulator_prop.h"
@@ -121,6 +122,8 @@ HandProp * HandProp::newProperty(const std::string& nom, Glossary& glos)
         if ( a == "bind" )
             return new HandProp(nom);
 #if NEW_HAND_TYPES
+        if ( a == "wander" )
+            return new WandererProp(nom);
         if ( a == "kinesin" )
             return new KinesinProp(nom);
         if ( a == "dynein" )

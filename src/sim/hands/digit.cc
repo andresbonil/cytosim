@@ -31,6 +31,17 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
         if ( lat->outsideMP(s) || unavailable(lat, s) )
             return false;
         
+        // further check for entanglement (if it is a couple and the other hand is already attached)
+        if ( prop->footprint && otherHand() && otherHand()->attached())
+        {
+            
+            // otherhand is the one that is attached (old), from the old fiber we call the function
+            // we pass the position in space of the old hand, the position of the new hand, and the
+            // position of the new fiber
+            if (otherHand()->fiber()->causesEntanglement(otherHand()->pos(), sit.pos(), sit.fiber()))
+                return false;
+        }
+        
         // adjust to match selected lattice site:
         sit.engageLattice(lat, s, prop->site_shift);
 #endif

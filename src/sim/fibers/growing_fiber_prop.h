@@ -67,7 +67,11 @@ public:
     
     /// Shrinking speed of end that are outside, for option 'shrink_outside'
     real    shrinking_speed[2];
-
+    
+    /// Space in which the shrinking happens, by default the confining space.
+    std::string shrinking_space;
+    
+    
     /// @}
     
 private:
@@ -106,7 +110,9 @@ public:
 
     /// write
     void write_values(std::ostream&) const;
-
+    
+    /// A pointer to the space specified in shrinking_space, by default the confining_space
+    Space const*  shrinking_space_ptr;
 };
 
 #endif

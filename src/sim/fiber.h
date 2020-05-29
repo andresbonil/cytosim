@@ -21,7 +21,7 @@ class LineDisp;
 
 
 /// Flag to associate a Lattice to the Fiber {0, 1}
-#define FIBER_HAS_LATTICE 0
+#define FIBER_HAS_LATTICE 1
 
 /// Lattice composed of integers, appropriate for discrete occupancy
 typedef Lattice<uint64_t> FiberLattice;
@@ -260,6 +260,9 @@ public:
 
     /// recalculate occupancy lattice from bound Hands
     void           resetLattice();
+
+    /// check whether the binding of a couple with two digits would cause entanglement
+    bool           causesEntanglement(Vector const &, Vector const & ,const Fiber *) const;
 #else
     /// does nothing
     void           resetLattice() {}

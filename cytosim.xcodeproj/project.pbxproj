@@ -85,6 +85,10 @@
 		BB2BFFDF184640D800EBE4EC /* space_polygonZ.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB2BFFDC184640D800EBE4EC /* space_polygonZ.cc */; };
 		BB2BFFE0184640D800EBE4EC /* space_polygonZ.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2BFFDD184640D800EBE4EC /* space_polygonZ.h */; };
 		BB2BFFE1184640D800EBE4EC /* space_polygonZ.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2BFFDD184640D800EBE4EC /* space_polygonZ.h */; };
+		BB2C77712481595200689B56 /* wanderer.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2C776D2481595100689B56 /* wanderer.h */; };
+		BB2C77722481595200689B56 /* wanderer_prop.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB2C776E2481595200689B56 /* wanderer_prop.cc */; };
+		BB2C77732481595200689B56 /* wanderer_prop.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2C776F2481595200689B56 /* wanderer_prop.h */; };
+		BB2C77742481595200689B56 /* wanderer.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB2C77702481595200689B56 /* wanderer.cc */; };
 		BB2EBF470FCF1F3F00CCA721 /* fiber_site.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB2EBF450FCF1F3F00CCA721 /* fiber_site.cc */; };
 		BB2EBF480FCF1F3F00CCA721 /* fiber_site.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2EBF460FCF1F3F00CCA721 /* fiber_site.h */; };
 		BB30922C2164BB2B00C6DEE4 /* grid_display.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB3092292164BAC300C6DEE4 /* grid_display.cc */; };
@@ -937,6 +941,10 @@
 		BB2BF8DA0E085C880024546A /* makefile.inc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.pascal; lineEnding = 0; name = makefile.inc; path = src/base/makefile.inc; sourceTree = SOURCE_ROOT; };
 		BB2BFFDC184640D800EBE4EC /* space_polygonZ.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = space_polygonZ.cc; path = src/sim/spaces/space_polygonZ.cc; sourceTree = SOURCE_ROOT; };
 		BB2BFFDD184640D800EBE4EC /* space_polygonZ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = space_polygonZ.h; path = src/sim/spaces/space_polygonZ.h; sourceTree = SOURCE_ROOT; };
+		BB2C776D2481595100689B56 /* wanderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wanderer.h; path = hands/wanderer.h; sourceTree = "<group>"; };
+		BB2C776E2481595200689B56 /* wanderer_prop.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wanderer_prop.cc; path = hands/wanderer_prop.cc; sourceTree = "<group>"; };
+		BB2C776F2481595200689B56 /* wanderer_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wanderer_prop.h; path = hands/wanderer_prop.h; sourceTree = "<group>"; };
+		BB2C77702481595200689B56 /* wanderer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wanderer.cc; path = hands/wanderer.cc; sourceTree = "<group>"; };
 		BB2EBF450FCF1F3F00CCA721 /* fiber_site.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = fiber_site.cc; path = src/sim/fiber_site.cc; sourceTree = SOURCE_ROOT; };
 		BB2EBF460FCF1F3F00CCA721 /* fiber_site.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fiber_site.h; path = src/sim/fiber_site.h; sourceTree = SOURCE_ROOT; };
 		BB2EFCAD230AAF7100073B5A /* test_solver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_solver.cc; sourceTree = "<group>"; };
@@ -1601,6 +1609,17 @@
 				BB749D641793645C00B43298 /* polygon.cc */,
 			);
 			name = geometry;
+			sourceTree = "<group>";
+		};
+		BB2C776C2481593200689B56 /* Wanderer */ = {
+			isa = PBXGroup;
+			children = (
+				BB2C776D2481595100689B56 /* wanderer.h */,
+				BB2C77702481595200689B56 /* wanderer.cc */,
+				BB2C776F2481595200689B56 /* wanderer_prop.h */,
+				BB2C776E2481595200689B56 /* wanderer_prop.cc */,
+			);
+			name = Wanderer;
 			sourceTree = "<group>";
 		};
 		BB4ADEC10D47459400C2B1C9 /* Grids */ = {
@@ -2495,6 +2514,7 @@
 				BB500226126A06B2005E925C /* Motor */,
 				BBA005B2163495F70026FCB1 /* Digit */,
 				BBA1014B126CC7BD00D28A55 /* Walker */,
+				BB2C776C2481593200689B56 /* Wanderer */,
 				BBFF313816F3580500C09B51 /* Myosin */,
 				BBFF314216F3648E00C09B51 /* Dynein */,
 				BBFF314116F3648800C09B51 /* Kinesin */,
@@ -2893,6 +2913,7 @@
 				BBA27AEB211EC31600A7E184 /* vector4.h in Headers */,
 				BB6D309620CA5B12009C5C7C /* matrix22.h in Headers */,
 				BB71917A0EF1CD9900CED9E2 /* smath.h in Headers */,
+				BB2C77712481595200689B56 /* wanderer.h in Headers */,
 				BB71917B0EF1CD9900CED9E2 /* clapack.h in Headers */,
 				BB9EC395209235CC00EF00E7 /* SFMT-params19937.h in Headers */,
 				BB9EC399209235CC00EF00E7 /* SFMT.h in Headers */,
@@ -2912,6 +2933,7 @@
 				BB71918C0EF1CD9900CED9E2 /* vector2.h in Headers */,
 				BB6D309A20CABF96009C5C7C /* matrix11.h in Headers */,
 				BB71918D0EF1CD9900CED9E2 /* vector3.h in Headers */,
+				BB2C77732481595200689B56 /* wanderer_prop.h in Headers */,
 				BB7191960EF1CD9900CED9E2 /* vector.h in Headers */,
 				BBD1B1F018FFD97800E5D80A /* project_ellipse.h in Headers */,
 				BB0E4BD81002698100A96B34 /* random_vector.h in Headers */,
@@ -3647,6 +3669,7 @@
 			files = (
 				BB7191A00EF1CD9900CED9E2 /* matsparse.cc in Sources */,
 				BB7191A20EF1CD9900CED9E2 /* matrix.cc in Sources */,
+				BB2C77742481595200689B56 /* wanderer.cc in Sources */,
 				BB7191A90EF1CD9900CED9E2 /* pointsonsphere.cc in Sources */,
 				BB7191AA0EF1CD9900CED9E2 /* random.cc in Sources */,
 				BB9EC398209235CC00EF00E7 /* SFMT.c in Sources */,
@@ -3663,6 +3686,7 @@
 				BB7191B90EF1CD9900CED9E2 /* vector1.cc in Sources */,
 				BB7191BA0EF1CD9900CED9E2 /* vector2.cc in Sources */,
 				BB7191BB0EF1CD9900CED9E2 /* vector3.cc in Sources */,
+				BB2C77722481595200689B56 /* wanderer_prop.cc in Sources */,
 				BB089A0A2228A26D00C070E7 /* matrix11.cc in Sources */,
 				BB0E4BD91002698100A96B34 /* random_vector.cc in Sources */,
 				BB749D661793645D00B43298 /* polygon.cc in Sources */,

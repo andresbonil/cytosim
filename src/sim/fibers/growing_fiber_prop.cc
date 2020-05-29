@@ -26,6 +26,7 @@ void GrowingFiberProp::clear()
         growing_force[i]     = INFINITY;
         shrink_outside[i]    = false;
         shrinking_speed[i]   = 0;
+        shrinking_space = "";
     }
 }
 
@@ -39,6 +40,7 @@ void GrowingFiberProp::read(Glossary& glos)
     glos.set(growing_off_speed, 2, "growing_off_speed");
     glos.set(shrink_outside,    2, "shrink_outside");
     glos.set(shrinking_speed,   2, "shrinking_speed");
+    glos.set(shrinking_space, "shrinking_space");
 }
 
 
@@ -61,6 +63,16 @@ void GrowingFiberProp::complete(Simul const& sim)
         growing_off_speed_dt[i] = growing_off_speed[i] * sim.time_step();
         shrinking_speed_dt[i] = shrinking_speed[i] * sim.time_step();
     }
+    if (shrink_outside[0]||shrink_outside[1])
+    {
+        if (shrinking_space!="")
+            shrinking_space_ptr = sim.findSpace(shrinking_space);
+        else
+        {
+            shrinking_space_ptr = confine_space_ptr;
+            shrinking_space = confine_space;
+        }
+    }
 }
 
 
@@ -72,5 +84,8 @@ void GrowingFiberProp::write_values(std::ostream& os) const
     write_value(os, "growing_force",     growing_force, 2);
     write_value(os, "shrink_outside",    shrink_outside, 2);
     write_value(os, "shrinking_speed",   shrinking_speed, 2);
+    if (shrink_outside[0]||shrink_outside[1])
+        write_value(os, "shrinking_space",   shrinking_space);
+    
 }
 

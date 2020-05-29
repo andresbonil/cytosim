@@ -1395,4 +1395,33 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     }
 }
 
+//ADDED by manu
+/**
+ 
+ fiber f: pointer to the fiber where you want to attach the free hand (new)
+ pos_old: position of the hand that was attached
+ pos_new: position of the new site where the hand will try to attach
+ 
+ */
+bool Fiber::causesEntanglement( Vector const & pos_old, Vector const & pos_new, const Fiber * f) const
+{
+    for ( Hand * ha_old = handListFront; ha_old; ha_old = ha_old->next() )
+    {
+        
+        // ha_old is the hand of the "old fiber"-> fiber where the hand was attached
+        
+        // hand of the "new fiber"-> fiber where the hand is trying to attach
+        Hand const* ha_new = ha_old->otherHand();
+        
+        // This also tests wether the hand belongs to a couple or a single by testing if ha_new is true, and whether it is attached, and whether both hands have lattices
+        if (ha_new && ha_new->lattice()==&f->lattice() && ha_old->lattice())
+        {
+            if (dot(ha_new->pos()-pos_new,ha_old->pos()-pos_old)<0)
+                return true;
+        }
+    }
+    return false;
+
+}
+
 

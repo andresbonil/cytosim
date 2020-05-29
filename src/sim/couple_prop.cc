@@ -156,6 +156,8 @@ void CoupleProp::complete(Simul const& sim)
                 Cytosim::warn << "hand2:binding_range should be >= couple:length for " << name() << "\n";
         }
     }
+    hand1_prop->completeStiffness(sim,stiffness);
+    hand2_prop->completeStiffness(sim,stiffness);
 }
 
 

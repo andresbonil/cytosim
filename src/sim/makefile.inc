@@ -24,6 +24,7 @@ OBJ_DIGITS := digit.o digit_prop.o\
               walker.o walker_prop.o\
               myosin.o myosin_prop.o\
               dynein.o dynein_prop.o\
+              wanderer.o wanderer_prop.o\
               kinesin.o kinesin_prop.o
 
 OBJ_SINGLES := single.o single_prop.o single_set.o\

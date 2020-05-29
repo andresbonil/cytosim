@@ -179,6 +179,9 @@ void SingleProp::complete(Simul const& sim)
         if ( length > hand_prop->binding_range )
             throw InvalidParameter("hand:binding_range must be >= single:length");
             //Cytosim::warn << "Attachment cannot occur because single:length > hand:binding_range\n";
+
+        // This should only be done if the single has stiffness
+        hand_prop->completeStiffness(sim,stiffness);
     }
 }
 

@@ -245,6 +245,9 @@ public:
     
     /// return a carbon copy of object
     Property* clone() const { return new HandProp(*this); }
+    
+    /// Complete Hand's property given stiffness value from the Couple/Single
+    virtual void completeStiffness(Simul const&, real stiffness){};
 };
 
 
