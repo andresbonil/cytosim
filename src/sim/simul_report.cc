@@ -1917,7 +1917,7 @@ void reFlag(FiberSet const& set, ObjectFlag a, ObjectFlag b)
     if ( a < b )
         std::swap(a, b);
 
-    // replace a -> b
+    // replace a -> b = min(a, b)
     for ( Fiber* fib = set.first(); fib; fib=fib->next() )
     {
         if ( fib->flag() == a )
@@ -1935,16 +1935,6 @@ void Simul::flagClustersCouples() const
     {
         ObjectFlag f1 = cx->fiber1()->flag();
         ObjectFlag f2 = cx->fiber2()->flag();
-        if ( f1 == 0 )
-        {
-            f1 = cx->fiber1()->identity();
-            cx->fiber1()->flag(f1);
-        }
-        if ( f2 == 0 )
-        {
-            f2 = cx->fiber2()->identity();
-            cx->fiber2()->flag(f2);
-        }
         if ( f1 != f2 )
             reFlag(fibers, f1, f2);
     }
@@ -1959,8 +1949,13 @@ void Simul::flagClustersCouples(Property const* arg) const
 
     for ( Couple * cx = couples.firstAA(); cx ; cx=cx->next() )
     {
-        if ( cx->prop == arg  &&  cx->fiber1()->flag() != cx->fiber2()->flag() )
-            reFlag(fibers, cx->fiber1()->flag(), cx->fiber2()->flag());
+        if ( cx->prop == arg )
+        {
+            ObjectFlag f1 = cx->fiber1()->flag();
+            ObjectFlag f2 = cx->fiber2()->flag();
+            if ( f1 != f2 )
+                reFlag(fibers, f1, f2);
+        }
     }
 }
 
@@ -1980,10 +1975,8 @@ void Simul::flagClustersSolids() const
             if ( s->attached() )
             {
                 ObjectFlag f = s->fiber()->flag();
-                if ( flg == 0 )
+                if ( flg == 0 || f < flg )
                     flg = f;
-                else
-                    flg = std::min(f, flg);
             }
         }
         // reflag:
@@ -2000,13 +1993,13 @@ void Simul::flagClustersSolids() const
 
 
 /// class to store info about a Cluster
-struct ClusterInfo
+struct Cluster
 {
     ObjectFlag flg;
     size_t     cnt;
     
-    ClusterInfo(ObjectFlag f, size_t n) { flg = f; cnt = n; }
-    real operator < (ClusterInfo const&b) const { return cnt > b.cnt; }
+    Cluster(ObjectFlag f, size_t n) { flg = f; cnt = n; }
+    real operator < (Cluster const&b) const { return cnt > b.cnt; }
 };
 
 
@@ -2017,41 +2010,52 @@ flags according to the corresponding cluster index.
 */
 int Simul::orderClusters(std::ostream& out, size_t threshold, int details) const
 {
-    typedef std::set<Fiber*> list_t;
+    typedef std::vector<Fiber*> list_t;
     typedef std::map<ObjectFlag, list_t> map_t;
     // the std::set will keep its elements ordered:
-    typedef std::set<ClusterInfo> set_t;
+    typedef std::multiset<Cluster> set_t;
     map_t map;
     set_t clusters;
 
-    // extract clusters in 'map' and reset fiber flag:
-    for ( Fiber * fib = fibers.first(); fib; fib=fib->next() )
+    // extract clusters in 'map' and reset fiber's flag:
+    for ( Fiber* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
     {
-        map[fib->flag()].insert(fib);
+        //std::clog << fib->reference() << " " << fib->flag() << "\n";
+        map[fib->flag()].push_back(fib);
         fib->flag(0);
     }
     
     // insert clusters with size information to get them sorted:
     for ( map_t::const_iterator c = map.begin(); c != map.end(); ++c )
-        if ( c->second.size() >= threshold )
-            clusters.insert(ClusterInfo(c->first, c->second.size()));
+    {
+        size_t s = c->second.size();
+        if ( s >= threshold )
+            clusters.emplace(c->first, s);
+    }
+    
+    if ( details > 0 )
+        out << LIN << clusters.size() << " clusters:";
     
     // consider clusters by decreasing size:
     int idx = 0;
     for ( set_t::const_iterator cc = clusters.begin(); cc != clusters.end(); ++cc )
     {
         ++idx;
-        list_t & list = map[cc->flg];
+        list_t const& list = map[cc->flg];
+        
         for ( Fiber * i : list )
             i->flag(idx);
 
         if ( details > 0 )
         {
-            out << LIN << cc->flg << SEP << cc->cnt << " :";
+            out << LIN << cc->flg << SEP << cc->cnt;
             
             if ( details > 1 )
+            {
+                out << " :";
                 for ( Fiber * i : list )
                     out << " " << i->identity();
+            }
         }
     }
     
