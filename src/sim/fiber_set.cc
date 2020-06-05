@@ -158,7 +158,7 @@ ObjectList FiberSet::newObjects(const std::string& name, Glossary& opt)
 
         for ( size_t n = 0; n < cnt; ++n )
         {
-            FiberSite fs(fib, fib->someAbscissa(abs, ref, mod, n/std::max(1UL, cnt-1)));
+            FiberSite fs(fib, fib->someAbscissa(abs, ref, mod, (real)n/std::max(1UL, cnt-1)));
             Object * cs = nullptr;
             Hand * h = nullptr;
             if ( sip )
