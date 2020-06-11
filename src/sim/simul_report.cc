@@ -1427,8 +1427,8 @@ void Simul::reportSinglePosition(std::ostream& out, std::string const& which) co
     if ( which.size() )
         selected = properties.find_or_die("single", which);
 
-    out << COM << "class" << SEP << "identity" << SEP << repeatXYZ("pos_hand");
-    out << SEP << repeatXYZ("pos") << SEP << "fiber" << SEP << "abscissa";
+    out << COM << "class" << SEP << "identity" << SEP << repeatXYZ("pos");
+    out << SEP << "fiber" << SEP << "abscissa";
 
     for ( Single const* obj = singles.firstID(); obj; obj = singles.nextID(obj) )
     {
@@ -1436,7 +1436,6 @@ void Simul::reportSinglePosition(std::ostream& out, std::string const& which) co
         {
             out << LIN << obj->prop->number();
             out << SEP << obj->identity();
-            out << SEP << obj->posHand();
             out << SEP << obj->posFoot();
             if ( obj->attached() )
             {
