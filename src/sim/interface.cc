@@ -305,8 +305,7 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
     
     //Cytosim::warn << "could not fulfill `position=" + opt.value("position", 0) + "'\n";
     throw InvalidParameter("could not fulfill `position=" + opt.value("position", 0) + "'");
-    iso.reset();
-    return iso;
+    //iso.reset(); return iso;
 }
 
 

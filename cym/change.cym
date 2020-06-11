@@ -40,6 +40,7 @@ change system display { back_color=0x00FFA7FF }
 change all simul { display = (back_color=red;) }
 change all simul display { back_color=0x00FFA7FF }
 
+change actin rigidity { 1 }
 change actin { rigidity=1; }
 change microtubule { rigidity = 20; }
 change all fiber { confine = inside, 10; }
@@ -57,7 +58,7 @@ change fiber microtubule { rigidity=20; }
 change simul:display * { back_color=black; }
 change simul * { viscosity = 1; }
 
-set simul:display * { back_color = blue; }
+%set simul:display system { back_color = blue; }
 set fiber:segmentation actin { 0.5 }
 set fiber:rigidity actin { 1 }
 

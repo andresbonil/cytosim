@@ -50,7 +50,7 @@ public:
 
 private:
     
-    /// signals that engine is ready to perform a step
+    /// signals that Simul is ready to perform a Monte-Carlo step
     bool            sReady;
 
     /// preconditionning method used in last solve
@@ -246,7 +246,7 @@ public:
     Object*         readReference(Inputter&, ObjectTag& tag);
 
     /// check if `name` corresponds to a property class, but excluding 'simul'
-    bool            isPropertyClass(const std::string& name) const;
+    bool            isCategory(const std::string& name) const;
     
     /// return existing property of given class and name, or return zero
     Property*       findProperty(const std::string&, const std::string&) const;
@@ -330,14 +330,16 @@ public:
     void      reportInventory(std::ostream&) const;
  
     /// print the length and the points of each fiber
-    void      reportFiber(std::ostream&, FiberProp const*) const;
+
+    /// print the length and the points of each fiber
+    void      reportFibers(std::ostream&, Property const*) const;
     
     /// print the length and the points of each fiber
-    void      reportFiber(std::ostream&, std::string const&) const;
-    
+    void      reportFibers(std::ostream&, std::string const&) const;
+
     /// print the length and the points of each fiber
-    void      reportFiber(std::ostream&) const;
-    
+    void      reportFibers(std::ostream&) const;
+
     /// print the coordinates of the vertices of each fiber
     void      reportFiberPoints(std::ostream&) const;
     
