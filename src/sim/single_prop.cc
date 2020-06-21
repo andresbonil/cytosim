@@ -113,7 +113,10 @@ void SingleProp::read(Glossary& glos)
                                          {"surface", CONFINE_ON},
                                          {"inside",  CONFINE_INSIDE}});
     
-    //glos.set(confine_stiffness,  "confine", 1);
+    real val;
+    if ( glos.set(val, "confine", 1) && val > 0 )
+        throw InvalidParameter(name()+":confine[1] is ignored");
+    
     glos.set(confine_space,  "confine", 2);
 
 #ifdef BACKWARD_COMPATIBILITY
@@ -192,7 +195,7 @@ void SingleProp::write_values(std::ostream& os) const
 #if NEW_MOBILE_SINGLE
     write_value(os, "speed",          speed);
 #endif
-    write_value(os, "confine",        confine, "", confine_space);
+    write_value(os, "confine",        confine, 0, confine_space);
     write_value(os, "activity",       activity);
 }
 
