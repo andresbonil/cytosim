@@ -9,14 +9,15 @@
 *  [Introduction to the command line](main/starter.md)
 *  [**Tutorials**](tutorials/index.md)
 *  [Simulation engine](sim/index.md)
-*  [The different executables](main/executables.md)
 *  [Running simulations on your computer](main/runs.md)
 *  [Running cytosim on a cluster](main/run_slurm.md)
-*  [Graphical rendering](sim/graphics.md)
-*  [Making movies](main/movies.md)
 *  [Getting numbers out of Cytosim with `report`](sim/report.md)
 *  [Frequently asked questions](main/faq.md)
+*  [The different executables](main/executables.md)
+*  [Graphical rendering](sim/graphics.md)
+*  [Making movies](main/movies.md)
 *  [Prior work](examples/index.md)
+*  [Syntax highlighting for config file](https://github.com/manulera/cytosimGrammar)
 *  [File types](main/file_types.md)
 
 # Installation
