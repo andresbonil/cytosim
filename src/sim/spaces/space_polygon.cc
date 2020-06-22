@@ -184,7 +184,7 @@ Vector SpacePolygon::project(Vector const& w) const
  @todo Also project re-entrant polygon corners on the segments of the Fiber.
  */
 void SpacePolygon::setInteraction(Vector const& pos, Mecapoint const& pe, Meca & meca, real stiff) const
-{    
+{
 #if ( DIM > 1 )
     index_t inx = DIM * pe.matIndex();
     
@@ -214,8 +214,8 @@ void SpacePolygon::setInteraction(Vector const& pos, Mecapoint const& pe, Meca &
         {
             meca.mC(inx+2, inx+2) -= stiff;
             meca.base(inx+2)      += stiff * std::copysign(height_, pos.ZZ);
+            return;
         }
-        return;
     }
 #endif
 
