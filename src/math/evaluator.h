@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <vector>
 
 /// a minimal math expression evaluator
 /**
@@ -21,16 +22,16 @@ class Evaluator
 public:
     
     /// variable names must be a single letter
-    typedef std::pair<char, real> variable;
+    typedef std::pair<int, real> variable;
 
     /// list of variables
-    typedef std::initializer_list<variable> variable_list;
+    typedef std::vector<variable> variable_list;
     
     static void print_variables(std::ostream& os, variable_list const& list)
     {
         os << "Known variables:\n";
         for ( variable const& v : list )
-            os << "   " << v.first << " = " << v.second << "\n";
+            os << "   " << (char)v.first << " = " << v.second << "\n";
     }
 
 private:
@@ -176,7 +177,7 @@ private:
     
 public:
     
-    Evaluator(variable_list const& v) : variables_(v)
+    Evaluator(std::initializer_list<variable> const& v) : variables_(v)
     {
         //print_variables(std::clog, variables_);
     }
