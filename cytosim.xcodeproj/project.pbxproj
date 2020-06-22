@@ -89,6 +89,16 @@
 		BB2EBF480FCF1F3F00CCA721 /* fiber_site.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2EBF460FCF1F3F00CCA721 /* fiber_site.h */; };
 		BB30922C2164BB2B00C6DEE4 /* grid_display.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB3092292164BAC300C6DEE4 /* grid_display.cc */; };
 		BB30922D216543C000C6DEE4 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB69D0B8209C666100445716 /* GLUT.framework */; };
+		BB31697224A0F1A9008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697324A0F1AB008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697424A0F1AC008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697524A0F1B1008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697624A0F286008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697724A0F289008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697824A0F28A008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697924A0F28A008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697A24A0F28B008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
+		BB31697B24A0F28C008DFDB3 /* operator_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB6E174B223E5B2F00AF850D /* operator_new.cc */; };
 		BB33E9D9100355B500B44F1E /* libcytodisp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB4DB5950C69D5A2001E5E4F /* libcytodisp.a */; };
 		BB33E9E01003564400B44F1E /* libcytodisp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB4DB5950C69D5A2001E5E4F /* libcytodisp.a */; };
 		BB33E9E41003566600B44F1E /* libcytodisp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB4DB5950C69D5A2001E5E4F /* libcytodisp.a */; };
@@ -173,7 +183,6 @@
 		BB60C86C0B60353300596D88 /* fiber_grid.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB60C6A00B6022FE00596D88 /* fiber_grid.cc */; };
 		BB61B7F019B7622800B1F4F6 /* print_color.h in Headers */ = {isa = PBXBuildFile; fileRef = BB61B7EF19B7622800B1F4F6 /* print_color.h */; };
 		BB61B7F219B7626A00B1F4F6 /* print_color.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB61B7F119B7626A00B1F4F6 /* print_color.cc */; };
-		BB61CA8416D6310100A0F6A5 /* linear_solvers.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB2185620B4084CC00B75436 /* linear_solvers.cc */; };
 		BB6403F705FBC2F400DF7BFF /* libcytosim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB51BD1405FA5FAA00D4869F /* libcytosim.a */; };
 		BB6403FA05FBC2F900DF7BFF /* libcytobase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB51BC5C05FA559800D4869F /* libcytobase.a */; };
 		BB64041A05FBC59200DF7BFF /* frametool.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB77D6FB05F12F16001C0596 /* frametool.cc */; };
@@ -3384,6 +3393,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697524A0F1B1008DFDB3 /* operator_new.cc in Sources */,
 				BB18BBC21DFD7DD900567023 /* test_simd.cc in Sources */,
 				BB18BBC11DFD7C0E00567023 /* tictoc.cc in Sources */,
 			);
@@ -3397,6 +3407,7 @@
 				BBE447DB2064ED200058ADAC /* SFMT.c in Sources */,
 				BB04E2761E1A4E89000BDBC9 /* random.cc in Sources */,
 				BB04E2751E1A4E7B000BDBC9 /* tictoc.cc in Sources */,
+				BB31697A24A0F28B008DFDB3 /* operator_new.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3449,6 +3460,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697924A0F28A008DFDB3 /* operator_new.cc in Sources */,
 				BB51BC2805FA539B00D4869F /* test_glapp.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3601,6 +3613,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697424A0F1AC008DFDB3 /* operator_new.cc in Sources */,
 				BBA75855139CFBA40098FBAF /* sieve.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3609,6 +3622,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697324A0F1AB008DFDB3 /* operator_new.cc in Sources */,
 				BB64041A05FBC59200DF7BFF /* frametool.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3617,6 +3631,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697624A0F286008DFDB3 /* operator_new.cc in Sources */,
 				BB64060605FBD9EA00DF7BFF /* test_space.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3655,6 +3670,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697824A0F28A008DFDB3 /* operator_new.cc in Sources */,
 				BBCB0859244AF571004E7C32 /* SFMT.c in Sources */,
 				BBCB0858244AF530004E7C32 /* rasterizer.cc in Sources */,
 				BB7C2B8505F94000002C69A9 /* test_rasterizer.cc in Sources */,
@@ -3669,6 +3685,7 @@
 				BB51BC1005FA4F9A00D4869F /* random.cc in Sources */,
 				BB51BC1605FA4FD100D4869F /* messages.cc in Sources */,
 				BB3417660C3294B40016CF18 /* filewrapper.cc in Sources */,
+				BB31697724A0F289008DFDB3 /* operator_new.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3676,6 +3693,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697B24A0F28C008DFDB3 /* operator_new.cc in Sources */,
 				BB9D87B41E76BBF100DD0F00 /* backtrace.cc in Sources */,
 				BB9D87AF1E76BBAE00DD0F00 /* matsparsesymblk.cc in Sources */,
 				BB738A6420C51E620039C670 /* SFMT.c in Sources */,
@@ -3721,6 +3739,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB31697224A0F1A9008DFDB3 /* operator_new.cc in Sources */,
 				BBA75888139CFC700098FBAF /* frame_reader.cc in Sources */,
 				BB0F033114C5FDF2002FA598 /* report.cc in Sources */,
 			);
