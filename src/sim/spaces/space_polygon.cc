@@ -12,11 +12,11 @@
 SpacePolygon::SpacePolygon(SpaceProp const* p)
 : Space(p)
 {
-    surface_ = 0;
-    height_ = 0;
     inf_.reset();
     sup_.reset();
-    
+    surface_ = 0;
+    height_ = 0;
+
     if ( DIM == 1 )
         throw InvalidParameter("polygon is not usable in 1D");
 }
