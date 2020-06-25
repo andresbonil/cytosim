@@ -25,21 +25,6 @@ inline void show(vec2 v, vec2 w, char const* s)
     printf("vec2 %s ( %5.2f %5.2f )( %5.2f %5.2f )\n", s, v[1], v[0], w[1], w[0]);
 }
 
-/*
-inline void show8(__m128i v, char const* s)
-{
-    uint16_t a = _mm_extract_epi16(v, 0);
-    uint16_t b = _mm_extract_epi16(v, 1);
-    uint16_t c = _mm_extract_epi16(v, 2);
-    uint16_t d = _mm_extract_epi16(v, 3);
-    uint16_t e = _mm_extract_epi16(v, 5);
-    uint16_t f = _mm_extract_epi16(v, 6);
-    uint16_t g = _mm_extract_epi16(v, 7);
-    uint16_t h = _mm_extract_epi16(v, 8);
-    printf("veci %s ( %3i %3i %3i %3i %3i %3i %3i %3i )\n", s, h, g, f, e, d, c, b, a);
-}
-*/
-
 /// print SIMD vector of 4 floats
 inline void show(vec4f v, char const* s)
 {
