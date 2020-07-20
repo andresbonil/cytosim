@@ -244,9 +244,6 @@ public:
     
     /// fill array `vec` with independent random numbers following normal law N(0,v*v).
     void gauss_set(real vec[], size_t n, real v);
-
-    /// signed real number, following a normal law N(0,1), slower algorithm
-    void gauss_slow(real &, real&);
     
     /// random in [0, inf[, with P(x) = exp(-x), mean = 1.0, variance = 1.0
     real exponential() { return -log( URAND32() * TWO_POWER_MINUS_32 + TWO_POWER_MINUS_32 );  }

@@ -327,20 +327,6 @@ void Random::gauss_set(real vec[], size_t cnt)
 
 #endif
 
-
-/**
- This is the Box & Muller method.
- A note on the generation of random normal deviates
- Box & Muller, 1958
- */
-void Random::gauss_slow(real& x, real& y)
-{
-    real angle = real( URAND32() ) * ( TWO_POWER_MINUS_31 * M_PI );
-    real norm  = sqrt( -2 * log( preal_exc() ));
-    x = norm * cos(angle);
-    y = norm * sin(angle);
-}
-
 //------------------------------------------------------------------------------
 #pragma mark -
 
