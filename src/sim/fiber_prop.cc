@@ -22,6 +22,39 @@ Fiber* FiberProp::newFiber() const
 
 
 /**
+ Return the length specified by the user in 'opt'
+ */
+real FiberProp::newFiberLength(Glossary& opt) const
+{
+    real len = 1.0;
+
+#ifdef BACKWARD_COMPATIBILITY
+    opt.set(len, "initial_length");
+#endif
+    opt.set(len, "length") || opt.set(len, "fiber_length");
+    
+    // exponential distribution:
+    if ( opt.value_is("length", 1, "exponential") )
+    {
+        len *= RNG.exponential();
+    }
+    else
+    {
+        // add variability without changing mean:
+        real var = 0;
+        if ( opt.set(var, "length", 1) || opt.set(var, "fiber_length", 1) )
+        {
+            len += var * RNG.sreal();
+        }
+    }
+    
+    len = std::max(len, min_length);
+    len = std::min(len, max_length);
+    return len;
+}
+
+
+/**
  @addtogroup FiberGroup
  @{
  <hr>
@@ -112,33 +145,6 @@ Fiber* FiberProp::newFiber() const
 Fiber* FiberProp::newFiber(Glossary& opt) const
 {
     Fiber * fib = newFiber();
-    real len = 1.0;
-    
-    /* 
-     initial length and reference point for placement can be specified in 'opt'
-     */
-#ifdef BACKWARD_COMPATIBILITY
-    opt.set(len, "initial_length");
-#endif
-    opt.set(len, "length") || opt.set(len, "fiber_length");
-
-    // exponential distribution:
-    if ( opt.value_is("length", 1, "exponential") )
-    {
-        len *= RNG.exponential();
-    }
-    else
-    {
-        // add variability without changing mean:
-        real var = 0;
-        if ( opt.set(var, "length", 1) || opt.set(var, "fiber_length", 1) )
-        {
-            len += var * RNG.sreal();
-        }
-    }
-
-    len = std::max(len, min_length);
-    len = std::min(len, max_length);
     
 #if ( 1 )
     // specify the vertices directly:
@@ -154,7 +160,7 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
             fib->setPoint(p, vec);
         }
         if ( opt.has_key("length") )
-            fib->imposeLength(len);
+            fib->imposeLength(newFiberLength(opt));
     }
     else
 #endif
@@ -163,23 +169,24 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         unsigned nbp = opt.nb_values("shape");
         
         if ( nbp < 2 )
-            throw InvalidParameter("fiber:shape must be a list of comma-separated vectors");
+            throw InvalidParameter("fiber:shape must be a list of comma-separated points");
 
         real* tmp = new_real(DIM*nbp);
         for ( unsigned p = 0; p < nbp; ++p )
         {
             Vector vec(0,0,0);
             if ( ! opt.set(vec, "shape", p) )
-                throw InvalidParameter("fiber:shape must be a list of comma-separated vectors");
+                throw InvalidParameter("fiber:shape must be a list of comma-separated points");
             vec.store(tmp+DIM*p);
         }
         fib->setShape(tmp, nbp, 0);
         if ( fib->nbPoints() < 2 )
-            throw InvalidParameter("the vectors specified in fiber:shape must be different");
+            throw InvalidParameter("the vectors specified in fiber:shape must not overlap");
         free_real(tmp);
     }
     else
     {
+        const real len = newFiberLength(opt);
         real pl = 0; // persistence length
         // place fiber horizontally with center at the origin:
         if ( opt.set(pl, "equilibrate") && pl > 0 )
@@ -189,7 +196,7 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         
         FiberEnd ref = CENTER;
         if ( opt.set(ref, "reference", {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}}) )
-            fib->moveEnd(ref);
+            fib->placeEnd(ref);
     }
     
     // possible dynamic states of the ends

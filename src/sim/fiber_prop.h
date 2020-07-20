@@ -302,6 +302,9 @@ public:
     /// return a non-initialized Fiber with this property
     virtual Fiber* newFiber() const;
     
+    /// return a length specified by the user in a Glossary
+    real newFiberLength(Glossary& opt) const;
+    
     /// return a Fiber with this property, initialized
     Fiber* newFiber(Glossary& opt) const;
     

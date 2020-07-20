@@ -96,10 +96,14 @@ void Chain::setStraight(Vector const& pos, Vector const& dir, real len)
 }
 
 
-void Chain::moveEnd(const FiberEnd ref)
+void Chain::placeEnd(const FiberEnd ref)
 {
     switch( ref )
     {
+        case NO_END:
+            flipChainPolarity();
+            break;
+        
         case MINUS_END:
             translate(posMiddle()-posEndM());
             break;
@@ -113,15 +117,15 @@ void Chain::moveEnd(const FiberEnd ref)
             break;
             
         default:
-            ABORT_NOW("invalid argument to Chain::moveEnd()");
+            ABORT_NOW("invalid argument to Chain::placeEnd()");
     }
 }
 
 
 /**
- This will set the Fiber with `np` points unless `np == 0`, in which case
- the number of points will be set automatically from fnSegmentation.
- pts[] should be of size DIM * n_pts and contain coordinates.
+ This will set the Fiber with `n_pts` points unless `n_pts == 0`, in which case
+ the number of points will be set automatically from `fnSegmentation`.
+ `pts[]` should provide `DIM * n_pts` coordinates.
 
  The given set of points do not need to be equally distributed.
  The MINUS_END and PLUS_END will be set to the first and last points in `pts[]`,
@@ -592,8 +596,8 @@ void Chain::getPoints(real const* ptr)
 
 
 /**
- Flip all the points without changing fnAbscissaM or fnAbscissaP,
- and the abscissa of center thus stays as it is.
+ Flip all the points, such that minus_end becomes plus_end and vice-versa.
+ This does not affects Abscissa and the abscissa of center thus stays as it is.
 */
 void Chain::flipChainPolarity()
 {
