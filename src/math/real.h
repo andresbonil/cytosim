@@ -106,4 +106,12 @@ inline real square(const real x) { return x * x; }
 inline real cube(const real x) { return x * x * x; }
 
 
+/// return `neg` if `arg < 0` and `pos` otherwise
+inline real sign_select(real const& val, real const& neg, real const& pos)
+{
+    // this should be branchless, using Intel's VBLENDVPD instruction
+    if ( val >= 0 ) return pos;
+    else return neg;
+}
+
 #endif

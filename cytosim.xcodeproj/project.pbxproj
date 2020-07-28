@@ -105,6 +105,7 @@
 		BB3417660C3294B40016CF18 /* filewrapper.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB20484A0AF203A0004EDA21 /* filewrapper.cc */; };
 		BB39EC26153806070047768E /* duo_long.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB39EC24153806070047768E /* duo_long.cc */; };
 		BB39EC27153806070047768E /* duo_long.h in Headers */ = {isa = PBXBuildFile; fileRef = BB39EC25153806070047768E /* duo_long.h */; };
+		BB3A4AE919351389005CD868 /* space_tee.h in Headers */ = {isa = PBXBuildFile; fileRef = BB3A4AE619351389005CD868 /* space_tee.h */; };
 		BB40C8800CC6044E00EC90F8 /* meca1d.h in Sources */ = {isa = PBXBuildFile; fileRef = BB40C87F0CC6044E00EC90F8 /* meca1d.h */; };
 		BB4737BD2024B39300FE6CEC /* accumulator.h in Headers */ = {isa = PBXBuildFile; fileRef = BB4737BC2024B39300FE6CEC /* accumulator.h */; };
 		BB48AB021B42BABD008540D1 /* space_banana.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB48AB001B42BABD008540D1 /* space_banana.cc */; };
@@ -466,6 +467,7 @@
 		BBD025DF1B28DF950002B9FE /* chewer_prop.h in Headers */ = {isa = PBXBuildFile; fileRef = BBD025DB1B28DF950002B9FE /* chewer_prop.h */; };
 		BBD025E01B28DF950002B9FE /* chewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD025DC1B28DF950002B9FE /* chewer.cc */; };
 		BBD025E11B28DF950002B9FE /* chewer.h in Headers */ = {isa = PBXBuildFile; fileRef = BBD025DD1B28DF950002B9FE /* chewer.h */; };
+		BBD096E624D0767400084292 /* space_tee.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB3A4AE519351389005CD868 /* space_tee.cc */; };
 		BBD1B1EE18FFD5DA00E5D80A /* project_ellipse.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD1B1EB18FFCE9A00E5D80A /* project_ellipse.cc */; };
 		BBD1B1F018FFD97800E5D80A /* project_ellipse.h in Headers */ = {isa = PBXBuildFile; fileRef = BBD1B1EF18FFD97800E5D80A /* project_ellipse.h */; };
 		BBD5DA7A0FF7956C0010D08D /* organizer_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBD5DA760FF7956C0010D08D /* organizer_set.cc */; };
@@ -2195,38 +2197,38 @@
 		BB8838BE10B48EF900A4028F /* spaces */ = {
 			isa = PBXGroup;
 			children = (
-				BB48AB001B42BABD008540D1 /* space_banana.cc */,
 				BB48AB011B42BABD008540D1 /* space_banana.h */,
-				BB88394B10B4912A00A4028F /* space_capsule.cc */,
+				BB48AB001B42BABD008540D1 /* space_banana.cc */,
 				BB88394C10B4912A00A4028F /* space_capsule.h */,
-				BB8838C110B48EF900A4028F /* space_cylinder.cc */,
+				BB88394B10B4912A00A4028F /* space_capsule.cc */,
 				BB8838C210B48EF900A4028F /* space_cylinder.h */,
-				E2F6428715D01466009B7C31 /* space_cylinderP.cc */,
+				BB8838C110B48EF900A4028F /* space_cylinder.cc */,
 				E2F6428815D01466009B7C31 /* space_cylinderP.h */,
-				BB8838C310B48EF900A4028F /* space_cylinderZ.cc */,
+				E2F6428715D01466009B7C31 /* space_cylinderP.cc */,
 				BB8838C410B48EF900A4028F /* space_cylinderZ.h */,
+				BB8838C310B48EF900A4028F /* space_cylinderZ.cc */,
 				BB8838C610B48EF900A4028F /* space_dice.h */,
 				BB8838C510B48EF900A4028F /* space_dice.cc */,
-				BBDF81781E677D620032906A /* space_disc.h */,
-				BBDF81771E677D620032906A /* space_disc.cc */,
-				BB8838C710B48EF900A4028F /* space_ellipse.cc */,
 				BB8838C810B48EF900A4028F /* space_ellipse.h */,
-				BBE4B5E913E04D2400CBE163 /* space_periodic.cc */,
+				BB8838C710B48EF900A4028F /* space_ellipse.cc */,
 				BBE4B5EA13E04D2400CBE163 /* space_periodic.h */,
-				BB8838CD10B48EF900A4028F /* space_polygon.cc */,
+				BBE4B5E913E04D2400CBE163 /* space_periodic.cc */,
 				BB8838CE10B48EF900A4028F /* space_polygon.h */,
-				BB2BFFDC184640D800EBE4EC /* space_polygonZ.cc */,
+				BB8838CD10B48EF900A4028F /* space_polygon.cc */,
 				BB2BFFDD184640D800EBE4EC /* space_polygonZ.h */,
-				BBE9D38B158500BA00FF944A /* space_ring.cc */,
+				BB2BFFDC184640D800EBE4EC /* space_polygonZ.cc */,
 				BBE9D38C158500BA00FF944A /* space_ring.h */,
-				BB8838D110B48EF900A4028F /* space_sphere.cc */,
+				BBE9D38B158500BA00FF944A /* space_ring.cc */,
 				BB8838D210B48EF900A4028F /* space_sphere.h */,
-				BB8838D510B48EF900A4028F /* space_square.cc */,
+				BB8838D110B48EF900A4028F /* space_sphere.cc */,
 				BB8838D610B48EF900A4028F /* space_square.h */,
-				BB8838D710B48EF900A4028F /* space_strip.cc */,
+				BB8838D510B48EF900A4028F /* space_square.cc */,
 				BB8838D810B48EF900A4028F /* space_strip.h */,
-				BB8838DB10B48EF900A4028F /* space_torus.cc */,
+				BB8838D710B48EF900A4028F /* space_strip.cc */,
 				BB8838DC10B48EF900A4028F /* space_torus.h */,
+				BB8838DB10B48EF900A4028F /* space_torus.cc */,
+				BB3A4AE619351389005CD868 /* space_tee.h */,
+				BB3A4AE519351389005CD868 /* space_tee.cc */,
 			);
 			name = spaces;
 			path = src/sim/spaces;
