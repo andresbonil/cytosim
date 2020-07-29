@@ -66,7 +66,7 @@ bool SpaceCylinderP::inside(Vector const& W) const
     const real RT = W.YY * W.YY + W.ZZ * W.ZZ;
     return ( RT <= square(radius_) );
 #elif ( DIM > 1 )
-    return ( abs_real(W.YY) <= radius_ );
+    return ( fabs(W.YY) <= radius_ );
 #else
     return false;
 #endif
@@ -80,7 +80,7 @@ bool SpaceCylinderP::allInside(Vector const& W, const real rad) const
     const real RT = W.YY * W.YY + W.ZZ * W.ZZ;
     return ( RT <= square(radius_-rad) );
 #elif ( DIM > 1 )
-    return ( abs_real(W.YY) <= radius_-rad );
+    return ( fabs(W.YY) <= radius_-rad );
 #else
     return false;
 #endif
@@ -106,7 +106,7 @@ Vector SpaceCylinderP::normalToEdge(Vector const& pos) const
     real n = 1.0 / pos.normYZ();
     return Vector(0, n * pos.YY, n * pos.ZZ);
 #elif ( DIM >= 2 )
-    return Vector(0, sign_real(pos.YY), 0);
+    return Vector(0, std::copysign((real)1, pos.YY), 0);
 #endif
     return Vector(0, 0, 0);  // intentionally invalid!
 }
