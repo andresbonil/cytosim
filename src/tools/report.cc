@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
         ofs.close();
 
     /// check if all specified parameters were used:
-    arg.warnings(std::cerr, cnt);
-    
+    arg.print_warning(std::cerr, cnt, "\n");
+
     return EXIT_SUCCESS;
 }

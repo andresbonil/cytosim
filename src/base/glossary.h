@@ -97,7 +97,7 @@ private:
     static std::string format_count(size_t);
     
     /// report unused values and values used more than `threshold` times
-    static int   warnings(std::ostream&, pair_type const&, size_t threshold, std::string const& msg);
+    static int   warning(pair_type const&, std::string& msg, size_t threshold);
 
     /// read key and assignement operator
     static int   read_key(pair_type&, std::istream&);
@@ -143,7 +143,7 @@ private:
     static int is_number(std::string const& str)
     {
         char const* ptr = str.c_str();
-        char * end;
+        char * end = nullptr;
         
         errno = 0;
         long i = strtol(ptr, &end, 10);
@@ -191,7 +191,7 @@ private:
     {
         for ( auto const& kv : dict )
         {
-            // accept both the named-value of the ascii representation of the value
+            // accept both the named-value and the representation of the value
             if ( val == kv.first || val == std::to_string(kv.second) )
             {
                 var = kv.second;
@@ -266,14 +266,17 @@ public:
     rec_type const* values(key_type const&) const;
     
     /// return copy of value corresponding to `key[inx]`, or empty string if this value is not present
-    std::string  value(key_type const&, size_t inx) const;
+    std::string  value(key_type const&, size_t inx = 0) const;
     
     /// returns true if `key[inx]==val`, or false otherwise. Counter is incremented in case of match
     bool         value_is(key_type const& key, size_t inx, std::string const& val) const;
     
-    /// report unused values and values used multiple times
-    int          warnings(std::ostream&, size_t threshold=1, std::string const& msg="") const;
+    /// print message about unused values and values used multiple times; return warning code
+    int          has_warning(std::ostream&, size_t threshold = 1) const;
     
+    /// print message about unused values and values used multiple times
+    void         print_warning(std::ostream&, size_t threshold, std::string const&) const;
+
     //-------------------------------------------------------------------------------
     #pragma mark -
     
@@ -291,6 +294,9 @@ public:
         oss << val;
         define(key, inx, oss.str());
     }
+    
+    /// add value to key
+    void         add_value(key_type const&, std::string const& val);
 
     /// update the glossary to include one assignment read from stream
     void         read_entry(std::istream&, int no_overwrite = 2);
@@ -359,6 +365,15 @@ public:
         return 0;
     }
     
+    /// set `var` from `key[int]` or `alt[alt_inx], using the dictionary `dict`
+    template <typename T>
+    int set(T & var, key_type const& key, size_t inx, key_type const& alt, size_t alt_inx) const
+    {
+        int res = set(var, key, inx);
+        if ( !res )
+            res = set(var, alt, alt_inx);
+        return res;
+    }
     
     /// set `cnt` values in the array `ptr[]`, starting at `key[0]`
     template <typename T>
@@ -407,13 +422,22 @@ public:
         return 0;
     }
     
+    /// set `var` from `key[int]` or `alt[alt_inx], using the dictionary `dict`
+    template <typename T>
+    int set(T & var, key_type const& key, size_t inx, key_type const& alt, size_t alt_inx, dict_type<T> const& dict) const
+    {
+        int res = set(var, key, inx, dict);
+        if ( !res )
+            res = set(var, alt, alt_inx, dict);
+        return res;
+    }
+
     /// set `var` from `key[0]`, using the dictionary `dict`
     template <typename T>
     int set(T & var, key_type const& key, dict_type<T> const& dict) const
     {
         return set(var, key, 0, dict);
     }
-
     
     /// true if value of `key[inx]` is composed of alpha characters and '_'
     int is_alpha(key_type const& key, size_t inx) const
@@ -427,13 +451,12 @@ public:
     
     /// check if value of `key[inx]` could be a number
     /**
-     @returns a bitwise field:
-     - 0 if this is not a number
-     - 1 if not negative (>=0)
+     @returns a bitwise field with individual bits set as follows:
+     - 1 if not negative (that is >= 0 )
      - 2 if integer
      - 4 if float
      .
-     eg. value 3 is a positive integer
+     eg. result is 0 if not a number; result is 3 for a positive integer
      */
     int is_number(key_type const& key, size_t inx) const
     {

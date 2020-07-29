@@ -12,26 +12,35 @@
 #include <fstream>
 
 
-// Use the second definition to get some verbose reports:
+// Use the second definition to get some reports:
 #define VLOG(ARG) ((void) 0)
 //#define VLOG(ARG) std::clog << ARG;
 
 
 //------------------------------------------------------------------------------
 /**
- The permission of the parser are:
- - do_set: new Properties can be created
- - do_change: existing Property or Object can be modified
- - do_new: new Object can be created
+ The permission of the parser are set by a number of variables:
+ - do_set: can create new Properties
+ - do_change: can modify existing Property or Object
+ - do_new: can create new Object
  - do_run: can perform simulation steps
  - do_write: can write to disc
  .
  */
-Parser::Parser(Simul& arg, bool s, bool c, bool n, bool r, bool w)
-: Interface(arg), do_set(s), do_change(c), do_new(n), do_run(r), do_write(w)
+Parser::Parser(Simul& sim, bool s, bool c, bool n, bool r, bool w)
+: Interface(sim), do_set(s), do_change(c), do_new(n), do_run(r), do_write(w)
 {
 }
 
+/// check for unused values in Glossary and issue a warning
+void check_warnings(Glossary& opt, std::istream& is, std::streampos ipos, size_t cnt = 1)
+{
+    if ( opt.has_warning(std::cerr, cnt) )
+    {
+        std::cerr << '\n';
+        StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+    }
+}
 
 //------------------------------------------------------------------------------
 #pragma mark - Parse
@@ -173,7 +182,7 @@ void Parser::parse_set(std::istream& is)
                 opt.read(blok);
             else
                 opt.define(para, blok);
-            pp = execute_change(name, opt, false);
+            pp = execute_change(name, opt, do_set);
         }
         else if ( para == "display" )
         {
@@ -182,8 +191,8 @@ void Parser::parse_set(std::istream& is)
         }
     }
 
-    if ( pp && opt.warnings(std::cerr) )
-        StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+    if ( pp )
+        check_warnings(opt, is, ipos);
 }
 
 //------------------------------------------------------------------------------
@@ -286,10 +295,10 @@ void Parser::parse_change(std::istream& is)
         if ( change_all )
             execute_change_all(name, opt);
         else
-            execute_change(name, opt);
+            execute_change(name, opt, do_set);
  
-        if ( opt.warnings(std::cerr, ~0U) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        if ( do_set )
+            check_warnings(opt, is, ipos, ~0U);
     }
     else if ( para == "display" )
     {
@@ -372,7 +381,7 @@ void Parser::parse_new(std::istream& is)
         opt.define("position", 0, blok);
     }
     
-    if ( do_new  &&  cnt > 0 )
+    if ( do_new & ( cnt > 0 ))
     {
         if ( opt.nb_keys() == 0 )
         {
@@ -438,8 +447,7 @@ void Parser::parse_new(std::istream& is)
             if ( opt.has_key("display") )
                 throw InvalidParameter("display parameters should be specified within `set'");
             
-            if ( opt.warnings(std::cerr, ~0U) )
-                StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+            check_warnings(opt, is, ipos, ~0U);
         }
     }
 }
@@ -530,8 +538,7 @@ void Parser::parse_delete(std::istream& is)
     {
         Glossary opt(blok);
         execute_delete(name, opt, cnt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -580,8 +587,7 @@ void Parser::parse_mark(std::istream& is)
     {
         Glossary opt(blok);
         execute_mark(name, opt, cnt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -624,8 +630,7 @@ void Parser::parse_cut(std::istream& is)
     {
         Glossary opt(blok);
         execute_cut(str, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -655,7 +660,7 @@ void Parser::parse_run(std::istream& is)
     }
 #endif
     if ( name.empty() )
-        throw InvalidSyntax("missing simul name (use `run NB_STEPS all { }')");
+        throw InvalidSyntax("unexpected syntax (use `run NB_STEPS NAME_OF_SIMUL { }')");
     
     if ( name == "all" )
     {
@@ -664,8 +669,8 @@ void Parser::parse_run(std::istream& is)
         // There can only be one Simul object:
         name = simul.prop->name();
     }
-
-    if ( name != simul.prop->name() )
+    
+    if ( name != "*"  &&  name != simul.prop->name() )
         throw InvalidSyntax("unknown simul name `"+name+"'");
 
     std::string blok = Tokenizer::get_block(is, '{');
@@ -699,8 +704,7 @@ void Parser::parse_run(std::istream& is)
         else
             execute_run(cnt, opt, do_write);
 
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -734,8 +738,7 @@ void Parser::parse_read(std::istream& is)
     {
         Glossary opt(blok);
         opt.set(required, "required");
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
     
     if ( FilePath::is_file(file) )
@@ -800,8 +803,7 @@ void Parser::parse_import(std::istream& is)
     {
         Glossary opt(blok);
         execute_import(file, what, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -849,8 +851,7 @@ void Parser::parse_export(std::istream& is)
     {
         Glossary opt(blok);
         execute_export(file, what, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -887,7 +888,7 @@ void Parser::parse_report(std::istream& is)
     std::string file = Tokenizer::get_filename(is);
 
     if ( file.empty() )
-        throw InvalidSyntax("missing/invalid file name after 'report'");
+        throw InvalidSyntax("missing file name. Expected 'report WHAT FILE'");
     
     std::string blok = Tokenizer::get_block(is, '{');
     
@@ -895,8 +896,7 @@ void Parser::parse_report(std::istream& is)
     {
         Glossary opt(blok);
         execute_report(file, what, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -925,8 +925,7 @@ void Parser::parse_call(std::istream& is)
     {
         Glossary opt(blok);
         execute_call(str, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -1214,13 +1213,6 @@ void Parser::readConfig(std::string const& filename)
 
 void Parser::readConfig()
 {
-    try {
-        readConfig(simul.prop->config_file);
-    }
-    catch ( InvalidIO& e ) {
-        if ( simul.prop->config_file == "config.cym" )
-            throw InvalidIO("You must specify a config file");
-        throw;
-    }
+    readConfig(simul.prop->config_file);
 }
 
