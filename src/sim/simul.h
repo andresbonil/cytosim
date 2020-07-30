@@ -169,7 +169,7 @@ public:
 
     
     /// call setInteractions(Meca) for all objects (this is called before `solve()`
-    void            setInteractions(Meca&) const;
+    void            setAllInteractions(Meca&) const;
 
     /// display Meca's links
     void            drawLinks() const;

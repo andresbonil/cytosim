@@ -182,6 +182,7 @@ void Simul::drawLinks() const
     sMeca.drawLinks = true;
     if ( !sReady )
         prop->complete(*this);
-    setInteractions(sMeca);
+    sMeca.prepare(this);
+    setAllInteractions(sMeca);
     sMeca.drawLinks = false;
 }

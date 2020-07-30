@@ -1046,8 +1046,21 @@ int smaller_mecable(const void * ap, const void * bp)
  Allocate and reset matrices and vectors necessary for Meca::solve(),
  copy coordinates of Mecables into vPTS[]
  */
-void Meca::prepare()
+void Meca::prepare(Simul const* sim)
 {
+    ready_ = 0;
+    objs.clear();
+    
+    for ( Fiber  * f= sim->fibers.first(); f ; f=f->next() )
+        addMecable(f);
+    for ( Solid  * s= sim->solids.first(); s ; s=s->next() )
+        addMecable(s);
+    for ( Sphere * o=sim->spheres.first(); o ; o=o->next() )
+        addMecable(o);
+    for ( Bead   * b=  sim->beads.first(); b ; b=b->next() )
+        addMecable(b);
+
+
 #if NUM_THREADS > 1
     /*
      Sorting Mecables can improve multithreaded performance by distributing
@@ -1517,8 +1530,6 @@ void Meca::apply()
 {
     if ( ready_ )
     {
-        ready_ = 0;
-        
 #if NUM_THREADS > 1
 #pragma omp parallel num_threads(NUM_THREADS)
         {

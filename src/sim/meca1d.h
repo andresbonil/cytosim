@@ -9,6 +9,7 @@
 #include "monitor.h"
 #include "allocator.h"
 #include "bicgstab.h"
+#include "simul.h"
 
 
 /// Solves the motion of Objects along the X axis
@@ -70,20 +71,17 @@ public:
         vMOB = nullptr;
         vRHS = nullptr;
     }
-    
-    void clear()
-    {
-        objs.clear();
-    }
-    
-    /// register a Mecable
-    void add(Mecable * fib)
-    {
-        objs.push_back(fib);
-    }
 
-    void prepare(real time_step, real kT)
+    void prepare(Simul const* sim, real time_step, real kT)
     {
+        ready_ = false;
+        
+        // register all the fibers as mecable:
+        objs.clear();
+        
+        for(Fiber * fib = sim->fibers.first(); fib; fib=fib->next())
+            objs.push_back(fib);
+
         size_t dim = objs.size();
         if ( dim > allocated_ )
         {
@@ -107,7 +105,7 @@ public:
         zero_real(dim, vBAS);
         zero_real(dim, vRHS);
 
-        unsigned ii = 0;
+        size_t ii = 0;
         for ( Mecable * mec : objs )
         {
             mec->matIndex(ii);
@@ -140,7 +138,7 @@ public:
     real setRightHandSide(real kT)
     {
         real res = INFINITY;
-        for ( unsigned ii = 0; ii < objs.size(); ++ii )
+        for ( size_t ii = 0; ii < objs.size(); ++ii )
         {
             real b = sqrt( 2 * kT * vMOB[ii] );
             vRHS[ii] = vMOB[ii] * vBAS[ii] + b * RNG.gauss();
@@ -191,8 +189,7 @@ public:
     {
         if ( ready_ )
         {
-            ready_ = false;
-            unsigned ii = 0;
+            size_t ii = 0;
             for ( Mecable * mec : objs )
             {
                 // Move the Mecable along the X direction as calculated

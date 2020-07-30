@@ -218,24 +218,8 @@ void Simul::setStericInteractions(Meca& meca) const
  - call setStericInteractions() if prop->steric is true.
  .
  */
-void Simul::setInteractions(Meca & meca) const
+void Simul::setAllInteractions(Meca & meca) const
 {
-    // prepare the meca, and register Mecables
-    meca.clear();
-    
-    for ( Fiber  * f= fibers.first(); f ; f=f->next() )
-        meca.add(f);
-    for ( Solid  * s= solids.first(); s ; s=s->next() )
-        meca.add(s);
-    for ( Sphere * o=spheres.first(); o ; o=o->next() )
-        meca.add(o);
-    for ( Bead   * b=  beads.first(); b ; b=b->next() )
-        meca.add(b);
-    
-    meca.prepare();
-    
-    // add interactions for all objects:
-    
     for ( Space * s=spaces.first(); s; s=s->next() )
         s->setInteractions(meca, fibers);
     
@@ -315,8 +299,9 @@ void Simul::setInteractions(Meca & meca) const
 /// solve the system
 void Simul::solve()
 {
+    sMeca.prepare(this);
     //auto rdtsc = __rdtsc();
-    setInteractions(sMeca);
+    setAllInteractions(sMeca);
     //printf("     ::set      %16llu\n", (__rdtsc()-rdtsc)>>5); rdtsc = __rdtsc();
     sMeca.solve(prop, prop->precondition);
     //printf("     ::solve    %16llu\n", (__rdtsc()-rdtsc)>>5); rdtsc = __rdtsc();
@@ -330,7 +315,8 @@ void Simul::solve()
  */
 void Simul::solve_auto()
 {
-    setInteractions(sMeca);
+    sMeca.prepare(this);
+    setAllInteractions(sMeca);
     
     // solve the system, recording time:
     long cpu = TicToc::centiseconds();
@@ -393,7 +379,8 @@ void Simul::computeForces() const
         if ( !ready() )
         {
             prop->complete(*this);
-            setInteractions(sMeca);
+            sMeca.prepare(this);
+            setAllInteractions(sMeca);
             sMeca.computeForces();
         }
         else
@@ -402,7 +389,8 @@ void Simul::computeForces() const
             /* if the simulation is running live, the force are already available
             and we can check here that the result are similar */
             fibers.first()->printTensions(std::clog);
-            setInteractions(sMeca);
+            sMeca.prepare(this);
+            setAllInteractions(sMeca);
             sMeca.computeForces();
             fibers.first()->printTensions(std::clog);
             std::clog<<"\n";
@@ -430,13 +418,8 @@ void Simul::solveX()
     Meca1D & sMeca1D = *pMeca1D;
 
     //-----initialize-----
-    
-    sMeca1D.clear();
-    
-    for(Fiber * fib = fibers.first(); fib; fib=fib->next())
-        sMeca1D.add(fib);
 
-    sMeca1D.prepare(prop->time_step, prop->kT);
+    sMeca1D.prepare(this, prop->time_step, prop->kT);
     
     //-----set matrix-----
 

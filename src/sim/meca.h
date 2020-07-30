@@ -18,6 +18,7 @@ class Mecapoint;
 class Interpolation;
 class SimulProp;
 class Modulo;
+class Simul;
 
 /// MatrixBlock is an alias to a matrix class of size DIM * DIM
 class Matrix11;
@@ -288,11 +289,8 @@ public:
     /// destructor
     ~Meca() { release(); }
     
-    /// Clear list of Mecable
-    void clear() { objs.clear(); }
-    
     /// Add a Mecable to the list of objects to be simulated
-    void add(Mecable* p) { objs.push_back(p); }
+    void     addMecable(Mecable* p) { objs.push_back(p); }
     
     /// Number of Mecable
     size_t   nbMecables() const { return objs.size(); }
@@ -493,7 +491,7 @@ public:
     
     
     /// Allocate the memory necessary to solve(). This must be called after the last add()
-    void prepare();
+    void prepare(Simul const*);
     
     /// Calculate motion of all Mecables in the system
     void solve(SimulProp const*, int precondition);
