@@ -77,7 +77,7 @@
 Meca::Meca()
 : objs(32)
 {
-    ready_ = 0;
+    ready_ = -1;
     nbPts = 0;
     allocated_ = 0;
     vPTS = nullptr;
@@ -1250,6 +1250,7 @@ real brownian1(Mecable* mec, real const* rnd, real alpha, real* fff, real beta, 
  */
 void Meca::solve(SimulProp const* prop, const int precond)
 {
+    assert_true(ready_==0);
     // get global time step
     time_step = prop->time_step;
 
