@@ -1654,6 +1654,30 @@ void Meca::saveRHS(FILE * file) const
 }
 
 
+void Meca::saveSystem(const char dirname[]) const
+{
+    std::string cwd = FilePath::get_cwd();
+    FilePath::change_dir(dirname, true);
+    FILE * f = fopen("matrix.mtx", "w");
+    if ( f && ~ferror(f) )
+    {
+        saveMatrix(f, 0);
+        fclose(f);
+    }
+    f = fopen("rhs.mtx", "w");
+    if ( f && ~ferror(f) )
+    {
+        saveRHS(f);
+        fclose(f);
+    }
+    fprintf(stderr, "Cytosim saved its matrix in `%s'\n", dirname);
+    FilePath::change_dir(cwd);
+}
+
+
+//------------------------------------------------------------------------------
+#pragma mark - MATLAB export Functions
+
 /**
  Save the full matrix associated with multiply(), in binary format
  */
@@ -1886,6 +1910,16 @@ void Meca::dump() const
     f = fopen("con.bin", "wb");
     dumpPreconditionner(f);
     fclose(f);
+}
+
+
+void Meca::dump(const char dirname[]) const
+{
+    std::string cwd = FilePath::get_cwd();
+    FilePath::change_dir(dirname, true);
+    dump();
+    FilePath::change_dir(cwd);
+    fprintf(stderr, "Cytosim dumped its matrices in directory `%s'\n", dirname);
 }
 
 

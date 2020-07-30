@@ -1040,7 +1040,7 @@ void Parser::parse_dump(std::istream& is)
         throw InvalidSyntax("missing directory name after 'dump'");
 
     if ( do_write && do_run )
-        simul.dump(str.c_str());
+        simul.sMeca.dump(str.c_str());
 }
 
 
@@ -1057,7 +1057,7 @@ void Parser::parse_save(std::istream& is)
         throw InvalidSyntax("missing directory name after 'save'");
 
     if ( do_write && do_run )
-        simul.saveSystem(str.c_str());
+        simul.sMeca.saveSystem(str.c_str());
 }
 
 

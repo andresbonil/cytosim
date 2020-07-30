@@ -416,39 +416,6 @@ void Simul::computeForces() const
     }
 }
 
-
-void Simul::dump(const char dirname[]) const
-{
-    std::string cwd = FilePath::get_cwd();
-    FilePath::make_dir(dirname);
-    FilePath::change_dir(dirname);
-    sMeca.dump();
-    FilePath::change_dir(cwd);
-    fprintf(stderr, "Cytosim dumped its matrices in directory `%s'\n", dirname);
-}
-
-
-void Simul::saveSystem(const char dirname[]) const
-{
-    std::string cwd = FilePath::get_cwd();
-    FilePath::make_dir(dirname);
-    FilePath::change_dir(dirname);
-    FILE * f = fopen("matrix.mtx", "w");
-    if ( f && ~ferror(f) )
-    {
-        sMeca.saveMatrix(f, 0);
-        fclose(f);
-    }
-    f = fopen("rhs.mtx", "w");
-    if ( f && ~ferror(f) )
-    {
-        sMeca.saveRHS(f);
-        fclose(f);
-    }
-    fprintf(stderr, "Cytosim saved its matrix in `%s'\n", dirname);
-    FilePath::change_dir(cwd);
-}
-
 //==============================================================================
 //                              SOLVE-X 1D
 //==============================================================================

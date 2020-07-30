@@ -516,6 +516,9 @@ public:
     
     /// Save right-hand-side vector
     void saveRHS(FILE *) const;
+    
+    /// Output vectors and matrices, in a format that can be imported in MATLAB
+    void saveSystem(const char dirname[]) const;
 
     /// Save complete matrix in binary format
     void dumpMatrix(FILE *) const;
@@ -538,6 +541,9 @@ public:
     /// Output vectors and matrices, in a format that can be imported in MATLAB
     void dump() const;
  
+    /// Output vectors and matrices, in a format that can be imported in MATLAB
+    void dump(const char dirname[]) const;
+
     /// Output vectors and matrices in various files (for debugging)
     void dumpSparse();
     
