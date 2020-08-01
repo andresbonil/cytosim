@@ -218,12 +218,6 @@ void Mecafil::addRigidityUpper(real * mat, unsigned ldd) const
     if ( nPoints > 2 )
     {
         add_rigidity_upper(nPoints, mat, ldd, rfRigidity);
-#if ( 0 )
-        int N = DIM*nPoints;
-        MatrixSymmetric m(N);
-        add_rigidity_upper(nPoints, m.data(), ldd, 1.0);
-        VecPrint::print(std::clog, N, N, m.data(), N, 0);
-#endif
     }
 }
 
