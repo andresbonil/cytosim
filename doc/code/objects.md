@@ -40,7 +40,6 @@
  `dynamic`     | DynamicFiber        | @ref DynamicFiberPar      | DynamicFiberProp
  `classic`     | ClassicFiber        | @ref ClassicFiberPar      | ClassicFiberProp
  `treadmill`   | TreadmillingFiber   | @ref TreadmillingFiberPar | TreadmillingFiberProp
- `tubule`      | Tubule (deprecated) | @ref TubulePar            | TubuleProp
  
 #### Hands
  

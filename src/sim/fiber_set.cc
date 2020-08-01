@@ -38,7 +38,6 @@
  `classic`     | ClassicFiber        | @ref ClassicFiberPar
  `dynamic`     | DynamicFiber        | @ref DynamicFiberPar
  `treadmill`   | TreadmillingFiber   | @ref TreadmillingFiberPar
- `tubule`      | Tubule (disabled)   | @ref TubulePar
  
  */
 Property* FiberSet::newProperty(const std::string& cat, const std::string& nom, Glossary& opt) const
