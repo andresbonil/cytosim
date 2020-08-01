@@ -1469,14 +1469,12 @@ void Meca::solve(SimulProp const* prop, const int precond)
                 zero_real(dimension(), vSOL);
                 LinearSolvers::GMRES(*this, vRHS, vSOL, 255, monitor, allocator, mH, mV, temporary);
                 Cytosim::out("    GMRES(256): count %4u residual %.2e\n", monitor.count(), monitor.residual());
-                
-                if ( !monitor.converged() )
-                {
-                    // no method could converge... this is really bad!
-                    Exception e("convergence failure");
-                    e << monitor.count() << " iterations, residual " << monitor.residual() << '\n';
-                    throw e;
-                }
+            }
+            
+            if ( !monitor.converged() )
+            {
+                // if the solver did not converge, its result cannot be used!
+                throw Exception("no convergence after ",monitor.count()," iterations, residual ",monitor.residual());
             }
         }
     }
@@ -1553,7 +1551,8 @@ void Meca::apply()
     }
     else
     {
-        //write(2, "extra Meca::apply() calls\n", 26);
+        // if !ready_, the result is not usable
+        //printf("superfluous call to Meca::apply()\n");
     }
 }
 
