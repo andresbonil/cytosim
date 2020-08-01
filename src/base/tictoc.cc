@@ -8,7 +8,8 @@
 #include <cstring>
 #include <sys/time.h>
 
-#pragma mark Wall time
+//------------------------------------------------------------------------------
+#pragma mark - Wall time
 
 /**
  This get current time from the C-library functions time() and ctime_r()
@@ -106,11 +107,11 @@ double TicToc::seconds_today()
 }
 
 
-double TicToc::centiseconds()
+double TicToc::milliseconds()
 {
     struct timeval tv;
     gettimeofday(&tv, nullptr);
-    return 100 * tv.tv_sec + tv.tv_usec / 10000.0;
+    return 1000 * tv.tv_sec + tv.tv_usec / 1000.0;
 }
 
 double TicToc::microseconds()
@@ -120,8 +121,9 @@ double TicToc::microseconds()
     return tv.tv_usec;
 }
 
-#pragma mark CPU time
 
+//------------------------------------------------------------------------------
+#pragma mark - CPU time
 
 /**
  This calls the C-library function clock()

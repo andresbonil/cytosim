@@ -6,7 +6,7 @@
 
 #include <ctime>
 
-/// import __rdtsc()
+/// this will import Intel's cycle counter rdtscp()
 #if defined(__APPLE__) || defined(__linux)
 #  include <x86intrin.h>
 #else
@@ -52,8 +52,8 @@ namespace TicToc
     /// number of seconds since midnight
     double  seconds_today();
     
-    /// number of centiseconds since midnight
-    double  centiseconds();
+    /// number of milliseconds since midnight
+    double  milliseconds();
  
     /// number of microseconds
     double  microseconds();
