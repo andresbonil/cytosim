@@ -75,16 +75,13 @@ public:
     //-------------------------------------------------------------------------------
     
     /// true if no property are known
-    bool         empty() const    { return vec_.empty(); }
+    bool         empty()   const { return vec_.empty(); }
     
     /// number of known Property
-    size_t       size()  const    { return vec_.size(); }
+    size_t       size()    const { return vec_.size(); }
 
     /// number of Property of given category
-    unsigned int size(std::string const& cat) const;
-    
-    /// return property stored at index `n`
-    Property *   operator[] (size_t n) const;
+    size_t       size(std::string const& cat) const;
 
     /// apply function to all objects
     void         for_each(void func(Property *)) const;
@@ -101,7 +98,7 @@ public:
     Property *   find(std::string const& cat, std::string const& name) const;
     
     /// return property which has the provided index, or zero if it cannot be found
-    Property *   find(std::string const& cat, const unsigned index) const;
+    Property *   find(std::string const& cat, const size_t index) const;
     
     
     /// return property with provided name, throwing an exception if it cannot be found
@@ -111,7 +108,7 @@ public:
     Property *   find_or_die(std::string const& cat, std::string const& name) const;
 
     /// return property with provided name, throwing an exception if it cannot be found
-    Property *   find_or_die(std::string const& cat, const unsigned index) const;
+    Property *   find_or_die(std::string const& cat, const size_t index) const;
     
     
     /// return list of properties of the given category
@@ -129,9 +126,6 @@ public:
     
     /// return list of properties which are not of the given category
     PropertyList find_all_except(std::string const&) const;
-
-    /// return position where `p` is stored, end() otherwise
-    Property const* contains(Property const* p) const;
 
     //-------------------------------------------------------------------------------
 
