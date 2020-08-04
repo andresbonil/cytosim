@@ -3,7 +3,7 @@
 # make_movie.py:
 # create QuickTime and MPEG movies for cytosim
 #
-# Copyright F. Nedelec, 2007 - 2014
+# Copyright F. Nedelec, 2007 - 2020
 #
 # To make MP4 Quicktime movies, you need to install ffmpeg:
 # http://www.ffmpeg.org
@@ -47,7 +47,7 @@ Options are specified as 'option=value', without space around the '=' sign.
 Existing options and their values:
 
     format    mp4, mov            movie file format (default = 'mp4')
-    codec     mpeg4, h264, h265   if format='mp4'   (default = 'mpeg4')
+    codec     mpeg4, h264, h265   if format='mp4'   (default = 'h264')
               png, h263, h264     if format='mov'   (default = 'png')
     rate      integer             images per second (default = 12)
     quality   integer (default=3) subjective quality for MPEG4: 1=great, 4=good
@@ -86,7 +86,7 @@ def executable(arg):
 executable = []
 source_dir = ''
 format     = 'mp4'
-codec      = 'png'
+codec      = 'h264'
 rate       = 12
 lazy       = 1
 cleanup    = True
@@ -347,6 +347,10 @@ def main(args):
         if key=='' or equal!='=' or value=='':
             if os.path.isdir(arg):
                 paths.append(arg)
+            elif arg=='+':
+                codec = 'h264'
+            elif arg=='++':
+                codec = 'h265'
             else:
                 err.write(prefix+"ignored '%s' on command line\n" % arg)
         else:
@@ -359,12 +363,7 @@ def main(args):
                 if format == 'mov':
                     quality = '256'
             elif key=='codec':
-                if value = '264':
-                    codec = 'h264'
-                elif value = '265':
-                    codec = 'h265'
-                else:
-                    codec = value
+                codec = value
             elif key=='quality':
                 quality = value
             elif key=='lazy':

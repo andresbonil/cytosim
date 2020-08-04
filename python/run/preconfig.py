@@ -2,12 +2,8 @@
 #
 # PRECONFIG, a versatile configuration file generator
 #
-# Copyright Francois J. Nedelec, EMBL 2010--2017, Cambridge University 2019--
-# This is PRECONFIG version 1.24, last modified on 19.03.2020
-
-__VERSION__="1.24"
-
-__DATE__   ="19.03.2020"
+# Copyright Francois J. Nedelec, EMBL 2010--2017, Cambridge University 2019--2020
+# This is PRECONFIG version 1.4, last modified on 19.03.2020
 
 """
 # SYNOPSIS
@@ -79,13 +75,15 @@ __DATE__   ="19.03.2020"
    
 # DEFINITIONS
 
-   Variables can be specified on the command line as 'name=value' or
-   'name=sequence', with no space around the '='. They are added to the
-   dictionary used to evaluate the code snippets found inside the template file,
-   for example: `preconfig rate=7.2 config.cym.tpl`
-   
-   A variable can be defined using '==' to prevent it from being expanded, for
-   example `preconfig rate==[7.2,8,9.12] config.cym.tpl`
+   Variables can be defined on the command line as 'name=value', with no space 
+   around the '='. They are added to the dictionary used to evaluate the code 
+   snippets found inside the template file.
+   example: `preconfig rate=100 config.cym.tpl`
+
+   Sequences can be defined as 'name=sequence' or 'name==sequence'. In the first
+   instance, the sequence is expanded, generating new files for each value.
+   However, using '==' prevents this expansion, and the variable is used verbatim.
+   example: `preconfig rate=[1,10,100] config.cym.tpl`
 
 # CODE SNIPPETS
 
@@ -202,12 +200,10 @@ for their feedback which has contributed greatly to this development.
 We thanks Shaun Jackman and Steven Andrews for valuable feedback!
 
 Copyright Francois J. Nedelec and Serge Dmitrieff
-EMBL 2010--2017
-Cambridge University 2019--
-This is Free Software with no WARANTY, hoping to be useful.
+EMBL 2010--2017; Cambridge University 2019--2020
+This is Free Software with no WARANTY, just hoping to be useful.
 Preconfig is distributed under GPL3.0 Licence (see LICENCE)
 """
-
 
 import sys
 
@@ -219,6 +215,10 @@ except ImportError:
     sys.exit()
 
 #-------------------------------------------------------------------------------
+
+__VERSION__="1.4"
+
+__DATE__   ="19.03.2020"
 
 # code snippets are surrounded by double square brackets:
 CODE = '['
@@ -454,8 +454,8 @@ class Preconfig:
             f.write(text)
             self.files_made.extend([dst])
         # fancy ouput:
-        self.out.write("\\"+repr(self.locals)+'\n')
-        self.out.write(" \\"+('> '+dst).rjust(78, '-')+'\n')
+        self.out.write(' \\'+repr(self.locals)+'\n')
+        self.out.write('  \\'+('> '+dst+'\n').rjust(96, '-'))
         # write log:
         if self.log:
             keys = sorted(self.locals.keys())
@@ -519,7 +519,7 @@ class Preconfig:
         arg = args[0]
         if arg.find('%') >= 0 and not os.path.isfile(arg):
             self.pattern = arg
-            del(args[0])
+            args.pop(0)
         
         for arg in args:
             #print("preconfig argument `%s'" % arg)

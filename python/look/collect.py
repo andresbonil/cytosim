@@ -2,7 +2,7 @@
 #
 # collect.py renames files from subdirectories
 #
-# Copyright F. Nedelec, 2007--2018
+# Copyright F. Nedelec, 2007--2020
 
 
 """
@@ -129,7 +129,7 @@ def main(args):
                 res.append(dst)
                 break
             if not os.path.exists(dst):
-                #make directory if name include a directory that does not exist:
+                #make directory if name includes a non-existent directory:
                 dir = os.path.dirname(dst)
                 if dir and not os.path.isdir(dir):
                     os.mkdir(dir)
