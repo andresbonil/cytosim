@@ -1998,7 +1998,13 @@ struct Cluster
     size_t     cnt;
     
     Cluster(ObjectFlag f, size_t n) { flg = f; cnt = n; }
-    real operator < (Cluster const&b) const { return cnt > b.cnt; }
+        
+    /// Compare function
+    bool operator < (Cluster const&b) const
+    {
+        if ( cnt == b.cnt ) return flg < b.flg;
+        return cnt > b.cnt;
+    }
 };
 
 

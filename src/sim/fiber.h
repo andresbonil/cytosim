@@ -64,7 +64,7 @@ private:
         SeverPos(real a, state_t p, state_t m) { abs=a; stateP=p; stateM=m; }
         
         /// sort from PLUS_END to MINUS_END, i.e. with decreasing abscissa
-        real operator < (SeverPos const&b) const { return abs > b.abs; }
+        bool operator < (SeverPos const&b) const { return abs > b.abs; }
     };
     
     /// ordered list of future severing positions
