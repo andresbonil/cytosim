@@ -518,28 +518,28 @@ APPROXIMATE FORMULA FOR ELLIPSOIDAL PARTICLE
  */
 real Fiber::dragCoefficientEllipsoid(const real len, FiberProp const* prop)
 {
-    // hydrodynamic cut-off on length:
-    assert_true( prop->drag_length > REAL_EPSILON );
-    real lenc = std::min(len, prop->drag_length);
-    lenc = std::max(lenc, prop->drag_radius);
-    
-    // Stokes' law for a sphere:
+    // Stokes' law for a sphere having diameter of filament:
     assert_true( prop->drag_radius > 0 );
-    const real drag_sphere = 6 * prop->drag_radius;
-    
-    // length below which the formula is not valid:
-    const real min_len = exp( 1 + log(prop->drag_radius) );
+    real drag = 6 * prop->drag_radius;
 
+    assert_true( len > REAL_EPSILON );
+    assert_true( prop->drag_length > REAL_EPSILON );
+    // hydrodynamic cut-off on length:
+    const real lenc = std::max(std::min(len, prop->drag_length), prop->drag_radius);
+
+    // drag of 3D ellipsoid
     const real drag_ellipsoid = 3 * len / log( lenc / prop->drag_radius );
-
-    real drag = drag_sphere;
+    
+    // length below which ellipsoid formula is not valid:
+    const real min_len = exp( 1 + log(prop->drag_radius) );
     
     if ( len > min_len )
     {
         // use largest drag coefficient
-        drag = std::max(drag_ellipsoid, drag_sphere);
+        drag = std::max(drag, drag_ellipsoid);
     }
 
+    assert_true( prop->viscosity > 0 );
     return M_PI * prop->viscosity * drag;
 }
 
@@ -585,29 +585,29 @@ real Fiber::dragCoefficientEllipsoid(const real len, FiberProp const* prop)
  */
 real Fiber::dragCoefficientCylinder(const real len, FiberProp const* prop)
 {
-    // hydrodynamic cut-off on length:
-    assert_true( prop->drag_length > REAL_EPSILON );
-    real lenc = std::min(len, prop->drag_length);
-    lenc = std::max(lenc, prop->drag_radius);
-    
-    // Stokes' law for a sphere:
+    // Stokes' law for a sphere having diameter of filament:
     assert_true( prop->drag_radius > 0 );
-    const real drag_sphere = 6 * prop->drag_radius;
+    real drag = 6 * prop->drag_radius;
+
+    assert_true( len > REAL_EPSILON );
+    assert_true( prop->drag_length > REAL_EPSILON );
+    // hydrodynamic cut-off on length:
+    const real lenc = std::max(std::min(len, prop->drag_length), prop->drag_radius);
     
-    // length below which the formula is not valid anymore ( ~ 3.94 * radius )
-    // this corresponds to the minimun point of `drag_cylinder`
-    const real min_len = 2 * prop->drag_radius * exp(1.0-0.32);
-    
+    /// drag of a cylinder:
     const real drag_cylinder = 3 * len / ( log(0.5*lenc/prop->drag_radius) + 0.32 );
 
-    real drag = drag_sphere;
+    // length below which the formula is not valid anymore ( ~ 3.94 * radius )
+    // this corresponds to the minimun value of the formula above
+    const real min_len = 2 * prop->drag_radius * exp(1.0-0.32);
     
     if ( len > min_len )
     {
         // use largest drag coefficient
-        drag = std::max(drag_cylinder, drag_sphere);
+        drag = std::max(drag, drag_cylinder);
     }
-
+    
+    assert_true( prop->viscosity > 0 );
     return M_PI * prop->viscosity * drag;
 }
 
@@ -668,7 +668,7 @@ void Fiber::setDragCoefficient()
     const real len = length();
     assert_true( len > 0 );
     
-    real drag;
+    real drag = 0;
     
     if ( prop->drag_model )
     {
@@ -681,14 +681,14 @@ void Fiber::setDragCoefficient()
     else
         drag = dragCoefficientCylinder(len, prop);
 
-    //the forces are distributed equally on all points, hence we multiply by nPoints
-    assert_true( nPoints > 0 );
+    assert_true( drag > 0 );
+    // distribute drag equally to all points, to set point's mobility
     rfPointMobility = nPoints / drag;
     
 #if ( 0 )
     std::ostream& os = std::cerr; //Cytosim::log;
-    os << "Fiber " << prop->name() << "  L = " << std::setw(7) << length();
-    os << "  has  drag " << drag << "    point_mobility " << rfPointMobility << std::endl;
+    os << "Fiber " << std::setw(16) << prop->name() << " length " << std::setw(7) << length();
+    os << " drag " << std::setw(9) << drag << " point_mobility " << rfPointMobility << std::endl;
 #endif
 }
 
@@ -699,7 +699,7 @@ void Fiber::prepareMecable()
     storeDirections();
     makeProjection();
 
-    assert_true( rfPointMobility > REAL_EPSILON );
+    assert_true( rfPointMobility >= 0 );
 
     // the scaling of the bending elasticity depends on the length of the segments
     rfRigidity = prop->rigidity / segmentationCube();
