@@ -225,7 +225,7 @@ enum PlacementType { PLACE_NOT, PLACE_ANYWHERE, PLACE_INSIDE, PLACE_EDGE,
  - if placement = `surface`, the position is projected on the edge of current Space
  .
  
- By default, the specifications are relative to the last Space that was defined,
+ By default, the specifications are relative to the first Space to be defined,
  but a different space can be specified as second argument of PLACEMENT.
  
  You can set the density of objects with `nb_trials=1`:

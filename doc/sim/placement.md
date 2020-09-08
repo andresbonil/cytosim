@@ -1,16 +1,16 @@
-# Object placement
+# Object's initial position
 
 The position of an object is specified as it is created with the `new` command:
  
-     new [MULTIPLICITY] NAME
+     new [POSITIVE_INTEGER] NAME
      {
-       position         = POSITION, [SPACE]
-       orientation      = ROTATION, [ROTATION]
-       [direction       = DIRECTION]
+       position     = POSITION[, SPACE]
+       orientation  = ROTATION[, ROTATION]
+       direction    = DIRECTION
 		...
      }
 
-See the specifications below.
+All parameters are optional. See the specifications below.
 Some POSITION primitives refer to the *current space*, but another space can be specified (`position = inside, my_space`). 
 
 The rotation given in `orientation` is applied before the translation given by `position`.
@@ -120,3 +120,75 @@ Most primitives describe a certain area in Space, and the returned position is
 
 
  
+# Object placement
+
+
+The creation of an object involves three steps:
+
+1. Drawing a random position and a random orientation, 
+2. Creating the object at this position with this orientation
+3. Testing if the object's vertices fulfills certain requirements: eg. are all points inside?
+
+If step 3 fails, Cytosim starts again from 1, up to `nb_trials` times.
+
+Step 1 is controlled by parameter `position`  
+Step 3 is controlled by parameter `placement`  
+
+Both in steps 1 and 3 you can specify a Space, and by default, these use the ‘master space’: the first one to be created.
+If ‘placement’ is not specified, it is by default ‘inside’ the 'master space'.
+
+Syntax:
+
+     new POSITIVE_INTEGER NAME
+     {
+       position    = POSITION[, SPACE_NAME]
+       orientation = ROTATION[, ROTATION]
+       direction   = DIRECTION
+       placement   = PLACEMENT[, SPACE_NAME[, CONDITION]]
+       nb_trials   = INTEGER
+     }
+ 
+PLACEMENT can be:
+ 
+- `inside` (default), it tries to find a place inside the Space
+- `anywhere`, the position is returned
+- `outside`, the object is created only if it is outside the Space
+- `surface`, the position is projected on the edge of current Space
+.
+ 
+By default, these specifications are relative to the first Space to be defined,
+but a different space can be specified as second argument of PLACEMENT.
+
+### Examples
+
+One can use `nb_trials=1` to control the density of objects:
+
+     new 100 grafted
+     {
+          position = ( rectangle 10 10 )
+          nb_trials = 1
+     }
+ 
+In this way an object will be created only if its randomly chosen position falls
+inside the Space, and the density will thus be exactly what is specified from the
+`position` range (here 100/10*10 = 1 object per squared micrometer).
+
+
+
+To place objects at the intersection of two spaces
+
+    new 100 sphere_mol
+    {
+        radius = 0.1
+        position = inside, sphere
+        placement = inside, cylinder
+    }
+
+To skip the ‘placement’ test:
+
+    new 100 cyl_mol
+    {
+        radius = 0.1
+        position = inside, cyl
+        placement = anywhere
+    }
