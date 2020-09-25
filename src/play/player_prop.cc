@@ -93,8 +93,8 @@ void PlayerProp::toggleReport(bool alt)
         {
             case 0: report = "";                   break;
             case 1: report = "inventory";          break;
-            case 2: report = "platelet";           break;
-            case 3: report = "fiber:lattice_density;field"; break;
+            case 2: report = "system";             break;
+            case 3: report = "fiber:lattice_density,field"; break;
             case 4: report = "fiber:segment";      break;
             case 5: report = "fiber:cluster";      break;
             case 6: report = "fiber:age";          break;
@@ -105,8 +105,8 @@ void PlayerProp::toggleReport(bool alt)
         switch( report_index )
         {
             case 0: report = "";                   break;
-            case 1: report = "fiber:lengths";      break;
-            case 2: report = "fiber:dynamics";     break;
+            case 1: report = "fiber:length";       break;
+            case 2: report = "fiber:dynamic";      break;
             case 3: report = "single";             break;
             case 4: report = "couple";             break;
             case 5: report = "couple:configuration"; break;

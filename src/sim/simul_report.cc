@@ -81,7 +81,7 @@ void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
     out << "\n% time " << std::fixed << std::setprecision(3) << prop->time;
     out << "\n% report " << arg;
     try {
-        std::string::size_type pos = arg.find(';');
+        std::string::size_type pos = arg.find(',');
         while ( pos != std::string::npos )
         {
             report0(out, arg.substr(0, pos), opt);
@@ -337,6 +337,10 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
         if ( what.empty() )
             return reportInventory(out);
         throw InvalidSyntax("I only know `inventory'");
+    }
+    if ( who == "system" )
+    {
+        return reportSystem(out);
     }
     if ( who == "property" || who == "parameter" )
     {
@@ -1165,6 +1169,42 @@ void Simul::reportInventory(std::ostream& out) const
     couples.report(out);
     organizers.report(out);
     events.report(out);
+}
+
+
+template < typename SET >
+void reportSystemSet(std::ostream& out, SET& set, PropertyList const& properties)
+{
+    for ( Property const* i : properties.find_all(set.title()) )
+    {
+        unsigned points = 0, sup = 0;
+        ObjectList objs = set.collect(match_property, i);
+        for ( Object * o : objs )
+        {
+            Mecable * mec = Simul::toMecable(o);
+            if ( mec )
+            {
+                points += mec->nbPoints();
+                sup = std::max(sup, mec->nbPoints());
+            }
+        }
+        if ( points > 0 )
+        {
+            out << LIN << ljust(i->name(), 2);
+            out << SEP << objs.size();
+            out << SEP << points << SEP << sup;
+        }
+    }
+}
+
+
+void Simul::reportSystem(std::ostream& out) const
+{
+    out << COM << ljust("class", 2, 2) << SEP << "count" << SEP << "vertices" << SEP << "largest";
+    reportSystemSet(out,  fibers, properties);
+    reportSystemSet(out,  solids, properties);
+    reportSystemSet(out, spheres, properties);
+    reportSystemSet(out,   beads, properties);
 }
 
 
