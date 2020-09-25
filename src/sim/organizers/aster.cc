@@ -21,7 +21,7 @@
 void Aster::step()
 {
     assert_true( linked() );
-    
+
     Simul & sim = simul();
 
     // nucleation:
@@ -58,9 +58,7 @@ void Aster::step()
 void Aster::setInteractions(Meca& meca) const
 {
     assert_true( linked() );
-
     Solid const* sol = solid();
-    
     if ( !sol )
         return;
 
@@ -209,7 +207,6 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
         opt.set(tif, "fibers");
         opt.set(fos, "fibers", 1);
     }
-
     // fiber's anchor points can be specified directly:
     std::string var = "fiber1";
     if ( opt.has_key(var) )
@@ -342,7 +339,6 @@ ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, size_t& origin)
             }
         }
     }
-    
     if ( ! sol )
         throw InvalidParameter("aster:solid must be specified");
     
@@ -674,52 +670,75 @@ Vector Aster::posFiber2(size_t inx) const
     }
 }
 
+
+/**
+ retrieve link between Solid and ends of Fiber
+ this is only meaningfull if ( inx < nbFibers() )
+ */
+real Aster::getLink1(size_t inx, Vector& pos1, Vector& pos2) const
+{
+    if ( inx < asLinks.size() && asLinks[inx].rank > 0 )
+    {
+        pos1 = posLink1(inx);
+        if ( fiber(inx) )
+        {
+            pos2 = posFiber1(inx);
+            return prop->stiffness[0];
+        }
+        pos2 = pos1;
+    }
+    return 0;
+}
+
+
+/**
+ retrieve link between Solid and side of Fiber
+ this is only meaningfull if ( inx < nbFibers() )
+ */
+real Aster::getLink2(size_t inx, Vector& pos1, Vector& pos2) const
+{
+    if ( inx < asLinks.size() && asLinks[inx].rank > 0 )
+    {
+        Fiber const* fib = fiber(inx);
+
+        if ( fib )
+        {
+            real len = asLinks[inx].len;
+            if ( fib->length() >= len )
+            {
+                pos1 = posLink2(inx);
+            }
+            else
+            {
+                // interpolate between the two solid-points:
+                real c = fib->length() / len;
+                pos1 = ( 1.0 - c ) * posLink1(inx) + c * posLink2(inx);
+            }
+            pos2 = posFiber2(inx);
+            return prop->stiffness[1];
+        }
+        else
+        {
+            pos1 = posLink2(inx);
+            pos2 = pos1;
+        }
+    }
+    return 0;
+}
+
+
 /**
  This sets 'pos1' and 'pos2' as the ends of the link number `inx`
  or returns zero if the link does not exist
  */
 bool Aster::getLink(size_t inx, Vector& pos1, Vector& pos2) const
 {
-    size_t n = inx / 2;
+    if ( inx & 1 )
+        getLink2(inx/2, pos1, pos2);
+    else
+        getLink1(inx/2, pos1, pos2);
     
-    if ( n < asLinks.size() && asLinks[n].rank > 0 )
-    {
-        Fiber const* fib = fiber(n);
-        
-        if ( inx & 1 )
-        {
-            pos1 = posLink1(n);
-            if ( fib )
-                pos2 = fib->posEnd(prop->focus);
-            else
-                pos2 = pos1;
-        }
-        else
-        {
-            if ( fib )
-            {
-                real len = asLinks[n].len;
-                if ( fib->length() >= len )
-                {
-                    pos1 = posLink2(n);
-                }
-                else
-                {
-                    // interpolate between the two solid-points:
-                    real c = fib->length() / len;
-                    pos1 = ( 1.0 - c ) * posLink1(n) + c * posLink2(n);
-                }
-                pos2 = posFiber2(n);
-            }
-            else
-            {
-                pos1 = posLink2(n);
-                pos2 = pos1;
-            }
-        }
-        return true;
-    }
-    return false;
+    return ( inx < 2 * asLinks.size() );
 }
 
 

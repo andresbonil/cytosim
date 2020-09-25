@@ -52,7 +52,7 @@ public:
 
     //------------------------------ read/write --------------------------------
     
-    /// retrieve links end-points for display
+    /// retrieve link between Solid and Aster's core
     bool       getLink(size_t, Vector&, Vector&) const;
     
     /// return PointDisp of Solid

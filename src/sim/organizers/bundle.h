@@ -56,9 +56,6 @@ public:
     /// return the center of gravity from all MT central ends
     Vector     position() const;
     
-    /// retrieve links end-points for display
-    bool       getLink(size_t, Vector&, Vector&) const { return false; }
-    
     /// display parameters
     PointDisp const* disp() const { return nullptr; }
 
