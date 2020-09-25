@@ -239,11 +239,11 @@ using namespace gle;
 bool SpaceStrip::draw() const
 {
     const real X = length_[0];
-    const real Y = ( DIM > 2 ) ? length_[1] : top_;
-    const real B = ( DIM > 2 ) ? bot_ : 0;
-    const real T = ( DIM > 2 ) ? top_ : 0;
-    
-#if ( DIM > 2 )
+    const real T = top_;
+    const real B = bot_;
+
+#if ( DIM >= 3 )
+    const real Y = length_[1];
     // draw faces:
     glBegin(GL_TRIANGLE_STRIP);
     glNormal3f(0, 0, 1);
@@ -276,10 +276,10 @@ bool SpaceStrip::draw() const
     glEnd();
 #else
     glBegin(GL_LINES);
-    gleVertex(-X,  Y, T);
-    gleVertex( X,  Y, T);
-    gleVertex( X, -Y, T);
-    gleVertex(-X, -Y, T);
+    gleVertex(-X, T, 0);
+    gleVertex( X, T, 0);
+    gleVertex( X, B, 0);
+    gleVertex(-X, B, 0);
     glEnd();
 #endif
 
@@ -287,7 +287,7 @@ bool SpaceStrip::draw() const
     glLineStipple(1, 0x000F);
     glEnable(GL_LINE_STIPPLE);
     glBegin(GL_LINES);
-#if ( DIM > 2 )
+#if ( DIM >= 3 )
     gleVertex( X,  Y, T);
     gleVertex( X,  Y, B);
     gleVertex( X, -Y, T);
@@ -297,10 +297,10 @@ bool SpaceStrip::draw() const
     gleVertex(-X, -Y, T);
     gleVertex(-X, -Y, B);
 #else
-    gleVertex( X,  Y, T);
-    gleVertex( X, -Y, T);
-    gleVertex(-X,  Y, T);
-    gleVertex(-X, -Y, T);
+    gleVertex( X, T, 0);
+    gleVertex( X, B, 0);
+    gleVertex(-X, T, 0);
+    gleVertex(-X, B, 0);
 #endif
     glEnd();
     glDisable(GL_LINE_STIPPLE);
