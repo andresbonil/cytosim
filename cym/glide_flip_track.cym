@@ -1,16 +1,5 @@
 % F. Nedelec, June 2011
 
-set space cell
-{
-    dim = 2
-    shape = periodic
-}
-
-new cell
-{
-    length = 30, 10
-}
-
 set simul system
 {
     dim = 2
@@ -24,6 +13,16 @@ set simul system
         zoom = 0.5
     }
     precondition = 0
+}
+
+set space cell
+{
+    shape = periodic
+}
+
+new cell
+{
+    length = 30, 10
 }
 
 set fiber microtubule
