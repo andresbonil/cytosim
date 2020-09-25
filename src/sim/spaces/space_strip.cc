@@ -75,8 +75,13 @@ void SpaceStrip::update()
 
 void SpaceStrip::boundaries(Vector& inf, Vector& sup) const
 {
+#if ( DIM == 2 )
+    inf.set(-length_[0], bot_, 0);
+    sup.set( length_[0], top_, 0);
+#else
     inf.set(-length_[0],-length_[1], bot_);
     sup.set( length_[0], length_[1], top_);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -234,7 +239,7 @@ using namespace gle;
 bool SpaceStrip::draw() const
 {
     const real X = length_[0];
-    const real Y = ( DIM > 1 ) ? length_[1] : 1;
+    const real Y = ( DIM > 2 ) ? length_[1] : top_;
     const real B = ( DIM > 2 ) ? bot_ : 0;
     const real T = ( DIM > 2 ) ? top_ : 0;
     
