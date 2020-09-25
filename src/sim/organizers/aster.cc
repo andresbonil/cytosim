@@ -21,7 +21,6 @@
 void Aster::step()
 {
     assert_true( linked() );
-
     Simul & sim = simul();
 
     // nucleation:

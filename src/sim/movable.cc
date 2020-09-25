@@ -116,9 +116,11 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             
             if ( tok == "surface" )
             {
-                real e = 0.1;
-                is >> e;
-                return spc->randomPlaceOnEdge(e);
+                real R = 1;
+                is >> R;
+                if ( R < REAL_EPSILON )
+                    throw InvalidParameter("distance R must be > 0 in `surface R`");
+                return spc->randomPlaceOnEdge(R);
             }
 
             if ( tok == "outside_sphere" )
