@@ -16,8 +16,6 @@
 #include "simul.h"
 #include "vecprint.h"
 
-//extern void lapack_xpttrf(int, real*, real*, int*);
-//extern void lapack_xptts2(int, int, const real*, const real*, real*, int);
 
 extern Modulo const* modulo;
 
