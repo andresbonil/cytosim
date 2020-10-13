@@ -184,78 +184,80 @@ real FiberSegment::projectPointF(const real w[], real& dis) const
  If the segments are parallel, the mid-point of the overlapping section is returned.
  */
 
-int FiberSegment::shortestDistance(FiberSegment const& seg, real& abs1, real& abs2, real& dis) const
+real FiberSegment::shortestDistance(FiberSegment const& seg, real& abs1, real& abs2) const
 {
-    Vector d1  = diff();
-    Vector d2  = seg.diff();
-    Vector d12 = seg.pos1() - pos1();
-    
-    real len1 = len();
-    real len2 = seg.len();
+    Vector off = seg.pos1() - pos1();
+    Vector d11 = dir();
+    Vector d22 = seg.dir();
     
     if ( modulo )
-        modulo->fold(d12);
+        modulo->fold(off);
     
-    real beta = dot(d1, d2) / ( len1 * len2 );
-    real scal = 1.0 - beta * beta;
+    real C = dot(d11, d22);  // cosinus of angle
     
-    if ( scal > REAL_EPSILON )
+    if ( C < 1.0-REAL_EPSILON )
     {
-        // This is the general case of non-parallel lines:
-        
-        real d1d12 = dot(d1, d12) / ( scal * len1 );
-        real d2d12 = dot(d2, d12) / ( scal * len2 );
-        
-        //abs1 = (( d1 / len1 - beta * d2 / len2 ) * d12 ) / scal;
-        abs1 = d1d12 - beta * d2d12;
-        
-        if ( abs1 < 0  || len1 <= abs1 )
-            return 0;
-        
-        //abs2 = (( beta * d1 / len1 - d2 / len2 ) * d12 ) / scal;
-        abs2 = beta * d1d12 - d2d12;
-        
-        if ( abs2 < 0  || len2 <= abs2 )
-            return 0;
-        
+        real iS = 1.0 / ( 1.0 - C * C );    // sinus squared
+        // This deals with the general case of non-parallel lines
 #if ( DIM > 2 )
-        //dis = ( d12 + (abs2/len2) * d2 - (abs1/len1) * d1 ).normSqr();
-        //dis = ( d12 - d1 * (abs1/len1) ).normSqr() - abs2 * abs2;
-        dis = ( d12 + d2 * (abs2/len2) ).normSqr() - abs1 * abs1;
+        // direction N of the shortest path is orthogonal to both lines:
+        // distance between lines = dot(off, N) / N.norm()
+        real D = dot(off, cross(d11, d22));
+#endif
+        real d1off = dot(d11, off);
+        real d2off = dot(d22, off);
+        
+        abs1 = ( d1off - C * d2off ) * iS;
+        abs2 = ( C * d1off - d2off ) * iS;
+#if 0
+        // check that identified line path is orthogonal to both segments:
+        Vector p1 = pos1() + abs1 * d11;
+        Vector p2 = seg.pos1() + abs2 * d22;
+        real n1 = dot(d11, p2-p1);
+        real n2 = dot(d22, p2-p1);
+        printf("shortestDistance %+9.6f %+9.6f :", n1, n2);
+        // check different formula for distance betwen lines:
+        real res0 = ( off + abs2 * d22 - abs1 * d11 ).normSqr();
+        real res1 = ( off - d11 * abs1 ).normSqr() - abs2 * abs2;
+        real res2 = ( off + d22 * abs2 ).normSqr() - abs1 * abs1;
+        real res3 = ( D * D ) * iS;  // 1.0 / N.normSqr() == iS
+        printf("%6.4f  %6.4f  %6.4f  %6.4f\n", sqrt(res0), sqrt(res1), sqrt(res2), sqrt(res3));
+#endif
+#if ( DIM > 2 )
+        //printf("dis %03u:%02lu", seg.fiber()->identity(), seg.point());
+        //printf(" %03u:%02lu  %6.4f\n", fiber()->identity(), point(), fabs(D)*sqrt(iS));
+        return ( D * D ) * iS;
 #else
-        dis = 0;
+        return 0;
 #endif
     }
     else
     {
+        const real len1 = len();
+        const real len2 = seg.len();
         /*
          This deals with the case where the two segments are almost parallel:
-         beta = +/- 1
-         p1 = projection of that.pos1() on this segment
-         p2 = projection of that.pos2()
+         S ~= 0; C ~= +/- 1
+         m1 = projection of seg.pos1() on this segment
+         p1 = projection of seg.pos2()
          */
-        real p1 = dot(d12, d1) / len1;
-        real p2 = p1 + beta * len2;
+        const real d1off = dot(d11, off);
         
-        if ( p1 < 0  &&  p2 < 0 )
-            return false;
+        real m1 = d1off;
+        real p1 = d1off + C * len2;
         
-        if ( p1 > len1  &&  p2 > len1 )
-            return false;
+        // clamp inside segment and use mid-point
+        abs1 = 0.5 * ( std::min(len1, std::max(m1, p1)) + std::max((real)0, std::min(m1, p1)));
         
-        const real p = p1;
-        dis = d12.normSqr() - p1 * p1;
+        real m2 = -dot(d22, off);
+        real p2 = m2 + C * len1;
         
-        if ( p1 < 0 ) p1 = 0; else if ( p1 > len1 ) p1 = len1;
-        if ( p2 < 0 ) p2 = 0; else if ( p2 > len1 ) p2 = len1;
+        // clamp inside segment and use mid-point
+        abs2 = 0.5 * ( std::min(len2, std::max(m2, p2)) + std::max((real)0, std::min(m2, p2)));
         
-        // take the midpoint:
-        abs1 = 0.5 * ( p1 + p2 );
-        //abs2 = abs1 * beta - ( d12 * d2 ) / len2;
-        abs2 = ( abs1 - p ) * beta;
+        // return distance between lines
+        return off.normSqr() - d1off * d1off;
     }
-    
-    return 1;
 }
 
 

@@ -416,8 +416,9 @@ void PointGrid::checkLL(Meca& meca, PointGridParam const& pam,
 
     /* in 3D, we use shortestDistance() to calculate the closest distance
      between two segments, and use the result to build an interaction */
-    real a, b, d;
-    if ( aa.seg.shortestDistance(bb.seg, a, b, d)  &&  d < ran*ran )
+    real a, b;
+    real d = aa.seg.shortestDistance(bb.seg, a, b);
+    if ( d < ran*ran && ( aa.seg.within(a) & bb.seg.within(b) ) )
     {
         const real len = aa.radius + bb.radius;
         

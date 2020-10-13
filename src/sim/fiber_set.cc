@@ -334,10 +334,10 @@ void FiberSet::allIntersections(Array<FiberSite>& res1, Array<FiberSite>& res2,
             for ( unsigned s2 = s1+2; s2 < fib1->nbSegments(); ++s2 )
             {
                 FiberSegment seg2(fib1, s2);
-                real abs1, abs2, dis = INFINITY;
-                if ( seg1.shortestDistance(seg2, abs1, abs2, dis) )
+                real abs1, abs2;
+                if ( seg1.shortestDistance(seg2, abs1, abs2) < sup )
                 {
-                    if ( dis < sup )
+                    if ( seg1.within(abs1) & seg2.within(abs2) )
                     {
                         res1.push_back(FiberSite(fib1, abs1+fib1->abscissaPoint(s1)));
                         res2.push_back(FiberSite(fib1, abs2+fib1->abscissaPoint(s2)));
@@ -350,10 +350,10 @@ void FiberSet::allIntersections(Array<FiberSite>& res1, Array<FiberSite>& res2,
                 for ( unsigned s2 = 0; s2 < fib2->nbSegments(); ++s2 )
                 {
                     FiberSegment seg2(fib2, s2);
-                    real abs1, abs2, dis = INFINITY;
-                    if ( seg1.shortestDistance(seg2, abs1, abs2, dis) )
+                    real abs1, abs2;
+                    if ( seg1.shortestDistance(seg2, abs1, abs2) < sup )
                     {
-                        if ( dis < sup )
+                        if ( seg1.within(abs1) & seg2.within(abs2) )
                         {
                             res1.push_back(FiberSite(fib1, abs1+fib1->abscissaPoint(s1)));
                             res2.push_back(FiberSite(fib2, abs2+fib2->abscissaPoint(s2)));

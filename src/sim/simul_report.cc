@@ -1089,8 +1089,8 @@ void Simul::reportFiberIntersections(std::ostream& out, Glossary& opt) const
     opt.set(up, "threshold");
     opt.set(details, "details");
     
-    const real mds = up * up;
-    real abs1, abs2, dis;
+    const real sup = up * up;
+    real abs1, abs2;
     
     if ( details == 2 )
     {
@@ -1110,9 +1110,9 @@ void Simul::reportFiberIntersections(std::ostream& out, Glossary& opt) const
                 for ( unsigned jj = 0; jj < fob->nbSegments(); ++jj )
                 {
                     FiberSegment seg2(fob, jj);
-                    if ( seg1.shortestDistance(seg2, abs1, abs2, dis) )
+                    if ( seg1.shortestDistance(seg2, abs1, abs2) < sup )
                     {
-                        if ( dis <= mds )
+                        if ( seg1.within(abs1) & seg2.within(abs2) )
                         {
                             ++cnt;
                             Vector pos1 = seg1.pos(abs1/seg1.len());
