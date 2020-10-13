@@ -606,7 +606,7 @@ void glApp::normalKeyFunc(void (*func)(unsigned char, int, int))
  */
 void glApp::processSpecialKey(int key, int, int)
 {
-    Vector3 vec, dxy(0, 0, 0);
+    Vector3 vec(0,0,0), dxy(0, 0, 0);
     View & view = glApp::currentView();
     real F = ( glutGetModifiers() & GLUT_ACTIVE_SHIFT ) ? 0.0625 : 1;
 
