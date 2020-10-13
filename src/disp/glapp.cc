@@ -1225,6 +1225,7 @@ void glApp::displayPlain()
     view.display();
     view.closeDisplay();
 
+    glFinish();
     if ( view.buffered )
         glutSwapBuffers();
     else
@@ -1263,6 +1264,7 @@ void glApp::displayMain()
     if ( userMode == MOUSE_SET_ROI )
         drawROI(ROI);
 
+    glFinish();
     if ( view.buffered )
         glutSwapBuffers();
     else
