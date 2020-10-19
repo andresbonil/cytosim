@@ -458,20 +458,14 @@ void FiberProp::complete(Simul const& sim)
     
     if ( segmentation <= 0 )
         throw InvalidParameter("fiber:segmentation must be > 0");
- 
-#if ( 1 )
-    // Adjust the segmentation of all Fibers with this FiberProp:
-    for ( Fiber* fib = sim.fibers.first(); fib; fib=fib->next() )
+
+    if ( sim.ready() )
     {
-        if ( fib->property() == this  &&  fib->targetSegmentation() != segmentation )
-        {
-            fib->segmentation(segmentation);
-            fib->adjustSegmentation();
-            fib->updateFiber();
-            fib->reshape();
-        }
+        // Adjust the segmentation of all Fibers having this FiberProp
+        for ( Fiber* fib = sim.fibers.first(); fib; fib=fib->next() )
+            if ( fib->property() == this )
+                fib->adjustSegmentation(segmentation);
     }
-#endif
     
     if ( steric && steric_radius <= 0 )
         throw InvalidParameter("fiber:steric[1] (radius) must be specified and > 0");

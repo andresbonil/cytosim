@@ -332,7 +332,7 @@ public:
     //--------------------- Segmentation / discrete representation
 
     /// set desired segmentation
-    void         segmentation(real c) { assert_true(c>0); fnSegmentation = c; }
+    void         targetSegmentation(real c) { assert_true(c>0); fnSegmentation = c; }
     
     /// return desired segmentation (this is not the length of the segments)
     real         targetSegmentation() const { return fnSegmentation; }
@@ -349,6 +349,9 @@ public:
     /// automatically select the number of points if needed, and resegment the fiber
     void         adjustSegmentation();
     
+    /// change the target segmentation, and adjust number of points if needed
+    void         adjustSegmentation(real);
+
     /// change all vertices to given array of coordinates
     void         getPoints(real const*);
     
