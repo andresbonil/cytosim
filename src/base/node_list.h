@@ -5,7 +5,7 @@
 
 #include <stddef.h>
 #include "node.h"
-class Random;
+
 
 /// Doubly linked list of Nodes
 /**

@@ -15,7 +15,7 @@ operator_new.o: operator_new.cc
 
 #----------------------------targets--------------------------------------------
 
-cytobase.a: $(OBJ_BASE) SFMT.o operator_new.o | lib
+cytobase.a: $(OBJ_BASE) operator_new.o | lib
 	$(MAKELIB)
 	$(DONE)
 
