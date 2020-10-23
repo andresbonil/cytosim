@@ -545,12 +545,6 @@ void Mecafil::computeTensions(const real* force)
 }
 
 
-void Mecafil::storeTensions(const real*)
-{
-    copy_real(nPoints, rfLLG, rfLag);
-}
-
-
 void Mecafil::printProjection(std::ostream& os) const
 {
     const unsigned nbv = DIM * nbPoints();
@@ -577,32 +571,33 @@ void Mecafil::printProjection(std::ostream& os) const
 
 //------------------------------------------------------------------------------
 #pragma mark - Projection DIFF
-
+//#include "cytoblas.h"
 
 void Mecafil::makeProjectionDiff(const real* force)
 {
     const unsigned nbs = nbSegments();
     assert_true( nbs > 0 );
     
-#if ( 0 )
-    // verify that we have the correct Lagrange multipliers:
-    copy_real(nbs, rfLag, rfLLG);
+#if 0
+    // Check here that iLLG[] contains the correct Lagrange multipliers
+    // compute Lagrange multipliers corresponding to 'force' in iLag:
     computeTensions(force);
     real n = blas::max_diff(nbs, rfLLG, rfLag);
     if ( n > 1e-6 )
     {
-        std::clog << "Error= \n" << n << "\n";
-        std::clog << "Lagrange: "; VecPrint::print(std::clog, std::min(20u,nbs), rfLLG);
-        std::clog << "Multipl.: "; VecPrint::print(std::clog, std::min(20u,nbs), rfLag);
-        std::clog << "\n";
+        fprintf(stderr, "\n|iLag - iLLG| = %e", n);
+        fprintf(stderr, "\niLag "); VecPrint::print(std::clog, std::min(20LU,nbs), rfLag);
+        fprintf(stderr, "\niLLG "); VecPrint::print(std::clog, std::min(20LU,nbs), rfLLG);
     }
 #endif
     
-    //----- we remove compressive forces ( negative Lagrange-multipliers )
+    // use Lagrange multipliers computed from the last projectForces() in iLLG
+
+    // remove compressive forces ( negative Lagrange-multipliers )
     useProjectionDiff = false;
     for ( unsigned jj = 0; jj < nbs; ++jj )
     {
-        if ( rfLag[jj] > 0 )
+        if ( rfLLG[jj] > 0 )
         {
             useProjectionDiff = true;
             break;
@@ -614,8 +609,8 @@ void Mecafil::makeProjectionDiff(const real* force)
         const real th = 0.0;
         const real sc = 1.0 / segmentation();
         #pragma vector unaligned
-        for ( unsigned jj = 0; jj < nbs; ++jj )
-            mtJJtiJforce[jj] = std::max(th, rfLag[jj] * sc);
+        for ( size_t jj = 0; jj < nbs; ++jj )
+            mtJJtiJforce[jj] = std::max(th, rfLLG[jj] * sc);
         
         //std::clog << "projectionDiff: " << blas::nrm2(nbs, mtJJtiJforce) << std::endl;
         //std::clog << "projectionDiff:"; VecPrint::print(std::clog, std::min(20u,nbs), mtJJtiJforce);

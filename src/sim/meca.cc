@@ -1144,34 +1144,20 @@ void Meca::prepareMatrices()
  Calculates forces due to external links, without adding Thermal motion,
  and also excluding bending elasticity of Fibers.
  
- This also sets the Lagrange multipliers for the Fiber.
+ Mecable::getForces will also sets the Lagrange multipliers for the Fiber.
  
- The function will not change the position of the Mecables.
+ The function will not change the positions of any Mecable.
  */
 void Meca::computeForces()
 {
     prepareMatrices();
     
-    // calculate forces in vFOR, but without Brownian noise:
+    // vFOR <- external forces
     calculateForces(vPTS, vBAS, vFOR);
-    copy_real(dimension(), vFOR, vTMP);
 
-    // add rigidity, and calculate the Lagrange Multiplier with this:
     for ( Mecable * mec : objs )
     {
-        real * fff = vFOR + DIM * mec->matIndex();
-        real * ttt = vTMP + DIM * mec->matIndex();
-        
-        // add bending rigidity:
-#if ( DIM > 1 )
-        real * xxx = vPTS + DIM * mec->matIndex();
-        mec->addRigidity(xxx, ttt);
-#endif
-        // calculate Lagrange multipliers for Fibers (irrelevant for other object)
-        mec->projectForces(ttt, ttt);
-        mec->storeTensions(ttt);
-        // register force (all objects)
-        mec->getForces(fff);
+        mec->getForces(vFOR+DIM*mec->matIndex());
     }
 }
 
@@ -1179,8 +1165,8 @@ void Meca::computeForces()
 /**
 This preforms:
  
-    vFOR <- vFOR + Noise
-    vRHS <- time_step * P * vFOR:
+    fff <- fff + Brownian
+    rhs <- time_step * P * fff:
  
  Also prepare Projection diff is requested
 
@@ -1193,15 +1179,16 @@ real brownian1(Mecable* mec, real const* rnd, real alpha, real* fff, real beta, 
     // Calculate the right-hand-side of the system in vRHS:
     mec->projectForces(fff, rhs);
     
-    // rhs <- beta * rhs, resulting in time_step * P * vFOR:
+    // rhs <- beta * rhs, resulting in time_step * P * fff:
     blas::xscal(DIM*mec->nbPoints(), beta*mec->leftoverMobility(), rhs, 1);
 
     /*
-     In this case, `fff` contains the true force in each vertex of the system
-     and the Lagrange multipliers will represent the tension in the filaments
+     At this stage, `fff` contains the external forces in each vertex but also
+     internal force such as bending elasticity terms, and the Lagrange multipliers
+     do not represent the true tension in the filaments.
+     Hence we do not call 'computeTensions(fff)' here
      */
-    mec->storeTensions(fff);
-    
+
 #if ADD_PROJECTION_DIFF
     mec->makeProjectionDiff(fff);
 #endif
@@ -1225,27 +1212,35 @@ real brownian1(Mecable* mec, real const* rnd, real alpha, real* fff, real beta, 
  
  where M is a matrix and B is a vector, leading to:
  
-     ( I - time_step * P * M ) ( Xnew - Xold ) = time_step * P * F + Noise
+     ( I - time_step * P * M ) ( Xnew - Xold ) = time_step * P * Force + Noise
  
  where:
  
-     F = M * Xold + B
+     Force = M * Xold + B
  
      Noise = sqrt(2*kT*time_step*mobility) * Gaussian(0,1)
  
  Implicit integration ensures numerical stability. In the code,
- the matrix M is decomposed as:
+ the sparse matrix M is decomposed as:
  
-     M = mB + mC + the rigidity terms of Mecables
+     M = mB + mC + Rigidity_of_Mecables
  
- and the vectors are:
+ Where mB is isotropic: it applies similarly in the X, Y and Z subspaces, and
+ has no crossterms between X and Y or X and Z or Y ans Z subspaces.
+ All crossterms go into mC.
+ The terms should already be set:
+
+     'mB', 'mC' and 'B=vBAS' are set in Meca::setAllInteractions()
+     'vPTS = Xold' is set from Mecables' points in Meca::prepare()
+     
+ The outline of the calculation is:
  
-     'vPTS' is Xold
-     'vBAS' is B
-     'vRND' is Noise, a vector of calibrated Brownian terms
-     'vFOR' is the force ( M * Xold + B ) and then ( M * Xnew + B )
-     'vRHS' is the right-hand-side of the system (time_step * P * F + vRND)
-     'vSOL' is `Xnew - Xold`, the solution to the system
+     'vRND' <- calibrated Gaussian random terms ~N(0,1)
+     'vFOR' <- force 'M * Xold + B'
+     'vRHS' <- time_step * P * F + vRND (right-hand-side of the system)
+     'vSOL' <- solution to the linear system of equations is calculated
+     'vSOL' <- 'Xnew = Xold + vSOL'
+     'vFOR' <- force 'M * Xnew + B'
  
  */
 void Meca::solve(SimulProp const* prop, const int precond)
@@ -1256,7 +1251,7 @@ void Meca::solve(SimulProp const* prop, const int precond)
 
     prepareMatrices();
     
-    // calculate forces before constraints in vFOR:
+    // calculate external forces in vFOR:
     calculateForces(vPTS, vBAS, vFOR);
     
 #if ( DIM > 1 )
@@ -1493,16 +1488,24 @@ void Meca::solve(SimulProp const* prop, const int precond)
     
 #endif
     
-    //add the solution of the system (=dPTS) to the points coordinates
+    //add the solution (the displacement) to update the Mecable's vertices
     blas::add(dimension(), vSOL, vPTS);
     
     /*
-     Re-calculate forces with the new coordinates, excluding bending elasticity
-     and Brownian terms on the vertices.
-     In this way the result returned to the fibers does not sum-up to zero,
-     and is appropriate for example to calculate the effect of force on assembly.
+     Re-calculate forces with the new coordinates, excluding bending elasticity.
+     In this way the forces returned to the fibers do not sum-up to zero, and
+     are appropriate for example to calculate the effect of force on assembly.
      */
     calculateForces(vPTS, vBAS, vFOR);
+    
+    // add Brownian terms:
+    for ( Mecable * mec : objs )
+    {
+        const size_t inx = DIM * mec->matIndex();
+        mec->addBrownianForces(vRND+inx, alpha, vFOR+inx);
+        //fprintf(stderr, "\n  "); VecPrint::print(stderr, DIM*mec->nbPoints(), vFOR+inx, 2, DIM);
+    }
+
     ready_ = 1;
     
     // report on the matrix type and size, sparsity, and the number of iterations
@@ -1544,8 +1547,9 @@ void Meca::apply()
 #else
         for ( Mecable * mec : objs )
         {
-            mec->getForces(vFOR+DIM*mec->matIndex());
-            mec->getPoints(vPTS+DIM*mec->matIndex());
+            size_t off = DIM * mec->matIndex();
+            mec->getPoints(vPTS+off);
+            mec->getForces(vFOR+off);
         }
 #endif
     }

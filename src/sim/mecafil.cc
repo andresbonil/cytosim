@@ -151,18 +151,27 @@ void Mecafil::projectForces(const real* X, real* Y) const
 }
 
 void Mecafil::computeTensions(const real*) {} //DIM == 1
-void Mecafil::storeTensions(const real*) {} //DIM == 1
 void Mecafil::makeProjectionDiff(const real*) {} //DIM == 1
 void Mecafil::addProjectionDiff(const real*, real*) const {} //DIM == 1
 
 #endif
 
 
-void Mecafil::printTensions(std::ostream& os) const
+void Mecafil::printTensions(FILE * out, char c) const
 {
-    os << "\n" << reference() << " ";
-    VecPrint::print(os, nbSegments(), rfLag, 2);
-    os << " end " << std::fixed << std::setprecision(2) << netForceEndM() << "   " << netForceEndP();
+    fprintf(out, "\n%c%s ", c, reference().c_str());
+    VecPrint::print(out, nbSegments(), rfLag, 2);
+    fprintf(out, "  fM"); netForceEndM().print(out);
+    fprintf(out, "  fP"); netForceEndP().print(out);
+}
+
+
+void Mecafil::getForces(const real* ptr)
+{
+    Mecable::getForces(ptr);
+    //fprintf(stderr, "\nF "); VecPrint::print(stderr, DIM*nbPoints(), ptr, 2, DIM);
+    computeTensions(ptr);
+    //printTensions(stderr);
 }
 
 //-----------------------------------------------------------------------
