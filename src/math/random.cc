@@ -91,8 +91,8 @@ uint32_t hash(long t, int32_t c)
 uint32_t Random::seed()
 {
     uint32_t s = 0;
-    // use system source if available
-    FILE * f = fopen("/dev/random", "r");
+    // read system source if available, from /dev/random which does not block!
+    FILE * f = fopen("/dev/urandom", "r");
     if ( f && ! ferror(f) )
     {
         int cnt = 0;
