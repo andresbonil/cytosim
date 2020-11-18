@@ -1,0 +1,40 @@
+% A set of confined fibers induce a deformation of the Space
+% This uses the Space 'dynamic_ellipse' designed by Serge Dmitrieff 
+% to simulate platelet morphology.
+% F. Nedelec, November 2017
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1
+}
+
+set space cell
+{
+    shape = dynamic_ellipse
+    tension = 10
+    viscosity=100,100
+    display = ( color = 0x0000FF55; visible=1 )
+}
+
+new cell
+{
+    length = 5, 5, 4
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.25
+    confine = inside, 200
+}
+
+new 10 microtubule
+{
+    length = 7
+    orientation = X
+}
+
+run 200 system
+{
+}
