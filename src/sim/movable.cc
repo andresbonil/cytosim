@@ -913,7 +913,16 @@ Rotation Movable::readOrientation(std::istream& is, Vector const& pos, Space con
     int c = Tokenizer::skip_space(is, false);
 
     if ( isalpha(c) )
-        return readRotation(is);
+    {
+        try {
+            return readRotation(is);
+        }
+        catch ( Exception& e )
+        {
+            // Some keywords are handled by readDirection(), so we just warn here
+            std::cerr << "Warning, " << e.message() << '\n';
+        }
+    }
 
     // normally a unit vector is specified:
     Vector vec = readDirection(is, pos, spc);
