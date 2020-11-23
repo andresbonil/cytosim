@@ -791,8 +791,8 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
     
     do_write &= ( nb_frames > 0 );
 
-    size_t frame = 1;
-    real   delta = (real)nb_steps;
+    size_t frame = 0;
+    real   delta = real(nb_steps);
     size_t check = nb_steps;
     
     VLOG("+RUN START " << nb_steps << '\n');
@@ -806,7 +806,7 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
             simul.prop->clear_trajectory = false;
         }
         delta = real(nb_steps) / real(nb_frames);
-        check = delta;
+        check = size_t(delta);
     }
     
     simul.prepare();
@@ -821,8 +821,9 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
             simul.step();
             ++sss;
         }
+        ++frame;
         // next check point:
-        check = (size_t)( ++frame * delta );
+        check = size_t(delta*(frame+1));
 
         if ( do_write )
         {
