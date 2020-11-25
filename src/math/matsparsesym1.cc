@@ -609,7 +609,7 @@ void MatrixSparseSymmetric1::vecMulAddIso3D(const real* X, real* Y, index_t jj, 
     }
     Y[jj  ] = Y0;
     Y[jj+1] = Y1;
-    Y[jj+1] = Y2;
+    Y[jj+2] = Y2;
 }
 
 
