@@ -438,7 +438,7 @@ void Chain::reshape_apply(const unsigned ns, const real* src, real* dst,
     Vector old = sca[0] * ( B - A );
     (A+old).store(dst);
     
-    for ( unsigned i = 1; i < ns; ++i )
+    for ( size_t i = 1; i < ns; ++i )
     {
         Vector C(src+DIM*i+DIM);
         Vector vec = sca[i] * ( C - B );
@@ -510,7 +510,7 @@ void Chain::reshape_global(const unsigned ns, const real* src, real* dst, real c
     
     Vector(src).store(dst);
 
-    for ( unsigned i = 1; i < ns; ++i )
+    for ( size_t i = 1; i < ns; ++i )
     {
         seg = diffPoints(src, i);
         dis = seg.norm();
@@ -635,10 +635,11 @@ void Chain::growM(const real delta)
 {
     assert_true( length() + delta > 0 );
     real a = -delta / length();
+    const size_t ns = nbSegments();
     
     if ( delta > 0 )
     {
-        unsigned p = 0, n = nbSegments();
+        size_t p = 0, n = ns;
         Vector dp0 = diffPoints(0), dp1;
         movePoint(p, ( a * n ) * dp0);
         ++p;
@@ -667,12 +668,12 @@ void Chain::growM(const real delta)
     }
     else if ( delta < 0 )
     {
-        for ( unsigned p = 0, n = nbSegments(); n > 0; ++p, --n )
+        for ( size_t p = 0, n = ns; n > 0; ++p, --n )
             movePoint(p, ( a * n ) * diffPoints(p));
     }
     
     fnAbscissaM -= delta;
-    setSegmentation(std::max(fnCut+delta/nbSegments(), REAL_EPSILON));
+    setSegmentation(length()/ns);
     postUpdate();
 }
 
@@ -711,21 +712,21 @@ void Chain::cutM(const real delta)
     assert_true( 0 <= delta );
     assert_true( delta < len );
     
-    const unsigned np = bestNumberOfPoints((len-delta)/fnSegmentation);
-    const real cut = (len-delta) / (np-1);
-    real* tmp = new_real(DIM*np);
+    const size_t ns = bestNumberOfPoints((len-delta)/fnSegmentation) - 1;
+    const real cut = (len-delta) / ns;
+    real* tmp = new_real(DIM*(ns+1));
 
     // calculate intermediate points:
-    for ( unsigned i=0; i+1 < np; ++i )
+    for ( size_t i=0; i < ns; ++i )
     {
         Vector w = interpolateM(delta+i*cut).pos();
         w.store(tmp+DIM*i);
     }
 
     // copy the position of plus-end:
-    copy_real(DIM, pPos+DIM*lastPoint(), tmp+DIM*(np-1));
+    copy_real(DIM, pPos+DIM*lastPoint(), tmp+DIM*ns);
     
-    setNbPoints(np);
+    setNbPoints(ns+1);
     fnAbscissaM += delta;
     setSegmentation(cut);
     getPoints(tmp);
@@ -750,13 +751,13 @@ void Chain::growP(const real delta)
 {
     assert_true( length() + delta > 0 );
     real a = delta / length();
+    const size_t ns = nbSegments();
     
     if ( delta > 0 )
     {
-        unsigned p = lastPoint();
-        Vector dp0 = diffPoints(p-1), dp1;
-        movePoint(p, ( a * p ) * dp0);
-        --p;
+        Vector dp0 = diffPoints(ns-1), dp1;
+        movePoint(ns, ( a * ns ) * dp0);
+        size_t p = ns-1;
         
         if ( p > 0  &&  ( p & 1 ) )
         {
@@ -780,12 +781,12 @@ void Chain::growP(const real delta)
     }
     else if ( delta < 0 )
     {
-        for ( unsigned p = lastPoint() ; p > 0 ; --p )
+        for ( size_t p = ns ; p > 0 ; --p )
             movePoint(p, ( a * p ) * diffPoints(p-1));
     }
     
-    setSegmentation(std::max(fnCut+delta/nbSegments(), REAL_EPSILON));
     fnAbscissaP += delta;
+    setSegmentation(length()/ns);
     postUpdate();
 }
 
@@ -903,22 +904,21 @@ void Chain::truncateP(unsigned p)
  */
 void Chain::join(Chain const* fib)
 {
-    const real len1 = length();
-    const real lenT = len1 + fib->length();
-    const unsigned ns = bestNumberOfPoints(lenT/fnSegmentation) - 1;
+    const real len = length();
+    const real lenT = len + fib->length();
+    const size_t ns = bestNumberOfPoints(lenT/fnSegmentation) - 1;
     const real cut = lenT / real(ns);
     
     real* tmp = new_real(DIM*(ns+1));
 
     // calculate new points into tmp[]:
-    for ( unsigned i = 1; i < ns; ++i )
+    for ( size_t i = 1; i < ns; ++i )
     {
         Vector w;
-        if ( i*cut < len1 )
+        if ( i*cut < len )
             w = interpolateM(i*cut).pos();
         else
-            w = fib->interpolateM(i*cut-len1).pos();
-        
+            w = fib->interpolateM(i*cut-len).pos();
         w.store(tmp+DIM*i);
     }
     
@@ -927,7 +927,7 @@ void Chain::join(Chain const* fib)
 
     setNbPoints(ns+1);
     setSegmentation(cut);
-    fnAbscissaP = fnAbscissaM + cut * fnCut;
+    fnAbscissaP = fnAbscissaM + cut * ns;
     getPoints(tmp);
     free_real(tmp);
     updateFiber();
@@ -1151,7 +1151,7 @@ real Chain::planarIntersect(unsigned s, Vector const& n, const real a) const
 void Chain::resegment(unsigned ns)
 {
     assert_true( ns > 0 );
-    real cut = nbSegments() * fnCut / ns;
+    real cut = length() / ns;
     
     // calculate new intermediate points in tmp[]:
     Vector a = posP(0), b = posP(1);
@@ -1342,17 +1342,17 @@ real Chain::someAbscissa(real dis, FiberEnd ref, int mod, real alpha) const
  */    
 FiberEnd Chain::whichEndDomain(const real ab, const real lambda) const
 {
-    const real abs = ab - fnAbscissaM;
-    const real len = length();
+    const real abM = ab - fnAbscissaM;
+    const real abP = fnAbscissaP - ab;
     
-    if ( 2 * abs > len )
+    if ( abM > abP )
     {
-        if ( abs >= len - lambda )
+        if ( abP <= lambda )
             return PLUS_END;
     }
     else
     {
-        if ( abs <= lambda )
+        if ( abM <= lambda )
             return MINUS_END;
     }
     return NO_END;

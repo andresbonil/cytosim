@@ -113,7 +113,7 @@ protected:
     static int   reshape_local(unsigned, const real*, real*, real cut, real* tmp, size_t);
 
     /// change segmentation
-    void         setSegmentation(real c) { fnCut = c; }
+    void         setSegmentation(real c) { fnCut = std::max(c, REAL_EPSILON); }
     
 public:
     
@@ -222,18 +222,16 @@ public:
 
     //---------------------
     
-    /// displace the ORIGIN of abscissa
-    void         setOrigin(real a) { fnAbscissaM = -a; fnAbscissaP = fnCut*nbSegments() - a; }
+    /// displace the ORIGIN of abscissa at distance `a` from the MINUS_END
+    void         setOrigin(real a) { fnAbscissaM = -a; fnAbscissaP = fnCut * real(nbSegments()) - a; }
 
     /// signed distance from ORIGIN to MINUS_END (abscissa of MINUS_END)
     real         abscissaM() const { return fnAbscissaM; }
     
     /// abscissa of center, midway between MINUS_END and PLUS_END
-    //real       abscissaC()             const { return fnAbscissaM + 0.5 * length(); }
     real         abscissaC() const { return 0.5 * (fnAbscissaM + fnAbscissaP); }
 
     /// signed distance from ORIGIN to PLUS_END (abscissa of PLUS_END)
-    //real       abscissaP()             const { return fnAbscissaM + length(); }
     real         abscissaP() const { return fnAbscissaP; }
 
     /// signed distance from ORIGIN to vertex specified with index (or intermediate position)
