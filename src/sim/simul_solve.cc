@@ -271,9 +271,9 @@ void Simul::setAllInteractions(Meca & meca) const
 #endif
 
 #if ( 0 )
-    // add steric interaction between a sphere and all fibers
-    Sphere * sol = spheres.first();
-    if ( sol )
+    // add steric interaction between the first Sphere and all Fibers
+    Sphere * sol = spheres.firstID();
+    if ( sol && sol->prop->steric )
     {
         const Vector cen = sol->posPoint(0);
         const real rad = sol->radius();

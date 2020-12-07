@@ -45,6 +45,12 @@ public:
         return static_cast<Sphere*>(nodes.front());
     }
     
+    /// first Sphere in inventory
+    Sphere * firstID() const
+    {
+        return static_cast<Sphere*>(inventory.first());
+    }
+
     /// return pointer to the Object of given ID, or zero if not found
     Sphere *    findID(ObjectID n) const
     {
