@@ -23,16 +23,16 @@ class FatPoint
 public:
     
     /// buffer for position
-    Vector         pos;
+    Vector    pos;
     
     /// equilibrium radius of the interaction (distance where force is zero)
-    real           radius;
+    real      radius;
     
     /// interaction range (maximum distance at which the force can operate)
-    real           range;
+    real      range;
     
     /// indicates the central vertex
-    Mecapoint      pnt;
+    Mecapoint pnt;
         
 public:
     
@@ -66,13 +66,13 @@ class FatSegment
 public:
     
     /// equilibrium radius of the interaction (distance where force is zero)
-    real           radius;
+    real         radius;
     
     /// interaction range (maximum distance at which the force can operate)
-    real           range;
+    real         range;
     
     /// this FatSegment represents the entire segment indicated by the FiberSegment
-    FiberSegment   seg;
+    FiberSegment seg;
     
 public:
     
@@ -105,12 +105,12 @@ public:
         return seg.isLast();
     }
 
-    FatPoint point1() const
+    FatPoint fatPoint1() const
     {
         return FatPoint(seg.exact1(), radius, range, seg.pos1());
     }
     
-    FatPoint point2() const
+    FatPoint fatPoint2() const
     {
         return FatPoint(seg.exact2(), radius, range, seg.pos2());
     }

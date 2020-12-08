@@ -186,13 +186,13 @@ void PointGrid::checkPL(Meca& meca, PointGridParam const& pam,
         else
         {
             if ( bb.isLast() )
-                checkPP(meca, pam, aa, bb.point2());
+                checkPP(meca, pam, aa, bb.fatPoint2());
         }
     }
     else
     {
         if ( bb.isFirst() )
-            checkPP(meca, pam, aa, bb.point1());
+            checkPP(meca, pam, aa, bb.fatPoint1());
         else
         {
             /* we check the projection to the previous segment,
@@ -418,29 +418,61 @@ void PointGrid::checkLL(Meca& meca, PointGridParam const& pam,
 
 
 //------------------------------------------------------------------------------
-#pragma mark -
+#pragma mark - Selections of pairs excluded from Sterics
 
+
+/// excluding two spheres when they are from the same Solid
+inline bool adjacent(FatPoint const* a, FatPoint const* b)
+{
+    return a->pnt.mecable() == b->pnt.mecable();
+}
+
+
+/// excluding Fiber and Solid from the same Aster
+inline bool adjacent(FatPoint const* a, FatSegment const* b)
+{
+    //a->pnt.mecable()->Buddy::print(std::clog);
+    //b->seg.fiber()->Buddy::print(std::clog);
+    return b->seg.fiber()->buddy() == a->pnt.mecable()->buddy();
+}
+
+
+/// excluding segments that are adjacent on the same fiber, or protofilaments from Tubule
+inline bool adjacent(FatSegment const* a, FatSegment const* b)
+{
+#if FIBER_HAS_FAMILY
+    return (( a->seg.fiber()->family_ == b->seg.fiber()->family_ )
+#else
+    return (( a->seg.fiber() == b->seg.fiber() )
+#endif
+            & ( a->seg.point() < 2 + b->seg.point() ) & ( b->seg.point() < 2 + a->seg.point() ));
+}
+
+//------------------------------------------------------------------------------
+#pragma mark - Check all possible object pairs from two Cells
 
 /**
  This will consider once all pairs of objects from the given lists
  */
-void PointGrid::setInteractions(Meca& meca, PointGridParam const& pam,
-                                FatPointList & fpl, FatSegmentList & fll) const
+void PointGrid::setInteractions(Meca& meca, PointGridParam const& stiff,
+                                FatPointList & pots, FatSegmentList & locs) const
 {
-    for ( FatPoint* ii = fpl.begin(); ii < fpl.end(); ++ii )
+    for ( FatPoint* ii = pots.begin(); ii < pots.end(); ++ii )
     {
-        for ( FatPoint* jj = ii+1; jj < fpl.end(); ++jj )
-            checkPP(meca, pam, *ii, *jj);
+        for ( FatPoint* jj = ii+1; jj < pots.end(); ++jj )
+            if ( !adjacent(ii, jj) )
+                checkPP(meca, stiff, *ii, *jj);
         
-        for ( FatSegment* kk = fll.begin(); kk < fll.end(); ++kk )
-            checkPL(meca, pam, *ii, *kk);
+        for ( FatSegment* kk = locs.begin(); kk < locs.end(); ++kk )
+            if ( !adjacent(ii, kk) )
+                checkPL(meca, stiff, *ii, *kk);
     }
     
-    for ( FatSegment* ii = fll.begin(); ii < fll.end(); ++ii )
+    for ( FatSegment* ii = locs.begin(); ii < locs.end(); ++ii )
     {
-        for ( FatSegment* jj = ii+1; jj < fll.end(); ++jj )
-            if ( !adjacent(ii->seg, jj->seg) )
-                checkLL(meca, pam, *ii, *jj);
+        for ( FatSegment* jj = ii+1; jj < locs.end(); ++jj )
+            if ( !adjacent(ii, jj) )
+                checkLL(meca, stiff, *ii, *jj);
     }
 }
 
@@ -450,29 +482,34 @@ void PointGrid::setInteractions(Meca& meca, PointGridParam const& pam,
  assuming that the list are different and no object is repeated
  */
 void PointGrid::setInteractions(Meca& meca, PointGridParam const& pam,
-                                FatPointList & fpl1, FatSegmentList & fll1,
-                                FatPointList & fpl2, FatSegmentList & fll2) const
+                                FatPointList & pots1, FatSegmentList & locs1,
+                                FatPointList & pots2, FatSegmentList & locs2) const
 {
-    assert_true( &fpl1 != &fpl2 );
-    assert_true( &fll1 != &fll2 );
+    assert_true( &pots1 != &pots2 );
+    assert_true( &locs1 != &locs2 );
     
-    for ( FatPoint* ii = fpl1.begin(); ii < fpl1.end(); ++ii )
+    for ( FatPoint* ii = pots1.begin(); ii < pots1.end(); ++ii )
     {
-        for ( FatPoint* jj = fpl2.begin(); jj < fpl2.end(); ++jj )
-            checkPP(meca, pam, *ii, *jj);
+        for ( FatPoint* jj = pots2.begin(); jj < pots2.end(); ++jj )
+            if ( !adjacent(ii, jj) )
+                checkPP(meca, pam, *ii, *jj);
         
-        for ( FatSegment* kk = fll2.begin(); kk < fll2.end(); ++kk )
-            checkPL(meca, pam, *ii, *kk);
+        for ( FatSegment* kk = locs2.begin(); kk < locs2.end(); ++kk )
+            if ( !adjacent(ii, kk) )
+                checkPL(meca, pam, *ii, *kk);
     }
     
-    for ( FatSegment* ii = fll1.begin(); ii < fll1.end(); ++ii )
+    for ( FatSegment* ii = locs1.begin(); ii < locs1.end(); ++ii )
     {
-        for ( FatPoint* jj = fpl2.begin(); jj < fpl2.end(); ++jj )
-            checkPL(meca, pam, *jj, *ii);
+        for ( FatPoint* jj = pots2.begin(); jj < pots2.end(); ++jj )
+            if ( !adjacent(jj, ii) )
+                checkPL(meca, pam, *jj, *ii);
         
-        for ( FatSegment* kk = fll2.begin(); kk < fll2.end(); ++kk )
-            if ( !adjacent(ii->seg, kk->seg) )
+        for ( FatSegment* kk = locs2.begin(); kk < locs2.end(); ++kk )
+        {
+            if ( !adjacent(ii, kk)  )
                 checkLL(meca, pam, *ii, *kk);
+        }
     }
 }
 

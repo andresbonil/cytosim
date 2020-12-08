@@ -3,6 +3,7 @@
 #include <iostream>
 #include "assert_macro.h"
 #include "fiber.h"
+#include "grid.h"
 #include "real.h"
 #include "dim.h"
 
@@ -19,8 +20,11 @@ inline void splash(std::ostream& os)
 /// print general info about the program
 inline void print_version(std::ostream& os)
 {
-    os << "    Precision: " << sizeof(real) << " bytes, " << REAL_EPSILON << "\n";
-    os << "    Built on " <<__DATE__<< " at " <<__TIME__<< " with " <<__VERSION__<< "\n";
+    os << "   Dimension: " << DIM;
+    os << "   Periodic: " << GRID_HAS_PERIODIC;
+    os << "   Precision: " << sizeof(real) << " bytes\n";
+    os << "   Fiber: lattice " << FIBER_HAS_LATTICE << "\n";
+    os << "   Built " <<__DATE__<< " " <<__TIME__<< " with " <<__VERSION__<< "\n";
     
 #ifdef CODE_VERSION
     os << "    Code version " << CODE_VERSION;

@@ -1191,7 +1191,6 @@
 		BB9B5E0C15429ED100C0B9B6 /* field.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = field.cc; sourceTree = "<group>"; };
 		BB9B6DC806AC5160004A4D10 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		BB9BEB9C1C774BB30085E19F /* analyse.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = analyse.cc; sourceTree = "<group>"; };
-		BB9CA2931A55C2C000302A6D /* point_grid2.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = point_grid2.cc; sourceTree = "<group>"; };
 		BB9CED2A07E21B0F00887531 /* player.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = player.h; path = src/play/player.h; sourceTree = SOURCE_ROOT; };
 		BB9D224520C5D30200CBB0B1 /* simd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = simd.h; path = src/math/simd.h; sourceTree = SOURCE_ROOT; };
 		BB9D87A01E76BAE500DD0F00 /* test_matrix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_matrix; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1605,7 +1604,6 @@
 				BB3AAF5806076A8B00508E18 /* fiber_grid2.cc */,
 				BB53F5770DCB467000ED38EB /* point_grid.h */,
 				BB53F5760DCB467000ED38EB /* point_grid.cc */,
-				BB9CA2931A55C2C000302A6D /* point_grid2.cc */,
 			);
 			name = Grids;
 			sourceTree = "<group>";

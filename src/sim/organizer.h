@@ -20,7 +20,7 @@ Organizer contains an Array of pointers of type Mecable*.
 These Mecables are organized by Organizer::setInteraction()
 which is implemented in the derived classes, eg. Bundle, Aster & Nucleus.
 */
-class Organizer: public Object, private Buddy
+class Organizer: public Object, public Buddy
 {
 
 private:

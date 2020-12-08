@@ -194,6 +194,8 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
     if ( !solid() )
         throw InvalidParameter("could not make aster:solid");
     //solid()->write(std::clog);
+    if ( !Buddy::check(solid()) )
+        Buddy::connect(solid());
 
     if ( opt.is_positive_integer("fibers", 0) )
     {
@@ -564,7 +566,9 @@ void Aster::read(Inputter& in, Simul& sim, ObjectTag tag)
     assert_true( nbOrganized() > 0 );
     assert_true( organized(0)->tag() == Solid::TAG );
     
-    Solid * sol = solid();
+    if ( !Buddy::check(solid()) )
+        Buddy::connect(solid());
+    Solid const* sol = solid();
     if ( sol->nbPoints() > 1 )
         asRadius = ( sol->posPoint(0) - sol->posPoint(1) ).norm();
     
