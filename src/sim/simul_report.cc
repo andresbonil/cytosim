@@ -454,16 +454,17 @@ void Simul::reportFiberLengthDistribution(std::ostream& out, Glossary & opt) con
     nbin = std::min(nbin, BMAX);
     
     std::streamsize p = out.precision();
-    out.precision(4);
 
     if ( 1 )
     {
+        out.precision(2);
         out << COM << "length_distribution (`scale` indicates the center of each bin)";
         out << LIN << ljust("scale", 2);
         for ( unsigned u = 0; u <= nbin; ++u )
             out << " " << std::setw(5) << delta * ( u + 0.5 );
     }
-    
+    out.precision(4);
+
     for ( Property * i : properties.find_all("fiber") )
     {
         FiberProp * fp = static_cast<FiberProp*>(i);
