@@ -37,14 +37,14 @@ namespace VecPrint
         else
         {
             char str[32], fmt[32];
-            snprintf(fmt, sizeof(fmt), " %%%i.%if", digits+5, digits);
+            snprintf(fmt, sizeof(fmt), " %%%i.%if", digits+4, digits);
             for ( size_t i = 0; i < len; ++i )
             {
                 snprintf(str, sizeof(str), fmt, vec[i]);
-                if ( i % 4 )
+                if ( i % 3 )
                     os << str;
                 else
-                    os << "  " << str;
+                    os << " " << str;
             }
         }
         os.flush();

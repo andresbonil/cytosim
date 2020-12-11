@@ -63,7 +63,7 @@ void remove_plural(std::string & str)
 }
 
 
-/** 
+/**
  @copydetails Simul::report0
  This can report multiple data, separated by ';', for example:
  
@@ -78,7 +78,7 @@ void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
     opt.set(column_width, "column") || opt.set(column_width, "width");
 
     //out << "\n% start   " << prop->time; // historical
-    out << "\n% time " << std::fixed << std::setprecision(3) << prop->time;
+    out << "\n% time " << std::fixed << prop->time;
     out << "\n% report " << arg;
     try {
         std::string::size_type pos = arg.find(',');
@@ -615,12 +615,14 @@ void Simul::reportFiberLattice(std::ostream& out, bool density) const
     for ( Fiber const* fib = fibers.first(); fib; fib = fib->next() )
         fib->infoLattice(len, cnt, sm, mn, mx);
 
+    int p = out.precision();
     out << LIN << ljust("fiber:lattice", 2);
     out << SEP << sm;
     out << SEP << std::setprecision(4) << sm / cnt;
     out << SEP << std::fixed << std::setprecision(6) << mn;
     out << SEP << std::fixed << std::setprecision(6) << mx;
     out << SEP << std::setprecision(3) << len;
+    out.precision(p);
 }
 
 
@@ -2347,8 +2349,11 @@ void Simul::reportPlatelet(std::ostream& out) const
     if ( flagRing() == 1 )
         analyzeRing(1, len, rad);
 
+    int p = out.precision();
+    out.precision(std::min(p,3));
     out << COM << "nb_fiber" << SEP << "polymer" << SEP << "tension" << SEP << "force" << SEP << "length" << SEP << "radius";
-    out << LIN << nfib << SEP << std::fixed << std::setprecision(3) << pol << SEP << ten << SEP << force << SEP << len << SEP << rad;
+    out << LIN << nfib << SEP << std::fixed << pol << SEP << ten << SEP << force << SEP << len << SEP << rad;
+    out.precision(p);
 }
 
 

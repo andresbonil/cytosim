@@ -169,13 +169,16 @@ void FiberSite::print(std::ostream& os) const
 {
     if ( fiber() )
     {
+        int p = os.precision();
+        os.precision(3);
         os << "(f" << fiber()->identity();
 #if FIBER_HAS_LATTICE
         if ( fbLattice )
             os << " s " << fbSite;
         else
 #endif
-            os << " @ " << std::fixed << std::setprecision(3) << abscissa() << ")";
+            os << " @ " << std::fixed << abscissa() << ")";
+        os.precision(p);
     } else
         os << "(null)";
 }

@@ -275,7 +275,8 @@ namespace sMath
     std::string repr(T const& x, unsigned width, unsigned precision)
     {
         std::ostringstream oss;
-        oss << std::setw(width) << std::setprecision(precision) << std::fixed << x;
+        oss.precision(precision);
+        oss << std::setw(width) << std::fixed << x;
         return oss.str();
     }
     

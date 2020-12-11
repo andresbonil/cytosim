@@ -852,7 +852,7 @@ void Meca::verifyBlock(const Mecable * mec, const real* blk)
  
     std::clog << "verifyBlock ";
     std::clog << std::setw(10) << mec->reference() << " " << std::setw(6) << bs;
-    std::clog << "  | B - K | = " << std::setprecision(3) << err << std::endl;
+    std::clog << "  | B - K | = " << err << std::endl;
     
     if ( err > bs * bs * REAL_EPSILON )
     {
@@ -903,7 +903,7 @@ void Meca::checkBlock(const Mecable * mec, const real* blk)
         tmp[k] -= 1.0;
     
     real err = blas::nrm2(bs*bs,tmp) / bs;
-    std::clog << " | 1 - PM | = " << std::setprecision(3) << err;
+    std::clog << " | 1 - PM | = " << err;
     
     if ( 1 )
     {
