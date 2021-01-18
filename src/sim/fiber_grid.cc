@@ -231,7 +231,7 @@ void FiberGrid::paintGrid(const Fiber * first, const Fiber * last, real range)
 /**
  This will bind the given Hand to any Fiber found within `binding_range`, with a
  probability that is encoded in `prob`.
- The test is `RNG.pint() < prob`, and with 'prob = 1<<30', the chance is 1/4.
+ The test is `RNG.pint32() < prob`, and with 'prob = 1<<30', the chance is 1/4.
  The result is thus stochastic, and will depend on the number of Fiber
  within the range, but it will saturate if there are more than '4' possible targets.
  

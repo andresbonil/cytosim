@@ -1,4 +1,4 @@
-// Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
+// Cytosim was created by Francois Nedelec. Copyright 2020 Cambridge University
 /**
  @file real.h
  SYNOPSIS: we define and use "real" to be able to easily change
@@ -12,19 +12,17 @@
 
 #include <cmath>
 #include <cfloat>
-#include <cstdlib>
-#include <cstring>
-#include <cstdio>
-#include <cstdint>
+#include <cstring>  // memset
+#include <algorithm>
 #include <new>
 
 /**
  It is possible to select double or single precision throughout Cytosim
  by editing this file.
  
- Cytosim is faster in single precision, but the iterative solver used
- in Meca::solve() (conjugate-gradient) may fail in adverse conditions.
- Much of the code was not optimized for double precision.
+ Calculations might be faster in single precision, but the iterative solver used
+ in Meca::solve() (the conjugate-gradient method) may fail in adverse conditions.
+ Much of the code was optimized for double precision but not for single precision.
  
  It is safer, and STRONGLY ADVISED therefore, to use double precision!
 */
@@ -42,76 +40,150 @@
 #endif
 
 
+//----------------------------ALLOCATION----------------------------------------
+
 /// return a number greater or equal to 's' that is a multiple of 4
-inline size_t chunk_real(size_t s)
+inline static size_t chunk_real(size_t cnt)
 {
     // align to 4 doubles (of size 8 bytes), hence 32 bytes
     constexpr size_t chunk = 32 / sizeof(real);
     // return a multiple of chunk greater than 's'
     // this bit trickery works if chunk is a pure power of 2
-    return ( s + chunk - 1 ) & ~( chunk - 1 );
-}
-
-/// check memory alignement of a pointer for AVX load/store
-inline void check_alignment(void * ptr)
-{
-    uintptr_t a = ((uintptr_t)ptr & 31);
-    if ( a )
-        fprintf(stderr, "missaligned pointer %p (%lu)\n", ptr, a);
+    return ( cnt + chunk - 1 ) & ~( chunk - 1 );
 }
 
 
 /// allocate a new array to hold `size` real scalars
-/** The returned pointer is aligned to a 32 byte boundary */
-inline real* new_real(size_t size)
+/** The returned pointer is aligned to a 64 byte boundary */
+inline static real* new_real(size_t cnt)
 {
     void* ptr = nullptr;
-    // we align to 4 doubles (of size 8 bytes), hence 32 bytes
-    if ( posix_memalign(&ptr, 32, size*sizeof(real)) )
+    /*
+     We need to align to 4 doubles (of size 8 bytes), hence 32 bytes
+     Allocating to 64 bytes matches the cache boundary on most CPUs
+     */
+    if ( posix_memalign(&ptr, 64, cnt*sizeof(real)) )
         throw std::bad_alloc();
-    //printf("new_real(%lu)  %lu\n", size, ((uintptr_t)ptr&63));
-    return (real*)ptr;
+    real* res = (real*)ptr;
+    //printf("%p = new_real(%lu)  %lu\n", ptr, cnt, ((uintptr_t)ptr&63));
+#if ( 0 )
+    /*
+     Allocated memory can be filled with signalling NaN, to catch access
+     to uninitialized data, using the option '-fp-trap-all=divzero,invalid'
+     from the intel compiler, or with GCC:
+     feenableexcept(FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW);
+     */
+    real n = std::numeric_limits<real>::signaling_NaN();
+    for ( size_t u = 0; u < cnt; ++u )
+        res[u] = n;
+#endif
+    return res;
 }
 
 
 /// release an array of reals allocated by `new_real`
-inline void free_real(void * ptr)
+inline static void free_real(void* ptr)
 {
-    free(ptr);
+    if ( ptr )
+    {
+        //printf("free_real(%p)\n", ptr);
+        free(ptr);
+    }
 }
 
 
-/// copy `size` real scalars from `src` to `dst`
-inline void copy_real(size_t size, real const* src, real * dst)
+/// copy `cnt` real scalars from `src` to `dst`
+inline static void copy_real(size_t cnt, real const* src, real * dst)
 {
     //#pragma vector unaligned
-    for ( size_t u = 0; u < size; ++u )
+    for ( size_t u = 0; u < cnt; ++u )
         dst[u] = src[u];
 }
 
-
-/// set `size` values of the array `ptr` to 0 (zero).
-inline void zero_real(size_t size, real * ptr)
+#if REAL_IS_DOUBLE
+/// copy `cnt` real scalars from `src` to `dst`
+inline static void copy_real(size_t cnt, real const* src, float * dst)
 {
-    #pragma vector unaligned
-    for ( size_t u = 0; u < size; ++u )
+    for ( size_t u = 0; u < cnt; ++u )
+        dst[u] = (float)src[u];
+}
+#else
+/// copy `cnt` real scalars from `src` to `dst`
+inline static void copy_real(size_t cnt, real const* src, double * dst)
+{
+    for ( size_t u = 0; u < cnt; ++u )
+        dst[u] = (double)src[u];
+}
+#endif
+
+
+/// set `cnt` values of the array `ptr` to 0 (zero).
+inline static void zero_real(size_t cnt, real * ptr)
+{
+    #pragma ivdep
+    for ( size_t u = 0; u < cnt; ++u )
         ptr[u] = 0.0;
 }
 
+//-------------------------------CONSTANTS--------------------------------------
+
+constexpr real M_SQRT3 = 1.7320508075688772935274463415059;
+
+//----------------------------BRANCHLESS? CODE----------------------------------
 
 /// square of the argument: `x * x`
-inline real square(const real x) { return x * x; }
+inline static real square(const real x) { return x * x; }
 
 /// cube of the argument: `x * x * x`
-inline real cube(const real x) { return x * x * x; }
+inline static real cube(const real x) { return x * x * x; }
 
-
-/// return `neg` if `arg < 0` and `pos` otherwise
-inline real sign_select(real const& val, real const& neg, real const& pos)
+/// return `neg` if `val < 0` and `pos` otherwise
+inline static real sign_select(real const val, real const neg, real const pos)
 {
-    // this should be branchless, using Intel's VBLENDVPD instruction
-    if ( val >= 0 ) return pos;
-    else return neg;
+    // this should be branchless, using a conditional-move instruction (CMOVBE)
+    return ( val < 0 ? neg : pos );
+}
+
+/// sign of a 'real': -1 or +1; result is +1 if ( x == 0 ) and -1 if ( x == -0 )
+inline static real sign_real(const real x)
+{
+#if REAL_IS_DOUBLE
+    return std::copysign(1.0, x);
+#else
+    return std::copysign(1.0f, x);
+#endif
+}
+
+/// absolute value of `x`
+inline static real abs_real(const real x) { return std::fabs(x); }
+
+/// minimum between `x` and `y`
+inline static real min_real(const real x, const real y) { return std::min(x, y); }
+
+/// maximum between `x` and `y`
+inline static real max_real(const real x, const real y) { return std::max(x, y); }
+
+/// clamp value 'x' within [i, s]
+inline static real clamp_real(const real x, const real i, const real s)
+{
+    return std::max(i, std::min(x, s));
+}
+
+/// adjust 'x' to canonical image with period 'p':
+inline static real fold_real(const real x, const real p)
+{
+    // using remainder() function for branchless code
+    return std::remainder(x, p);
+}
+
+//----------------------------------- DEBUG ------------------------------------
+
+inline static bool has_nan(size_t cnt, real const* ptr)
+{
+    bool res = false;
+    for ( size_t i = 0; i < cnt; ++i )
+        res |= std::isnan(ptr[i]);
+    return res;
 }
 
 #endif

@@ -9,14 +9,6 @@ constexpr int PERIODIC_YZ  = ( 1 << (DIM-1) ) - 1;
 constexpr int PERIODIC_X   = 1;
 
 
-/// adjust 'x' to canonical image with period 'p':
-inline real fold_real(const real x, const real p)
-{
-    // using remainder() function for branchless code
-    return std::remainder(x, p);
-}
-
-
 /// enable periodicity in dimension 'd'
 void Modulo::enable(size_t d, real size)
 {

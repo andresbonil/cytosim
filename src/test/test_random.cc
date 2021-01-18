@@ -26,8 +26,8 @@ void speed_test()
     uint32_t u = 10;
     for (size_t j=0; j<cnt; ++j)
     {
-        u = RNG.pint(1024);
-        RNG.pint(u);
+        u = RNG.pint32(1024);
+        RNG.pint32(u);
     }
     TicToc::toc("int");
 }
@@ -38,7 +38,7 @@ void test_int()
     for (int j=0; j<8; ++j)
     {
         for (int k=0; k<8; ++k)
-            printf(" %12u", RNG.pint());
+            printf(" %12u", RNG.pint32());
         printf("\n");
     }
     printf("\n");
@@ -54,7 +54,7 @@ void test_int()
     for (int j=0; j<8; ++j)
     {
         for (int k=0; k<32; ++k)
-            printf(" %2u", RNG.pint(100));
+            printf(" %2u", RNG.pint32(100));
         printf("\n");
     }
     printf("\n");
@@ -77,7 +77,7 @@ void silly_test()
     uint32_t hit = 0;
     
     for (uint32_t j=0; j<cnt; ++j)
-        hit += ( RNG.pint() < up );
+        hit += ( RNG.pint32() < up );
 
     printf(" prob( pint() < 1^30 ) = %f\n", hit/(float)cnt);
 }
@@ -111,7 +111,7 @@ void testbits()
     double y;
     for ( int ii=0; ii <= 20; ++ii )
     {
-        y = convertFix( RNG.pint() );
+        y = convertFix( RNG.pint32() );
         printf(" %f :", y);
         print_bits(stdout, &y,8);
     }
@@ -235,7 +235,7 @@ void test_gauss()
     real vec[n_max] = { 0 };
     for ( size_t i = 0; i < 10000000; ++i )
     {
-        size_t n = RNG.pint(n_max);
+        size_t n = RNG.pint32(n_max);
         RNG.gauss_set(vec, n);
         cnt += n;
         for ( size_t u = 0; u < n; ++u )

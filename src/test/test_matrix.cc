@@ -57,8 +57,8 @@ void setIndices(int fill, int*& ii, int*& jj, int mx, int bs)
     {
         int i, j;
         do {
-            i = RNG.pint(mx) / bs;
-            j = RNG.pint(mx) / bs;
+            i = RNG.pint32(mx) / bs;
+            j = RNG.pint32(mx) / bs;
         } while ( i == j );
         ii[n] = bs * std::max(i,j);
         jj[n] = bs * std::min(i,j);
@@ -106,15 +106,15 @@ void compare(unsigned size,  MATRIXA & mat1, MATRIXB& mat2, unsigned fill)
     for ( unsigned n = 0; n < fill; ++n )
     {
         real a = 10.0 * RNG.preal();
-        unsigned ii = RNG.pint(size);
-        unsigned jj = RNG.pint(size);
+        unsigned ii = RNG.pint32(size);
+        unsigned jj = RNG.pint32(size);
         mat1(ii, jj) += a;
         mat2(ii, jj) += a;
     }
     
     for ( unsigned nbc = DIM; nbc < size; nbc+=DIM )
     {
-        unsigned inx = DIM * ( RNG.pint(size-nbc) / DIM );
+        unsigned inx = DIM * ( RNG.pint32(size-nbc) / DIM );
         std::clog << "Comparing matrices: size " << size << " inx " << inx << " nbc " << nbc << " ";
         
         zero_real(size*size, tmp1);
@@ -508,10 +508,10 @@ int main( int argc, char* argv[] )
     {
         //testMatrices(DIM*17, 23);
         int dim[5] = { 0 };
-        for ( int i = 0; i < 5; ++i ) dim[i] = RNG.pint(1<<(i+7));
+        for ( int i = 0; i < 5; ++i ) dim[i] = RNG.pint32(1<<(i+7));
         qsort(dim, 5, sizeof(int), compareInt);
         for ( int i = 0; i < 5; ++i )
-            testMatrices(DIM*dim[i], RNG.pint(dim[i]*dim[i]));
+            testMatrices(DIM*dim[i], RNG.pint32(dim[i]*dim[i]));
     }
     return EXIT_SUCCESS;
 }

@@ -394,7 +394,7 @@ void processNormalKey(unsigned char c, int x=0, int y=0)
         case 'd':
         {
             real val[] = { -2, -1, 0, 1, 2, 5 };
-            opt.define("inflate", 0, val[ RNG.pint(6) ]);
+            opt.define("inflate", 0, val[ RNG.pint32(6) ]);
             setGeometry();
         } break;
             

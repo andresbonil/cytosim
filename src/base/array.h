@@ -489,9 +489,9 @@ public:
     {
         assert_true(nbo_>0);
 #if HANDLE_HUGE_ARRAYS
-        return val_[RNG.plong(nbo_)];
+        return val_[RNG.pint64(nbo_)];
 #else
-        return val_[RNG.pint(nbo_)];
+        return val_[RNG.pint32(nbo_)];
 #endif
     }
 
@@ -522,11 +522,11 @@ public:
     {
         assert_true(val_);
 #if HANDLE_HUGE_ARRAYS
-        size_t ii = RNG.plong(nbo_);
-        size_t jj = RNG.plong(nbo_);
+        size_t ii = RNG.pint64(nbo_);
+        size_t jj = RNG.pint64(nbo_);
 #else
-        size_t ii = RNG.pint(nbo_);
-        size_t jj = RNG.pint(nbo_);
+        size_t ii = RNG.pint32(nbo_);
+        size_t jj = RNG.pint32(nbo_);
 #endif
         if ( ii != jj )
             swap(val_+ii, val_+jj);
@@ -546,7 +546,7 @@ public:
         uint32_t jj = nbo_, kk;
         while ( jj > 1 )
         {
-            kk = RNG.pint(jj);  // 32 bits in [0, j-1]
+            kk = RNG.pint32(jj);  // 32 bits in [0, j-1]
             --jj;
             swap(val_+jj, val_+kk);
         }
@@ -564,7 +564,7 @@ public:
         uint64_t jj = nbo_, kk;
         while ( jj > 1 )
         {
-            kk = RNG.plong(jj);  // 64 bits in [0, j-1]
+            kk = RNG.pint64(jj);  // 64 bits in [0, j-1]
             --jj;
             swap(val_+jj, val_+kk);
         }

@@ -129,7 +129,7 @@ void Solid::reset()
 #if ( DIM > 2 )
     soMomentum = Matrix33(0, 1);
 #endif
-    soReshapeTimer = RNG.pint(7);
+    soReshapeTimer = RNG.pint32(7);
 }
 
 

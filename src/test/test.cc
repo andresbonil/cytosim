@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
         a.clear();
         unsigned n = RNG.poisson(8);
         for( int i=0; i < n; ++i )
-            a.push_back(RNG.pint(2));
+            a.push_back(RNG.pint32(2));
         
         printf("\nsize %lu", a.size());
         {

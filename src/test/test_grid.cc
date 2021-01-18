@@ -282,7 +282,7 @@ void testInterpolate()
     
     real * vec[CNT];
     for ( int i = 0; i < CNT; ++i )
-        vec[i] = rand + RNG.pint(MAX);
+        vec[i] = rand + RNG.pint32(MAX);
 
     real sum = 0;
     TicToc::tic();

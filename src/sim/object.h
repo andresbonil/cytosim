@@ -83,7 +83,7 @@ public:
 public:
     
     /// constructor
-    Object() : mark_(0), flag_(0), signature_(RNG.pint()), set_(nullptr) { }
+    Object() : mark_(0), flag_(0), signature_(RNG.pint32()), set_(nullptr) { }
     
     /// copy constructor
     Object(Object const& o) : mark_(o.mark_), flag_(o.flag_), signature_(o.signature_), set_(nullptr) {}
