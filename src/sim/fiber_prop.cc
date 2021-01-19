@@ -33,10 +33,14 @@ real FiberProp::newFiberLength(Glossary& opt) const
 #endif
     opt.set(len, "length") || opt.set(len, "fiber_length");
     
-    // exponential distribution:
+    // exponential distribution, truncated (Julio M.Belmonte's student):
     if ( opt.value_is("length", 1, "exponential") )
     {
-        len *= RNG.exponential();
+        real L;
+        do {
+            L = len * RNG.exponential();
+        } while (( L < min_length ) | ( L > max_length ));
+        len = L;
     }
     else
     {
