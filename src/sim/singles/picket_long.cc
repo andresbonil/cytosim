@@ -27,38 +27,22 @@ PicketLong::~PicketLong()
 
 //------------------------------------------------------------------------------
 
-#if ( DIM == 2 )
-
-/**
- Returns -len or +len
- */
-real PicketLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
+Torque PicketLong::calcArm(Interpolation const& pt, Vector const& pos, real len)
 {
-    Vector vec = pt.pos() - pos;
+    Vector off = pt.pos1() - pos;
     if ( modulo )
-        modulo->fold(vec);
-    return std::copysign(len, cross(vec, pt.diff()) );
-}
-
-#elif ( DIM >= 3 )
-
-/**
- Return a vector of norm `len`, perpendicular to the Fiber referenced by `pt` and aligned with the link.
-*/
-Vector PicketLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
-{
-    Vector vec = pt.pos() - pos;
-    if ( modulo )
-        modulo->fold(vec);
-    Vector a = cross( vec, pt.diff() );
-    real an = a.normSqr();
-    if ( an > REAL_EPSILON )
-        return a * ( len / sqrt(an) );
+        modulo->fold(off);
+#if ( DIM >= 3 )
+    off = cross(off, pt.diff());
+    real n = off.norm();
+    if ( n > REAL_EPSILON )
+        return off * ( len / n );
     else
         return pt.diff().randOrthoU(len);
-}
-
+#else
+    return std::copysign(len, cross(off, pt.diff()));
 #endif
+}
 
 //------------------------------------------------------------------------------
 

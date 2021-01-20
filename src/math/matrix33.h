@@ -308,6 +308,16 @@ public:
         return res;
     }
     
+    /// return scaled transposed matrix
+    Matrix33 transposed(real alpha) const
+    {
+        Matrix33 res;
+        for ( int x = 0; x < 3; ++x )
+        for ( int y = 0; y < 3; ++y )
+            res[y+BLD*x] = alpha * val[x+BLD*y];
+        return res;
+    }
+
     /// maximum of all component's absolute values
     real norm_inf() const
     {
@@ -913,6 +923,15 @@ public:
         return symmetric(X * X2 - 1.0, X * Y2, X * Z2,
                          Y * Y2 - 1.0, Y * Z2,
                          Z * Z2 - 1.0);
+    }
+    
+    /// build the matrix `dia * Id + vec (x) Id`
+    /** thus applying M to V results in `dia * V + vec (x) V */
+    static Matrix33 vectorProduct(const real dia, const Vector3& vec)
+    {
+        return Matrix33(    dia,  vec.ZZ, -vec.YY,
+                        -vec.ZZ,     dia,  vec.XX,
+                         vec.YY, -vec.XX,     dia);
     }
 
     /// rotation around `axis` (of norm 1) with angle set by cosinus and sinus values

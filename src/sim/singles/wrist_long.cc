@@ -20,40 +20,22 @@ WristLong::~WristLong()
 
 //------------------------------------------------------------------------------
 
-#if ( DIM == 2 )
-
-/**
- Returns -len or +len
- */
-real WristLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
+Torque WristLong::calcArm(Interpolation const& pt, Vector const& pos, real len)
 {
-    Vector vec = pt.pos() - pos;
+    Vector off = pt.pos1() - pos;
     if ( modulo )
-        modulo->fold(vec);
-    return std::copysign(len, cross(vec, pt.diff()) );
-}
-
-#elif ( DIM >= 3 )
-
-/**
- Return a vector of norm len, that is perpendicular to the Fiber referenced by `pt`,
- and also perpendicular to the link.
- */
-Vector WristLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
-{
-    Vector vec = pt.pos() - pos;
-    if ( modulo )
-        modulo->fold(vec);
-    Vector a = cross( vec, pt.diff() );
-    real an = a.normSqr();
-    if ( an > REAL_EPSILON )
-        return a * ( len / sqrt(an) );
+        modulo->fold(off);
+#if ( DIM >= 3 )
+    off = cross(off, pt.diff());
+    real n = off.norm();
+    if ( n > REAL_EPSILON )
+        return off * ( len / n );
     else
         return pt.diff().randOrthoU(len);
-}
-
+#else
+    return std::copysign(len, cross(off, pt.diff()));
 #endif
-
+}
 
 //------------------------------------------------------------------------------
 Vector WristLong::force() const
@@ -106,11 +88,9 @@ void WristLong::setInteractions(Meca & meca) const
     
     mArm = calcArm(pt, posFoot(), prop->length);
     if ( anchor.rank() == 1 )
-        meca.addSideLinkS(pt, anchor.vertex0(), mArm, prop->length, prop->stiffness);
+        meca.addSideLink3D(pt, anchor.point(), mArm, prop->stiffness);
     else
         throw InvalidParameter("unfinished WristLong::setInteractions(length>0, Interpolation4)");
-
-    //@todo WristLong:setInteractions() use interSideLink3D()
     
 #endif
 }

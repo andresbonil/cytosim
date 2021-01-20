@@ -427,7 +427,7 @@ public:
 #elif ( DIM >= 3 )
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment
     void addSideLink3D(Interpolation const&, Mecapoint const&, Vector const& arm, real weight);
-    
+
     /// Force of stiffness `weight`, at distance `arm` on the side of segment supporting the first argument
     void addSideLinkS(Interpolation const&, Mecapoint const&, Vector const& arm, real len, real weight);
 #endif
@@ -439,6 +439,9 @@ public:
     /// Force of stiffness `weight`, at distance `arm` on the side of first segment
     void addSideLink2D(Interpolation const&, Interpolation const&, real arm, real weight);
 #elif ( DIM >= 3 )
+    /// Force of stiffness `weight`, at distance `arm` on the side of first segment
+    void addSideLink3D(Interpolation const&, Interpolation const&, Vector const& arm, real weight);
+
     /// Force of stiffness `weight`, at distance `arm` on the side of segment supporting first argument
     void addSideLinkS(Interpolation const&, Interpolation const&, Vector const& arm, real len, real weight);
 #endif

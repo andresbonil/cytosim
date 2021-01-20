@@ -21,41 +21,23 @@ DuoLong::~DuoLong()
 }
 
 //------------------------------------------------------------------------------
-#if ( DIM == 2 )
 
-/**
- Returns -len or +len
- */
-real DuoLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
+Torque DuoLong::calcArm(Interpolation const& pt, Vector const& pos, real len)
 {
-    Vector vec = pt.pos() - pos;
+    Vector off = pt.pos1() - pos;
     if ( modulo )
-        modulo->fold(vec);
-    return std::copysign(len, cross(vec, pt.diff()) );
-}
-
-#elif ( DIM >= 3 )
-
-/**
- Return a vector of norm `len`, perpendicular to the Fiber referenced by `pt` and aligned with the link.
- @todo update to match interSideLink3D when available
- */
-Vector DuoLong::calcArm(const Interpolation & pt, Vector const& pos, real len)
-{
-    Vector a  = pt.diff();
-    Vector as = pos - pt.pos();
-    if ( modulo )
-        modulo->fold(as);
-    Vector p = ( as - ( dot(as, a) / a.normSqr() ) * a );
-    real pn = p.normSqr();
-    if ( pn > REAL_EPSILON )
-        return p * ( len / sqrt(pn) );
+        modulo->fold(off);
+#if ( DIM >= 3 )
+    off = cross(off, pt.diff());
+    real n = off.norm();
+    if ( n > REAL_EPSILON )
+        return off * ( len / n );
     else
-        return a.randOrthoU(len);
-    //return cross( pt.pos()-pos, pt.diff() ).normalized(len);
-}
-
+        return pt.diff().randOrthoU(len);
+#else
+    return std::copysign(len, cross(off, pt.diff()));
 #endif
+}
 
 //------------------------------------------------------------------------------
 
@@ -120,7 +102,7 @@ void DuoLong::setInteractions(Meca & meca) const
 #elif ( DIM >= 3 )
 
     mArm = calcArm(pt1, pt2.pos(), prop->length);
-    meca.addSideLinkS(pt1, pt2, mArm, prop->length, prop->stiffness);
+    meca.addSideLink3D(pt1, pt2, mArm, prop->stiffness);
     //@todo DuoLong:setInteractions() use interSideLink3D()
     
 #endif

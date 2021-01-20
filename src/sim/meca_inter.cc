@@ -2008,6 +2008,96 @@ void Meca::addSideLinkS(const Interpolation & pta,
         throw Exception("interSideLinkS is not usable with periodic boundary conditions");
 }
 
+/**
+Link `B` to an interpolated point `S` on the side of `A`:
+
+    S = pos(A) + cross( arm, A.dir() )
+
+Where A.dir() is the direction of the Fiber supporting `A`, in `A`.
+The vector `arm` should ideally be perpendicular to A.dir(), and in this case,
+`A` and `B` are separated by norm(arm). The force is linear:
+
+    force_B = weight * ( S - B )
+    force_S = -force_B
+
+The `force_S` is redistributed on the vertices on each side of `A`,
+according to the interpolation coefficients, as usual.
+
+This code is valid in any dimension and works in 2 and 3D
+*/
+void Meca::addSideLink3D(Interpolation const& ptA,
+                         Interpolation const& ptB,
+                         Torque const& arm,
+                         const real weight)
+{
+    assert_true( weight >= 0 );
+    
+    // full indices:
+    const size_t ii0 = DIM * ptA.matIndex1();
+    const size_t ii1 = DIM * ptA.matIndex2();
+    const size_t ii2 = DIM * ptB.matIndex1();
+    const size_t ii3 = DIM * ptB.matIndex2();
+
+    if ( any_equal(ii0, ii1, ii2, ii3) )
+        return;
+    
+    //coefficients to form A-B:
+    const real cc0 =  ptA.coef2();
+    const real cc1 =  ptA.coef1();
+    const real cc2 = -ptB.coef2();
+    const real cc3 = -ptB.coef1();
+    const Torque leg = arm / ptA.len();
+
+    MatrixBlock aR = MatrixBlock::vectorProduct(cc0, -leg);
+    MatrixBlock bR = MatrixBlock::vectorProduct(cc1,  leg);
+
+    const real wcc2 = -weight * cc2;
+    const real wcc3 = -weight * cc3;
+
+    MatrixBlock wAt = aR.transposed(-weight);
+    MatrixBlock wBt = bR.transposed(-weight);
+
+    mC.diag_block(ii0).add_half(wAt.mul(aR));  //this term is symmetric but not diagonal
+    mC.block(ii1, ii0).add_full(wBt.mul(aR));
+    mC.diag_block(ii1).add_half(wBt.mul(bR));  //this term is symmetric but not diagonal
+    if ( ii2 > ii0 )
+    {
+        mC.block(ii2, ii0).add_full(wcc2, aR);
+        mC.block(ii3, ii0).add_full(wcc3, aR);
+        mC.block(ii2, ii1).add_full(wcc2, bR);
+        mC.block(ii3, ii1).add_full(wcc3, bR);
+    }
+    else
+    {
+        mC.block(ii0, ii2).add_full(cc2, wAt);
+        mC.block(ii0, ii3).add_full(cc3, wAt);
+        mC.block(ii1, ii2).add_full(cc2, wBt);
+        mC.block(ii1, ii3).add_full(cc3, wBt);
+    }
+    mC.diag_block(ii2).add_half(MatrixBlock(0, wcc2*cc2));
+    mC.block(ii3, ii2).add_full(MatrixBlock(0, wcc3*cc2));
+    mC.diag_block(ii3).add_half(MatrixBlock(0, wcc3*cc3));
+    
+    if ( modulo )
+    {
+        Vector off = modulo->offset( ptB.pos() - ptA.pos() );
+        if ( off.is_not_zero() )
+        {
+            (wAt*off).add_to(vBAS+ii0);
+            (wBt*off).add_to(vBAS+ii1);
+            (off*wcc2).add_to(vBAS+ii2);
+            (off*wcc3).add_to(vBAS+ii3);
+        }
+    }
+    
+#if DRAW_MECA_LINKS
+    if ( drawLinks )
+    {
+        gle::bright_color(pta.mecable()->signature()).load();
+        gle::drawLink(pta.pos(), arm, ptb.pos());
+    }
+#endif
+}
 #endif
 
 
