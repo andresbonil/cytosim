@@ -127,7 +127,9 @@ inline static void zero_real(size_t cnt, real * ptr)
 
 //-------------------------------CONSTANTS--------------------------------------
 
+#ifndef M_SQRT3
 constexpr real M_SQRT3 = 1.7320508075688772935274463415059;
+#endif
 
 //----------------------------BRANCHLESS? CODE----------------------------------
 
