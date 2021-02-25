@@ -971,32 +971,29 @@ void Chain::segmentationVariance(real& avg, real& var) const
 }
 
 /**
- Calculate the inverse of the radius of the circle containing the points A, B, C
+ Calculate Menger curvature:
+ the inverse of the radius of the circle that passes through A, B and C
  
-     cos(angle) = scalar_product( AB, BC ) / ( |AB| * |BC| )
-     sin(angle) = sqrt( 1 - cos(angle)^2 )
-     2 * radius * sin(angle) = |AC|
-     curvature = 2 * sin(angle) / |AC|
-     curvature = 2 * sqrt( ( 1 - cos(angle)^2 ) / AC^2 )
-
+ 1/R = 4 * Area(triangle) / ( |AB|*|BC|*|AC| )
+ 
  curvature is ZERO if A, B and C are aligned
+ 
+ Thank you, Serge to point this out!
  */
-real curvature3(Vector const& A, Vector const& B, Vector const& C)
+real curvature3(Vector const& A, Vector const& B, Vector const& C, real seg)
 {
-    Vector ab = B - A;
-    Vector bc = C - B;
-    real P = dot(ab, bc);
-    real S = std::max(0.0, 1.0 - ( P * P ) / ( ab.normSqr() * bc.normSqr() ));
-    real D = ( C - A ).normSqr();
-    return 2.0 * sqrt( S / D );
+    real H = norm( A + C - 2 * B );  // 2 * height_of_triangle
+    return H / ( seg * seg );
 }
 
-
+/**
+ This returns
+ */
 real Chain::curvature(unsigned p) const
 {
-    if ( p < 1 || lastPoint() <= p )
-        return 0;
-    return curvature3(posP(p-1), posP(p), posP(p+1));
+    if (( 0 < p ) & ( p < lastPoint() ))
+        return curvature3(posP(p-1), posP(p), posP(p+1), fnCut);
+    return 0;
 }
 
 
