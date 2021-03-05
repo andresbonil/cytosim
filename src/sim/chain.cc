@@ -1548,10 +1548,10 @@ real Chain::checkSegmentation(real tol, bool arg) const
     real mn, mx;
     segmentationMinMax(mn, mx);
     real d = ( mx - mn ) / segmentation();
-    if ( d > tol )
+    if ( d > tol && arg )
     {
-        if ( arg ) std::clog << reference() << "  ";
-        std::clog << " Segments in [ " << std::fixed << mn << " " << std::fixed << mx;
+        std::clog << "Attention: segments of " << reference() << " in [ ";
+        std::clog << std::fixed << mn << " " << std::fixed << mx;
         std::clog << " ] for " << segmentation() << std::endl;
     }
     return d;
@@ -1635,7 +1635,7 @@ void Chain::read(Inputter& in, Simul& sim, ObjectTag tag)
     if ( in.vectorSize() == DIM )
     {
         checkLength(len);
-        checkSegmentation(0.01);
+        checkSegmentation(0.1);
     }
 }
 
