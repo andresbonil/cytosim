@@ -332,9 +332,9 @@ Vector Couple::position() const
 }
 
 
-void Couple::foldPosition(Modulo const* s)
+void Couple::foldPosition(Modulo const* m)
 {
-    modulo->fold(cPos);
+    m->fold(cPos);
 }
 
 void Couple::randomizePosition()

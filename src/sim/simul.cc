@@ -161,16 +161,16 @@ size_t Simul::nbObjects() const
 }
 
 
-void Simul::foldPosition() const
+void Simul::foldPositions() const
 {
     if ( modulo )
     {
-        fibers.foldPosition(modulo);
-        beads.foldPosition(modulo);
-        solids.foldPosition(modulo);
-        spheres.foldPosition(modulo);
-        singles.foldPosition(modulo);
-        couples.foldPosition(modulo);
+        fibers.foldPositions(modulo);
+        beads.foldPositions(modulo);
+        solids.foldPositions(modulo);
+        spheres.foldPositions(modulo);
+        singles.foldPositions(modulo);
+        couples.foldPositions(modulo);
     }
 }
 

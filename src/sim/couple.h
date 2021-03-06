@@ -109,7 +109,7 @@ public:
     /// move object to specified position
     void           setPosition(Vector const& x) { cPos = x; }
 
-    /// modulo the current position vector in the space
+    /// bring object to centered image using periodic boundary conditions
     virtual void   foldPosition(Modulo const*);
     
     /// set the position randomly inside prop->confine_space

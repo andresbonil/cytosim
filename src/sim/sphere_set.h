@@ -57,8 +57,8 @@ public:
         return static_cast<Sphere*>(inventory.get(n));
     }
     
-    /// modulo the position (periodic boundary conditions)
-    void        foldPosition(Modulo const* s) const;
+    /// bring all objects to centered image using periodic boundary conditions
+    void        foldPositions(Modulo const*) const;
     
     /// Monte-Carlo simulation step for every Object
     void        step() {}

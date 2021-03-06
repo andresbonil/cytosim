@@ -307,10 +307,10 @@ void FiberSet::planarCut(ObjectList& objs, Vector const& n, const real a, state_
 }
 
 
-void FiberSet::foldPosition(Modulo const* s) const
+void FiberSet::foldPositions(Modulo const* m) const
 {
     for ( Fiber * o=first(); o; o=o->next() )
-        o->foldPosition(s);
+        o->foldPosition(m);
 }
 
 

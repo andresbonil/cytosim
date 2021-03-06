@@ -159,8 +159,8 @@ public:
     /// cleanup at end of simulation period
     void          relax() { uniRelax(); }
     
-    /// modulo the position (periodic boundary conditions)
-    void          foldPosition(Modulo const*) const;
+    /// bring all objects to centered image using periodic boundary conditions
+    void          foldPositions(Modulo const*) const;
 
     //--------------------------
     

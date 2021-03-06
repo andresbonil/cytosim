@@ -75,8 +75,8 @@ public:
     /// Monte-Carlo step for every Fiber
     void step();
     
-    /// modulo the position (periodic boundary conditions)
-    void foldPosition(Modulo const*) const;
+    /// bring all objects to centered image using periodic boundary conditions
+    void foldPositions(Modulo const*) const;
     
     /// find intersections between fibers in entire network, within given threshold
     void allIntersections(Array<FiberSite>&, Array<FiberSite>&, real max_distance) const;

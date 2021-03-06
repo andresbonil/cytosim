@@ -174,8 +174,8 @@ public:
     /// display Meca's links
     void            drawLinks() const;
     
-    /// call foldPosition() for all objects (implements periodic boundary conditions)
-    void            foldPosition() const;
+    /// bring all objects to centered image using periodic boundary conditions
+    void            foldPositions() const;
 
     /// simulate the mechanics of the system and move Mecables accordingly, corresponding to `time_step`
     void            solve();

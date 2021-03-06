@@ -362,7 +362,7 @@ public:
     /// Rotate object by given rotation
     virtual void    rotate(Rotation const&);
     
-    /// Modulo around the first point
+    /// bring object to centered image using periodic boundary conditions
     virtual void    foldPosition(Modulo const*);
     
     /// true if all points are inside Space

@@ -89,9 +89,9 @@ Vector Single::position() const
     return sPos;
 }
 
-void Single::foldPosition(Modulo const* s)
+void Single::foldPosition(Modulo const* m)
 {
-    s->fold(sPos);
+    m->fold(sPos);
 }
 
 void Single::randomizePosition()
