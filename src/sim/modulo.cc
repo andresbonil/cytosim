@@ -12,10 +12,13 @@ constexpr int PERIODIC_X   = 1;
 /// enable periodicity in dimension 'd'
 void Modulo::enable(size_t d, real size)
 {
-    if ( size <= 0 )
-        throw InvalidParameter("periodic:length[",d,"] must be > 0");
-    mMode |= 1<<d;
-    mSize[d] = size;
+    if ( size > 0 )
+    {
+        mMode |= 1<<d;
+        mSize[d] = size;
+    }
+    else
+        ;//throw InvalidParameter("periodic:length[",d,"] must be > 0");
 }
 
 
