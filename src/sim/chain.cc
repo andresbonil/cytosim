@@ -1127,8 +1127,12 @@ real Chain::planarIntersect(unsigned s, Vector const& n, const real a) const
     Vector pos = posP(s);
     
     if ( modulo )
-        modulo->fold(pos);
-    
+    {
+        // calculate image that is closest to plane:
+        Vector cen = n * ( -a / n.normSqr() );
+        modulo->fold(pos, cen);
+    }
+
     return - ( dot(pos, n) + a ) / sca;
 }
 
