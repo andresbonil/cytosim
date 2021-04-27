@@ -97,12 +97,12 @@ void compare(unsigned size,  MATRIXA & mat1, MATRIXB& mat2, unsigned fill)
     real * tmp1 = new_real(size*size);
     real * tmp2 = new_real(size*size);
     
-    mat1.reset();
-    mat2.reset();
-    
     mat1.resize(size);
     mat2.resize(size);
     
+    mat1.reset();
+    mat2.reset();
+
     for ( unsigned n = 0; n < fill; ++n )
     {
         real a = 10.0 * RNG.preal();
