@@ -21,7 +21,7 @@ void SpaceDice::resize(Glossary& opt)
 {
     real rad = radius_;
     
-    opt.set(rad, "radius");
+    opt.set(rad, "radius") || opt.set(rad, "edge");
     if ( rad < 0 )
         throw InvalidParameter("dice:radius must be >= 0");
 

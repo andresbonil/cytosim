@@ -49,9 +49,6 @@ void FieldProp::read(Glossary& glos)
     glos.set(boundary_condition, "boundary", keys);
     glos.set(boundary_value,     "boundary", 1);
     glos.set(decay_rate,         "decay_rate");
-    
-    if ( glos.has_key("bind_fibers") )
-        Cytosim::warn << "field::bind_fibers is obsolete, use fiber:lattice_binding_rate\n";
 
     glos.set(transport_strength, "transport", 0);
     glos.set(transport_length,   "transport", 1);
