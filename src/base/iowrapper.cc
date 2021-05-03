@@ -22,6 +22,7 @@ int nonStandardTypes()
 void Inputter::reset()
 {
     format_  = 0;
+    vecsize_ = 3;
     binary_  = 0;
     
     if ( nonStandardTypes() )

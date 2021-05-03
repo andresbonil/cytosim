@@ -87,6 +87,9 @@ public:
 
     /// true if everything looks correct for input
     bool     good() const { return inputter.good(); }
+    
+    /// dimensionality of vectors
+    unsigned vectorSize() const { return inputter.vectorSize(); }
 
     /// rewind file and clear position buffer
     void     clear();
