@@ -271,24 +271,30 @@ void Simul::setAllInteractions(Meca & meca) const
 #endif
 
 #if ( 0 )
-    // add steric interaction between the first Sphere and all Fibers
-    Sphere * sol = spheres.firstID();
-    if ( sol && sol->prop->steric )
+    /*
+     Add simplified steric interactions between the first Sphere and all Fibers
+     This is not necessarily equivalent to the steric engine, since we do not add
+     the 'radius' of the fiber, but it can be faster eg. if there is only one
+     sphere in the system. The code can easily be adapted to handle Beads
+     */
+    Sphere * S = spheres.firstID();
+    if ( S && S->prop->steric )
     {
-        const Vector cen = sol->posPoint(0);
-        const real rad = sol->radius();
-        const real rad2 = square(rad);
+        LOG_ONCE("Limited steric interactions with first Sphere enabled!");
         const real stiff = prop->steric_stiffness_push[0];
+        const Vector cen = S->posPoint(0);
+        const real rad = S->radius();
+        const real rad2 = square(rad);
 
-        for ( Fiber * fib = fibers.first(); fib; fib = fib->next() )
+        for ( Fiber const* F = fibers.first(); F; F = F->next() )
         {
-            for ( unsigned n = 0; n < fib->nbSegments(); ++n )
+            for ( size_t n = 0; n < F->nbSegments(); ++n )
             {
-                FiberSegment seg(fib, n);
+                FiberSegment seg(F, n);
                 real dis = INFINITY;
                 real abs = seg.projectPoint(cen, dis);
                 if ( dis < rad2 )
-                    meca.addSideLink(Interpolation(seg, abs), Mecapoint(sol, 0), rad, stiff);
+                    meca.addSideSlidingLink(Interpolation(seg, abs), Mecapoint(S, 0), rad, stiff);
             }
         }
     }
