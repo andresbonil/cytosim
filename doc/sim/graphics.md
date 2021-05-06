@@ -1,7 +1,6 @@
 # Cytosim's Graphics
  
 Display parameters can be embedded in the config file, in the `display` string of each object.
-A minimal list of parameters is given by `play parameters`.
 The `display` strings are ignored by `sim`.
 
 # Global Parameters
@@ -52,7 +51,7 @@ Alternative syntax:
 	}
 
 
-# Display setup files
+# Play setup file
 
 Display parameters can also be specified in a separate file with extension `.cyp`.
 Such setup file should be specified on the command line:
@@ -65,7 +64,7 @@ while cytosim reads `config.cym`.
 To control at which time the display parameters are changed, the best technique is to 
 `include` the setup in the main config file:
 
-	include ../display.cyp { required=0 }
+	include display.cyp { required=0 }
 
 The result will be equivalent to having the specifications directly in the config file, 
 except that cytosim will continue even if the setup file is not found (because 'required=0').
