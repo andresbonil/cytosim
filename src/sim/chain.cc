@@ -1,6 +1,7 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 #include "dim.h"
+#include "smath.h"
 #include "assert_macro.h"
 #include "chain.h"
 #include "iowrapper.h"
@@ -585,9 +586,11 @@ void Chain::getPoints(real const* ptr)
     else if ( reshape_local(nbSegments(), ptr, pPos, fnCut, mem, allocated()) )
 #endif
     {
-        reshape_global(nbSegments(), ptr, pPos, fnCut);
-        Cytosim::warn << "Warning: a crude method was used to reshape " << reference();
-        dump(std::clog);
+        std::string doc = document(ptr);
+        //reshape_global(nbSegments(), ptr, pPos, fnCut);
+        Cytosim::warn << "crude motion was applied to " << doc << '\n';
+        copy_real(DIM*nbPoints(), ptr, pPos);
+        mark(1);
     }
 
     free_real(mem);
@@ -941,16 +944,22 @@ void Chain::join(Chain const* fib)
 /**
  Returns the minimum and maximum distance between consecutive points
  */
-void Chain::segmentationMinMax(real& mn, real& mx) const
+/**
+ Returns the minimum and maximum distance between consecutive points
+ */
+void Chain::segmentationMinMax(real const* ptr, real& in, real& ax) const
 {
-    mn = diffPoints(0).norm();
-    mx = mn;
-    for ( unsigned n = 1; n < lastPoint(); ++n )
+    real x = sMath::distanceSqr<DIM>(ptr, ptr+DIM);
+    in = x;
+    ax = x;
+    for ( unsigned i = 1; i < lastPoint(); ++i )
     {
-        real r = diffPoints(n).norm();
-        mx = std::max(mx, r);
-        mn = std::min(mn, r);
+        x = sMath::distanceSqr<DIM>(ptr+DIM*i, ptr+DIM*(i+1));
+        in = std::min(in, x);
+        ax = std::max(ax, x);
     }
+    in = std::sqrt(in);
+    ax = std::sqrt(ax);
 }
 
 /**
@@ -1534,47 +1543,70 @@ real Chain::projectedForceEnd(const FiberEnd end) const
 //------------------------------------------------------------------------------
 #pragma mark -
 
-int Chain::checkLength(real len, bool arg) const
+void Chain::briefdoc(std::ostream& os, real len, real con, real mn, real mx) const
 {
-    assert_small( length() - len );
-    real con = contourLength(pPos, nPoints);
-    if ( fabs( con - len ) > 0.1 )
-    {
-        if ( arg ) std::clog << reference() << "  ";
-        std::clog << " length is " << con << " but " << len << " was expected\n";
-        return 1;
-    }
-    return 0;
-}
-
-
-real Chain::checkSegmentation(real tol, bool arg) const
-{
-    real mn, mx;
-    segmentationMinMax(mn, mx);
-    real d = ( mx - mn ) / segmentation();
-    if ( d > tol && arg )
-    {
-        std::clog << "Attention: segments of " << reference() << " in [ ";
-        std::clog << std::fixed << mn << " " << std::fixed << mx;
-        std::clog << " ] for " << segmentation() << std::endl;
-    }
-    return d;
+    std::streamsize p = os.precision();
+    os.precision(3);
+    os << "chain " << reference();
+    os << "( seg " << segmentation() << ": " << mn << " +" << mx-mn;
+    os << " len " << len << " " << std::showpos << con-len << std::noshowpos << " )";
+    os.precision(p);
 }
 
 
 /**
  Prints info on the length of Segments, which can be useful for debugging
  */
-void Chain::dump(std::ostream& os) const
+void Chain::document(std::ostream& os, real len, real con, real mn, real mx) const
 {
-    os << "\n chain " << std::setw(7) << reference();
-    os << "  " << std::left << std::setw(6) << fnCut << " {";
-    real d = checkSegmentation(0.01, false);
-    os << " deviation " << std::fixed << 100*d << " %";
-    os << " }" << std::endl;
+    os << "chain " << std::setw(7) << reference() << '\n';
+    os << "{\n";
+    os << "    segmentation = " << segmentation() << '\n';
+    os << "    segment_min = " << mn << '\n';
+    os << "    segment_max = " << mx << '\n';
+    os << "    length  = " << len << '\n';
+    os << "    contour = " << con << '\n';
+    os << "}" << std::endl;
 }
 
+
+int Chain::checkLength(real const* ptr, std::ostream& os, real len) const
+{
+    real mn, mx;
+    segmentationMinMax(ptr, mn, mx);
+    real dev = ( mx - mn ) / segmentation();
+    real con = contourLength(ptr, nPoints);
+    real err = abs_real( con - len ) / ( con + len );
+    int res = ( dev > 0.05 ) + ( err > 0.05 );
+    if ( res )
+        document(os, len, con, mn, mx);
+    return res;
+}
+
+
+/**
+ Prints info on the length of Segments, which can be useful for debugging
+ */
+void Chain::document(real const* ptr, std::ostream& os) const
+{
+    real mn, mx;
+    real len = length();
+    segmentationMinMax(ptr, mn, mx);
+    real con = contourLength(ptr, nPoints);
+    briefdoc(os, len, con, mn, mx);
+}
+
+
+std::string Chain::document(real const* ptr) const
+{
+    std::ostringstream ss;
+    document(ptr, ss);
+    return ss.str();
+}
+
+
+//------------------------------------------------------------------------------
+#pragma mark - I/O
 
 void Chain::write(Outputter& out) const
 {
@@ -1638,9 +1670,6 @@ void Chain::read(Inputter& in, Simul& sim, ObjectTag tag)
     
     // verify the length and segmentation:
     if ( in.vectorSize() == DIM )
-    {
-        checkLength(len);
-        checkSegmentation(0.1);
-    }
+        checkLength(pPos, std::clog, len);
 }
 

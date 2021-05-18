@@ -240,23 +240,31 @@ namespace sMath
     
     
     ///square of distance between two vectors in dimension `dim`
-    template <typename T>
-    inline T  distanceSqr(const T a[], const T b[], int dim)
+    template <int dim, typename T>
+    inline T distanceSqr(const T a[], const T b[])
     {
-        T n = ( a[0] - b[0] ) * ( a[0] - b[0] );
-        for( int d = 1; d < dim; ++d )
-            n += ( a[d] - b[d] ) * ( a[d] - b[d] );
+        T x = a[0] - b[0];
+        T n = x * x;
+        for( int i = 1; i < dim; ++i )
+        {
+            x = a[i] - b[i];
+            n += x * x;
+        }
         return n;
     }
  
     ///usual distance between two vectors of dimension `dim`
-    template <typename T>
-    inline T  distance(const T a[], const T b[], int dim)
+    template <int dim, typename T>
+    inline T distance(const T a[], const T b[])
     {
-        T n = ( a[0] - b[0] ) * ( a[0] - b[0] );
-        for( int d = 1; d < dim; ++d )
-            n += ( a[d] - b[d] ) * ( a[d] - b[d] );
-        return sqrt(n);
+        T x = a[0] - b[0];
+        T n = x * x;
+        for( int i = 1; i < dim; ++i )
+        {
+            x = a[i] - b[i];
+            n += x * x;
+        }
+        return std::sqrt(n);
     }
     
     //------------------------------------------------------------------------------

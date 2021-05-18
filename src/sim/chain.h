@@ -362,7 +362,10 @@ public:
     //--------------------- Info
     
     /// calculate the minimum and maximum segment length
-    void         segmentationMinMax(real&, real&) const;
+    void         segmentationMinMax(real const* ptr, real&, real&) const;
+    
+    /// calculate the minimum and maximum segment length
+    void         segmentationMinMax(real& n, real& x) const { segmentationMinMax(pPos, n, x); }
 
     /// calculate average and variance of the segment length
     void         segmentationVariance(real&, real&) const;
@@ -419,15 +422,21 @@ public:
 
     //---------------------
     
-    /// sum the length of the segments and compare with 'len'
-    int          checkLength(real len, bool = true) const;
+    /// print info such as length and segmentation
+    void         briefdoc(std::ostream&, real, real, real, real) const;
+
+    /// print info such as length and segmentation
+    void         document(std::ostream&, real, real, real, real) const;
     
-    /// check the length of all segments, and returns deviation
-    real         checkSegmentation(real tolerance, bool = true) const;
+    /// print info such as length and segmentation
+    void         document(real const* ptr, std::ostream&) const;
     
-    /// dump for debugging
-    void         dump(std::ostream&) const;
-    
+    /// return string with info such as length and segmentation
+    std::string  document(real const* ptr) const;
+
+    /// check length and segmentation and write if suspicious
+    int          checkLength(real const* ptr, std::ostream&, real len) const;
+
     /// write to Outputter
     void         write(Outputter&) const;
     
