@@ -437,14 +437,10 @@ inline bool adjacent(FatPoint const* a, FatSegment const* b)
 }
 
 
-/// excluding segments that are adjacent on the same fiber, or protofilaments from Tubule
+/// excluding segments that are adjacent on the same fiber
 inline bool adjacent(FatSegment const* a, FatSegment const* b)
 {
-#if FIBER_HAS_FAMILY
-    return (( a->seg.fiber()->family_ == b->seg.fiber()->family_ )
-#else
     return (( a->seg.fiber() == b->seg.fiber() )
-#endif
             & ( a->seg.point() < 2 + b->seg.point() ) & ( b->seg.point() < 2 + a->seg.point() ));
 }
 

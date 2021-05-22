@@ -237,7 +237,6 @@ void Random::gauss_set(real & a, real & b, real v)
     b = w * y;
 }
 
-#if ( !NEW_SIMD_GAUSSIANS )
 
 /**
  Fill array `vec[]` with Gaussian values ~ N(0,1).
@@ -277,29 +276,6 @@ void Random::refill_gaussians()
     sfmt_gen_rand_all(&twister_);
     //printf("refill_gaussians %lu\n", next_gaussian_ - gaussians_);
 }
-
-#else
-
-#include "simd.h"
-#include "simd_float.h"
-#include "simd_math.cc"
-#include "random_simd.cc"
-
-
-/**
- Fill array `gaussians_` with approximately 500 Gaussian values ~ N(0,1).
- Set `next_gaussian` past the last position containing a valid number.
- The number of gaussian values set by this function is random,
- and it may even be zero.
- */
-void Random::refill_gaussians()
-{
-    next_gaussian_ = gauss_fill_AVX0(gaussians_, SFMT_N256, (__m256i*)twister_.state);
-    sfmt_gen_rand_all(&twister_);
-    //printf("refill_gaussians_simd %lu\n", next_gaussian_ - gaussians_);
-}
-
-#endif
 
 
 #if ( 0 )
