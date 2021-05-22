@@ -893,7 +893,7 @@ inline void multiply4(const real* X, real* Y, index_t ii,
                       const real* val, vec4 const& xx, vec4& ss)
 {
     vec4 x = blend4(xx, broadcast2(X+ii), 0b1100);  // hi <- X , lo <- xx
-    ss = blend4(cast4(load2(Y+ii)), ss, 0b1100);    // hi <- ss, lo <- Y
+    ss = blend4(load2crap(Y+ii), ss, 0b1100);    // hi <- ss, lo <- Y
     ss = fmadd4(broadcast1(val), x, ss);
     store2(Y+ii, getlo(ss));
 }
@@ -948,10 +948,10 @@ void MatrixSparseSymmetric1::vecMulAddIso2D_AVXU(const real* X, real* Y, index_t
         const index_t i1 = inx[1];
         const index_t i2 = inx[2];
         const index_t i3 = inx[3];
-        s0 = blend4(cast4(load2(Y+i0)),s0,0b1100);    // lo = Y
-        s1 = blend4(cast4(load2(Y+i1)),s1,0b1100);    // lo = Y
-        s2 = blend4(cast4(load2(Y+i2)),s2,0b1100);    // lo = Y
-        s3 = blend4(cast4(load2(Y+i3)),s3,0b1100);    // lo = Y
+        s0 = blend4(load2crap(Y+i0),s0,0b1100);    // lo = Y
+        s1 = blend4(load2crap(Y+i1),s1,0b1100);    // lo = Y
+        s2 = blend4(load2crap(Y+i2),s2,0b1100);    // lo = Y
+        s3 = blend4(load2crap(Y+i3),s3,0b1100);    // lo = Y
         vec4 x0 = blend4(xx,broadcast2(X+i0),0b1100);   // hi = X , lo <- xx
         vec4 x1 = blend4(xx,broadcast2(X+i1),0b1100);   // hi = X , lo <- xx
         vec4 x2 = blend4(xx,broadcast2(X+i2),0b1100);   // hi = X , lo <- xx
