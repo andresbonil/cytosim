@@ -76,22 +76,22 @@ real Simul::estimateStericRange() const
 void Simul::setStericGrid(Space const* spc) const
 {
     assert_true(spc);
-    real& range = prop->steric_max_range;
+    real res = prop->steric_max_range;
+    real inf = estimateStericRange();
     
-    if ( range <= 0 ) 
-    {
-        range = estimateStericRange();
-        //Cytosim::log("auto setting simul:steric_max_range=%.3f\n", range);
-    }
-    
-    if ( range <= 0 )
+    res = std::max(res, inf);
+
+    if ( res <= 0 )
         throw InvalidParameter("simul:steric_max_range must be defined");
 
     const size_t sup = 1 << 17;
-    while ( pointGrid.setGrid(spc, range) > sup )
+    while ( pointGrid.setGrid(spc, res) > sup )
+        res *= M_SQRT2;
+
+    if ( res != prop->steric_max_range )
     {
-        //std::clog << "increasing simul:steric_max_range\n";
-        range *= 2;
+        Cytosim::log("adjusting simul:steric_max_range = %.3f\n", res);
+        prop->steric_max_range = res;
     }
     pointGrid.createCells();
 }
