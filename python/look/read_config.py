@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 #
-# read_config.py is a simple parser for Cytosim configuration files
+# read_config.py formats Cytosim's configuration files
 #
-# F. Nedelec, 13-15.11.2013 - 31.07.2014, 3.09.2015, 12.08.2018, 11.12.2019
+# FJN 13-15.11.2013 - 31.07.2014, 3.09.2015, 12.08.2018, 11.12.2019, 27.05.2021
 
 """
     Read cytosim configuration files
@@ -17,13 +17,13 @@ Description:
     Reads a config file and prints a formatted copy to standard output.
     Two formats are possible: vertical (default) or horizontal (second syntax)
 
-F. Nedelec 11.2013--20.02.2017
+F. Nedelec 11.2013 --- 27.05.2021
 """
 
 import sys, os, io
 
 read_comments = False
-column_width = 16
+column_width = 0
 err = sys.stderr
 out = sys.stdout
 
@@ -52,12 +52,12 @@ def format_values(val):
 
 
 class Instruction:
-    words = []
-    vals = {}
-    cnt  = 1
+    words_ = []
+    values_ = {}
+    code_ = {}
     
     def __init__(self, key):
-        self.words = [ key ]
+        self.words_ = [ key ]
     
     def value(self, key, index=0):
         if key in self.vals:
@@ -69,43 +69,47 @@ class Instruction:
         return ""
     
     def values(self):
-        return self.vals;
+        return self.values_;
     
     def __repr__(self):
         return self.format_horizontal()
     
     def format_header(self):
-        res = self.words[0] + ' '
-        if self.cnt != 1:
-            res += repr(self.cnt) + ' '
-        if len(self.words) > 1:
-            res += self.words[1] + ' '
-        if len(self.words) > 2:
-            res += self.words[2] + ' '
+        res = ''
+        for w in self.words_:
+            res += w + ' '
         return res
     
     def format_horizontal(self):
         res = self.format_header() + "{ "
-        for p in sorted(self.vals):
-            res += str(p) + '=' + format_values(self.vals[p]) + "; "
+        if self.code_:
+            for i in self.code_:
+                res += i.format_horizontal() + "; "
+        else:
+            for p in sorted(self.values_):
+                res += str(p) + '=' + format_values(self.values_[p]) + "; "
         res += "}"
         return res
     
-    def format_vertical(self):
-        res = self.format_header() + "\n{\n"
-        for p in sorted(self.vals):
-            lin = "   " + p.ljust(column_width) + " = " + format_values(self.vals[p])
-            #add line-comment if present:
-            try:
-                e = self.vals[p][-1]
-                if e[0] == '%':
-                    lin = (lin+';').ljust(50) + e
-                else:
+    def format_vertical(self, indent = ""):
+        res = indent + self.format_header() + "\n" + indent + "{\n"
+        if self.code_:
+            for i in self.code_:
+                res += i.format_vertical(indent+"   ")
+        else:
+            for p in sorted(self.values_):
+                lin = indent + "   " + p.ljust(column_width) + " = " + format_values(self.values_[p])
+                #add line-comment if present:
+                try:
+                    e = self.values_[p][-1]
+                    if e[0] == '%':
+                        lin = (lin+';').ljust(50) + e
+                    else:
+                        lin += ';'
+                except:
                     lin += ';'
-            except:
-                lin += ';'
-            res += lin + '\n'
-        res += "}\n"
+                res += lin + '\n'
+        res += indent + "}\n"
         return res
     
     def format(self, mode):
@@ -341,45 +345,39 @@ def read_list(fid):
 
 def parse_config(fid):
     """
-    return the list resulting from parsing the specified file
+    return a list resulting from parsing the specified file
     """
-    known_keywords = [ 'set', 'new', 'run', 'call', 'delete', 'change', 'cut', 'mark' ];
+    keywords = [ 'set', 'new', 'run', 'call', 'delete', 'change', 'cut', 'mark', 'report', 'write', 'repeat' ];
     cur = []
     pile = []
     while fid:
         tok = get_token(fid)
-        #print(">>>>> `",tok.strip(), "'")
+        #print(">>>>> |"+tok+"|")
         if not tok:
             break
         if tok[0] == '%':
             pass
         elif tok == '\n':
             pass
-        elif tok == 'repeat':
-            if cur:
-                pile.append(cur)
-                cur = []
-            cnt = get_token(fid)
-            blok = get_token(fid)
-            sfid = io.StringIO(blok[1:-1])
-            pile.extend(parse_config(sfid))
-        elif tok in known_keywords:
+        elif tok in keywords:
             if cur:
                 pile.append(cur)
             cur = Instruction(tok)
-        elif len(cur.words)==1 and tok.isdigit():
-            cur.cnt = int(tok)
         elif tok[0] == '{' or tok[0] == '(':
-            pam = read_list(file_object(tok[1:-1]))
-            #print("VALUES  : ", pam)
-            cur.vals = simplify(pam)
-            #print("SIMPLIFIED: ", cur.vals)
+            if cur.words_[0] == 'repeat':
+                sfid = io.StringIO(tok[1:-1])
+                cur.code_ = parse_config(sfid);
+            else:
+                pam = read_list(file_object(tok[1:-1]))
+                #print("VALUES  : ", pam)
+                cur.values_ = simplify(pam)
+                #print("SIMPLIFIED: ", cur.values_)
             pile.append(cur)
             cur = []
-        elif tok[0].isalpha():
-            cur.words.append(tok)
+        elif cur and ( tok[0].isalpha() or tok.isdigit() or tok=='*' ):
+            cur.words_.append(tok)
         else:
-            print(">>>>>ignored `",tok, "'")
+            print(">>>>>ignored |"+tok+"|")
     return pile
 
 
@@ -407,6 +405,20 @@ def format_config(pile, mode=0, prefix=''):
     return res
 
 
+def matching(ins, keys):
+    """
+    """
+    j = 0
+    res = 1
+    for i in range(3):
+        w = ins.words_[j]
+        if w.isdigit():
+            j += 1
+            w = ins.words_[j]
+        res &= ( keys[i]=='*' or w==keys[i] )
+    return res
+
+
 def get_command(pile, keys):
     """
     Return all commands corresponding to = [ command, class, name ]
@@ -416,10 +428,8 @@ def get_command(pile, keys):
         return "Error: get_command(arg, keys) expects `keys` to be of size 3"
     res = []
     for p in pile:
-        if keys[0]=='*' or p.words[0]==keys[0]:
-            if keys[1]=='*' or p.words[1]==keys[1]:
-                if keys[2]=='*' or p.words[2]==keys[2]:
-                    res.append(p)
+        if matching(p, keys):
+            res.append(p)
     if len(res) == 1:
         return res[0]
     return res
@@ -437,14 +447,12 @@ def get_value(arg, keys):
     else:
         pile = arg
     for p in pile:
-        if keys[0]=='*' or p.words[0]==keys[0]:
-            if keys[1]=='*' or p.words[1]==keys[1]:
-                if keys[2]=='*' or p.words[2]==keys[2]:
-                    try:
-                        return p.vals[keys[3]]
-                    except KeyError:
-                        if keys[3]=='*':
-                            return p.vals
+        if matching(p, keys):
+            try:
+                return p.values_[keys[3]]
+            except KeyError:
+                if keys[3]=='*':
+                    return p.values_
     return "Unspecified"
 
 
