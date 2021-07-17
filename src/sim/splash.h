@@ -27,9 +27,9 @@ inline void print_version(std::ostream& os)
     os << "   Built " <<__DATE__<< " " <<__TIME__<< " with " <<__VERSION__<< "\n";
     
 #ifdef CODE_VERSION
-    os << "    Code version " << CODE_VERSION;
+    os << "   Code version " << CODE_VERSION;
 #else
-    os << "    Code version unknown";
+    os << "   Code version unknown";
 #endif
     
 #ifdef NDEBUG
@@ -39,7 +39,7 @@ inline void print_version(std::ostream& os)
 #endif
 
 #ifdef FIBER_HAS_LATTICE
-    os << "    Fiber Lattice " << FIBER_HAS_LATTICE << "\n";
+    os << "   Fiber Lattice " << FIBER_HAS_LATTICE << "\n";
 #endif
 }
 
