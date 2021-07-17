@@ -587,10 +587,9 @@ void Chain::getPoints(real const* ptr)
 #endif
     {
         std::string doc = document(ptr);
-        //reshape_global(nbSegments(), ptr, pPos, fnCut);
+        reshape_global(nbSegments(), ptr, pPos, fnCut);
         Cytosim::warn << "crude motion was applied to " << doc << '\n';
-        copy_real(DIM*nbPoints(), ptr, pPos);
-        mark(1);
+        //copy_real(DIM*nbPoints(), ptr, pPos);
     }
 
     free_real(mem);
