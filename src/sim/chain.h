@@ -259,7 +259,7 @@ public:
     Vector       pos(real ab) const { return posM(ab-fnAbscissaM); }
 
     /// position of a point specified by abscissa `ab` from reference `ref`
-    Vector       pos(real ab, FiberEnd ref) const { return posM(abscissaFrom(ab, ref)); }
+    Vector       posFrom(real ab, FiberEnd ref) const { return pos(abscissaFrom(ab, ref)); }
 
     /// position of the point taken mid-way along the curve
     Vector       posMiddle() const { return posM(0.5*length()); }

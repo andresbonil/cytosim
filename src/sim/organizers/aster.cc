@@ -662,7 +662,7 @@ Vector Aster::posFiber2(size_t inx) const
     if ( fib->length() >= len )
     {
         if ( len > 0 )
-            return fib->pos(len, prop->focus);
+            return fib->posFrom(len, prop->focus);
         else
             return fib->posEnd(prop->focus);
     }
