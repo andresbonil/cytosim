@@ -243,6 +243,11 @@ bool Couple::allowAttachment(FiberSite const& sit)
             if ( fabs(dot(sit.dirFiber(), that->dirFiber())) > 0.866025 )
                 return false;
             break;
+        
+        case CoupleProp::BIND_ALIGNED:
+            if ( fabs(dot(sit.dirFiber(), that->dirFiber())) < 0.9848 )
+                return false;
+            break;
             
         default:
             throw InvalidParameter("unknown couple:specificity");

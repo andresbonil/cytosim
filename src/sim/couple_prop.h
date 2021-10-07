@@ -37,7 +37,8 @@ public:
         BIND_NOT_PARALLEL,     ///< can link two fibers only if `cosine(angle) < 0.5`
         BIND_ANTIPARALLEL,     ///< can link two fibers only if `cosine(angle) < -0.5`
         BIND_NOT_ANTIPARALLEL, ///< can link two fibers only if `cosine(angle) > -0.5`
-        BIND_ORTHOGONAL        ///< can link two fibers only if `-sqrt(3)/2 < cosine(angle) < sqrt(3)/2`
+        BIND_ORTHOGONAL,       ///< can link two fibers only if `-sqrt(3)/2 < cosine(angle) < sqrt(3)/2`
+        BIND_ALIGNED           ///< can link two fibers only if `abs(cosine(angle)) > 0.9848`
     };
     
     /**

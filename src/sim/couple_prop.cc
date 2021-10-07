@@ -69,6 +69,7 @@ void CoupleProp::read(Glossary& glos)
             #endif
                                               {"orthogonal",   BIND_ORTHOGONAL},
                                               {"parallel",     BIND_PARALLEL},
+                                              {"aligned",      BIND_ALIGNED},
                                               {"not_parallel", BIND_NOT_PARALLEL},
                                               {"antiparallel", BIND_ANTIPARALLEL},
                                               {"not_antiparallel", BIND_NOT_ANTIPARALLEL}});
