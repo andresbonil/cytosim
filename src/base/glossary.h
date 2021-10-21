@@ -439,6 +439,45 @@ public:
         return set(var, key, 0, dict);
     }
     
+    /// try to set `var` from `key[inx]`. @return 1 if `var` was set, 0 otherwise
+    /** An internal counter is incremented to record that the value was read */
+    static int least_used_index(rec_type const* rec)
+    {
+        size_t i = 0;
+        size_t r = ~0;
+        for ( size_t v = 0; v < rec->size(); ++v )
+        {
+            if ( rec->at(v).defined_ && rec->at(v).count_ < r )
+            {
+                r = rec->at(v).count_;
+                i = v;
+            }
+        }
+        return i;
+    }
+
+    /// try to set `var` from `key[inx]`. @return 1 if `var` was set, 0 otherwise
+    /** An internal counter is incremented to record that the value was read */
+    template <typename T>
+    int set_from_least_used_value(T & var, key_type const& key) const
+    {
+        rec_type const* rec = values(key);
+        
+        if ( rec  &&  0 < rec->size() )
+        {
+            size_t i = least_used_index(rec);
+            //std::clog << key << " least used " << i << "\n";
+            val_type const& val = rec->at(i);
+            if ( val.defined_ )
+            {
+                set_value(var, key, val.value_);
+                ++val.count_;
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     /// true if value of `key[inx]` is composed of alpha characters and '_'
     int is_alpha(key_type const& key, size_t inx) const
     {

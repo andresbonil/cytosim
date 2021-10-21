@@ -1,0 +1,135 @@
+% Compressing a S.pombe 'spindle' made of static crosslinkers
+% From "Mechanical design principles of a mitotic spindle"
+% J. Ward, H. Roque, C. Antony and FJN (resuscitated 10.2021)
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 1.0
+    steric = 1, 200
+}
+
+set space cell
+{
+    shape = capsule
+    display = ( color=0xFFFFFF20 )
+}
+
+set space rail
+{
+    shape = capsule
+    display = ( color=red; visible=2; )
+}
+
+set space envelope
+{
+    shape = capsule
+    display = ( color=0x0000FF22; visible=1; )
+}
+
+set fiber microtubule
+{
+    rigidity = 20
+    segmentation = 0.1
+    confine = none
+    steric = 1
+    steric_radius = 0.03
+    display = ( end_style = 2; plus_end=2, 2; )
+}
+
+set hand ase1_klp9_clasp
+{
+    binding_range = 0.06
+    binding_rate = 300
+    unbinding_rate = 1    
+    unbinding_force = 6    
+    display = ( size=8; color=0xFF00FFFF; )
+}
+
+set couple complex 
+{
+    activity = bridge
+    length = 0.05
+    hand1 = ase1_klp9_clasp
+    hand2 = ase1_klp9_clasp
+    specificity = antiparallel
+    stiffness = 1000
+    diffusion = 20 
+    confine = inside,, envelope
+}
+
+set solid core
+{
+    display = ( color=0x00FF0011; style=3; )
+    confine = point, 500, rail
+}
+
+set aster mtoc
+{
+    stiffness = 1000, 20
+}
+
+new envelope
+{
+    length = 2.5
+    radius = 0.5
+}
+
+new rail
+{
+    length = 6
+    radius = 0
+}
+
+new cell
+{
+    length = 11.0
+    radius = 2.0
+}
+
+new mtoc
+{
+    solid = core
+    point1 = center, 1.0
+    radius = 0.06, 0.04
+    type = disc
+    seed_diameter = 0.025
+    fibers = 4, microtubule, ( fiber_length=3.07, 3.04, 2.37, 2.86; )
+    position = 2.555 0 0
+    orientation = -1 0 0
+    placement = anywhere
+}
+
+new mtoc
+{
+    solid = core
+    point1 = center, 1.0
+    radius = 0.06, 0.04
+    type = disc
+    fibers = 4, microtubule, ( fiber_length=2.98, 3.02, 2.54, 3.36; )
+    seed_diameter = 0.025
+    position = -2.555 0
+    orientation = 1 0 0 
+    placement = anywhere
+}
+
+new 50 complex
+run 100 system {}
+
+new 100 complex
+run 100 system {}
+
+new 150 complex
+run 100 system {}
+
+change ase1_klp9_clasp { unbinding_rate=0; }
+change envelope display { visible=0; }
+change system { viscosity=0.05 }
+change rail { length=4 }
+
+run 50000 system
+{
+    nb_frames = 30
+}
+
+

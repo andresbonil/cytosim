@@ -26,30 +26,29 @@ Fiber* FiberProp::newFiber() const
  */
 real FiberProp::newFiberLength(Glossary& opt) const
 {
-    real len = 1.0;
+    real len = 1.0, var = 0.0;
 
-#ifdef BACKWARD_COMPATIBILITY
-    opt.set(len, "initial_length");
-#endif
-    opt.set(len, "length") || opt.set(len, "fiber_length");
+    if ( 0 < opt.nb_values("fiber_length") )
+    {
+        opt.set_from_least_used_value(len, "fiber_length");
+        return len;
+    }
     
-    // exponential distribution, truncated (Julio M.Belmonte's student):
+    opt.set(len, "length");
+
     if ( opt.value_is("length", 1, "exponential") )
     {
+        // exponential distribution, truncated (Julio M.Belmonte's student):
         real L;
         do {
             L = len * RNG.exponential();
         } while (( L < min_length ) | ( L > max_length ));
         len = L;
     }
-    else
+    else if ( opt.set(var, "length", 1) )
     {
         // add variability without changing mean:
-        real var = 0;
-        if ( opt.set(var, "length", 1) || opt.set(var, "fiber_length", 1) )
-        {
-            len += var * RNG.sreal();
-        }
+        len += var * RNG.sreal();
     }
     
     len = std::max(len, min_length);
