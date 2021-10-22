@@ -217,7 +217,7 @@ new 1 pole_body
     point1 = center, 0.2
     radius = 0.06, 0.04
     type = disc
-    fibers = 6, microtubule, ( length=3.0; )
+    fibers = 6, microtubule, ( length=3.0; plus_end = grow;  )
     seed_diameter = 0.025
     position = -2.0 0 0
     orientation = 1 0 0
@@ -229,7 +229,7 @@ new 1 pole_body
     point1 = center, 0.2
     radius = 0.06, 0.04
     type = disc
-    fibers = 6, microtubule, ( length=3.0; )
+    fibers = 6, microtubule, ( length=3.0; plus_end = grow;  )
     seed_diameter = 0.025
     position = 2.0 0 0
     orientation = -1 0 0
