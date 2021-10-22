@@ -506,10 +506,6 @@
 		BBDE7FFB14E2609B00A23E0C /* picket_long.h in Headers */ = {isa = PBXBuildFile; fileRef = BBDE7FF914E2609B00A23E0C /* picket_long.h */; };
 		BBDE7FFE14E260B400A23E0C /* wrist_long.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBDE7FFC14E260B400A23E0C /* wrist_long.cc */; };
 		BBDE7FFF14E260B400A23E0C /* wrist_long.h in Headers */ = {isa = PBXBuildFile; fileRef = BBDE7FFD14E260B400A23E0C /* wrist_long.h */; };
-		BBDF81791E677D620032906A /* space_disc.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBDF81771E677D620032906A /* space_disc.cc */; };
-		BBDF817A1E677D620032906A /* space_disc.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBDF81771E677D620032906A /* space_disc.cc */; };
-		BBDF817B1E677D620032906A /* space_disc.h in Headers */ = {isa = PBXBuildFile; fileRef = BBDF81781E677D620032906A /* space_disc.h */; };
-		BBDF817C1E677D620032906A /* space_disc.h in Headers */ = {isa = PBXBuildFile; fileRef = BBDF81781E677D620032906A /* space_disc.h */; };
 		BBDF9AA4228BFBD3005018BD /* dpttrf.h in Headers */ = {isa = PBXBuildFile; fileRef = BBDF9AA3228BFBD3005018BD /* dpttrf.h */; };
 		BBDFE3BF0C6A37FF00CD333A /* hand_monitor.h in Headers */ = {isa = PBXBuildFile; fileRef = BBDFE3BD0C6A37FF00CD333A /* hand_monitor.h */; };
 		BBDFE3C00C6A37FF00CD333A /* hand_monitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = BBDFE3BE0C6A37FF00CD333A /* hand_monitor.cc */; };
@@ -2681,7 +2677,6 @@
 				BB88395010B4912A00A4028F /* space_capsule.h in Headers */,
 				BB955CF8116FCB40000E70A6 /* space_set.h in Headers */,
 				BBE4B5EC13E04D2400CBE163 /* space_periodic.h in Headers */,
-				BBDF817C1E677D620032906A /* space_disc.h in Headers */,
 				BBE9D390158500BA00FF944A /* space_ring.h in Headers */,
 				E2F6428C15D01466009B7C31 /* space_cylinderP.h in Headers */,
 			);
@@ -2979,7 +2974,6 @@
 				BB88394E10B4912A00A4028F /* space_capsule.h in Headers */,
 				BB955CF6116FCB39000E70A6 /* space_set.h in Headers */,
 				BBE4B5EE13E04D2400CBE163 /* space_periodic.h in Headers */,
-				BBDF817B1E677D620032906A /* space_disc.h in Headers */,
 				BBE9D38E158500BA00FF944A /* space_ring.h in Headers */,
 				E2F6428B15D01466009B7C31 /* space_cylinderP.h in Headers */,
 			);
@@ -3431,7 +3425,6 @@
 				BB48AB031B42BABD008540D1 /* space_banana.cc in Sources */,
 				BB2BFFDF184640D800EBE4EC /* space_polygonZ.cc in Sources */,
 				BB88389710B48EC400A4028F /* space.cc in Sources */,
-				BBDF817A1E677D620032906A /* space_disc.cc in Sources */,
 				BB8838FD10B48EF900A4028F /* space_cylinder.cc in Sources */,
 				BB8838FF10B48EF900A4028F /* space_cylinderZ.cc in Sources */,
 				BB88390110B48EF900A4028F /* space_dice.cc in Sources */,
@@ -3744,7 +3737,6 @@
 				BB88389110B48EC400A4028F /* space.cc in Sources */,
 				BB8838DF10B48EF900A4028F /* space_cylinder.cc in Sources */,
 				BB8838E110B48EF900A4028F /* space_cylinderZ.cc in Sources */,
-				BBDF81791E677D620032906A /* space_disc.cc in Sources */,
 				BB8838E310B48EF900A4028F /* space_dice.cc in Sources */,
 				BB8838E510B48EF900A4028F /* space_ellipse.cc in Sources */,
 				BB8838EB10B48EF900A4028F /* space_polygon.cc in Sources */,
