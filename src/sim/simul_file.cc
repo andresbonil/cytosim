@@ -7,7 +7,7 @@
 #include "messages.h"
 #include "parser.h"
 #include "print_color.h"
-
+#include "tictoc.h"
 
 /**
  A number `currentFormatID` is used to define the format of trajectory files

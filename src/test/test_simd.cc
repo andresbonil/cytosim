@@ -8,7 +8,7 @@
  */
 
 #include <cstdio>
-#include "tictoc.h"
+#include "timer.h"
 #include <stdint.h>
 #include "vecprint.h"
 #include "simd.h"
@@ -114,7 +114,7 @@ void run(real (*func)(), const char name[], const size_t REP)
     real a = 0, b = 0, c = 0, d = 0;
     real e = 0, f = 0, g = 0, h = 0;
     fprintf(stderr, "%10s:  ", name);
-    TicToc::tic();
+    tic();
     
     for ( size_t i=0; i<REP; ++i )
     {
@@ -129,7 +129,7 @@ void run(real (*func)(), const char name[], const size_t REP)
     }
     
     real s = ((a + b) + (c + d)) + ((e + f) + (g + h));
-    fprintf(stderr, " %16f :  %8.0f ms\n", s, TicToc::toc());
+    fprintf(stderr, " %16f :  %8.0f ms\n", s, toc());
 }
 
 

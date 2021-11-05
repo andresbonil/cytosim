@@ -218,6 +218,7 @@
 		BB7020AE0823C4B100B2AA50 /* sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = BB7020AA0823C4B100B2AA50 /* sphere.h */; };
 		BB7085E91285A2CA00D8D79A /* stream_func.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB7085E71285A2CA00D8D79A /* stream_func.cc */; };
 		BB7085EA1285A2CA00D8D79A /* stream_func.h in Headers */ = {isa = PBXBuildFile; fileRef = BB7085E81285A2CA00D8D79A /* stream_func.h */; };
+		BB70E47A2735D46E00F0796B /* timer.h in Headers */ = {isa = PBXBuildFile; fileRef = BB70E4792735D46E00F0796B /* timer.h */; };
 		BB71916B0EF1CD9900CED9E2 /* matsparsesym.h in Headers */ = {isa = PBXBuildFile; fileRef = BB0C409F069A043600CF45A8 /* matsparsesym.h */; };
 		BB71916E0EF1CD9900CED9E2 /* quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = BB94965A0933B75B003A32FE /* quaternion.h */; };
 		BB71916F0EF1CD9900CED9E2 /* matsparsesym1.h in Headers */ = {isa = PBXBuildFile; fileRef = BB66BF2E09A8DC2600E5C5BE /* matsparsesym1.h */; };
@@ -1043,6 +1044,7 @@
 		BB7020AA0823C4B100B2AA50 /* sphere.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = sphere.h; path = src/sim/sphere.h; sourceTree = SOURCE_ROOT; };
 		BB7085E71285A2CA00D8D79A /* stream_func.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stream_func.cc; sourceTree = "<group>"; };
 		BB7085E81285A2CA00D8D79A /* stream_func.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stream_func.h; sourceTree = "<group>"; };
+		BB70E4792735D46E00F0796B /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
 		BB7191C50EF1CD9900CED9E2 /* libcytomath.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcytomath.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB7192360EF1CEEA00CED9E2 /* makefile.inc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.pascal; name = makefile.inc; path = src/math/makefile.inc; sourceTree = SOURCE_ROOT; };
 		BB73586D05B98DA3006956D5 /* array.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = array.h; path = src/base/array.h; sourceTree = SOURCE_ROOT; };
@@ -1334,8 +1336,6 @@
 		BBDE7FFD14E260B400A23E0C /* wrist_long.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wrist_long.h; path = singles/wrist_long.h; sourceTree = "<group>"; };
 		BBDF72AD0B5C2327007CAD2A /* matsparsesymblk.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = matsparsesymblk.cc; path = src/math/matsparsesymblk.cc; sourceTree = SOURCE_ROOT; };
 		BBDF72AE0B5C2327007CAD2A /* matsparsesymblk.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 30; name = matsparsesymblk.h; path = src/math/matsparsesymblk.h; sourceTree = SOURCE_ROOT; };
-		BBDF81771E677D620032906A /* space_disc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = space_disc.cc; path = src/sim/spaces/space_disc.cc; sourceTree = SOURCE_ROOT; };
-		BBDF81781E677D620032906A /* space_disc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = space_disc.h; path = src/sim/spaces/space_disc.h; sourceTree = SOURCE_ROOT; };
 		BBDF9AA3228BFBD3005018BD /* dpttrf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dpttrf.h; sourceTree = "<group>"; };
 		BBDFE3BD0C6A37FF00CD333A /* hand_monitor.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = hand_monitor.h; path = src/sim/hand_monitor.h; sourceTree = SOURCE_ROOT; };
 		BBDFE3BE0C6A37FF00CD333A /* hand_monitor.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = hand_monitor.cc; path = src/sim/hand_monitor.cc; sourceTree = SOURCE_ROOT; };
@@ -1964,6 +1964,7 @@
 		BB7190A40EF1C9AE00CED9E2 /* misc */ = {
 			isa = PBXGroup;
 			children = (
+				BB70E4792735D46E00F0796B /* timer.h */,
 				BB73587505B98DA3006956D5 /* exceptions.h */,
 				BBB750830D15CFCA00B79171 /* exceptions.cc */,
 				BBA5E5800E8EBA620009F6D0 /* tictoc.h */,
@@ -1997,7 +1998,6 @@
 				BBAF37610748EB4600A29DB7 /* lib */,
 				BBB7ED3A06933C7700E2B49B /* Frameworks */,
 				BB1B723C05CD47BE0027A712 /* build */,
-				BBC4C39F24D5830B00DB5187 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2442,15 +2442,6 @@
 			name = Frameworks;
 			sourceTree = SOURCE_ROOT;
 		};
-		BBC4C39F24D5830B00DB5187 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				BBDF81781E677D620032906A /* space_disc.h */,
-				BBDF81771E677D620032906A /* space_disc.cc */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		BBCAA48F06B0653500638608 /* Fibers */ = {
 			isa = PBXGroup;
 			children = (
@@ -2696,6 +2687,7 @@
 				BB1F0BBF0653D5F4003F4957 /* exceptions.h in Headers */,
 				BB1F0BC20653D5F5003F4957 /* messages.h in Headers */,
 				BB1F0BC80653D5F6003F4957 /* iowrapper.h in Headers */,
+				BB70E47A2735D46E00F0796B /* timer.h in Headers */,
 				BB55BF310A25FB13003333C9 /* dim.h in Headers */,
 				BB55C2010A261F56003333C9 /* node.h in Headers */,
 				BB55C20C0A261F64003333C9 /* node_list.h in Headers */,
@@ -3323,7 +3315,7 @@
 		BB73574F05B98A51006956D5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = EMBL;
 				TargetAttributes = {
 					BB18BBB61DFD78F600567023 = {
@@ -4905,13 +4897,14 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CLANG_X86_VECTOR_INSTRUCTIONS = avx2;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse4.2;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -4978,13 +4971,14 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CLANG_X86_VECTOR_INSTRUCTIONS = avx2;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse4.2;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = NO;
 				GCC_DYNAMIC_NO_PIC = YES;
@@ -5048,13 +5042,14 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CLANG_X86_VECTOR_INSTRUCTIONS = avx2;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse4.2;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = NO;
 				GCC_ENABLE_CPP_RTTI = NO;

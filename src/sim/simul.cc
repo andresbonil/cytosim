@@ -8,7 +8,6 @@
 #include "simul_prop.h"
 #include "backtrace.h"
 #include "modulo.h"
-#include "tictoc.h"
 
 extern Modulo const* modulo;
 

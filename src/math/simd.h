@@ -4,11 +4,11 @@
 #ifndef SIMD_H
 #define SIMD_H
 
-#include <immintrin.h>
-
 //---------------------------------- SSE ---------------------------------------
 
 #if defined(__SSE3__)
+
+#include <immintrin.h>
 
 /// Vector of 2 doubles
 typedef __m128d vec2;

@@ -6,15 +6,13 @@
 #include "assert_macro.h"
 #include "exceptions.h"
 #include "random.h"
-#include "tictoc.h"
+#include "timer.h"
 #include "vecprint.h"
 
 #include "matsparsesym.h"
 #include "matsparsesym1.h"
 #include "matsparsesym2.h"
 #include "matsparsesymblk.h"
-
-using namespace TicToc;
 
 typedef MatrixSparseSymmetricBlock MatrixSparseSymmetricB;
 

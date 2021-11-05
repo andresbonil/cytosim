@@ -8,7 +8,7 @@
 #include "glapp.h"
 #include "glut.h"
 #include "real.h"
-#include "tictoc.h"
+#include "timer.h"
 #include "gle.h"
 using namespace gle;
 
@@ -285,19 +285,19 @@ void testInterpolate()
         vec[i] = rand + RNG.pint32(MAX);
 
     real sum = 0;
-    TicToc::tic();
+    tic();
     for ( int r = 0; r < 100; ++r )
         for ( int cc = 0; cc < CNT; ++cc )
             sum += map.interpolate3D(vec[cc]) + map.interpolate3D(vec[cc]);
-    TicToc::toc("interpolate3D");
+    printf("interpolate3D %5.2f\n", toc(CNT));
     printf("sum = %f\n", sum);
     
     real som = 0;
-    TicToc::tic();
+    tic();
     for ( int r = 0; r < 100; ++r )
         for ( int cc = 0; cc < CNT; ++cc )
             som += map.interpolate(vec[cc]) + map.interpolate(vec[cc]);
-    TicToc::toc("interpolate  ");
+    printf("interpolate %5.2f\n", toc(CNT));
     printf("som = %f\n", sum);
 }
 

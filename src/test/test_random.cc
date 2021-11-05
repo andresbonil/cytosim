@@ -3,7 +3,7 @@
 #include "random.h"
 #include <cstdio>
 #include <cstring>
-#include "tictoc.h"
+#include "timer.h"
 
 
 void print_bits(FILE * f, const void * v, const int size)
@@ -22,14 +22,14 @@ void print_bits(FILE * f, const void * v, const int size)
 void speed_test()
 {
     const size_t cnt = 1 << 30;
-    TicToc::tic();
+    tic();
     uint32_t u = 10;
     for (size_t j=0; j<cnt; ++j)
     {
         u = RNG.pint32(1024);
         RNG.pint32(u);
     }
-    TicToc::toc("int");
+    printf("int %5.2f\n", toc(cnt));
 }
 
 
@@ -522,22 +522,22 @@ void test_gaussian(int cnt)
 
     if ( 1 )
     {
-        TicToc::tic();
+        tic();
         for ( int i = 0; i < cnt; ++i )
             sfmt_gen_rand_all(&sfmt);
-        TicToc::toc("refill   ");
+        printf("refill %5.2f\n", toc(cnt));
         //print(vec, end);
     }
     if ( 1 )
     {
         real *end, vec[SFMT_N32] = { 0 };
-        TicToc::tic();
+        tic();
         for ( int i = 0; i < cnt; ++i )
         {
             end = gauss_fill_0(vec, buf, buf+SFMT_N32);
             sfmt_gen_rand_all(&sfmt);
         }
-        TicToc::toc("gauss 0  ");
+        printf("gauss0 %5.2f\n", toc(cnt));
         //print(vec, end);
     }
 #if defined(__INTEL_COMPILER) && defined(__AVX__)
@@ -545,13 +545,13 @@ void test_gaussian(int cnt)
     if ( 1 )
     {
         real *end, vec[SFMT_N32] = { 0 };
-        TicToc::tic();
+        tic();
         for ( int i = 0; i < cnt; ++i )
         {
             end = gauss_fill(vec, mem, mem+SFMT_N256);
             sfmt_gen_rand_all(&sfmt);
         }
-        TicToc::toc("gauss avx");
+        printf("gauss avx %5.2f\n", toc(cnt));
         //print(vec, end);
     }
 #endif
