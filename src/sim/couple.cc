@@ -130,14 +130,9 @@ void Couple::stepFF(Simul& sim)
      Note that this divides by two the effective binding rate of the Hands.
      */
     if ( RNG.flip() )
-    {
         cHand1->stepUnattached(sim, cPos);
-    }
-    else
-    {
-        if ( !prop->trans_activated )
-            cHand2->stepUnattached(sim, cPos);
-    }
+    else if ( !prop->trans_activated )
+        cHand2->stepUnattached(sim, cPos);
 }
 
 

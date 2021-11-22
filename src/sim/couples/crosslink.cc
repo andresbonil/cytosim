@@ -43,9 +43,15 @@ void Crosslink::stepFF(Simul& sim)
     if ( modulo )
         modulo->fold(cPos);
     
-    // activity:
-    cHand1->stepUnattached(sim, cPos);
-    cHand2->stepUnattached(sim, cPos);
+    /*
+     To attachment a Couple, we flip a coin to give equal chance to each Hand,
+     as if they were sharing the two half of a spherical cap.
+     Note that this divides by two the effective binding rate of the Hands.
+     */
+    if ( RNG.flip() )
+        cHand1->stepUnattached(sim, cPos);
+    else
+        cHand2->stepUnattached(sim, cPos);
 }
 
 

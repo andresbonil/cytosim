@@ -72,9 +72,14 @@ void Duo::stepFF(Simul& sim)
                 return;
         }
     
-        // hands may bind:
-        cHand1->stepUnattached(sim, cPos);
-        if ( !prop->trans_activated )
+        /*
+         To attachment a Couple, we flip a coin to give equal chance to each Hand,
+         as if they were sharing the two half of a spherical cap.
+         Note that this divides by two the effective binding rate of the Hands.
+         */
+        if ( RNG.flip() )
+            cHand1->stepUnattached(sim, cPos);
+        else if ( !prop->trans_activated )
             cHand2->stepUnattached(sim, cPos);
     }
 }
