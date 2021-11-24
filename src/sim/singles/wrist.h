@@ -55,7 +55,7 @@ public:
     Mecable const* base() const { return anchor.base(); }
 
     /// the position of the anchoring point
-    Vector  posFoot() const { return anchor.position(); }
+    Vector  posFoot() const { return anchor.pos(); }
     
     
     /// true if Single creates a link

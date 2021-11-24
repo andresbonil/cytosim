@@ -69,7 +69,6 @@ Vector WristLong::force() const
 
 
 //------------------------------------------------------------------------------
-#if ( 1 )
 
 /*
 Note that, since `mArm` is calculated by setInteraction(),
@@ -98,38 +97,21 @@ void WristLong::setInteractions(Meca & meca) const
 #if ( DIM == 2 )
     
     mArm = calcArm(pt, posFoot(), prop->length);
-    meca.addSideLink2D(pt, anchor.point(), mArm, prop->stiffness);
-    
+    if ( anchor.rank() == 1 )
+        meca.addSideLink2D(pt, anchor.vertex0(), mArm, prop->stiffness);
+    else
+        throw InvalidParameter("unfinished WristLong::setInteractions(length>0, Interpolation4)");
+
 #elif ( DIM >= 3 )
     
     mArm = calcArm(pt, posFoot(), prop->length);
-    meca.addSideLinkS(pt, anchor.point(), mArm, prop->length, prop->stiffness);
+    if ( anchor.rank() == 1 )
+        meca.addSideLinkS(pt, anchor.vertex0(), mArm, prop->length, prop->stiffness);
+    else
+        throw InvalidParameter("unfinished WristLong::setInteractions(length>0, Interpolation4)");
+
     //@todo WristLong:setInteractions() use interSideLink3D()
     
 #endif
 }
-
-#else
-
-/*
-Note that, since `mArm` is calculated by setInteraction(),
-the result of sidePos() will be incorrect if 'solve=0'
-*/
-Vector WristLong::sidePos() const
-{
-    return sHand->pos() + mArm;
-}
-
-/** 
- This uses Meca::interLongLink() 
- */
-void WristLong::setInteractions(Meca & meca) const
-{
-    Interpolation const& pt = sHand->interpolation();
-    mArm = ( sBase.pos() - sHand->pos() ).normalized(prop->length);
-    meca.addLongLink(pt, sBase, prop->length, prop->stiffness);
-}
-
-#endif
-
 

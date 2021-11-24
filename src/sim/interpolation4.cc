@@ -88,7 +88,7 @@ void Interpolation4::set(Mecable const* m, unsigned p, Vector const& vec)
 }
 
 
-Vector Interpolation4::position() const
+Vector Interpolation4::pos() const
 {
     unsigned top = std::min(ord_, mec_->nbPoints());
     Vector res = coef_[0] * mec_->posPoint(ref_);
