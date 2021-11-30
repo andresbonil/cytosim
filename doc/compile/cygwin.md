@@ -41,9 +41,9 @@ Once you open Cygwin, download Cytosim using the command:
  	git clone https://gitlab.com/f.nedelec/cytosim.git cytosim 
 
 Compile from within the Cygwin terminal, which will use the toolchain (`gcc` and `make`) provided by cygwin. 
-The MACHINE should be automatically selected (in case of trouble, set `MACHINE:=cygwin` in `makefile.inc`). You may disable PNG suppprt by setting `HAS_PNG:=0`. The procedure is the same as on other platforms (enter `make`). If you experience trouble, please let us know.
+The MACHINE should be automatically selected (in case of trouble, set `MACHINE:=cygwin` in `makefile.inc`). You may disable PNG support by setting `HAS_PNG:=0`. The procedure is the same as on other platforms (enter `make`). If you experience trouble, please let us know.
 
-if an error occur, look at the last messages to find out which library is missing. You can add them back to Cygwin by exiting it and running the `setup.exe` again. Then search for the missing library and install. This will only update Cygwin with the missing package, there is no need to select all other packages again.
+If an error occur, look at the last messages to find out which library is missing. You can add them back to Cygwin by exiting it and running the `setup.exe` again. Then search for the missing library and install. This will only update Cygwin with the missing package, there is no need to select all other packages again.
 
 ### The X Window System (X11)
 
