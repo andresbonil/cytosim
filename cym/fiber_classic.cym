@@ -1,9 +1,9 @@
-/**
+%{
  @example fiber_classic.cym
  We create a dynamic fiber with activity=classic
 
  F. Nedelec, April 2010, Minus-end dynamics on 7 Nov 2017
-*/
+}
 
 set simul system
 {

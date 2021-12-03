@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_cut.cym
  We create a Hand with `activity = cut`
 
  F. Nedelec, October 2011
-*/
+}
 
 set simul system
 {

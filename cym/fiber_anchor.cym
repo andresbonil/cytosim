@@ -1,9 +1,9 @@
-/**
+%{
  @example fiber_anchor.cym
  We use anchors to attach fibers to the substrate
 
  F. Nedelec, 2010
-*/
+}
 
 set simul system
 {

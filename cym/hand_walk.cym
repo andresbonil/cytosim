@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_walk.cym
  test Walker with `hand:activity=walk`
 
  F. Nedelec, 2010
-*/
+}
 
 
 % This is using 'binding_key' in Fiber and Hand

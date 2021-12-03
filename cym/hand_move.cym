@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_move.cym
  We create a Motor with `hand:activity=move`
 
  F. Nedelec, April 2010
-*/
+}
 
 set simul system
 {

@@ -293,7 +293,7 @@ void Hand::stepUnattached(Simul& sim, Vector const& pos)
 
 
 /**
- Test for spontaneous detachment at rate HandProp::unbinding_rate, 
+ By default, the unloaded Hand does nothing
  */
 void Hand::stepUnloaded()
 {
@@ -304,9 +304,7 @@ void Hand::stepUnloaded()
 
 
 /**
- Test for force-induced detachment following Kramers' law,
- vith basal rate HandProp::unbinding_rate, 
- and characteristic force HandProp::unbinding_force
+ By default, the loaded Hand does nothing
  */
 void Hand::stepLoaded(Vector const& force, real force_norm)
 {
