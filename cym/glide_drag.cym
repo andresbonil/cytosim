@@ -111,7 +111,7 @@ new linker
 
 new 3200 grafted
 
-repeat 100
+repeat 20
 {
     run 100 system
     {

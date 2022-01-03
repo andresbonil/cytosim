@@ -1,4 +1,4 @@
-// Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
+// Cytosim was created by Francois Nedelec. Copyright 2021 Cambridge University.
 
 #include "random.h"
 
@@ -14,13 +14,14 @@
 Random RNG;
 
 
-/// the last bit in a 32-bits integer
+/// the most significant bit in a 32-bits integer
 constexpr uint32_t BIT31 = 1U << 31;
 
-/// constexpr uint32_t FRAC32 = 0x7FFFFFU;
+//constexpr uint32_t FRAC32 = 0x7FFFFFU;
+/// bit mask for exponent in single precision (float)
 constexpr uint32_t EXPON32 = 127U << 23;
 
-/// exponent for a double precision float
+/// sign bit in double precision (double)
 constexpr uint64_t BIT63 = 1ULL << 63;
 
 // constexpr uint64_t EXPON64 = 1023ULL << 52;
@@ -40,13 +41,14 @@ Random::Random()
     
     //fprintf(stderr, "Random with SFMT_N32 = %i\n", SFMT_N32);
     
-    uint32_t * buf = twister_.state[0].u;
-    // clear state:
-    memset(buf, 0, 4*SFMT_N32);
-    
-    // initialize pointers:
-    start_ = buf;
-    end_ = buf;
+    // clear state (not necessary):
+    memset(integers_, 0, 4*SFMT_N32);
+    memset(gaussians_, 0, sizeof(real)*SFMT_N32);
+    memset(twister_.state[0].u, 0, 4*SFMT_N32);
+
+    // initialize pointers signalling an empty reserve:
+    start_ = integers_;
+    end_ = start_;
     next_gaussian_ = gaussians_;
 }
 
@@ -91,8 +93,8 @@ uint32_t hash(long t, int32_t c)
 uint32_t Random::seed()
 {
     uint32_t s = 0;
-    // use system source if available
-    FILE * f = fopen("/dev/random", "r");
+    // read system source if available, from /dev/urandom which does not block!
+    FILE * f = fopen("/dev/urandom", "r");
     if ( f && ! ferror(f) )
     {
         int cnt = 0;
@@ -122,7 +124,7 @@ uint32_t Random::seed()
 bool Random::seeded()
 {
     uint32_t * buf = twister_.state[0].u;
-    for ( unsigned n = 0; n < SFMT_N32; ++n )
+    for ( size_t n = 0; n < SFMT_N32; ++n )
         if ( buf[n] )
             return true;
     return false;
@@ -230,7 +232,7 @@ void Random::gauss_set(real & a, real & b, real v)
      formula below are only valid if ( w > 0 ),
      which may be false only with a minuscule probability
      */
-    w = v * sqrt( -2 * log(w) / w );
+    w = v * std::sqrt( -2 * std::log(w) / w );
     a = w * x;
     b = w * y;
 }
@@ -242,14 +244,15 @@ void Random::gauss_set(real & a, real & b, real v)
  For each 4 input values, this produces ~PI values.
  @Return address past the last value stored in `dst` = dst + nb_of_values_set
  */
-real * gauss_fill(real dst[], const int32_t src[], int32_t const*const end)
+real * gauss_fill(real dst[], size_t cnt, const int32_t src[])
 {
+    int32_t const*const end = src + cnt;
     while ( src < end )
     {
         real x = src[0] * TWO_POWER_MINUS_31;
         real y = src[1] * TWO_POWER_MINUS_31;
         real w = x * x + y * y;
-        if ( w <= 1 && 0 < w )
+        if (( w <= 1 ) & ( 0 < w ))
         {
             w = sqrt( -2 * log(w) / w );
             dst[0] = w * x;
@@ -269,9 +272,8 @@ real * gauss_fill(real dst[], const int32_t src[], int32_t const*const end)
  */
 void Random::refill_gaussians()
 {
-    int32_t * mem = reinterpret_cast<int32_t*>(gaussians_+SFMT_N32) - SFMT_N32;
-    sfmt_fill_array32(&twister_, (uint32_t*)mem, SFMT_N32);
-    next_gaussian_ = gauss_fill(gaussians_, mem, mem+SFMT_N32);
+    next_gaussian_ = gauss_fill(gaussians_, SFMT_N32, (int32_t*)twister_.state);
+    sfmt_gen_rand_all(&twister_);
     //printf("refill_gaussians %lu\n", next_gaussian_ - gaussians_);
 }
 
@@ -333,12 +335,12 @@ void Random::gauss_set(real vec[], size_t cnt)
  A note on the generation of random normal deviates
  Box & Muller, 1958
  */
-void Random::gauss_slow(real& x, real& y)
+void Random::gauss_boxmuller(real& x, real& y)
 {
-    real angle = real( URAND32() ) * ( TWO_POWER_MINUS_31 * M_PI );
-    real norm  = sqrt( -2 * log( preal_exc() ));
-    x = norm * cos(angle);
-    y = norm * sin(angle);
+    real ang = real(RAND32()) * ( TWO_POWER_MINUS_31 * M_PI );
+    real nrm = std::sqrt( -2 * std::log( preal_exc() ));
+    x = nrm * std::cos(ang);
+    y = nrm * std::sin(ang);
 }
 
 //------------------------------------------------------------------------------
@@ -347,7 +349,7 @@ void Random::gauss_slow(real& x, real& y)
 /**
  integer in [0,n] for n < 2^32
  */
-uint32_t Random::pint_slow(const uint32_t n)
+uint32_t Random::pint32_slow(const uint32_t n)
 {
     // Find which bits are used in n
     uint32_t used = n | ( n >> 1 );
@@ -404,16 +406,15 @@ uint32_t Random::distributed_bits(int b)
 /**
  returns an integer in [0 n], with the ratios given in the array of ints
  */
-uint32_t Random::pint_ratio(const uint32_t n, const int ratio[])
+uint32_t Random::pint32_ratio(const uint32_t n, const uint32_t ratio[])
 {
-    int sum = 0;
-    uint32_t ii;
+    uint32_t ii, sum = 0;
     for ( ii = 0; ii < n; ++ii )
         sum += ratio[ii];
-    // sum==0 may denotes a careless use of the function, with wrong arguments.
-    // it might be safer to throw an exception
-    if ( sum == 0 ) return 0;
-    sum = (int) floor( preal() * sum );
+    // `sum==0` may be caused by wrong arguments; might be safer to throw an exception
+    if ( sum == 0 )
+        return 0; //throw InvalidParameter("invalid argument to Random::pint32_ratio");
+    sum = (int) std::floor( preal() * sum );
     ii = 0;
     while ( sum >= ratio[ii] )
         sum -= ratio[ii++];
@@ -437,10 +438,10 @@ uint32_t Random::pint_ratio(const uint32_t n, const int ratio[])
 uint32_t Random::poisson_knuth(const real E)
 {
     if ( E > 256 )
-        return static_cast<uint32_t>( gauss() * sqrt(E) + E );
+        return static_cast<uint32_t>( gauss() * std::sqrt(E) + E );
     if ( E < 0 )
         return 0;
-    real L = exp(-E);
+    real L = std::exp(-E);
     real p = preal();
     uint32_t k = 0;
     while ( p > L )
@@ -465,10 +466,10 @@ uint32_t Random::poisson_knuth(const real E)
 uint32_t Random::poisson(const real E)
 {
     if ( E > 256 )
-        return static_cast<uint32_t>( gauss() * sqrt(E) + E );
+        return static_cast<uint32_t>( gauss() * std::sqrt(E) + E );
     if ( E < 0 )
         return 0;
-    real p = exp(-E);
+    real p = std::exp(-E);
     real s = p;
     uint32_t k = 0;
     real u = preal();

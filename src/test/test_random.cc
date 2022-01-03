@@ -3,7 +3,7 @@
 #include "random.h"
 #include <cstdio>
 #include <cstring>
-#include "tictoc.h"
+#include "timer.h"
 
 
 void print_bits(FILE * f, const void * v, const int size)
@@ -22,14 +22,14 @@ void print_bits(FILE * f, const void * v, const int size)
 void speed_test()
 {
     const size_t cnt = 1 << 30;
-    TicToc::tic();
+    tic();
     uint32_t u = 10;
     for (size_t j=0; j<cnt; ++j)
     {
-        u = RNG.pint(1024);
-        RNG.pint(u);
+        u = RNG.pint32(1024);
+        RNG.pint32(u);
     }
-    TicToc::toc("int");
+    printf("int %5.2f\n", toc(cnt));
 }
 
 
@@ -38,7 +38,7 @@ void test_int()
     for (int j=0; j<8; ++j)
     {
         for (int k=0; k<8; ++k)
-            printf(" %12u", RNG.pint());
+            printf(" %12u", RNG.pint32());
         printf("\n");
     }
     printf("\n");
@@ -46,7 +46,7 @@ void test_int()
     for (int j=0; j<8; ++j)
     {
         for (int k=0; k<8; ++k)
-            printf(" %+12i", RNG.sint());
+            printf(" %+12i", RNG.sint32());
         printf("\n");
     }
     printf("\n");
@@ -54,7 +54,7 @@ void test_int()
     for (int j=0; j<8; ++j)
     {
         for (int k=0; k<32; ++k)
-            printf(" %2u", RNG.pint(100));
+            printf(" %2u", RNG.pint32(100));
         printf("\n");
     }
     printf("\n");
@@ -62,7 +62,7 @@ void test_int()
     for (int j=0; j<8; ++j)
     {
         for (int k=0; k<32; ++k)
-            printf(" %2u", RNG.pint_slow(99));
+            printf(" %2u", RNG.pint32_slow(99));
         printf("\n");
     }
     printf("\n");
@@ -77,7 +77,7 @@ void silly_test()
     uint32_t hit = 0;
     
     for (uint32_t j=0; j<cnt; ++j)
-        hit += ( RNG.pint() < up );
+        hit += ( RNG.pint32() < up );
 
     printf(" prob( pint() < 1^30 ) = %f\n", hit/(float)cnt);
 }
@@ -111,7 +111,7 @@ void testbits()
     double y;
     for ( int ii=0; ii <= 20; ++ii )
     {
-        y = convertFix( RNG.pint() );
+        y = convertFix( RNG.pint32() );
         printf(" %f :", y);
         print_bits(stdout, &y,8);
     }
@@ -235,7 +235,7 @@ void test_gauss()
     real vec[n_max] = { 0 };
     for ( size_t i = 0; i < 10000000; ++i )
     {
-        size_t n = RNG.pint(n_max);
+        size_t n = RNG.pint32(n_max);
         RNG.gauss_set(vec, n);
         cnt += n;
         for ( size_t u = 0; u < n; ++u )
@@ -515,26 +515,29 @@ real * gauss_fill(real dst[], const __m256i src[], __m256i* src_end)
 
 void test_gaussian(int cnt)
 {
-    int32_t * buf = (int32_t*)RNG.data();
+    printf("test_gaussian --- %lu bytes real --- %s\n", sizeof(real), __VERSION__);
+    sfmt_t sfmt;
+    sfmt_init_gen_rand(&sfmt, time(nullptr));
+    int32_t * buf = (int32_t*)sfmt.state;
 
     if ( 1 )
     {
-        TicToc::tic();
+        tic();
         for ( int i = 0; i < cnt; ++i )
-            RNG.refill();
-        TicToc::toc("RNG.refill  ");
+            sfmt_gen_rand_all(&sfmt);
+        printf("refill %5.2f\n", toc(cnt));
         //print(vec, end);
     }
     if ( 1 )
     {
         real *end, vec[SFMT_N32] = { 0 };
-        TicToc::tic();
+        tic();
         for ( int i = 0; i < cnt; ++i )
         {
             end = gauss_fill_0(vec, buf, buf+SFMT_N32);
-            RNG.refill();
+            sfmt_gen_rand_all(&sfmt);
         }
-        TicToc::toc("gauss double");
+        printf("gauss0 %5.2f\n", toc(cnt));
         //print(vec, end);
     }
 #if defined(__INTEL_COMPILER) && defined(__AVX__)
@@ -542,13 +545,13 @@ void test_gaussian(int cnt)
     if ( 1 )
     {
         real *end, vec[SFMT_N32] = { 0 };
-        TicToc::tic();
+        tic();
         for ( int i = 0; i < cnt; ++i )
         {
             end = gauss_fill(vec, mem, mem+SFMT_N256);
-            RNG.refill();
+            sfmt_gen_rand_all(&sfmt);
         }
-        TicToc::toc("gauss avx   ");
+        printf("gauss avx %5.2f\n", toc(cnt));
         //print(vec, end);
     }
 #endif
@@ -558,13 +561,16 @@ void test_gaussian(int cnt)
 //==========================================================================
 int main(int argc, char* argv[])
 {
+    int mode = 4;
     RNG.seed();
 
-    real rate = 0;
     if ( argc > 1 )
-        rate = strtod(argv[1], 0);
+        mode = atoi(argv[1]);
+    real rate = 1;
+    if ( argc > 2 )
+        rate = strtod(argv[2], 0);
 
-    switch ( 4 )
+    switch ( mode )
     {
         case 0:
             test_poisson(1024);

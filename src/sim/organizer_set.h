@@ -48,15 +48,9 @@ public:
     
     /// find object with given ID
     Organizer * findID(ObjectID n) const;
-    
-    /// find Aster with given ID
-    Aster *     findAster(ObjectID n) const;
-    
-    /// find first Organizer containing given Mecable
-    Organizer*  findOrganizer(Mecable const*) const;
-    
-    /// modulo the position (periodic boundary conditions)
-    void        foldPosition(Modulo const* s) const;
+
+    /// find highest ObjectID among Organizers containing given Mecable
+    ObjectID    findOrganizerID(Mecable const*) const;
 
     /// Monte-Carlo simulation step for every Object
     void        step();

@@ -5,7 +5,7 @@
 #define DIM 3
 
 #include "real.h"
-#include "tictoc.h"
+#include "timer.h"
 #include "random.h"
 #include "vecprint.h"
 #include "cblas.h"
@@ -15,7 +15,7 @@
 const real scalar = 2.0;
 
 /// number of segments:
-const size_t NBS = 331;
+const size_t NBS = 129;
 const size_t NBR = DIM * ( NBS + 1 );
 const size_t ALOC = NBR + 8;
 
@@ -425,14 +425,14 @@ inline void testRigidity(unsigned cnt, void (*func)(const unsigned, const real*,
     new_reals(x, y, z, 1.0);
     
     unsigned nbt = DIM * ( NBS - 1 );
-    TicToc::tic();
+    tic();
     for ( unsigned int i=0; i<cnt; ++i )
     {
         func(nbt, y, scalar, x);
         func(nbt, x, scalar, z);
         func(nbt, z, scalar, y);
     }
-    TicToc::toc(str, nullptr);
+    printf("  %10s %5.2f", str, toc(cnt*NBS));
     zero_real(ALOC, x);
     func(nbt, pos, scalar, x);
     VecPrint::print(std::cout, std::min(16ul,NBR), x);
@@ -881,7 +881,7 @@ inline void testU(unsigned cnt, void (*func)(unsigned, const real*, const real*,
     real *x = nullptr, *y = nullptr, *z = nullptr;
     new_reals(x, y, z, 1.0);
 
-    TicToc::tic();
+    tic();
     for ( unsigned ii=0; ii<cnt; ++ii )
     {
         func(NBS, diff, y, z);
@@ -889,8 +889,8 @@ inline void testU(unsigned cnt, void (*func)(unsigned, const real*, const real*,
         func(NBS, diff, x+2, y);
         func(NBS, diff, z+4, y);
     }
-    TicToc::toc(str, nullptr);
-    
+    printf("  %10s %5.2f", str, toc(cnt*NBS));
+
     zero_real(ALOC, lagmul);
     func(NBS, diff, force, lagmul);
     VecPrint::print(std::cout, std::min(20UL,NBS+1), lagmul) << std::endl;
@@ -904,7 +904,7 @@ inline void testD(unsigned cnt, void (*func)(unsigned, const real*, const real*,
     real *x = nullptr, *y = nullptr, *z = nullptr;
     new_reals(x, y, z, 1.0);
 
-    TicToc::tic();
+    tic();
     for ( unsigned ii=0; ii<cnt; ++ii )
     {
         func(NBS, diff, x, y, z);
@@ -912,8 +912,8 @@ inline void testD(unsigned cnt, void (*func)(unsigned, const real*, const real*,
         func(NBS, diff, y+2, z, x+2);
         func(NBS, diff, z+4, x, y+4);
     }
-    TicToc::toc(str, nullptr);
-    
+    printf("  %10s %5.2f", str, toc(cnt*NBS));
+
     zero_real(ALOC, x);
     func(NBS, diff, pos, lagmul, x);
     VecPrint::print(std::cout, std::min(20UL,NBR+2), x) << std::endl;

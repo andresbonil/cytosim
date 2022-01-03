@@ -3,7 +3,9 @@
 #include "sim.h"
 #include "meca.h"
 #include "modulo.h"
+#include "glossary.h"
 #include "simul_prop.h"
+#include "print_color.h"
 #include "display1.h"
 #include "display2.h"
 #include "display3.h"
@@ -19,7 +21,7 @@ extern Modulo const* modulo;
 //------------------------------------------------------------------------------
 #pragma mark -
 
-void Player::setStyle(const int style)
+void Player::setStyle(const unsigned style)
 {
     if ( mDisplay )
     {
@@ -259,23 +261,23 @@ void Player::displayCytosim()
         else
             mDisplay->display(simul);
 
-#if DRAW_MECA_LINKS
         if ( disp.draw_links )
         {
+#if DRAW_MECA_LINKS
             glPushAttrib(GL_LIGHTING_BIT);
             glDisable(GL_LIGHTING);
             glLineWidth(4);
             glPointSize(8);
             glEnable(GL_LINE_STIPPLE);
-            const_cast<Simul&>(simul).drawLinks();
+            simul.drawLinks();
             glDisable(GL_LINE_STIPPLE);
             glPopAttrib();
             gle::gleReportErrors(stderr, "Simul::drawLinks()");
-        }
 #endif
+        }
     }
     catch(Exception & e) {
-        std::cerr<<"Error in display: " << e.what() << std::endl;
+        std::cerr << "Error in display: " << e.what() << std::endl;
     }
 }
 
@@ -315,6 +317,7 @@ void Player::displayScene(View& view, int mag)
     view.openDisplay();
     displayCytosim();
     view.closeDisplay();
+    glFinish();
 }
 
 //------------------------------------------------------------------------------

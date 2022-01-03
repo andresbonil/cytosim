@@ -8,7 +8,6 @@
 #include "simul_prop.h"
 #include "backtrace.h"
 #include "modulo.h"
-#include "tictoc.h"
 
 extern Modulo const* modulo;
 
@@ -161,17 +160,16 @@ size_t Simul::nbObjects() const
 }
 
 
-void Simul::foldPosition() const
+void Simul::foldPositions() const
 {
     if ( modulo )
     {
-        fibers.foldPosition(modulo);
-        beads.foldPosition(modulo);
-        solids.foldPosition(modulo);
-        spheres.foldPosition(modulo);
-        singles.foldPosition(modulo);
-        couples.foldPosition(modulo);
-        organizers.foldPosition(modulo);
+        fibers.foldPositions(modulo);
+        beads.foldPositions(modulo);
+        solids.foldPositions(modulo);
+        spheres.foldPositions(modulo);
+        singles.foldPositions(modulo);
+        couples.foldPositions(modulo);
     }
 }
 
@@ -303,7 +301,7 @@ Space const* Simul::findSpace(std::string const& str) const
 
 /**
  This is used primarily to parse the configuration file,
- using full class name
+ argument is the full class name
  */
 ObjectSet * Simul::findSet(const std::string& cat)
 {
@@ -361,12 +359,24 @@ ObjectSet * Simul::findSetT(const ObjectTag tag)
 //------------------------------------------------------------------------------
 #pragma mark -
 
-bool Simul::isPropertyClass(const std::string& name) const
+/* There can only be one SimulProp and it is already created */
+void Simul::rename(std::string const& arg)
 {
-    if ( name == "simul" )
-        return true;
-    
+    if ( prop->name() == "undefined" )
+    {
+        prop->rename(arg);
+        //std::clog << "Simul is named `" << arg << "'\n";
+    }
+    else if ( prop->name() != arg )
+        throw InvalidSyntax("only one `simul' can be defined");
+}
+
+
+bool Simul::isCategory(const std::string& name) const
+{
     if ( name == "hand" )
+        return true;
+    if ( name == "simul" )
         return true;
     
     return const_cast<Simul*>(this)->findSet(name);
@@ -466,14 +476,12 @@ Property* Simul::newProperty(const std::string& cat, const std::string& nom, Glo
 {
     if ( cat == "simul" )
     {
-        /* There can only be one SimulProp and it is already created */
         assert_true(prop);
-        prop->rename(nom);
-        //std::clog << "Simul is named `" << nom << "'\n";
+        rename(nom);
         return prop;
     }
     
-    if ( isPropertyClass(nom) )
+    if ( isCategory(nom) )
         throw InvalidSyntax("`"+nom+"' is a reserved keyword");
     
     Property * p = findProperty(nom);

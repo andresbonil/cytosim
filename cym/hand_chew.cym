@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_chew.cym
  We create a Chewer with `hand:activity=chew`
 
  F. Nedelec, June 2015
-*/
+}
 
 set simul system
 {

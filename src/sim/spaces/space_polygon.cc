@@ -12,11 +12,11 @@
 SpacePolygon::SpacePolygon(SpaceProp const* p)
 : Space(p)
 {
-    surface_ = 0;
-    height_ = 0;
     inf_.reset();
     sup_.reset();
-    
+    surface_ = 0;
+    height_ = 0;
+
     if ( DIM == 1 )
         throw InvalidParameter("polygon is not usable in 1D");
 }
@@ -184,7 +184,7 @@ Vector SpacePolygon::project(Vector const& w) const
  @todo Also project re-entrant polygon corners on the segments of the Fiber.
  */
 void SpacePolygon::setInteraction(Vector const& pos, Mecapoint const& pe, Meca & meca, real stiff) const
-{    
+{
 #if ( DIM > 1 )
     index_t inx = DIM * pe.matIndex();
     
@@ -214,8 +214,8 @@ void SpacePolygon::setInteraction(Vector const& pos, Mecapoint const& pe, Meca &
         {
             meca.mC(inx+2, inx+2) -= stiff;
             meca.base(inx+2)      += stiff * std::copysign(height_, pos.ZZ);
+            return;
         }
-        return;
     }
 #endif
 
@@ -331,7 +331,7 @@ bool SpacePolygon::draw() const
 #elif ( DIM > 2 )
     
     // display bottom
-    glLineWidth(2);
+    glLineWidth(3);
     glBegin(GL_LINE_LOOP);
     for ( unsigned n=0; n < npts; ++n )
         gle::gleVertex(pts[n].xx, pts[n].yy, -height_);
@@ -346,10 +346,15 @@ bool SpacePolygon::draw() const
     // display sides
     real Z = height_;
     glBegin(GL_TRIANGLE_STRIP);
-    for ( unsigned n=0; n <= npts; ++n )
+    for ( unsigned n=0; n < npts; ++n )
     {
         gle::gleVertex(pts[n].xx, pts[n].yy, Z);
         gle::gleVertex(pts[n].xx, pts[n].yy,-Z);
+    }
+    if ( 0 < npts )
+    {
+        gle::gleVertex(pts[0].xx, pts[0].yy, Z);
+        gle::gleVertex(pts[0].xx, pts[0].yy,-Z);
     }
     glEnd();
     
@@ -374,7 +379,6 @@ bool SpacePolygon::draw() const
         gle::gleDrawText(p, tmp, 0);
     }
 #endif
-    
 
     return true;
 }

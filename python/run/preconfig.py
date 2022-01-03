@@ -2,12 +2,9 @@
 #
 # PRECONFIG, a versatile configuration file generator
 #
-# Copyright Francois J. Nedelec, EMBL 2010--2017, Cambridge University 2019--
-# This is PRECONFIG version 1.3, last modified on 20.01.2020
-
-__VERSION__="1.23"
-
-__DATE__   ="30.01.2020"
+# Copyright Francois J. Nedelec and  Serge Dmitrieff, 
+# EMBL 2010--2017, Cambridge University 2019--2021
+# This is PRECONFIG version 1.44, last modified on 6.10.2021
 
 """
 # SYNOPSIS
@@ -32,7 +29,7 @@ __DATE__   ="30.01.2020"
    such that any syntax present in the configuration file can be maintained
    during the process.
 
-   At least one template file should be specified, and other arguments are optional.
+   At least one template file should be specified; other arguments are optional.
    If several template files are specified, they will be processed sequentially.
    The names of the produced files are built from the name of the template
    by removing any second extension, and inserting an integer of constant width.
@@ -51,6 +48,11 @@ __DATE__   ="30.01.2020"
    preconfig [OPTIONS] [DEFINITIONS] TEMPLATE_FILE [ADDITIONAL_TEMPLATE_FILES]
 
 # OPTIONS
+
+    - a pattern can be specified as first argument, to define the names of
+    the files to be generated, for example 'config%04i.cym'. If the pattern
+    includes '/', as in 'run%04i/config.cym', the directories will be made.
+    The pattern must accept integer substitution (eg. '%i' or '%4i' or '%04i').
 
    - if a positive integer REPEAT is specified, each template file will be
    processed REPEAT times, for example: `preconfig 3 config.cym.tpl` will parse
@@ -74,13 +76,15 @@ __DATE__   ="30.01.2020"
    
 # DEFINITIONS
 
-   Variables can be specified on the command line as 'name=value' or
-   'name=sequence', with no space around the '='. They are added to the
-   dictionary used to evaluate the code snippets found inside the template file,
-   for example: `preconfig rate=7.2 config.cym.tpl`
-   
-   A variable can be defined using '==' to prevent it from being expanded, for
-   example `preconfig rate==[7.2,8,9.12] config.cym.tpl`
+   Variables can be defined on the command line as 'name=value', with no space 
+   around the '='. They are added to the dictionary used to evaluate the code 
+   snippets found inside the template file.
+   example: `preconfig rate=100 config.cym.tpl`
+
+   Sequences can be defined as 'name=sequence' or 'name==sequence'. In the first
+   instance, the sequence is expanded, generating new files for each value.
+   However, using '==' prevents this expansion, and the variable is used verbatim.
+   example: `preconfig rate=[1,10,100] config.cym.tpl`
 
 # CODE SNIPPETS
 
@@ -89,8 +93,11 @@ __DATE__   ="30.01.2020"
    It is possible to use multiple bracketed expressions in the same file, and
    to define variables in the python environment. An integer 'n', starting at
    zero and corresponding to the file being generated is automatically defined.
+   
    Note that variables defined in embedded code are not expanded when they appear
-   alone in another code (eg. [[vec]]).
+   alone in another code (eg. [[vec]]). Furthermore, Preconfig will keep any code
+   that it cannot evaluate verbatim, which happens for example if they contain
+   a variable that is not defined, or some syntax error.
 
 ## Example 1
 
@@ -163,11 +170,12 @@ __DATE__   ="30.01.2020"
    of 'x' can be read. This can be useful to process the results later.
 
     [[ x = random.uniform(0,1) ]]
-    % preconfig.x = [[ x ]];
+    %preconfig.x= [[ x ]]
     binding_rate = [[ 10*x ]]
     unbinding_rate = [[ 2*x ]]
 
    Command: `preconfig 256 TEMPLATE_FILE` to make 256 files.
+   Extract values:  awk '/%preconfig./{sub("%preconfig.","");print}' config0000.cym
 
 ## Example 8
 
@@ -192,32 +200,34 @@ __DATE__   ="30.01.2020"
 
 ## Acknowledgments:
 
-We wish to thank the members of the Nedelec group, and all users of
-Cytosim for their feedback which has contributed greatly to this development.
+We wish to thank the members of the Nedelec group, and all users of Cytosim
+for their feedback which has contributed greatly to this development.
 We thanks Shaun Jackman and Steven Andrews for valuable feedback!
 
 Copyright Francois J. Nedelec and Serge Dmitrieff
-EMBL 2010--2018
-Cambridge University 2019--
-This is Free Software with absolutely no WARANTY.
+EMBL 2010--2017; Cambridge University 2019--2020
+This is Free Software with no WARANTY, just hoping to be useful.
 Preconfig is distributed under GPL3.0 Licence (see LICENCE)
 """
-
 
 import sys
 
 try:
-    import os, io
-    __GLOBALS__ = { 'random': __import__('random'), 'math': __import__('math') }
+    import os, io, re
+    GLOBALS = { 'random': __import__('random'), 'math': __import__('math') }
 except ImportError:
     sys.stderr.write("Error: Preconfig could not load necessary python modules\n")
     sys.exit()
 
 #-------------------------------------------------------------------------------
 
+__VERSION__="1.44"
+
+__DATE__ ="6.10.2021"
+
 # code snippets are surrounded by double square brackets:
-__SNIPPET_OPEN__ = '['
-__SNIPPET_CLOSE__ = ']'
+CODE = '['
+DECO = ']'
 
 
 # A function to return version to be able to pip package it
@@ -244,19 +254,18 @@ def pop_sequence(dic, protected):
 
 def try_assignment(arg):
     """
-        Check if `arg` follows the format of a variable assignent,
+        Check if `arg` follows the format of a variable definition,
         and if that succeeds, return the key and value strings in a tuple.
     """
-    try:
-        k, v = arg.split('=',1)
-        if k and v:
-            k = k.strip()
-            v = v.strip()
-            return (k, v)
-    except ValueError:
-        pass
-    return ('', arg)
-
+    res = re.match(r" *([a-zA-Z]\w*) *= *(.*)", arg)
+    #print("   try_assignment `%s'" % arg);
+    #print(res.groups())
+    if not res or not len(res.groups()) == 2:
+        return ('', arg)
+    k = res.group(1)
+    v = res.group(2).strip()
+    #print("   recognized `%s' = `%s'" % (k, v))
+    return (k, v)
 
 
 def get_block(file, S, E):
@@ -298,6 +307,7 @@ def get_block(file, S, E):
 
 
 #-------------------------------------------------------------------------------
+
 class Preconfig:
     """ A class container for preconfig,
     contains inner variables and methods """
@@ -309,55 +319,38 @@ class Preconfig:
         self.out = open(os.devnull, 'w')
         self.log = []
         # motif used to compose file names
-        self.pattern = 'config%04i.txt'
+        self.pattern = ''
         # number of digits used to compose `pattern`
         self.nb_digits = 4
         # index of file being generated
         self.file_index = 0
         # list of files generated
         self.files_made = []
+        # name of first output file (only one file can be made with this name)
+        self.file_name = ''
         # name of current input file being processed (used for error reporting)
         self.template = ''
-
+    
     def evaluate(self, arg):
-        """
-            Evaluate `arg` and return result
-        """
-        res = arg
-        #print("evaluating `"+arg+"'")
-        try:
-            res = eval(arg, __GLOBALS__, self.locals)
-        except Exception as e:
-            sys.stderr.write("\033[95m")
-            sys.stderr.write("Error evaluating '%s' in `%s`:\n" % (arg, self.template))
-            sys.stderr.write("\033[0m")
-            sys.stderr.write("    "+str(e)+'\n')
-            sys.exit(1)
+        """ Evaluate `arg` and return result """
+        res = eval(arg, GLOBALS, self.locals)
         if not isinstance(res, str):
             try:
                 res = list(res)
             except Exception:
                 pass
-        #print("evaluate("+arg+") = " + repr(res))
+        self.out.write("|%50s --> %s\n" % (arg, str(res)) )
+        #print("   evaluate("+arg+") = "+str(res))
         return res
-
-    def operate(self, key, val, block):
-        """
-            either define a variable 'key'
-            or return the value 'val'
-        """
-        if key:
-            exec(key+'='+repr(val), __GLOBALS__, self.locals)  #self.locals[key] = v
-            self.out.write("|%50s <-- %s\n" % (key, str(val)) )
-            #print("%s <-- %s" % (key, str(val)) )
-            return ''
-        else:
-            self.out.write("|%50s --> %s\n" % (block, str(val)) )
-            #print("%s --> %s" % (block, str(val)) )
-            if isinstance(val, str):
-                return val
-            return repr(val)
-
+    
+    def define(self, key, code):
+        """ Define a variable 'key' by executing 'code' """
+        #print("define(%s) with key `%s`" % (code, key) )
+        exec(code, GLOBALS, self.locals)  #self.locals[key] = v
+        res = self.locals[key]
+        self.out.write("|%50s <-- %s\n" % (key, repr(res)) )
+        return res
+    
     def process(self, file, text):
         """
             `process()` will identify and substitute bracketed code blocks
@@ -366,8 +359,8 @@ class Preconfig:
         output = text
 
         while file:
-            (pre, block, eof) = get_block(file, __SNIPPET_OPEN__, __SNIPPET_CLOSE__ )
-            #print("%i characters... block = '%s'" % (len(pre), block))
+            (pre, block, eof) = get_block(file, CODE, DECO)
+            #print("%i characters +  '%s'" % (len(pre), block))
             output += pre
             if eof:
                 if block:
@@ -378,49 +371,84 @@ class Preconfig:
                 self.make_file(output)
                 return
             # remove outer brackets:
-            cmd = (block[2:-2]).strip()
-            #print("%i characters... code block '%s'" % (len(pre), cmd))
-            # interpret command:
-            (key, vals) = try_assignment(cmd)
-            vals = self.evaluate(vals)
-            if cmd in self.locals:
-                # a plain variable is not expanded again:
-                val = vals
+            key = ''
+            code = block[2:-2].strip()
+            # print("%4i characters... " % len(pre), end='')
+            # print("code block `%s'" % block)
+            if code[0]==CODE and code[1]==CODE and code[-1]==DECO and code[-2]==DECO:
+                # any further level of bracketting is not evaluated:
+                val = code
+            elif code in self.locals:
+                # a defined variable is substituted but not expanded:
+                val = repr(self.locals[code])
             else:
+                # interpret command:
+                key, stuff = try_assignment(code)
                 try:
-                    # use 'pop()' to test if multiple values were specified...
-                    # put last value aside for later:
-                    val = vals.pop()
-                    ipos = file.tell()
-                    for v in vals:
-                        #print("value("+cmd+")="+repr(v));
-                        self.process(file, output+self.operate(key, v, block))
-                        file.seek(ipos)
-                except (AttributeError, IndexError):
-                    # a single value was specified:
-                    val = vals
+                    vals = code
+                    if key:
+                        vals = self.define(key, code)
+                    else:
+                        vals = self.evaluate(code)
+                    try:
+                        # use 'pop()' to probe if multiple values were specified...
+                        # puting last value aside for later:
+                        val = vals.pop()
+                        ipos = file.tell()
+                        for v in vals:
+                            if key:
+                                self.locals[key] = v
+                                self.process(file, output)
+                            else:
+                                self.process(file, output+str(v))
+                            file.seek(ipos)
+                    except (AttributeError, IndexError):
+                        # a single value was specified:
+                        val = vals
+                except Exception as e:
+                    sys.stderr.write("\033[95m")
+                    sys.stderr.write("Warning: %s in `%s'\n" % (str(e), code))
+                    sys.stderr.write("\033[0m")
+                    val = block
+                    key = ''
             # handle remaining value:
-            output += self.operate(key, val, block)
-
-    def set_template(self, name, path):
+            if key:
+                self.locals[key] = val
+            else:
+                output += str(val)
+    
+    def set_template(self, name):
         """
         Initialize variable to process template file 'name'
         """
         self.file_index = 0
         self.files_made = []
         self.template = name
-        [main, ext] = os.path.splitext(os.path.basename(name))
-        if '.' in main:
-            [main, ext] = os.path.splitext(main)
-        self.pattern = main + '%0' + repr(self.nb_digits) + 'i' + ext
-        if path:
-            self.pattern = os.path.join(path, self.pattern)
+
+    def set_pattern(self, name, path):
+        """
+        insert the number before the first '.' on the pattern
+        """
+        [main, ext] = os.path.basename(name).split('.', 1)
+        ext, drop = os.path.splitext(ext)
+        res = main + '%0' + repr(self.nb_digits) + 'i' + '.' + ext
+        if os.path.isdir(path):
+            res = os.path.join(path, res)
+        elif path:
+            self.file_name = path
+        self.pattern = res
 
     def next_file_name(self):
         """
         Generate the name of the next output file
         """
-        n = self.pattern % self.file_index
+        if self.file_name:
+            n = self.file_name
+            self.file_name = ''
+        elif self.pattern:
+            n = self.pattern % self.file_index
+        else:
+            n = 'config%04i.txt' % self.file_index
         self.file_index += 1
         # update variable
         self.locals['n'] = self.file_index
@@ -430,13 +458,17 @@ class Preconfig:
         """
         Create a file with the specified text
         """
-        name = self.next_file_name()
-        with open(name, 'w') as f:
+        dst = self.next_file_name()
+        #make directory if name includes a non-existent directory:
+        dir = os.path.dirname(dst)
+        if dir and not os.path.isdir(dir):
+            os.mkdir(dir)
+        with open(dst, 'w') as f:
             f.write(text)
-            self.files_made.extend([name])
+            self.files_made.extend([dst])
         # fancy ouput:
-        self.out.write("\\"+repr(self.locals)+'\n')
-        self.out.write(" \\"+('> '+name).rjust(78, '-')+'\n')
+        self.out.write(' \\'+repr(self.locals)+'\n')
+        self.out.write('  \\'+('> '+dst+'\n').rjust(96, '-'))
         # write log:
         if self.log:
             keys = sorted(self.locals.keys())
@@ -445,28 +477,32 @@ class Preconfig:
                 for k in keys:
                     self.log.write(', %10s' % k)
                 self.log.write('\n')
-            self.log.write('%20s' % name)
+            self.log.write('%20s' % dst)
             for k in keys:
                 self.log.write(', %10s' % repr(self.locals[k]))
             self.log.write('\n')
 
-    def expand_values(self, values, file, text):
+    def expand(self, values, file, text):
         """
-            Call self recursively to remove all entries of the dictionary
-            that are associated with multiple values.
+            Calls itself recursively to remove all entries of the 
+            dictionary that are associated with multiple values.
         """
+        #print("expand("+repr(values)+")")
         (key, vals) = pop_sequence(values, self.protected)
         if key:
             ipos = file.tell()
             for v in vals:
                 values[key] = v
-                #self.out.write("|%50s <-- %s\n" % (key, str(v)) )
-                self.expand_values(values, file, text)
+                self.out.write("|%50s <-- %s\n" % (key, str(v)) )
+                #print("|%50s <-- %s\n" % (key, str(v)) )
+                self.expand(values, file, text)
                 file.seek(ipos);
-            # restore multiple values on upward recursion
+            # restore all values on upward recursion
             values[key] = vals
         else:
-            self.locals = values
+            #copy dictionary values:
+            for key in values:
+                self.locals[key] = values[key]
             self.locals['n'] = self.file_index
             self.process(file, text)
 
@@ -474,10 +510,12 @@ class Preconfig:
         """
             process one file, and return the list of files generated
         """
-        self.set_template(name, path)
+        self.set_template(name)
+        if not self.pattern:
+            self.set_pattern(name, path)
         for x in range(repeat):
             with open(name, 'r') as f:
-                self.expand_values(values, f, '')
+                self.expand(values, f, '')
         return self.files_made
 
     def main(self, args):
@@ -490,14 +528,28 @@ class Preconfig:
         values = {}
         path = ''
         
+        # first argument may define the pattern:
+        arg = args[0]
+        if arg.find('%') >= 0 and not os.path.isfile(arg):
+            self.pattern = arg
+            args.pop(0)
+        
         for arg in args:
             #print("preconfig argument `%s'" % arg)
             if os.path.isdir(arg):
                 path = arg
+            elif arg.startswith("path="):
+                path = arg[5:]
             elif os.path.isfile(arg):
                 inputs.append(arg)
             elif arg.isdigit():
                 repeat = int(arg)
+            elif arg == '{{}}':
+                CODE = '{'
+                DECO = '}'
+            elif arg == '<<>>':
+                CODE = '<'
+                DECO = '>'
             elif arg == '-':
                 verbose = 0
             elif arg == '+':
@@ -536,6 +588,13 @@ class Preconfig:
 
 #-------------------------------------------------------------------------------
 
+def parse(name, values, repeat=1, path=''):
+    """
+    Process one file, and return the list of files generated
+    """
+    return Preconfig().parse(name, values, repeat, path)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("You must specify a template file (for instructions, invoke with option '--help')")
@@ -544,6 +603,6 @@ if __name__ == "__main__":
     elif sys.argv[1]=='--version':
         print("This is PRECONFIG version %s (%s)" %(__VERSION__,__DATE__))
     else:
-        preconf=Preconfig()
-        preconf.main(sys.argv[1:])
+        object=Preconfig()
+        object.main(sys.argv[1:])
 

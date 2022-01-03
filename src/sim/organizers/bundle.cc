@@ -155,7 +155,7 @@ ObjectList Bundle::build(Glossary& opt, Simul& sim)
                     ObjectSet::rotateObjects(objs, Rotation::rotation180());
                 
                 // translate to adjust the overlap:
-                ObjectSet::translateObjects(objs, fib->posMiddle()-fib->pos(0.5*prop->overlap, prop->focus));
+                ObjectSet::translateObjects(objs, fib->posMiddle()-fib->posFrom(0.5*prop->overlap, prop->focus));
                 
                 real len;
                 if ( opt.set(len, "length", inx) )

@@ -82,8 +82,8 @@ set single graftedK
     activity = fixed
 }
 
-new 200 graftedK { position=surface; placement = inside, cell, ( x > 0 ); }
-new 200 graftedD { position=surface; placement = inside, cell, ( x < 0 ); }
+new 200 graftedK { position=surface; placement = anywhere,, ( x > 0 ); }
+new 200 graftedD { position=surface; placement = anywhere,, ( x < 0 ); }
 
 
 run system 

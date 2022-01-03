@@ -219,11 +219,11 @@ void SingleSet::unlink(Object * obj)
 }
 
 
-void SingleSet::foldPosition(Modulo const* s) const
+void SingleSet::foldPositions(Modulo const* m) const
 {
     Single * obj;
-    for ( obj=firstF(); obj; obj=obj->next() )  obj->foldPosition(s);
-    for ( obj=firstA(); obj; obj=obj->next() )  obj->foldPosition(s);
+    for ( obj=firstF(); obj; obj=obj->next() ) obj->foldPosition(m);
+    for ( obj=firstA(); obj; obj=obj->next() ) obj->foldPosition(m);
 }
 
 
@@ -419,7 +419,7 @@ ObjectList SingleSet::makeWrists(Mecable const* obj, unsigned fip, unsigned nbp,
     {
         for ( unsigned u = 0; u < num; ++u )
         {
-            res.push_back(sip->newWrist(obj, fip+RNG.pint(nbp)));
+            res.push_back(sip->newWrist(obj, fip+RNG.pint32(nbp)));
         }
     }
     

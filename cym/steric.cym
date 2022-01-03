@@ -4,7 +4,7 @@
 
 set simul system
 {
-    steric = 1, 100
+    steric = 1, 100  % enable, stiffness 
     precondition = 0
     time_step = 0.005
     kT = 0.0042
@@ -28,7 +28,7 @@ set fiber filament
     rigidity = 1
     confine = inside, 100
     segmentation = 0.2
-    steric = 1, 0.05
+    steric = 1, 0.05  % enable, radius
     
     activity = classic
     growing_speed     = 0.2,  0.2
@@ -51,7 +51,7 @@ new 20 filament
 
 set bead ball
 {
-    steric = 1
+    steric = 1  % enable
     confine = all_inside, 100
     display = ( style=5; coloring=1; )
 }

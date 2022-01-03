@@ -130,14 +130,9 @@ void Couple::stepFF(Simul& sim)
      Note that this divides by two the effective binding rate of the Hands.
      */
     if ( RNG.flip() )
-    {
         cHand1->stepUnattached(sim, cPos);
-    }
-    else
-    {
-        if ( !prop->trans_activated )
-            cHand2->stepUnattached(sim, cPos);
-    }
+    else if ( !prop->trans_activated )
+        cHand2->stepUnattached(sim, cPos);
 }
 
 
@@ -332,9 +327,9 @@ Vector Couple::position() const
 }
 
 
-void Couple::foldPosition(Modulo const* s)
+void Couple::foldPosition(Modulo const* m)
 {
-    modulo->fold(cPos);
+    m->fold(cPos);
 }
 
 void Couple::randomizePosition()
@@ -423,7 +418,7 @@ void Couple::write(Outputter& out) const
     cHand1->write(out);
     cHand2->write(out);
     if ( !attached1() && !attached2() )
-        out.writeFloatVector(cPos, DIM);
+        out.writeFloats(cPos, DIM);
 }
 
 
@@ -438,7 +433,7 @@ void Couple::read(Inputter& in, Simul& sim, ObjectTag tag)
     if ( attached1() || attached2() )
         cPos = position();
     else
-        in.readFloatVector(cPos, DIM);
+        in.readFloats(cPos, DIM);
     
     /*
      Because the CoupleSet contains 4 sublists where Couple are stored depending

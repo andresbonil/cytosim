@@ -21,7 +21,6 @@
 void Aster::step()
 {
     assert_true( linked() );
-    
     Simul & sim = simul();
 
     // nucleation:
@@ -31,7 +30,8 @@ void Aster::step()
         {
             Glossary opt(prop->fiber_spec);
             sim.add(makeFiber(sim, ii, prop->fiber_type, opt));
-            opt.warnings(std::cerr, 1, " in aster:nucleate[1]");
+            if ( opt.has_warning(std::cerr, 1) )
+                std::cerr << " in aster:nucleate[1]";
         }
     }
 }
@@ -57,9 +57,7 @@ void Aster::step()
 void Aster::setInteractions(Meca& meca) const
 {
     assert_true( linked() );
-
     Solid const* sol = solid();
-    
     if ( !sol )
         return;
 
@@ -134,7 +132,7 @@ Aster::~Aster()
 }
 
 //------------------------------------------------------------------------------
-#pragma mark -
+#pragma mark - Build
 
 /**
  @defgroup NewAster How to create an Aster
@@ -184,8 +182,8 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
     
     // get number of fibers:
     size_t nbf = 0;
-    std::string type;
-    
+    std::string tif, fos;
+
     opt.set(asRadius, "radius");
     if ( asRadius <= 0 )
         throw InvalidParameter("aster:radius must be specified and > 0");
@@ -196,12 +194,20 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
     if ( !solid() )
         throw InvalidParameter("could not make aster:solid");
     //solid()->write(std::clog);
+    if ( !Buddy::check(solid()) )
+        Buddy::connect(solid());
 
     if ( opt.is_positive_integer("fibers", 0) )
+    {
         opt.set(nbf, "fibers");
+        opt.set(tif, "fibers", 1);
+        opt.set(fos, "fibers", 2);
+    }
     else
-        opt.set(type, "fibers");
-
+    {
+        opt.set(tif, "fibers");
+        opt.set(fos, "fibers", 1);
+    }
     // fiber's anchor points can be specified directly:
     std::string var = "fiber1";
     if ( opt.has_key(var) )
@@ -213,38 +219,32 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
             //std::clog << "direct fiber anchor " << pos1 << " and " << pos2 << "\n";
             placeAnchor(pos1, pos2, origin);
             nbOrganized(2+cnt);
-            std::string str;
-            if ( opt.set(str, var, 2) )
-            {
-                Glossary fopt(str);
-                res.append(makeFiber(sim, cnt, type, fopt));
-                fopt.warnings(std::cerr, 1, " in aster:nucleate[1]");
-            }
+            std::string str = fos;
+            opt.set(str, var, 2);
+            Glossary fopt(str);
+            res.append(makeFiber(sim, cnt, tif, fopt));
+            fopt.print_warning(std::cerr, 1, " in aster:nucleate[1]");
             ++cnt;
             var = "fiber" + std::to_string(cnt+1);
         }
     }
     else
     {
-        std::string str;
-        opt.set(type, "fibers", 1);
-        opt.set(str, "fibers", 2);
-    
-        Glossary fopt(str);
+        Glossary fopt(fos);
     
 #ifdef BACKWARD_COMPATIBILITY
-        if ( type.empty() && opt.set(nbf, "nb_fibers") )
+        if ( tif.empty() && opt.set(nbf, "nb_fibers") )
         {
-            type = prop->fiber_type;
+            tif = prop->fiber_type;
             fopt = opt;
-            str = "unknown";
+            fos = "unknown";
         }
 #endif
         nbOrganized(1+nbf);
         placeAnchors(opt, origin, nbf);
         nbf = std::min(nbf, asLinks.size());
 
-        if ( str.empty() )
+        if ( fos.empty() )
         {
             if ( prop->fiber_rate <= 0 )
                 throw InvalidParameter("you should specify aster::fiber_spec");
@@ -252,8 +252,8 @@ ObjectList Aster::build(Glossary& opt, Simul& sim)
         else
         {
             for ( size_t n = 0; n < nbf; ++n )
-                res.append(makeFiber(sim, n, type, fopt));
-            fopt.warnings(std::cerr, nbf, " in aster:nucleate[1]");
+                res.append(makeFiber(sim, n, tif, fopt));
+            fopt.print_warning(std::cerr, nbf, " in aster:nucleate[1]\n");
         }
     }
     return res;
@@ -340,7 +340,6 @@ ObjectList Aster::makeSolid(Simul& sim, Glossary& opt, size_t& origin)
             }
         }
     }
-    
     if ( ! sol )
         throw InvalidParameter("aster:solid must be specified");
     
@@ -539,7 +538,7 @@ void Aster::placeAnchors(Glossary & opt, size_t origin, size_t nbf)
 
 
 //------------------------------------------------------------------------------
-#pragma mark -
+#pragma mark - I/O
 
 void Aster::write(Outputter& out) const
 {
@@ -567,7 +566,9 @@ void Aster::read(Inputter& in, Simul& sim, ObjectTag tag)
     assert_true( nbOrganized() > 0 );
     assert_true( organized(0)->tag() == Solid::TAG );
     
-    Solid * sol = solid();
+    if ( !Buddy::check(solid()) )
+        Buddy::connect(solid());
+    Solid const* sol = solid();
     if ( sol->nbPoints() > 1 )
         asRadius = ( sol->posPoint(0) - sol->posPoint(1) ).norm();
     
@@ -613,7 +614,7 @@ void Aster::read(Inputter& in, Simul& sim, ObjectTag tag)
 
 
 //------------------------------------------------------------------------------
-#pragma mark -
+#pragma mark - Display
 
 Vector Aster::posLink1(size_t inx) const
 {
@@ -661,7 +662,7 @@ Vector Aster::posFiber2(size_t inx) const
     if ( fib->length() >= len )
     {
         if ( len > 0 )
-            return fib->pos(len, prop->focus);
+            return fib->posFrom(len, prop->focus);
         else
             return fib->posEnd(prop->focus);
     }
@@ -672,52 +673,75 @@ Vector Aster::posFiber2(size_t inx) const
     }
 }
 
+
+/**
+ retrieve link between Solid and ends of Fiber
+ this is only meaningfull if ( inx < nbFibers() )
+ */
+real Aster::getLink1(size_t inx, Vector& pos1, Vector& pos2) const
+{
+    if ( inx < asLinks.size() && asLinks[inx].rank > 0 )
+    {
+        pos1 = posLink1(inx);
+        if ( fiber(inx) )
+        {
+            pos2 = posFiber1(inx);
+            return prop->stiffness[0];
+        }
+        pos2 = pos1;
+    }
+    return 0;
+}
+
+
+/**
+ retrieve link between Solid and side of Fiber
+ this is only meaningfull if ( inx < nbFibers() )
+ */
+real Aster::getLink2(size_t inx, Vector& pos1, Vector& pos2) const
+{
+    if ( inx < asLinks.size() && asLinks[inx].rank > 0 )
+    {
+        Fiber const* fib = fiber(inx);
+
+        if ( fib )
+        {
+            real len = asLinks[inx].len;
+            if ( fib->length() >= len )
+            {
+                pos1 = posLink2(inx);
+            }
+            else
+            {
+                // interpolate between the two solid-points:
+                real c = fib->length() / len;
+                pos1 = ( 1.0 - c ) * posLink1(inx) + c * posLink2(inx);
+            }
+            pos2 = posFiber2(inx);
+            return prop->stiffness[1];
+        }
+        else
+        {
+            pos1 = posLink2(inx);
+            pos2 = pos1;
+        }
+    }
+    return 0;
+}
+
+
 /**
  This sets 'pos1' and 'pos2' as the ends of the link number `inx`
  or returns zero if the link does not exist
  */
 bool Aster::getLink(size_t inx, Vector& pos1, Vector& pos2) const
 {
-    size_t n = inx / 2;
+    if ( inx & 1 )
+        getLink2(inx/2, pos1, pos2);
+    else
+        getLink1(inx/2, pos1, pos2);
     
-    if ( n < asLinks.size() && asLinks[n].rank > 0 )
-    {
-        Fiber const* fib = fiber(n);
-        
-        if ( inx & 1 )
-        {
-            pos1 = posLink1(n);
-            if ( fib )
-                pos2 = fib->posEnd(prop->focus);
-            else
-                pos2 = pos1;
-        }
-        else
-        {
-            if ( fib )
-            {
-                real len = asLinks[n].len;
-                if ( fib->length() >= len )
-                {
-                    pos1 = posLink2(n);
-                }
-                else
-                {
-                    // interpolate between the two solid-points:
-                    real c = fib->length() / len;
-                    pos1 = ( 1.0 - c ) * posLink1(n) + c * posLink2(n);
-                }
-                pos2 = posFiber2(n);
-            }
-            else
-            {
-                pos1 = posLink2(n);
-                pos2 = pos1;
-            }
-        }
-        return true;
-    }
-    return false;
+    return ( inx < 2 * asLinks.size() );
 }
 
 

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <vector>
 
 /// a minimal math expression evaluator
 /**
@@ -21,107 +22,154 @@ class Evaluator
 public:
     
     /// variable names must be a single letter
-    typedef std::pair<char, real> variable;
+    typedef std::pair<int, real> variable;
 
     /// list of variables
-    typedef std::initializer_list<variable> variable_list;
-    
-    static void skip_space(char const*& str)
-    {
-        while ( isspace(*str) )
-            ++str;
-    }
+    typedef std::vector<variable> variable_list;
     
     static void print_variables(std::ostream& os, variable_list const& list)
     {
         os << "Known variables:\n";
         for ( variable const& v : list )
-            os << "   " << v.first << " = " << v.second << "\n";
+            os << "   " << (char)v.first << " = " << v.second << "\n";
     }
 
 private:
     
-    /// list of variables
-    variable_list variables_;
+    /// pointer
+    char const* ptr;
     
-    real value_(char const*& str)
+    /// list of variables
+    const variable_list variables_;
+    
+    
+    void skip_space()
     {
+        while ( isspace(*ptr) )
+            ++ptr;
+    }
+
+    real value_(char c)
+    {
+        if ( c == 0 )
+            throw InvalidSyntax("empty variable?");
         for ( variable const& v : variables_ )
         {
-            if ( *str == v.first || toupper(*str) == v.first )
-            {
-                ++str;
+            if ( c == v.first || toupper(c) == v.first )
                 return v.second;
-            }
         }
         print_variables(std::clog, variables_);
-        throw InvalidSyntax("Unknown variable '"+std::string(1,*str)+"'");
+        throw InvalidSyntax("unknown variable '"+std::string(1,c)+"'");
         return 0;
     }
     
-    real number_(char const*& str)
+    real number_()
     {
         errno = 0;
         char * end = nullptr;
-        real d = strtod(str, &end);
+        real d = strtod(ptr, &end);
         if ( errno )
-            throw InvalidSyntax("Unexpected syntax");
-        str = end;
+            throw InvalidSyntax("expected a number");
+        ptr = end;
+        //std::clog << "number: " << d << "  " << ptr << "\n";
         return d;
     }
     
-    real factor_(char const*& str)
+    real factor_()
     {
-        skip_space(str);
-        if ( '0' <= *str && *str <= '9' )
-            return number_(str);
-        else if ( *str == '(' )
+        //std::clog << "factor: " << ptr << "\n";
+        skip_space();
+        char c = *ptr;
+        if ( '0' <= c && c <= '9' )
+            return number_();
+        else if ( c == '(' )
         {
-            ++str; // '('
-            real result = expression_(str);
-            if ( *str != ')' )
-                throw InvalidSyntax("Unexpected syntax");
-            ++str; // ')'
+            ++ptr; // '('
+            //std::clog << " (   " << ptr << "\n";
+            real result = expression_();
+            skip_space();
+            if ( *ptr != ')' )
+                throw InvalidSyntax("missing closing parenthesis");
+            ++ptr; // ')'
             return result;
         }
-        else if ( *str == '-' )
+        else if ( c == '-' )
         {
-            ++str;
-            return -factor_(str);
+            ++ptr;
+            return -factor_();
         }
         else
-            return value_(str);
+            return value_(*ptr++);
     }
     
-    real term_(char const*& str)
+    real term_()
     {
-        real result = factor_(str);
+        //std::clog << "term: " << ptr << "\n";
+        real result = factor_();
         while ( 1 )
         {
-            skip_space(str);
-            char c = *str;
+            skip_space();
+            char c = *ptr;
             if ( c == '*' )
-                result *= factor_(++str);
+            {
+                ++ptr;
+                result *= factor_();
+            }
             else if ( c == '/' )
-                result /= factor_(++str);
+            {
+                ++ptr;
+                result /= factor_();
+            }
             else if ( c == '^' )
-                result = pow(result, factor_(++str));
+            {
+                ++ptr;
+                result = pow(result, factor_());
+            }
             else
                 return result;
         }
     }
     
-    real expression_(char const*& str)
+    real expression_()
     {
-        real result = term_(str);
+        //std::clog << "expression: " << ptr << "\n";
+        real result = term_();
         while ( 1 )
         {
-            skip_space(str);
-            char c = *str;
+            skip_space();
+            char c = *ptr;
             if ( c == '+' )
-                result += term_(++str);
+            {
+                ++ptr;
+                result += term_();
+            }
             else if ( c == '-' )
-                result -= term_(++str);
+            {
+                ++ptr;
+                result -= term_();
+            }
+            else if ( c == '<' )
+            {
+                ++ptr;
+                return ( result < term_() );
+            }
+            else if ( c == '>' )
+            {
+                ++ptr;
+                return ( result > term_() );
+            }
+            else if ( c == '&' )
+            {
+                ++ptr;
+                real rhs = term_();
+                return (( result != 0 ) && ( rhs != 0 ));
+            }
+            else if ( c == '|' )
+            {
+                ++ptr;
+                real rhs = term_();
+                return (( result != 0 ) || ( rhs != 0 ));
+            }
             else
                 return result;
         }
@@ -129,35 +177,16 @@ private:
     
 public:
     
-    Evaluator(variable_list const& v) : variables_(v)
+    Evaluator(std::initializer_list<variable> const& v) : variables_(v)
     {
         //print_variables(std::clog, variables_);
     }
     
-    real value(char const*& str)
+    real evaluate(char const* str)
     {
-        //std::clog << "evaluate (" << str << ")\n";
-        return expression_(str);
-    }
-    
-    bool inequality(char const*& str)
-    {
-        //std::clog << "inequality (" << str << ")\n";
-        real a = expression_(str);
-        skip_space(str);
-        char op = *str++;
-        if ( op != '<' && op != '>' )
-            throw InvalidSyntax("Unexpected syntax");
-        if ( *str == '=' )
-        {
-            ++str;
-            real b = expression_(str);
-            if ( op == '<' ) return ( a <= b );
-            if ( op == '>' ) return ( a >= b );
-        }
-        real b = expression_(str);
-        if ( op == '<' ) return ( a < b );
-        if ( op == '>' ) return ( a > b );
-        return false;
+        ptr = str;
+        real res = expression_();
+        //std::clog << "evaluate(" << str << ") = " << res << "\n";
+        return res;
     }
 };

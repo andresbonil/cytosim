@@ -32,11 +32,11 @@ class Meca;
  \par Viscous Drag:
  
  The distance between the points, and their radii define a total drag
- coefficient according to Stokes's law applied to individual spheres.
+ coefficient according to Stokes' law applied to individual spheres.
  Points that have a radius = 0 do not induce viscous drag.
  The hydrodynamic interactions between the beads in the ensemble,
  and more advanced hydrodynamic effects are neglected.
- The drag coefficent for translation is simply the sum of Stoke's law, 
+ The drag coefficent for translation is simply the sum of Stokes' law,
  for all points that have a radius > 0.
  The rotational drag coefficient involves the second momentum of the configuration.
  
@@ -57,7 +57,7 @@ private:
     /// the mean of the the points weighted by their drag coefficients
     Vector         soCenter;
     
-    /// the dimension used in Stoke's law to calculate mobility of each point
+    /// the dimensions used in Stokes' law to calculate overall mobility
     real     *     soRadius;
     
     /// array to store the reference shape of the solid, as coordinates

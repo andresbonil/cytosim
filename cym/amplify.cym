@@ -1,9 +1,9 @@
-/**
+%{
  @example amplify.cym
  A Nucleator that is only active if it is bound
 
  F. Nedelec, April 2011
-*/
+}
 
 set simul system
 {

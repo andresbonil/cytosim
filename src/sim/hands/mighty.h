@@ -22,9 +22,6 @@ private:
     
     /// disabled default constructor
     Mighty();
-    
-    /// clamp a in [0,b]
-    void limitSpeedRange(real& a, const real b);
 
 public:
     

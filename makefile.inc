@@ -90,7 +90,7 @@ ifeq ($(COMPILER),gcc)
 # You can use g++-8 to support Intel OMP directives
     CXX      := g++ -Wfatal-errors -Wno-deprecated-declarations
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops #-floop-optimize2 -ftree-vectorize -mavx2 -mfma
-    FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops -march=native -ffp-contract=fast
+    FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops -ffp-contract=fast
 
     DEBUG    :=-g3 -ggdb
     COVERAGE :=-fprofile-arcs -ftest-coverage
@@ -254,12 +254,9 @@ ifeq ($(MACHINE),linux)
     #   check for correct library libname.so otherwise give full path
     GRAFIX := -L$(LIBDIR) -lglut -lGL -lGLU -lXt -lX11 -lGLEW
 
-    ifneq ($(HAS_PNG), 0)
-
-        LIB_PNG := $(LIBDIR)/libpng.a $(LIBDIR)/libz.a
-        ING_PNG :=
-
-    endif
+    ### Specify here the PNG library
+    LIB_PNG := $(LIBDIR)/libpng.a $(LIBDIR)/libz.a
+    INC_PNG :=
 
 endif
 
@@ -289,12 +286,9 @@ ifeq ($(MACHINE),cygwin)
     ###  check for correct library yourlibname.so otherwise give full path
     GRAFIX := -L/usr/lib -lglut -lGL -lGLU -lXt -lX11 -lGLEW
 
-    ifneq ($(HAS_PNG), 0)
-
-    LIB_PNG := /lib/libpng.dll.a /lib/libz.a
-    ING_PNG :=
-
-    endif
+    ### Specify here the PNG library
+    LIB_PNG := $(LIBDIR)/libpng.a $(LIBDIR)/libz.a
+    INC_PNG :=
 
     BINEXT :=.exe
 

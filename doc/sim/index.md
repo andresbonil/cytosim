@@ -16,6 +16,7 @@ Table of Content:
 * [Stochastic events](stochastic.md)
 * [Stochastic forces](forces.md)
 * [Steric interactions](steric.md)
+* [Numerical Precision](numerical_precision.md)
 * [Graphical display](graphics.md)
 * [Parameters](parameters.md)
 * [Physical Units](units.md)

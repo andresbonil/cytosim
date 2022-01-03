@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_slide.cym
  We create a Slider with `hand:activity=slide`
 
  F. Nedelec, June 2011
-*/
+}
 
 set simul system
 {
@@ -47,14 +47,14 @@ set hand motor
     display = ( size=6; color=green )
 }
 
-/**
+%{
   The key parameter for a Slider is mobility (units of um/s/pN), 
   which defines the force-velocity curve as: 
   speed = mobility * force
   Attention: high values may lead to numerical instability.
   in this particular case, serious problems arise if
   'mobility * stiffness * time_step > 1'
-*/
+}
 set hand slider
 {
     binding = 10, 0.1

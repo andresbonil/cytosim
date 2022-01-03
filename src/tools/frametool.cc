@@ -211,7 +211,7 @@ void sizeFrame(FILE* in)
         
         if ( code == FRAME_END )
         {
-            printf("pid %lu   frame %5lu    time %8.3f   %7li lines (%+li)\n",
+            printf("pid %lu   frame %5lu    time %10.5f   %7li lines (%+li)\n",
                    frame_pid, frm, frame_time, cnt, cnt-oldcnt);
             oldcnt = cnt;
             ++frm;

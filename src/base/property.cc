@@ -33,7 +33,8 @@ void Property::read_string(std::string const& str, std::string const& msg)
         try {
             Glossary glos(str);
             read(glos);
-            glos.warnings(std::cerr, 1, msg);
+            if ( glos.has_warning(std::cerr) )
+                std::cerr << " in `" << msg << "'\n";
         } catch(Exception & e) {
             std::clog << msg << ": " << e.what() << std::endl;
         }

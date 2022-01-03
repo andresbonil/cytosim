@@ -11,7 +11,7 @@ Synopsis:
 
 Usage:
     
-    make_page.py [recursive=1] [tile=INT] [width=INT] [height=INT] [OUTPUT] DIRECTORIES
+    make_page.py [recursive=1] [tile=INT] [width=INT] [height=INT] [OUTPUT] DIRECTORIES/FILES
 
 Info:
     
@@ -85,8 +85,10 @@ def getImageSize(file):
 def writeImageLinks(paths):
     global out, imsize
     for path in sorted(paths):
+        shot = os.path.basename(path)
+        #out.write('<br>%s: ' % shot);
         out.write('<a href="javascript:zoom(\'%s\');">\n' % path);
-        out.write('  <img %s src="%s" alt="%s">\n' % (imsize, path, path));
+        out.write('  <img %s src="%s" alt="%s">\n' % (imsize, path, shot));
         out.write('</a>\n')
     if paths:
         out.write('\n')
@@ -96,7 +98,8 @@ def writeMovieLinks(paths):
     global out
     for path in sorted(paths):
         size = getImageSize(path)
-        out.write('<video controls="controls" width="%s" height="%s" loop="true" alt="%s">\n' % (size[0], size[1], path));
+        shot = os.path.basename(path)
+        out.write('<video controls="controls" width="%s" height="%s" loop="true" alt="%s">\n' % (size[0], size[1], shot));
         out.write('  <source src="%s" type="video/mp4">\n' % path);
         out.write('  This is a HTML5 VIDEO element\n');
         out.write('</video>\n');
@@ -157,6 +160,7 @@ def process_dir(dirpath):
         else:
             files.append(f)
     process(dirpath, directories, files)
+
 
 #------------------------------------------------------------------------
 

@@ -40,12 +40,6 @@ public:
     /// BACKWARD_COMPATIBILITY
     std::string  dimensions_;
     
-    /// viscosity and rotational viscosity
-    real         viscosity, viscosity_rot;
-    
-    /// equal to time_step / viscosity
-    real         mobility_dt, mobility_rot_dt;
-    
     /// derived variable: flag to indicate that `display` has a new value
     bool         display_fresh;
 
@@ -61,10 +55,10 @@ public:
     ~SpaceProp() { }
     
     /// create a new, uninitialized, Space
-    virtual Space * newSpace() const;
+    Space * newSpace() const;
 
     /// create a new Space according to specifications
-    virtual Space * newSpace(Glossary&) const;
+    Space * newSpace(Glossary&) const;
     
     /// identifies the property
     std::string category() const { return "space"; }
@@ -80,6 +74,7 @@ public:
  
     /// check and derive more parameters
     void complete(Simul const&);
+        
     
     /// return a carbon copy of object
     Property* clone() const { return new SpaceProp(*this); }

@@ -132,7 +132,6 @@ int main(int argc, char* argv[])
     {
         splash(std::cout);
         print_version(std::cout);
-        std::cout << "    DIM = " << DIM << '\n';
         return EXIT_SUCCESS;
     }
     
@@ -213,6 +212,12 @@ int main(int argc, char* argv[])
         std::cerr << "Error: missing frame " << frame << '\n';
         return EXIT_FAILURE;
     }
+    if ( DIM != reader.vectorSize() )
+    {
+        std::cerr << "Error: dimensionality missmatch between `report` and file\n";
+        return EXIT_FAILURE;
+    }
+
     report(simul, *osp, what, frame, arg);
 
     if ( arg.nb_values("frame") > 1 )
@@ -248,7 +253,7 @@ int main(int argc, char* argv[])
         ofs.close();
 
     /// check if all specified parameters were used:
-    arg.warnings(std::cerr, cnt);
-    
+    arg.print_warning(std::cerr, cnt, "\n");
+
     return EXIT_SUCCESS;
 }

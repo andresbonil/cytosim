@@ -73,12 +73,3 @@ This corresponds to a potential that raises quadratically from the edge in both 
  [`cylinderZ`](doxygen/class_space_cylinder_z.html)  | radius bottom top
  [`cylinderP`](doxygen/class_space_cylinder_p.html)  | length radius
  [`ring`](doxygen/class_space_ring.html)             | length radius
-
-### Dynamic Space with variable geometry 
- 
- GEOMETRY                                                      | DIMENSIONS   
- --------------------------------------------------------------|---------------------------------
- [`lid`](doxygen/class_space_lid.html)                         | ceiling length (X, Y and Z values)
- [`disc`](doxygen/class_space_disc.html)                       | radius length
- [`dynamic_sphere`](doxygen/class_space_dynamic_sphere.html)   | radius
- [`dynamic_ellipse`](doxygen/class_space_dynamic_ellipse.html) | length (X, Y and Z values)

@@ -130,9 +130,9 @@ void Display::displayTiled(Simul const& sim, int arg)
     
     glMatrixMode(GL_MODELVIEW);
     
-    Vector px = modulo->periodicity(0);
-    Vector py = modulo->periodicity(1);
-    Vector pz = modulo->periodicity(2);
+    Vector px = modulo->period(0);
+    Vector py = modulo->period(1);
+    Vector pz = modulo->period(2);
 
     for ( int dx = l[0]; dx <= u[0]; ++dx )
     for ( int dy = l[1]; dy <= u[1]; ++dy )
@@ -359,7 +359,7 @@ void Display::preparePointDisp(T * p, PropertyList& alldisp, gle_color col)
 void Display::prepareForDisplay(Simul const& sim, PropertyList& alldisp)
 {
     if ( prop->fold )
-        sim.foldPosition();
+        sim.foldPositions();
     
     // counter to give different colors to the objects
     unsigned int idx = 0;

@@ -28,7 +28,7 @@ void Mighty::stepUnloaded()
     
     real a = fbAbs + prop->set_speed_dt;
     
-    if ( a <= fbFiber->abscissaM() )
+    if ( a < fbFiber->abscissaM() )
     {
         if ( RNG.test_not(prop->hold_growing_end) )
         {
@@ -38,7 +38,7 @@ void Mighty::stepUnloaded()
         a = fbFiber->abscissaM();
     }
     
-    if ( a >= fbFiber->abscissaP() )
+    if ( a > fbFiber->abscissaP() )
     {
         if ( RNG.test_not(prop->hold_growing_end) )
         {
@@ -77,7 +77,7 @@ void Mighty::stepLoaded(Vector const& force, real force_norm)
     
     real a = fbAbs + dab;
     
-    if ( a <= fbFiber->abscissaM() )
+    if ( a < fbFiber->abscissaM() )
     {
         if ( RNG.test_not(prop->hold_growing_end) )
         {
@@ -87,7 +87,7 @@ void Mighty::stepLoaded(Vector const& force, real force_norm)
         a = fbFiber->abscissaM();
     }
     
-    if ( a >= fbFiber->abscissaP() )
+    if ( a > fbFiber->abscissaP() )
     {
         if ( RNG.test_not(prop->hold_growing_end) )
         {

@@ -7,7 +7,7 @@
 #include "saveimage.h"
 #include "filepath.h"
 #include "splash.h"
-#include "ansi_colors.h"
+#include "print_color.h"
 
 #include "opengl.h"
 #include "player.h"
@@ -21,11 +21,13 @@ Simul&      simul = player.simul;
 PlayerProp&  prop = player.prop;
 DisplayProp& disp = player.disp;
 
-/// enable to create a player for command-line-only offscreen rendering
-//#define HEADLESS_PLAYER
+void displayLive(View& view, int mag);
 
-#ifdef HEADLESS_PLAYER
-void helpKeys(std::ostream& os) {}
+/// enable to create a player for command-line-only offscreen rendering
+#define HEADLESS_PLAYER 0
+
+#if HEADLESS_PLAYER
+void helpKeys(std::ostream& os) { os << "This is a headless display\n"; }
 #else
 #  include "glut.h"
 #  include "glapp.h"
@@ -67,7 +69,6 @@ void displayLive(View& view, int mag)
         player.prepareDisplay(view, mag);
         player.displayCytosim();
         thread.unlock();
-        glFinish();
     }
     else
     {
@@ -84,7 +85,6 @@ void displayOffscreen(View & view, int mag)
 {
     //std::clog << "displayOffscreen " << glApp::views.size() << '\n';
     player.displayScene(view, mag);
-    glFinish();
 }
 
 
@@ -132,7 +132,9 @@ int main(int argc, char* argv[])
     int magnify = 1;
     Glossary arg;
     
-    Cytosim::all_silent();
+    Cytosim::out.silent();
+    Cytosim::log.silent();
+    
     std::atexit(goodbye);
 
     if ( arg.read_strings(argc-1, argv+1) )
@@ -184,11 +186,11 @@ int main(int argc, char* argv[])
         FilePath::change_dir(arg.value("directory", 0));
         //std::clog << "Cytosim working directory is " << FilePath::get_cwd() << '\n';
     }
-
-    // can specify a frame index to be loaded:
+    
+    // The user can specify a frame index to be loaded:
     size_t frm = 0;
     bool has_frame = false;
-    
+
     try
     {
         has_frame = arg.set(frm, "frame");
@@ -201,10 +203,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     
-    // default configuration file for play:
-    std::string setup = player.goLive ? simul.prop->config_file : simul.prop->property_file;
-    
-#ifdef HEADLESS_PLAYER
+#if HEADLESS_PLAYER
     View view("*");
     view.setDisplayFunc(displayOffscreen);
 #else
@@ -215,18 +214,30 @@ int main(int argc, char* argv[])
     view.setDisplayFunc(displayLive);
 #endif
 
+    // default configuration file for play:
+    std::string file;
+    if ( ! player.goLive || has_frame )
+        file = simul.prop->property_file;
+    else
+        file = simul.prop->config_file;
+    std::string setup = file;
+    
     try
     {
+        // read config file, to get the name of 'simul' and simul:display
+        Parser(simul, 0, 1, 0, 0, 0).readConfig(file);
+
         // check for play's configuration file specified on the command line:
-        bool has_setup = arg.set(setup, ".cyp");
+        if ( arg.set(setup, ".cyp") )
+        {
+            // extract "simul:display" from setup
+            if ( FilePath::is_file(setup) )
+                Parser(simul, 0, 1, 0, 0, 0).readConfig(setup);
+            else
+                std::cerr << " warning: could not read `" << setup << "'\n";
+        }
         
-        // extract first specification of "simul:display" string from the setup file
-        if ( FilePath::is_file(setup) )
-            Parser(simul, 0, 0, 0, 0, 0).readConfig(setup);
-        else if ( has_setup )
-            std::cerr << " warning: could not read `" << setup << "'\n";
-        
-        // read settings from the setup file, but do not overwrite the command-line options:
+        // read settings, but keep anything set on the command-line:
         arg.read(simul.prop->display, 1);
         simul.prop->display_fresh = false;
         
@@ -250,11 +261,10 @@ int main(int argc, char* argv[])
     {
         try
         {
-            std::string file = simul.prop->property_file;
+            // real file again to create all properties
+            Parser(simul, 1, 0, 0, 0, 0).readConfig(file);
             
-            Parser(simul, 1, 1, 0, 0, 0).readConfig(file);
-            
-            // read 'setup' file again allowing to overwrite 'display' values
+            // read 'setup' file again to overwrite 'display' values
             if ( file != setup )
                 Parser(simul, 0, 0, 0, 0, 0).readConfig(setup);
             
@@ -271,7 +281,7 @@ int main(int argc, char* argv[])
         }
         catch( Exception & e )
         {
-            arg.warnings(std::cerr);
+            arg.print_warning(std::cerr, 1, "\n");
             print_magenta(std::cerr, e.brief());
             std::cerr << '\n' << e.info() << '\n';
             return EXIT_FAILURE;
@@ -315,7 +325,7 @@ int main(int argc, char* argv[])
 
         if ( mode == OFFSCREEN_IMAGE )
         {
-            unsigned inx = 0;
+            size_t inx = 0;
             // it is possible to specify multiple frame indices:
             do {
                 thread.loadFrame(frm);
@@ -353,14 +363,14 @@ int main(int argc, char* argv[])
             OffScreen::releaseBuffer();
         OffScreen::releaseBuffer();
         OffScreen::closeContext();
-        arg.warnings(std::cerr);
+        arg.print_warning(std::cerr, 1, "\n");
         return EXIT_SUCCESS;
     }
     
-    arg.warnings(std::cerr);
+    arg.print_warning(std::cerr, 1, "\n");
 
     //--------- initialize Window system and create Window
-#ifndef HEADLESS_PLAYER
+#if ( HEADLESS_PLAYER == 0 )
 
 #ifdef __APPLE__
     glutInit(&argc, argv);
@@ -388,9 +398,9 @@ int main(int argc, char* argv[])
         buildMenus();
         glutAttachMenu(GLUT_RIGHT_BUTTON);
         glutMenuStatusFunc(menuCallback);
-        glutTimerFunc(100, timerCallback, 0);
         if ( glApp::isFullScreen() )
             glutFullScreen();
+        glutTimerFunc(200, timerCallback, 0);
     }
     catch ( Exception & e )
     {
@@ -401,10 +411,9 @@ int main(int argc, char* argv[])
     
     if ( player.goLive )
     {
+        thread.period(prop.period);
         try
         {
-            thread.period(prop.period);
-            
             if ( has_frame )
                 thread.extend();
             else

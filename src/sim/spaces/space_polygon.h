@@ -32,12 +32,12 @@
 class SpacePolygon : public Space
 {
 private:
-
-    /// The 2D polygon object
-    Polygon     poly_;
         
     /// pre-calculated bounding box derived from poly_
     Vector      inf_, sup_;
+
+    /// The 2D polygon object
+    Polygon     poly_;
     
     /// Surface of polygon
     real        surface_;

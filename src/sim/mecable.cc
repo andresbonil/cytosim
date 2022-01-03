@@ -299,9 +299,9 @@ void Mecable::calculateMomentum(Vector& avg, Vector& sec, bool sub)
 }
 
 
-void Mecable::foldPosition(Modulo const* s)
+void Mecable::foldPosition(Modulo const* m)
 {
-    Vector off = s->offset(position());
+    Vector off = m->offset(position());
     if ( off.is_not_zero() )
         translate(-off);
 }
@@ -324,8 +324,8 @@ bool Mecable::allInside(Space const* spc) const
 void Mecable::write(Outputter& out) const
 {
     out.writeUInt16(nPoints);
-    for ( unsigned int p = 0; p < nPoints ; ++p )
-        out.writeFloatVector(pPos+DIM*p, DIM, '\n');
+    for ( unsigned p = 0; p < nPoints ; ++p )
+        out.writeFloats(pPos+DIM*p, DIM, '\n');
 }
 
 
@@ -340,9 +340,9 @@ void Mecable::read(Inputter& in, Simul&, ObjectTag)
         nPoints = nb;
 #if ( 1 )
         for ( unsigned p = 0; p < nb ; ++p )
-            in.readFloatVector(pPos+DIM*p, DIM);
+            in.readFloats(pPos+DIM*p, DIM);
 #else
-        in.readFloatVector(pPos, nb, DIM);
+        in.readFloats(pPos, nb, DIM);
 #endif
     }
     catch( Exception & e )

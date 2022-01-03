@@ -5,7 +5,7 @@
 #include "messages.h"
 #include "glossary.h"
 #include "exceptions.h"
-#include "ansi_colors.h"
+#include "print_color.h"
 #include "filepath.h"
 #include "splash.h"
 #include "tictoc.h"
@@ -79,7 +79,6 @@ int main(int argc, char* argv[])
     {
         splash(std::cout);
         print_version(std::cout);
-        std::cout << "    DIM = " << DIM << '\n';
         return EXIT_SUCCESS;
     }
     
@@ -117,7 +116,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     
-    arg.warnings(std::cerr);
+    arg.print_warning(std::cerr, 1, " on command line\n");
     time_t sec = TicToc::seconds_since_1970();
     
     try {

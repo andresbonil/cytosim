@@ -2,8 +2,10 @@
 
 #include "interface.h"
 #include "stream_func.h"
+#include "exceptions.h"
 #include "simul_prop.h"
 #include "tokenizer.h"
+#include "evaluator.h"
 #include "messages.h"
 #include "glossary.h"
 #include "filepath.h"
@@ -13,7 +15,6 @@
 #include "sim.h"
 #include <fstream>
 
-#include "evaluator.h"
 
 // Use the second definition to get some verbose reports:
 #define VLOG(ARG) ((void) 0)
@@ -46,11 +47,8 @@ Property* Interface::execute_set(std::string const& cat, std::string const& name
 {
     VLOG("+SET " << cat << " `" << name << "'\n");
     
-    /* mostly for historical reason, we do not allow for name that are class name,
-    but this should also limit confusions in the config file */
-    
-    if ( simul.isPropertyClass(name) )
-        throw InvalidSyntax("property name `"+name+"' is a reserved keyword");
+    /* We do not allow for using the class name to name a property,
+    as this should create confusion in the config file */
     
     Property* pp = simul.newProperty(cat, name, def);
     
@@ -227,7 +225,7 @@ enum PlacementType { PLACE_NOT, PLACE_ANYWHERE, PLACE_INSIDE, PLACE_EDGE,
  - if placement = `surface`, the position is projected on the edge of current Space
  .
  
- By default, the specifications are relative to the last Space that was defined,
+ By default, the specifications are relative to the first Space to be defined,
  but a different space can be specified as second argument of PLACEMENT.
  
  You can set the density of objects with `nb_trials=1`:
@@ -274,7 +272,7 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
                                 {'R', iso.mov.norm()}, {'P', RNG.preal()}};
             try {
                 char const* ptr = condition_str.c_str();
-                condition = evaluator.inequality(ptr);
+                condition = evaluator.evaluate(ptr);
             }
             catch( Exception& e ) {
                 e.message(e.message()+" in `"+condition_str+"'");
@@ -308,8 +306,7 @@ Isometry Interface::find_placement(Glossary& opt, int placement)
     
     //Cytosim::warn << "could not fulfill `position=" + opt.value("position", 0) + "'\n";
     throw InvalidParameter("could not fulfill `position=" + opt.value("position", 0) + "'");
-    iso.reset();
-    return iso;
+    //iso.reset(); return iso;
 }
 
 
@@ -587,7 +584,7 @@ void Interface::execute_delete(std::string const& name, Glossary& opt, unsigned 
     
     if ( cnt == 1 )
     {
-        simul.erase(objs.random_pick());
+        simul.erase(objs.pick_one());
     }
     else
     {
@@ -773,7 +770,7 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
         event = new Event();
         opt.set(event->rate, "event");
         opt.set(event->activity, "event", 1);
-        event->reset(simul.time());
+        event->reload(simul.time());
         simul.events.add(event);
     }
 #endif
@@ -794,8 +791,8 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
     
     do_write &= ( nb_frames > 0 );
 
-    size_t frame = 1;
-    real   delta = (real)nb_steps;
+    size_t frame = 0;
+    real   delta = real(nb_steps);
     size_t check = nb_steps;
     
     VLOG("+RUN START " << nb_steps << '\n');
@@ -809,34 +806,34 @@ void Interface::execute_run(unsigned nb_steps, Glossary& opt, bool do_write)
             simul.prop->clear_trajectory = false;
         }
         delta = real(nb_steps) / real(nb_frames);
-        check = delta;
+        check = size_t(delta);
     }
     
     simul.prepare();
     
-    unsigned sss = 0;
-    while ( 1 )
-    {
-        if ( sss >= check )
+    size_t sss = 0;
+    do {
+        while ( sss < check )
         {
-            if ( do_write )
-            {
-                simul.relax();
-                simul.writeObjects(TRAJECTORY, true, binary);
-                reportCPUtime(frame, simul.time());
-                simul.unrelax();
-            }
-            if ( sss >= nb_steps )
-                break;
-            check = ( ++frame * delta );
+            hold();
+            //fprintf(stderr, "> step %6zu\n", sss);
+            (simul.*solveFunc)();
+            simul.step();
+            ++sss;
         }
+        ++frame;
+        // next check point:
+        check = size_t(delta*(frame+1));
 
-        hold();
-        //fprintf(stderr, "> step %6i\n", sss);
-        (simul.*solveFunc)();
-        simul.step();
-        ++sss;
-    }
+        if ( do_write )
+        {
+            simul.relax();
+            simul.writeObjects(TRAJECTORY, true, binary);
+            reportCPUtime(frame, simul.time());
+            simul.unrelax();
+        }
+    } while ( sss < nb_steps );
+    
 #ifdef BACKWARD_COMPATIBILITY
     if ( event )
         simul.events.erase(event);
@@ -887,13 +884,14 @@ void Interface::execute_run(unsigned nb_steps)
  */
 void Interface::execute_import(std::string const& file, std::string const& what, Glossary& opt)
 {
-    ObjectSet * selected = nullptr;
+    // we could use the 'tag' to select a certain class of object
+    ObjectSet * subset = nullptr;
     
     if ( what != "all" && what != "objects" )
     {
-        selected = simul.findSet(what);
-        if ( !selected )
-            throw InvalidIO("expected class specifier (i.e. import all)");
+        subset = simul.findSet(what);
+        if ( !subset )
+            throw InvalidIO("expected class specifier (eg. `import all FILE' or `import fiber FILE')");
     }
 
     Inputter in(DIM, file.c_str(), true);
@@ -914,11 +912,11 @@ void Interface::execute_import(std::string const& file, std::string const& what,
         if ( append )
         {
             real t = simul.prop->time;
-            simul.loadObjects(in, selected);
+            simul.loadObjects(in, subset);
             simul.prop->time = t;
         }
         else
-            simul.reloadObjects(in, selected);
+            simul.reloadObjects(in, subset);
         if ( cnt >= frm )
             break;
         ++cnt;
@@ -1020,7 +1018,7 @@ void Interface::execute_call(std::string& str, Glossary& opt)
     if ( str == "equilibrate" )
         simul.couples.equilibrate(simul.fibers, simul.properties);
     else if ( str == "connect" )
-        simul.couples.connect(simul.fibers, simul.properties);
+        simul.couples.bindToIntersections(simul.fibers, simul.properties);
     else if ( str == "custom0" )
         simul.custom0(opt);
     else if ( str == "custom1" )

@@ -90,14 +90,14 @@ public:
     /// free allocated memory
     void        release();
 
-    /// compute longitudinal tensions in the segments
+    /// compute Lagrange multipliers associated with length constraints, given the force
     void        computeTensions(const real* force);
     
-    /// copy Lagrange multipliers computed in projectForces()
-    void        storeTensions(const real* force);
-    
     /// debug output
-    void        printTensions(std::ostream&) const;
+    void        printTensions(FILE *, char = ' ') const;
+    
+    /// replace current forces by the ones provided as argument, and compute tensions
+    void        getForces(const real* ptr);
 
     /// longitudinal force dipole between vertices `p` and `p+1`
     /**

@@ -1,11 +1,11 @@
-/**
+%{
  @example fork.cym
  A fork creates an angle between two fibers with a given angular stiffness
 
  First version by Antonio Z Politi, 2013
  Reviewed by F. Nedelec, who added explicit Torque functions, Aug. 2015
  New implicit Torque in 3D and 2D by Serge Dmitrieff and FJN, 31.01.2019
-*/
+}
 
 
 set simul system

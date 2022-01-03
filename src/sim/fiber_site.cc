@@ -94,14 +94,14 @@ void FiberSite::write(Outputter& out) const
 #if FIBER_HAS_LATTICE
         if ( fbLattice )
         {
-            fbFiber->writeReference(out, Fiber::TAG_LATTICE);
+            Object::writeReference(out, Fiber::TAG_LATTICE, fbFiber->identity());
             // in older format, `fbAbs` was written here
             out.writeInt32(fbSite);
         }
         else
 #endif
         {
-            fbFiber->writeReference(out);
+            Object::writeReference(out, fbFiber);
             out.writeFloat(fbAbs);
         }
     }
@@ -169,13 +169,16 @@ void FiberSite::print(std::ostream& os) const
 {
     if ( fiber() )
     {
+        int p = os.precision();
+        os.precision(3);
         os << "(f" << fiber()->identity();
 #if FIBER_HAS_LATTICE
         if ( fbLattice )
             os << " s " << fbSite;
         else
 #endif
-            os << " @ " << std::fixed << std::setprecision(3) << abscissa() << ")";
+            os << " @ " << std::fixed << abscissa() << ")";
+        os.precision(p);
     } else
         os << "(null)";
 }
@@ -224,10 +227,10 @@ int FiberSite::bad() const
     {
         const real e = fbAbs - abscissaInter();
         
-        //std::clog << "Interpolation " << std::scientific << e << std::endl;
-        if ( fabs(e) > 1e-5 )
+        //std::clog << "Interpolation " << std::scientific << e << '\n';
+        if ( std::abs(e) > 1e-3 )
         {
-            std::cerr << "Interpolation error is " << std::scientific << e << "\n";
+            std::cerr << "FiberSite::Interpolation error " << std::scientific << e << "\n";
             std::cerr << " abscissa:\n";
             std::cerr << "    binder       " << fbAbs << "\n";
             std::cerr << "    interpolated " << abscissaInter() << "\n";

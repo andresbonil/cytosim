@@ -1,0 +1,55 @@
+% Contraction of an actin bundle in axonal tube
+% With Pramod Pullarkat and Jacques Prost
+% FJN Cambridge, 15.05.2019
+
+set simul system
+{
+    dim = 3
+    time_step = 0.0001
+    viscosity = 0.1
+    steric = 1, 10000
+    steric_max_range = 0.05
+    display = ( point_value=0.01; back_color=black; window_size=1024,512; style=3; )
+}
+
+% simulation space
+set space cell
+{
+    shape = capsule
+    display = ( color=0x00000044, dark_gray; visible=0 )
+}
+
+set fiber actin
+{
+    rigidity = 1
+    steric = 1, 0.01
+    segmentation = 0.022   % 0.0055 is 2 monomers
+    confine = inside, 10000, cell
+    drag_radius = 0.004
+
+    activity = grow
+    growing_speed = 0.1
+    max_length = 1
+
+    display = ( line=2, 1; point=2.5, 0; color=0xFF000033; )
+}
+
+new cell
+{
+    radius = 0.1
+    length = 1.2
+}
+
+new 16 actin
+{
+    direction = 1 0 0
+    length = 1.0
+    %range = 0 -0.01 0, 0 0.01 0
+    position = 0 0 0
+}
+
+run 10000 system
+{
+    nb_frames = 10
+}
+

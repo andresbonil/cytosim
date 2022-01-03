@@ -123,28 +123,15 @@ void OrganizerSet::add(Object * obj)
 }
 
 
-Aster * OrganizerSet::findAster(const ObjectID n) const
+ObjectID OrganizerSet::findOrganizerID(const Mecable * m) const
 {
-    return Aster::toAster(findID(n));
-}
-
-
-Organizer * OrganizerSet::findOrganizer(const Mecable * m) const
-{
+    ObjectID res = 0;
     for ( Organizer * o=first(); o; o=o->next() )
         for ( size_t i = 0; i < o->nbOrganized(); ++i )
             if ( m == o->organized(i) )
-                return o;
+                res = std::max(res, o->identity());
 
-    return nullptr;
-}
-
-
-//------------------------------------------------------------------------------
-void OrganizerSet::foldPosition(Modulo const* s) const
-{
-    for ( Organizer * o=first(); o; o=o->next() )
-        o->foldPosition(s);
+    return res;
 }
 
 

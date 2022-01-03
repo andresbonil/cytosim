@@ -160,6 +160,14 @@ public:
     /// return associated Property
     Property const* property() const { return prop; }
     
+    /// convert pointer to Solid* if the conversion seems valid; returns 0 otherwise
+    static Sphere* toSphere(Object * obj)
+    {
+        if ( obj  &&  obj->tag() == TAG )
+            return static_cast<Sphere*>(obj);
+        return nullptr;
+    }
+
     /// write to file
     void        write(Outputter&) const;
     

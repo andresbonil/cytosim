@@ -12,26 +12,35 @@
 #include <fstream>
 
 
-// Use the second definition to get some verbose reports:
+// Use the second definition to get some reports:
 #define VLOG(ARG) ((void) 0)
 //#define VLOG(ARG) std::clog << ARG;
 
 
 //------------------------------------------------------------------------------
 /**
- The permission of the parser are:
- - do_set: new Properties can be created
- - do_change: existing Property or Object can be modified
- - do_new: new Object can be created
+ The permission of the parser are set by a number of variables:
+ - do_set: can create new Properties
+ - do_change: can modify existing Property or Object
+ - do_new: can create new Object
  - do_run: can perform simulation steps
  - do_write: can write to disc
  .
  */
-Parser::Parser(Simul& arg, bool s, bool c, bool n, bool r, bool w)
-: Interface(arg), do_set(s), do_change(c), do_new(n), do_run(r), do_write(w)
+Parser::Parser(Simul& sim, bool s, bool c, bool n, bool r, bool w)
+: Interface(sim), do_set(s), do_change(c), do_new(n), do_run(r), do_write(w)
 {
 }
 
+/// check for unused values in Glossary and issue a warning
+void check_warnings(Glossary& opt, std::istream& is, std::streampos ipos, size_t cnt = 1)
+{
+    if ( opt.has_warning(std::cerr, cnt) )
+    {
+        std::cerr << '\n';
+        StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+    }
+}
 
 //------------------------------------------------------------------------------
 #pragma mark - Parse
@@ -86,7 +95,26 @@ void Parser::parse_set(std::istream& is)
 
     bool spec = ( is.peek() == ':' );
     
-    if ( simul.isPropertyClass(cat) && !spec )
+    if ( cat == "simul" )
+    {
+        name = Tokenizer::get_symbol(is);
+        blok = Tokenizer::get_block(is, '{', true);
+
+        if ( do_change )
+        {
+            opt.read(blok);
+            execute_change(simul.prop, opt);
+            simul.rename(name);
+        }
+#ifdef BACKWARD_COMPATIBILITY
+        else if ( name == "display" )
+        {
+            opt.define(name, blok);
+            execute_change(simul.prop, opt);
+        }
+#endif
+    }
+    else if ( simul.isCategory(cat) && !spec )
     {
         /* in this form:
          set CLASS NAME { PARAMETER = VALUE }
@@ -112,21 +140,10 @@ void Parser::parse_set(std::istream& is)
                     throw InvalidSyntax("Property number missmatch");
             }
         }
-        else if ( cat == "simul" )
-        {
-            // adjust the name of the 'simul' property:
-            if ( simul.prop->name() == "undefined" )
-                simul.prop->rename(name);
-            else if ( simul.prop->name() != name )
-                throw InvalidSyntax("only one `simul' can be defined");
-            VLOG(" simul is named `" << name << "'\n");
-            opt.read(blok);
-            execute_change(name, opt);
-        }
         else if ( do_change )
         {
             opt.read(blok);
-            execute_change(name, opt);
+            execute_change(name, opt, false);
         }
     }
     else
@@ -165,8 +182,7 @@ void Parser::parse_set(std::istream& is)
                 opt.read(blok);
             else
                 opt.define(para, blok);
-
-            pp = execute_change(name, opt);
+            pp = execute_change(name, opt, do_set);
         }
         else if ( para == "display" )
         {
@@ -175,8 +191,8 @@ void Parser::parse_set(std::istream& is)
         }
     }
 
-    if ( pp && opt.warnings(std::cerr) )
-        StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+    if ( pp )
+        check_warnings(opt, is, ipos);
 }
 
 //------------------------------------------------------------------------------
@@ -225,7 +241,7 @@ void Parser::parse_change(std::istream& is)
     {
         change_all = true;
         name = Tokenizer::get_symbol(is);
-        if ( !simul.isPropertyClass(name) )
+        if ( !simul.isCategory(name) )
             throw InvalidSyntax("`"+name+"' is not a known class of object");
     }
 
@@ -279,10 +295,10 @@ void Parser::parse_change(std::istream& is)
         if ( change_all )
             execute_change_all(name, opt);
         else
-            execute_change(name, opt);
+            execute_change(name, opt, do_set);
  
-        if ( opt.warnings(std::cerr, ~0U) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        if ( do_set )
+            check_warnings(opt, is, ipos, ~0U);
     }
     else if ( para == "display" )
     {
@@ -345,7 +361,7 @@ void Parser::parse_new(std::istream& is)
     
 #ifdef BACKWARD_COMPATIBILITY
     // Read formats anterior to 3.11.2017
-    if ( simul.isPropertyClass(name) )
+    if ( simul.isCategory(name) )
     {
         std::string str = Tokenizer::get_symbol(is);
         if ( !str.empty() )
@@ -365,7 +381,7 @@ void Parser::parse_new(std::istream& is)
         opt.define("position", 0, blok);
     }
     
-    if ( do_new  &&  cnt > 0 )
+    if ( do_new & ( cnt > 0 ))
     {
         if ( opt.nb_keys() == 0 )
         {
@@ -431,8 +447,7 @@ void Parser::parse_new(std::istream& is)
             if ( opt.has_key("display") )
                 throw InvalidParameter("display parameters should be specified within `set'");
             
-            if ( opt.warnings(std::cerr, ~0U) )
-                StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+            check_warnings(opt, is, ipos, ~0U);
         }
     }
 }
@@ -505,7 +520,7 @@ void Parser::parse_delete(std::istream& is)
     std::string name = Tokenizer::get_symbol(is);
 #ifdef BACKWARD_COMPATIBILITY
     // Read formats anterior to 3.11.2017
-    if ( simul.isPropertyClass(name) )
+    if ( simul.isCategory(name) )
     {
         std::string str = Tokenizer::get_symbol(is);
         if ( !str.empty() )
@@ -523,8 +538,7 @@ void Parser::parse_delete(std::istream& is)
     {
         Glossary opt(blok);
         execute_delete(name, opt, cnt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -558,7 +572,7 @@ void Parser::parse_mark(std::istream& is)
     std::string name = Tokenizer::get_symbol(is);
 #ifdef BACKWARD_COMPATIBILITY
     // Read formats anterior to 3.11.2017
-    if ( simul.isPropertyClass(name) )
+    if ( simul.isCategory(name) )
     {
         std::string str = Tokenizer::get_symbol(is);
         if ( !str.empty() )
@@ -573,8 +587,7 @@ void Parser::parse_mark(std::istream& is)
     {
         Glossary opt(blok);
         execute_mark(name, opt, cnt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -617,8 +630,7 @@ void Parser::parse_cut(std::istream& is)
     {
         Glossary opt(blok);
         execute_cut(str, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -648,7 +660,7 @@ void Parser::parse_run(std::istream& is)
     }
 #endif
     if ( name.empty() )
-        throw InvalidSyntax("missing simul name (use `run NB_STEPS all { }')");
+        throw InvalidSyntax("unexpected syntax (use `run NB_STEPS NAME_OF_SIMUL { }')");
     
     if ( name == "all" )
     {
@@ -657,8 +669,8 @@ void Parser::parse_run(std::istream& is)
         // There can only be one Simul object:
         name = simul.prop->name();
     }
-
-    if ( name != simul.prop->name() )
+    
+    if ( name != "*"  &&  name != simul.prop->name() )
         throw InvalidSyntax("unknown simul name `"+name+"'");
 
     std::string blok = Tokenizer::get_block(is, '{');
@@ -692,8 +704,7 @@ void Parser::parse_run(std::istream& is)
         else
             execute_run(cnt, opt, do_write);
 
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -727,8 +738,7 @@ void Parser::parse_read(std::istream& is)
     {
         Glossary opt(blok);
         opt.set(required, "required");
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
     
     if ( FilePath::is_file(file) )
@@ -793,8 +803,7 @@ void Parser::parse_import(std::istream& is)
     {
         Glossary opt(blok);
         execute_import(file, what, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -842,8 +851,7 @@ void Parser::parse_export(std::istream& is)
     {
         Glossary opt(blok);
         execute_export(file, what, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -880,7 +888,7 @@ void Parser::parse_report(std::istream& is)
     std::string file = Tokenizer::get_filename(is);
 
     if ( file.empty() )
-        throw InvalidSyntax("missing/invalid file name after 'report'");
+        throw InvalidSyntax("missing file name. Expected 'report WHAT FILE'");
     
     std::string blok = Tokenizer::get_block(is, '{');
     
@@ -888,8 +896,7 @@ void Parser::parse_report(std::istream& is)
     {
         Glossary opt(blok);
         execute_report(file, what, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -918,8 +925,7 @@ void Parser::parse_call(std::istream& is)
     {
         Glossary opt(blok);
         execute_call(str, opt);
-        if ( opt.warnings(std::cerr) )
-            StreamFunc::print_lines(std::cerr, is, ipos, is.tellg());
+        check_warnings(opt, is, ipos);
     }
 }
 
@@ -1034,7 +1040,7 @@ void Parser::parse_dump(std::istream& is)
         throw InvalidSyntax("missing directory name after 'dump'");
 
     if ( do_write && do_run )
-        simul.dump(str.c_str());
+        simul.sMeca.dump(str.c_str());
 }
 
 
@@ -1051,7 +1057,7 @@ void Parser::parse_save(std::istream& is)
         throw InvalidSyntax("missing directory name after 'save'");
 
     if ( do_write && do_run )
-        simul.saveSystem(str.c_str());
+        simul.sMeca.saveSystem(str.c_str());
 }
 
 
@@ -1068,44 +1074,7 @@ void Parser::parse_save(std::istream& is)
  */
 int Parser::evaluate_one(std::istream& is)
 {
-    std::string tok = Tokenizer::get_token(is, true);
-    
-    if ( is.fail() )
-        return 1;
-    
-    // empty lines
-    if ( tok.length() < 1 || isspace(tok[0]) )
-        return 0;
-    
-    // matlab-style comments (%{ })
-    if ( tok[0] == '%' )
-    {
-        int c = is.get();
-        if ( c == '{' )
-            Tokenizer::get_block_text(is, 0, '}');
-        else
-            Tokenizer::get_line(is);
-        return 0;
-    }
-    
-    /*
-     skip C-style comments:
-     - single-line comment start with '/' and '/'
-     - multi-line comments start with '/' and '*'
-     */
-    if ( tok[0] == '/' )
-    {
-        int c = is.get();
-        if ( '/' == c )
-            Tokenizer::get_line(is);
-        else if ( '*' == c )
-            Tokenizer::get_until(is, "*/");
-        else
-            throw InvalidSyntax("unexpected token after / `"+tok+"'");
-        return 0;
-    }
-    
-    //if (spos) StreamFunc::print_lines(std::clog, is, *spos, *spos);
+    std::string tok = Tokenizer::get_token(is);
     
     if ( tok == "set" )
         parse_set(is);
@@ -1119,20 +1088,12 @@ int Parser::evaluate_one(std::istream& is)
         parse_mark(is);
     else if ( tok == "run" )
         parse_run(is);
-    else if ( tok == "read" )
+    else if ( tok == "read" || tok == "include" )
         parse_read(is);
-#ifdef BACKWARD_COMPATIBILITY
-    else if ( tok == "include" )
-        parse_read(is);
-#endif
     else if ( tok == "cut" )
         parse_cut(is);
     else if ( tok == "report" )
         parse_report(is);
-#ifdef BACKWARD_COMPATIBILITY
-    else if ( tok == "write" )
-        parse_report(is);
-#endif
     else if ( tok == "import" )
         parse_import(is);
     else if ( tok == "export" )
@@ -1141,20 +1102,18 @@ int Parser::evaluate_one(std::istream& is)
         parse_call(is);
     else if ( tok == "repeat" )
         parse_repeat(is);
-    else if ( tok == "skip" )
-        Tokenizer::get_block(is, '{');
     else if ( tok == "for" )
         parse_for(is);
     else if ( tok == "restart" )
     {
-        // reset simulation and rewind config file
+        // reset simulation and rewind config file, repeating forever
         simul.erase();
         is.clear();
         is.seekg(0);
         return 0;
     }
     else if ( tok == "end" )
-        return 2; //parse_end(is);
+        return 2;
     else if ( tok == ";" )
         return 0;
     else if ( tok == "dump" )
@@ -1174,14 +1133,45 @@ void Parser::evaluate(std::istream& is)
     try {
         while ( is.good() )
         {
+            int c = Tokenizer::skip_space(is, true);
+            if ( c == EOF )
+                break;
+            
+            // skip matlab-style comments: % or %{...}
+            if ( c == '%' )
+            {
+                is.get();
+                if ( is.get() == '{' )
+                    Tokenizer::get_block_text(is, 0, '}');
+                else
+                    Tokenizer::get_line(is);
+                continue;
+            }
+#if 0
+            // skip C++-style comments: '//' or '/*...*/'
+            if ( c == '/' )
+            {
+                is.get();
+                c = is.get();
+                if ( '/' == c )
+                    Tokenizer::get_line(is);
+                else if ( '*' == c )
+                    Tokenizer::get_until(is, "*/");
+                else
+                    throw InvalidSyntax("unexpected token `/"+std::string(c,1)+"'");
+                continue;
+            }
+#endif
             ipos = is.tellg();
+            //StreamFunc::print_lines(std::clog, is, ipos, ipos);
+            
             if ( evaluate_one(is) )
-                return;
+                break;
         }
     }
     catch( Exception & e )
     {
-        e << StreamFunc::get_lines(is, ipos, is.tellg());
+        e << "\n" + StreamFunc::get_lines(is, ipos, is.tellg());
         throw;
     }
 }
@@ -1207,13 +1197,6 @@ void Parser::readConfig(std::string const& filename)
 
 void Parser::readConfig()
 {
-    try {
-        readConfig(simul.prop->config_file);
-    }
-    catch ( InvalidIO& e ) {
-        if ( simul.prop->config_file == "config.cym" )
-            throw InvalidIO("You must specify a config file");
-        throw;
-    }
+    readConfig(simul.prop->config_file);
 }
 

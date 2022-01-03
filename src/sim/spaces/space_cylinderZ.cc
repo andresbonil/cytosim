@@ -168,7 +168,7 @@ void SpaceCylinderZ::setInteraction(Vector const& pos, Mecapoint const& pe,
     else if ( ! cap )
     {
         // inside cylinder in XY plane and also inside in Z:
-        if ( dis > square( rad - fabs(pos.XX-Z) ) )
+        if ( dis > square( rad - fabs(pos.ZZ-Z) ) )
             cyl = true;
         else
             cap = true;

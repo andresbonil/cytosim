@@ -1,4 +1,4 @@
-/**
+%{
  @example radial.cym
  A static radial array of filaments, with motors moving inward
 
@@ -8,7 +8,7 @@
  analytically.
 
  F. Nedelec, Nov 2017
-*/
+}
 
 set simul system
 {

@@ -129,7 +129,7 @@ void Solid::reset()
 #if ( DIM > 2 )
     soMomentum = Matrix33(0, 1);
 #endif
-    soReshapeTimer = RNG.pint(7);
+    soReshapeTimer = RNG.pint32(7);
 }
 
 
@@ -600,8 +600,6 @@ void Solid::fixShape()
         for ( unsigned d = 0; d < DIM; ++d )
             soShape[DIM*p+d] = pPos[DIM*p+d] - avg[d];
     }
-    
-    setDragCoefficient();
 }
 
 //------------------------------------------------------------------------------
@@ -626,8 +624,6 @@ void Solid::scaleShape(const real scale[DIM])
     soShapeSqr = 0;
     for ( unsigned i = 0; i < DIM * soShapeSize; ++i )
         soShapeSqr += soShape[i] * soShape[i];
-    
-    setDragCoefficient();
 }
 
 
@@ -865,14 +861,18 @@ real Solid::dragCoefficient() const
 
 
 /**
-This sets the total drag coefficients for translation and rotation
- Stokes relations:
- Translation:
-   muT = 6 * M_PI * viscosity * radius;
-   d(position)/dt = force / muT
- Rotation:
-   muR = 8 * M_PI * viscosity * radius^3
-   d(angle)/dt = torque / muR
+The mobility is that of a set of spheres in an infinite fluid (Stokes law):
+
+Translation:
+    dposition/dtime = mu_T * force
+    mu_T = 6 * PI * viscosity * radius
+
+Rotation:
+    dangle/dtime = mu_R * torque
+    mu_R = 8 * PI * viscosity * radius^3
+
+ This sums up the drag of the sphere, ignoring any hydrodynamic interaction.
+ Thus drag will generally be overestimated.
  */
 void Solid::setDragCoefficient()
 {
@@ -922,14 +922,9 @@ void Solid::setDragCoefficient()
 }
 
 
-/**
- setDragCoefficient() is called by fixShape(), and it is not necessary to
- call it here again.
-*/
 void Solid::prepareMecable()
 {
-    //setDragCoefficient();
-    
+    setDragCoefficient();
     makeProjection();
 }
 
@@ -1177,7 +1172,7 @@ void Solid::write(Outputter& out) const
     out.writeUInt16(nPoints);
     for ( unsigned p = 0; p < nPoints ; ++p )
     {
-        out.writeFloatVector(pPos + DIM * p, DIM, '\n');
+        out.writeFloats(pPos + DIM * p, DIM, '\n');
         out.writeSoftSpace(2);
         out.writeFloat(soRadius[p]);
     }
@@ -1192,7 +1187,7 @@ void Solid::read(Inputter& in, Simul&, ObjectTag)
         setNbPoints(nbp);
         for ( unsigned i = 0; i < nbp ; ++i )
         {
-            in.readFloatVector(pPos+DIM*i, DIM);
+            in.readFloats(pPos+DIM*i, DIM);
             soRadius[i] = in.readFloat();
         }
     }

@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_track.cym
  We create a Tracker with `hand:activity=track`
 
  F. Nedelec, June 2011
-*/
+}
 
 
 set simul system

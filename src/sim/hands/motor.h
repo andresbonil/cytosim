@@ -35,9 +35,6 @@ private:
     
     /// disabled default constructor
     Motor();
-    
-    /// clamp a in [0,b]
-    void limitSpeedRange(real& a, const real b);
 
 public:
     

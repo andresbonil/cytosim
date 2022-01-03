@@ -21,7 +21,7 @@ void Mecapoint::write(Outputter& out) const
 {
     out.writeSoftSpace();
     if ( mec_ ) {
-        mec_->writeReference(out);
+        Object::writeReference(out, mec_);
         out.writeUInt16(pti_);
     }
     else {

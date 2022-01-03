@@ -128,8 +128,8 @@ public:
     /// move object to specified position
     virtual void    setPosition(Vector const& x) { sPos = x; }
 
-    /// modulo the position of the grafted
-    virtual void    foldPosition(Modulo const* s);
+    /// bring object to centered image using periodic boundary conditions
+    virtual void    foldPosition(Modulo const*);
     
     /// set the position randomly inside prop->confine_space
     void            randomizePosition();

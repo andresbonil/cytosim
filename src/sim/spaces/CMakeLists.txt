@@ -19,7 +19,6 @@ set(SPACES_SOURCES
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_dynamic_ellipse_prop.cc"
 	
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_polygonZ.cc"
-    "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_disc.cc"
     "${PROJECT_SOURCE_DIR}/src/sim/spaces/space_ring.cc"
 )
 

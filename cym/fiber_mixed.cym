@@ -1,4 +1,4 @@
-/**
+%{
  @example fiber_mixed.cym
  Two classes of fibers with motors that may only bind one class of fiber
 
@@ -7,7 +7,7 @@ This uses the parameters 'binding_key':
   For the hands, set binding keys that are equal to the fiber to which they may bind.
 
 F. Nedelec, October 2011
-*/
+}
 
 set simul system
 {

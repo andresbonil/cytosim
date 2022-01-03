@@ -9,23 +9,25 @@ class Meca;
 class Simul;
 class Glossary;
 
-/// an Event performs action on the simulation by executing code
+/// an Event acts on the simulation world by executing code
 /**
  An Event is a class that can perform some action in the simulation world,
- at regular interval or at stochastic time with a specified rate.
- The action is specified code interpreted by cytosim's parser.
- This can be used for example to add or remove objects.
+ specified as a line of code interpreted by Cytosim.
+ This can be used to add or remove objects or change parameter values.
  
- It is a special class that is not associated with a Property,
- and can be created with 'new' without a preceeding 'set'.
+ The firing time can be specified to occur:
+     - only once at a given time by setting the parameter `time`,
+     - at regular intervals by setting `delay`,
+     - at stochastic time by setting `rate`.
+ .
+ 
+ It is a special class in the sense that is not associated with a Property,
+ and can be created with 'new' without a 'set' beforehand.
  
  Events are not saved to trajectory files.
 */
 class Event: public Object
 {
-    
-    friend class EventSet;
-    
     /// clear member variables
     void clear();
     
@@ -47,6 +49,9 @@ public:
     /// delay in unit time between firing events (used if `rate` is not set)
     real        delay;
 
+    /// true if event will fire multiple times
+    bool        recurrent;
+    
     ///@}
     
     /// time of next event
@@ -62,9 +67,12 @@ public:
 
     /// destructor
     virtual ~Event();
-    
-    /// recalculate next firing time
-    void reset(real time);
+
+    /// set next firing time
+    void fire_at(real time);
+
+    /// recalculate next firing time, given current time
+    void reload(real time);
     
     /// a unique character identifying the class
     static const ObjectTag TAG = 'q';
@@ -81,7 +89,7 @@ public:
     void      step(Simul&);
     
     /// add interactions to a Meca
-    void      setInteractions(Meca &) const {}
+    void      setInteractions(Meca&) const {}
     
     
     /// a static_cast<> of Node::next()

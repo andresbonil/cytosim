@@ -1,6 +1,7 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 #include "dim.h"
+#include "smath.h"
 #include "assert_macro.h"
 #include "chain.h"
 #include "iowrapper.h"
@@ -16,8 +17,6 @@
 #include "simul.h"
 #include "vecprint.h"
 
-//extern void lapack_xpttrf(int, real*, real*, int*);
-//extern void lapack_xptts2(int, int, const real*, const real*, real*, int);
 
 extern Modulo const* modulo;
 
@@ -96,10 +95,14 @@ void Chain::setStraight(Vector const& pos, Vector const& dir, real len)
 }
 
 
-void Chain::moveEnd(const FiberEnd ref)
+void Chain::placeEnd(const FiberEnd ref)
 {
     switch( ref )
     {
+        case NO_END:
+            flipChainPolarity();
+            break;
+        
         case MINUS_END:
             translate(posMiddle()-posEndM());
             break;
@@ -113,15 +116,15 @@ void Chain::moveEnd(const FiberEnd ref)
             break;
             
         default:
-            ABORT_NOW("invalid argument to Chain::moveEnd()");
+            ABORT_NOW("invalid argument to Chain::placeEnd()");
     }
 }
 
 
 /**
- This will set the Fiber with `np` points unless `np == 0`, in which case
- the number of points will be set automatically from fnSegmentation.
- pts[] should be of size DIM * n_pts and contain coordinates.
+ This will set the Fiber with `n_pts` points unless `n_pts == 0`, in which case
+ the number of points will be set automatically from `fnSegmentation`.
+ `pts[]` should provide `DIM * n_pts` coordinates.
 
  The given set of points do not need to be equally distributed.
  The MINUS_END and PLUS_END will be set to the first and last points in `pts[]`,
@@ -436,7 +439,7 @@ void Chain::reshape_apply(const unsigned ns, const real* src, real* dst,
     Vector old = sca[0] * ( B - A );
     (A+old).store(dst);
     
-    for ( unsigned i = 1; i < ns; ++i )
+    for ( size_t i = 1; i < ns; ++i )
     {
         Vector C(src+DIM*i+DIM);
         Vector vec = sca[i] * ( C - B );
@@ -508,7 +511,7 @@ void Chain::reshape_global(const unsigned ns, const real* src, real* dst, real c
     
     Vector(src).store(dst);
 
-    for ( unsigned i = 1; i < ns; ++i )
+    for ( size_t i = 1; i < ns; ++i )
     {
         seg = diffPoints(src, i);
         dis = seg.norm();
@@ -583,8 +586,10 @@ void Chain::getPoints(real const* ptr)
     else if ( reshape_local(nbSegments(), ptr, pPos, fnCut, mem, allocated()) )
 #endif
     {
+        std::string doc = document(ptr);
         reshape_global(nbSegments(), ptr, pPos, fnCut);
-        Cytosim::warn << "Warning: a crude method was used to reshape " << reference() << '\n';
+        Cytosim::warn << "crude motion was applied to " << doc << '\n';
+        //copy_real(DIM*nbPoints(), ptr, pPos);
     }
 
     free_real(mem);
@@ -592,8 +597,8 @@ void Chain::getPoints(real const* ptr)
 
 
 /**
- Flip all the points without changing fnAbscissaM or fnAbscissaP,
- and the abscissa of center thus stays as it is.
+ Flip all the points, such that minus_end becomes plus_end and vice-versa.
+ This does not affects Abscissa and the abscissa of center thus stays as it is.
 */
 void Chain::flipChainPolarity()
 {
@@ -633,10 +638,11 @@ void Chain::growM(const real delta)
 {
     assert_true( length() + delta > 0 );
     real a = -delta / length();
+    const size_t ns = nbSegments();
     
     if ( delta > 0 )
     {
-        unsigned p = 0, n = nbSegments();
+        size_t p = 0, n = ns;
         Vector dp0 = diffPoints(0), dp1;
         movePoint(p, ( a * n ) * dp0);
         ++p;
@@ -665,12 +671,12 @@ void Chain::growM(const real delta)
     }
     else if ( delta < 0 )
     {
-        for ( unsigned p = 0, n = nbSegments(); n > 0; ++p, --n )
+        for ( size_t p = 0, n = ns; n > 0; ++p, --n )
             movePoint(p, ( a * n ) * diffPoints(p));
     }
     
     fnAbscissaM -= delta;
-    setSegmentation(std::max(fnCut+delta/nbSegments(), REAL_EPSILON));
+    setSegmentation(length()/ns);
     postUpdate();
 }
 
@@ -709,21 +715,21 @@ void Chain::cutM(const real delta)
     assert_true( 0 <= delta );
     assert_true( delta < len );
     
-    const unsigned np = bestNumberOfPoints((len-delta)/fnSegmentation);
-    const real cut = (len-delta) / (np-1);
-    real* tmp = new_real(DIM*np);
+    const size_t ns = bestNumberOfPoints((len-delta)/fnSegmentation) - 1;
+    const real cut = (len-delta) / ns;
+    real* tmp = new_real(DIM*(ns+1));
 
     // calculate intermediate points:
-    for ( unsigned i=0; i+1 < np; ++i )
+    for ( size_t i=0; i < ns; ++i )
     {
         Vector w = interpolateM(delta+i*cut).pos();
         w.store(tmp+DIM*i);
     }
 
     // copy the position of plus-end:
-    copy_real(DIM, pPos+DIM*lastPoint(), tmp+DIM*(np-1));
+    copy_real(DIM, pPos+DIM*lastPoint(), tmp+DIM*ns);
     
-    setNbPoints(np);
+    setNbPoints(ns+1);
     fnAbscissaM += delta;
     setSegmentation(cut);
     getPoints(tmp);
@@ -748,13 +754,13 @@ void Chain::growP(const real delta)
 {
     assert_true( length() + delta > 0 );
     real a = delta / length();
+    const size_t ns = nbSegments();
     
     if ( delta > 0 )
     {
-        unsigned p = lastPoint();
-        Vector dp0 = diffPoints(p-1), dp1;
-        movePoint(p, ( a * p ) * dp0);
-        --p;
+        Vector dp0 = diffPoints(ns-1), dp1;
+        movePoint(ns, ( a * ns ) * dp0);
+        size_t p = ns-1;
         
         if ( p > 0  &&  ( p & 1 ) )
         {
@@ -778,12 +784,12 @@ void Chain::growP(const real delta)
     }
     else if ( delta < 0 )
     {
-        for ( unsigned p = lastPoint() ; p > 0 ; --p )
+        for ( size_t p = ns ; p > 0 ; --p )
             movePoint(p, ( a * p ) * diffPoints(p-1));
     }
     
-    setSegmentation(std::max(fnCut+delta/nbSegments(), REAL_EPSILON));
     fnAbscissaP += delta;
+    setSegmentation(length()/ns);
     postUpdate();
 }
 
@@ -901,22 +907,21 @@ void Chain::truncateP(unsigned p)
  */
 void Chain::join(Chain const* fib)
 {
-    const real len1 = length();
-    const real lenT = len1 + fib->length();
-    const unsigned ns = bestNumberOfPoints(lenT/fnSegmentation) - 1;
+    const real len = length();
+    const real lenT = len + fib->length();
+    const size_t ns = bestNumberOfPoints(lenT/fnSegmentation) - 1;
     const real cut = lenT / real(ns);
     
     real* tmp = new_real(DIM*(ns+1));
 
     // calculate new points into tmp[]:
-    for ( unsigned i = 1; i < ns; ++i )
+    for ( size_t i = 1; i < ns; ++i )
     {
         Vector w;
-        if ( i*cut < len1 )
+        if ( i*cut < len )
             w = interpolateM(i*cut).pos();
         else
-            w = fib->interpolateM(i*cut-len1).pos();
-        
+            w = fib->interpolateM(i*cut-len).pos();
         w.store(tmp+DIM*i);
     }
     
@@ -925,7 +930,7 @@ void Chain::join(Chain const* fib)
 
     setNbPoints(ns+1);
     setSegmentation(cut);
-    fnAbscissaP = fnAbscissaM + cut * fnCut;
+    fnAbscissaP = fnAbscissaM + cut * ns;
     getPoints(tmp);
     free_real(tmp);
     updateFiber();
@@ -938,16 +943,22 @@ void Chain::join(Chain const* fib)
 /**
  Returns the minimum and maximum distance between consecutive points
  */
-void Chain::segmentationMinMax(real& mn, real& mx) const
+/**
+ Returns the minimum and maximum distance between consecutive points
+ */
+void Chain::segmentationMinMax(real const* ptr, real& in, real& ax) const
 {
-    mn = diffPoints(0).norm();
-    mx = mn;
-    for ( unsigned n = 1; n < lastPoint(); ++n )
+    real x = sMath::distanceSqr<DIM>(ptr, ptr+DIM);
+    in = x;
+    ax = x;
+    for ( unsigned i = 1; i < lastPoint(); ++i )
     {
-        real r = diffPoints(n).norm();
-        mx = std::max(mx, r);
-        mn = std::min(mn, r);
+        x = sMath::distanceSqr<DIM>(ptr+DIM*i, ptr+DIM*(i+1));
+        in = std::min(in, x);
+        ax = std::max(ax, x);
     }
+    in = std::sqrt(in);
+    ax = std::sqrt(ax);
 }
 
 /**
@@ -969,32 +980,29 @@ void Chain::segmentationVariance(real& avg, real& var) const
 }
 
 /**
- Calculate the inverse of the radius of the circle containing the points A, B, C
+ Calculate Menger curvature:
+ the inverse of the radius of the circle that passes through A, B and C
  
-     cos(angle) = scalar_product( AB, BC ) / ( |AB| * |BC| )
-     sin(angle) = sqrt( 1 - cos(angle)^2 )
-     2 * radius * sin(angle) = |AC|
-     curvature = 2 * sin(angle) / |AC|
-     curvature = 2 * sqrt( ( 1 - cos(angle)^2 ) / AC^2 )
-
+ 1/R = 4 * Area(triangle) / ( |AB|*|BC|*|AC| )
+ 
  curvature is ZERO if A, B and C are aligned
+ 
+ Thank you, Serge to point this out!
  */
-real curvature3(Vector const& A, Vector const& B, Vector const& C)
+real curvature3(Vector const& A, Vector const& B, Vector const& C, real seg)
 {
-    Vector ab = B - A;
-    Vector bc = C - B;
-    real P = dot(ab, bc);
-    real S = std::max(0.0, 1.0 - ( P * P ) / ( ab.normSqr() * bc.normSqr() ));
-    real D = ( C - A ).normSqr();
-    return 2.0 * sqrt( S / D );
+    real H = norm( A + C - 2 * B );  // 2 * height_of_triangle
+    return H / ( seg * seg );
 }
 
-
+/**
+ This returns
+ */
 real Chain::curvature(unsigned p) const
 {
-    if ( p < 1 || lastPoint() <= p )
-        return 0;
-    return curvature3(posP(p-1), posP(p), posP(p+1));
+    if (( 0 < p ) & ( p < lastPoint() ))
+        return curvature3(posP(p-1), posP(p), posP(p+1), fnCut);
+    return 0;
 }
 
 
@@ -1128,8 +1136,12 @@ real Chain::planarIntersect(unsigned s, Vector const& n, const real a) const
     Vector pos = posP(s);
     
     if ( modulo )
-        modulo->fold(pos);
-    
+    {
+        // calculate image that is closest to plane:
+        Vector cen = n * ( -a / n.normSqr() );
+        modulo->fold(pos, cen);
+    }
+
     return - ( dot(pos, n) + a ) / sca;
 }
 
@@ -1149,7 +1161,7 @@ real Chain::planarIntersect(unsigned s, Vector const& n, const real a) const
 void Chain::resegment(unsigned ns)
 {
     assert_true( ns > 0 );
-    real cut = nbSegments() * fnCut / ns;
+    real cut = length() / ns;
     
     // calculate new intermediate points in tmp[]:
     Vector a = posP(0), b = posP(1);
@@ -1219,6 +1231,18 @@ void Chain::adjustSegmentation()
         setShape(tmp, nPoints, best);
         free_real(tmp);
 #endif
+    }
+}
+
+void Chain::adjustSegmentation(real arg)
+{
+    if ( fnSegmentation != arg )
+    {
+        std::clog << "Resegmenting " << reference() << " -> " << arg << "\n";
+        fnSegmentation = arg;
+        adjustSegmentation();
+        updateFiber();
+        reshape();
     }
 }
 
@@ -1328,17 +1352,17 @@ real Chain::someAbscissa(real dis, FiberEnd ref, int mod, real alpha) const
  */    
 FiberEnd Chain::whichEndDomain(const real ab, const real lambda) const
 {
-    const real abs = ab - fnAbscissaM;
-    const real len = length();
+    const real abM = ab - fnAbscissaM;
+    const real abP = fnAbscissaP - ab;
     
-    if ( 2 * abs > len )
+    if ( abM > abP )
     {
-        if ( abs >= len - lambda )
+        if ( abP <= lambda )
             return PLUS_END;
     }
     else
     {
-        if ( abs <= lambda )
+        if ( abM <= lambda )
             return MINUS_END;
     }
     return NO_END;
@@ -1518,47 +1542,70 @@ real Chain::projectedForceEnd(const FiberEnd end) const
 //------------------------------------------------------------------------------
 #pragma mark -
 
-int Chain::checkLength(real len, bool arg) const
+void Chain::briefdoc(std::ostream& os, real len, real con, real mn, real mx) const
 {
-    assert_small( length() - len );
-    real con = contourLength(pPos, nPoints);
-    if ( fabs( con - len ) > 0.1 )
-    {
-        if ( arg ) std::clog << reference() << "  ";
-        std::clog << " length is " << con << " but " << len << " was expected\n";
-        return 1;
-    }
-    return 0;
-}
-
-
-real Chain::checkSegmentation(real tol, bool arg) const
-{
-    real mn, mx;
-    segmentationMinMax(mn, mx);
-    real d = ( mx - mn ) / segmentation();
-    if ( d > tol )
-    {
-        if ( arg ) std::clog << reference() << "  ";
-        std::clog << " Segments in [ " << std::fixed << mn << " " << std::fixed << mx;
-        std::clog << " ] for " << segmentation() << std::endl;
-    }
-    return d;
+    std::streamsize p = os.precision();
+    os.precision(3);
+    os << "chain " << reference();
+    os << "( seg " << segmentation() << ": " << mn << " +" << mx-mn;
+    os << " len " << len << " " << std::showpos << con-len << std::noshowpos << " )";
+    os.precision(p);
 }
 
 
 /**
  Prints info on the length of Segments, which can be useful for debugging
  */
-void Chain::dump(std::ostream& os) const
+void Chain::document(std::ostream& os, real len, real con, real mn, real mx) const
 {
-    os << "\n chain " << std::setw(7) << reference();
-    os << "  " << std::left << std::setw(6) << fnCut << " {";
-    real d = checkSegmentation(0.01, false);
-    os << " deviation " << std::fixed << 100*d << " %";
-    os << " }" << std::endl;
+    os << "chain " << std::setw(7) << reference() << '\n';
+    os << "{\n";
+    os << "    segmentation = " << segmentation() << '\n';
+    os << "    segment_min = " << mn << '\n';
+    os << "    segment_max = " << mx << '\n';
+    os << "    length  = " << len << '\n';
+    os << "    contour = " << con << '\n';
+    os << "}" << std::endl;
 }
 
+
+int Chain::checkLength(real const* ptr, std::ostream& os, real len) const
+{
+    real mn, mx;
+    segmentationMinMax(ptr, mn, mx);
+    real dev = ( mx - mn ) / segmentation();
+    real con = contourLength(ptr, nPoints);
+    real err = abs_real( con - len ) / ( con + len );
+    int res = ( dev > 0.05 ) + ( err > 0.05 );
+    if ( res )
+        document(os, len, con, mn, mx);
+    return res;
+}
+
+
+/**
+ Prints info on the length of Segments, which can be useful for debugging
+ */
+void Chain::document(real const* ptr, std::ostream& os) const
+{
+    real mn, mx;
+    real len = length();
+    segmentationMinMax(ptr, mn, mx);
+    real con = contourLength(ptr, nPoints);
+    briefdoc(os, len, con, mn, mx);
+}
+
+
+std::string Chain::document(real const* ptr) const
+{
+    std::ostringstream ss;
+    document(ptr, ss);
+    return ss.str();
+}
+
+
+//------------------------------------------------------------------------------
+#pragma mark - I/O
 
 void Chain::write(Outputter& out) const
 {
@@ -1617,18 +1664,11 @@ void Chain::read(Inputter& in, Simul& sim, ObjectTag tag)
         setSegmentation(len/nbSegments());
 
     fnAbscissaP = fnAbscissaM + len;
-
-    // resegment if the sementation parameter has changed:
-    if ( fnSegmentation != seg )
-        adjustSegmentation();
-    
+    fnSegmentation = seg;
     //Mecable::write(std::cerr);
     
     // verify the length and segmentation:
     if ( in.vectorSize() == DIM )
-    {
-        checkLength(len);
-        checkSegmentation(0.01);
-    }
+        checkLength(pPos, std::clog, len);
 }
 

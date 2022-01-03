@@ -85,35 +85,7 @@ namespace gle
         si[cnt] = si[0];
     }
 
-#ifdef __AVX__
-    // This works only if 'GLfloat == float'
-    void circle(size_t cnt, float cosi[], float rad)
-    {
-        const double theta = 2.0 * M_PI / (double)cnt;
-        const double c = cos(theta);
-        const double s = sin(theta);
-        const double c2 = c * c - s * s;
-        const double s2 = c * s + c * s;
-
-        vec4 cs{ c2, s2,  c2, s2};
-        vec4 sc{-s2, c2, -s2, c2};
-        vec4 pp{rad, 0.0, c*rad, s*rad};
-        
-        GLfloat * ptr = cosi;
-        GLfloat * const end = cosi + 2 * cnt;
-        while ( ptr < end )
-        {
-            store4f(ptr, _mm256_cvtpd_ps(pp));
-            ptr += 4;
-            // apply the rotation matrix
-            // x = c * x - s * y;
-            // y = s * X + c * y;
-            pp = add4(mul4(cs, duplo4(pp)), mul4(sc, duphi4(pp)));
-        }
-        end[0] = rad;
-        end[1] = 0.0;
-    }
-#else
+    /** Calculates a full circle with only one call to trigonometric functions */
     void circle(size_t cnt, GLfloat cosi[], GLfloat rad)
     {
         const double theta = 2.0 * M_PI / (double)cnt;
@@ -137,7 +109,6 @@ namespace gle
         cosi[2*cnt  ] = rad;
         cosi[2*cnt+1] = 0.0;
     }
-#endif
     
     void initialize()
     {

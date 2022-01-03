@@ -76,22 +76,22 @@ real Simul::estimateStericRange() const
 void Simul::setStericGrid(Space const* spc) const
 {
     assert_true(spc);
-    real& range = prop->steric_max_range;
+    real res = prop->steric_max_range;
+    real inf = estimateStericRange();
     
-    if ( range <= 0 ) 
-    {
-        range = estimateStericRange();
-        //Cytosim::log("auto setting simul:steric_max_range=%.3f\n", range);
-    }
-    
-    if ( range <= 0 )
+    res = std::max(res, inf);
+
+    if ( res <= 0 )
         throw InvalidParameter("simul:steric_max_range must be defined");
 
     const size_t sup = 1 << 17;
-    while ( pointGrid.setGrid(spc, range) > sup )
+    while ( pointGrid.setGrid(spc, res) > sup )
+        res *= M_SQRT2;
+
+    if ( res != prop->steric_max_range )
     {
-        //std::clog << "increasing simul:steric_max_range\n";
-        range *= 2;
+        Cytosim::log("adjusting simul:steric_max_range = %.3f\n", res);
+        prop->steric_max_range = res;
     }
     pointGrid.createCells();
 }
@@ -218,24 +218,8 @@ void Simul::setStericInteractions(Meca& meca) const
  - call setStericInteractions() if prop->steric is true.
  .
  */
-void Simul::setInteractions(Meca & meca) const
+void Simul::setAllInteractions(Meca & meca) const
 {
-    // prepare the meca, and register Mecables
-    meca.clear();
-    
-    for ( Fiber  * f= fibers.first(); f ; f=f->next() )
-        meca.add(f);
-    for ( Solid  * s= solids.first(); s ; s=s->next() )
-        meca.add(s);
-    for ( Sphere * o=spheres.first(); o ; o=o->next() )
-        meca.add(o);
-    for ( Bead   * b=  beads.first(); b ; b=b->next() )
-        meca.add(b);
-    
-    meca.prepare();
-    
-    // add interactions for all objects:
-    
     for ( Space * s=spaces.first(); s; s=s->next() )
         s->setInteractions(meca, fibers);
     
@@ -285,19 +269,57 @@ void Simul::setInteractions(Meca & meca) const
         meca.addForce(Mecapoint(sph, 2), +force);
     }
 #endif
+
+#if ( 0 )
+    /*
+     Add simplified steric interactions between the first Sphere and all Fibers
+     This is not necessarily equivalent to the steric engine, since we do not add
+     the 'radius' of the fiber, but it can be faster eg. if there is only one
+     sphere in the system. The code can easily be adapted to handle Beads
+     */
+    Sphere * S = spheres.firstID();
+    if ( S && S->prop->steric )
+    {
+        LOG_ONCE("Limited steric interactions with first Sphere enabled!");
+        const real stiff = prop->steric_stiffness_push[0];
+        const Vector cen = S->posPoint(0);
+        const real rad = S->radius();
+        const real rad2 = square(rad);
+
+        for ( Fiber const* F = fibers.first(); F; F = F->next() )
+        {
+            for ( size_t n = 0; n < F->nbSegments(); ++n )
+            {
+                FiberSegment seg(F, n);
+                real dis = INFINITY;
+                real abs = seg.projectPoint(cen, dis);
+                if ( dis < rad2 )
+                    meca.addSideSlidingLink(Interpolation(seg, abs), Mecapoint(S, 0), rad, stiff);
+            }
+        }
+    }
+#endif
 }
 
 
 /// solve the system
 void Simul::solve()
 {
-    //auto rdtsc = __rdtsc();
-    setInteractions(sMeca);
-    //printf("     ::set      %16llu\n", (__rdtsc()-rdtsc)>>5); rdtsc = __rdtsc();
+    sMeca.prepare(this);
+    //auto rdt = __rdtsc();
+    setAllInteractions(sMeca);
+    //printf("     ::set      %16llu\n", (__rdtsc()-rdt)>>5); rdtsc = __rdtsc();
     sMeca.solve(prop, prop->precondition);
-    //printf("     ::solve    %16llu\n", (__rdtsc()-rdtsc)>>5); rdtsc = __rdtsc();
+    //printf("     ::solve    %16llu\n", (__rdtsc()-rdt)>>5); rdtsc = __rdtsc();
     sMeca.apply();
-    //printf("     ::apply    %16llu\n", (__rdtsc()-rdtsc)>>5);
+    //printf("     ::apply    %16llu\n", (__rdtsc()-rdt)>>5);
+#if ( 0 )
+    // check that recalculating gives similar forces
+    fibers.firstID()->printTensions(stderr, 47);
+    sMeca.computeForces();
+    fibers.firstID()->printTensions(stderr, 92);
+    putc('\n', stderr);
+#endif
 }
 
 
@@ -306,12 +328,13 @@ void Simul::solve()
  */
 void Simul::solve_auto()
 {
-    setInteractions(sMeca);
+    sMeca.prepare(this);
+    setAllInteractions(sMeca);
     
     // solve the system, recording time:
-    long cpu = TicToc::centiseconds();
+    double cpu = TicToc::milliseconds();
     sMeca.solve(prop, precondMethod);
-    cpu = TicToc::centiseconds() - cpu;
+    cpu = TicToc::milliseconds() - cpu;
     
     sMeca.apply();
 
@@ -364,65 +387,22 @@ void Simul::solve_auto()
 
 void Simul::computeForces() const
 {
-    // we could use here an accessory Meca mec;
     try {
+        // if the simulation is running live, the force should be available.
         if ( !ready() )
         {
+            // we could use here a different Meca for safety
             prop->complete(*this);
-            setInteractions(sMeca);
+            sMeca.prepare(this);
+            setAllInteractions(sMeca);
             sMeca.computeForces();
-        }
-        else
-        {
-#if ( 0 )
-            /* if the simulation is running live, the force are already available
-            and we can check here that the result are similar */
-            fibers.first()->printTensions(std::clog);
-            setInteractions(sMeca);
-            sMeca.computeForces();
-            fibers.first()->printTensions(std::clog);
-            std::clog<<"\n";
-#endif
         }
     }
     catch ( Exception & e )
     {
-        std::clog << "cytosim could not compute the forces:\n";
+        std::clog << "Error, cytosim could not compute forces:\n";
         std::clog << "   " << e.what() << '\n';
     }
-}
-
-
-void Simul::dump(const char dirname[]) const
-{
-    std::string cwd = FilePath::get_cwd();
-    FilePath::make_dir(dirname);
-    FilePath::change_dir(dirname);
-    sMeca.dump();
-    FilePath::change_dir(cwd);
-    fprintf(stderr, "Cytosim dumped its matrices in directory `%s'\n", dirname);
-}
-
-
-void Simul::saveSystem(const char dirname[]) const
-{
-    std::string cwd = FilePath::get_cwd();
-    FilePath::make_dir(dirname);
-    FilePath::change_dir(dirname);
-    FILE * f = fopen("matrix.mtx", "w");
-    if ( f && ~ferror(f) )
-    {
-        sMeca.saveMatrix(f, 0);
-        fclose(f);
-    }
-    f = fopen("rhs.mtx", "w");
-    if ( f && ~ferror(f) )
-    {
-        sMeca.saveRHS(f);
-        fclose(f);
-    }
-    fprintf(stderr, "Cytosim saved its matrix in `%s'\n", dirname);
-    FilePath::change_dir(cwd);
 }
 
 //==============================================================================
@@ -439,13 +419,8 @@ void Simul::solveX()
     Meca1D & sMeca1D = *pMeca1D;
 
     //-----initialize-----
-    
-    sMeca1D.clear();
-    
-    for(Fiber * fib = fibers.first(); fib; fib=fib->next())
-        sMeca1D.add(fib);
 
-    sMeca1D.prepare(prop->time_step, prop->kT);
+    sMeca1D.prepare(this, prop->time_step, prop->kT);
     
     //-----set matrix-----
 

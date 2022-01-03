@@ -52,6 +52,9 @@ public:
 
     /// the length of the segment
     real         len()         const { return fib_->segmentation(); }
+        
+    /// true if abscissa 'a', counted from point 0 is within the segment
+    bool         within(real a) const { return ( 0 <= a ) & ( a <= fib_->segmentation() ); }
     
     /// position of first point
     Vector       pos1()        const { return fib_->posP(pti_); }
@@ -100,7 +103,7 @@ public:
     real         projectPointF(const real[], real& dist) const;
 
     /// calculates the closest distance between two segments
-    int          shortestDistance(FiberSegment const&, real& a, real& b, real& dis) const;
+    real         shortestDistance(FiberSegment const&, real& a, real& b) const;
 
     /// Human friendly ouput
     void         print(std::ostream&) const;

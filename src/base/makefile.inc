@@ -3,7 +3,7 @@
 
 OBJ_BASE := messages.o filewrapper.o filepath.o iowrapper.o exceptions.o\
             tictoc.o node_list.o inventory.o stream_func.o tokenizer.o\
-            glossary.o property.o property_list.o backtrace.o ansi_colors.o\
+            glossary.o property.o property_list.o backtrace.o print_color.o\
 
 #----------------------------rules----------------------------------------------
 
@@ -15,7 +15,7 @@ operator_new.o: operator_new.cc
 
 #----------------------------targets--------------------------------------------
 
-cytobase.a: $(OBJ_BASE) SFMT.o operator_new.o | lib
+cytobase.a: $(OBJ_BASE) operator_new.o | lib
 	$(MAKELIB)
 	$(DONE)
 

@@ -56,7 +56,7 @@ public:
     virtual void resize(Glossary& opt) {};
 
     /// initialize Modulo if this Space has some periodic dimensions
-    virtual Modulo * makeModulo() const { return nullptr; }
+    virtual Modulo const* getModulo() const { return nullptr; }
     
     /// radius used for piston effect (and defined only for certain shapes)
     virtual real thickness() const { return 0; }

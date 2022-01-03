@@ -3,7 +3,7 @@
 #include "glossary.h"
 #include "tokenizer.h"
 #include "stream_func.h"
-#include "ansi_colors.h"
+#include "print_color.h"
 #include "filepath.h"
 #include <fstream>
 #include <cctype>
@@ -11,7 +11,7 @@
 #include "vector2.h"
 
 
-// Use the second definition to get some verbose reports:
+// Use the second definition to get some reports:
 #define VLOG0(ARG) ((void) 0)
 //#define VLOG0(ARG) std::clog << ARG;
 
@@ -33,9 +33,9 @@ Glossary::Glossary(std::istream& in)
     read(in);
 }
 
-Glossary::Glossary(const std::string& str)
+Glossary::Glossary(const std::string& arg)
 {
-    std::istringstream iss(str);
+    std::istringstream iss(arg);
     read(iss);
 }
 
@@ -64,16 +64,15 @@ std::string format_count(size_t c)
 
 std::string format(Glossary::pair_type const& pair)
 {
-    std::ostringstream os;
-    os << pair.first;
+    std::string res = pair.first;
     if ( pair.second.size() > 0 )
     {
-        os << " = " << format_value(pair.second[0].value_);
+        res += " = " + format_value(pair.second[0].value_);
         for ( size_t i = 1; i < pair.second.size(); ++i )
-            os << ", " << format_value(pair.second[i].value_);
-        os << ";";
+            res += ", " + format_value(pair.second[i].value_);
+        res += ";";
     }
-    return os.str();
+    return res;
 }
 
 /**
@@ -82,15 +81,15 @@ std::string format(Glossary::pair_type const& pair)
  */
 std::string format_counts(Glossary::pair_type const& pair)
 {
-    std::ostringstream os;
-    os << pair.first;
+    std::string res = pair.first;
     if ( pair.second.size() > 0 )
     {
-        os << " = " << pair.second[0].value_ << format_count(pair.second[0].count_);
+        res += " = " + pair.second[0].value_ + format_count(pair.second[0].count_);
         for ( size_t i = 1; i < pair.second.size(); ++i )
-            os << ", " << pair.second[i].value_ << format_count(pair.second[i].count_);
+            res += ", " + pair.second[i].value_ + format_count(pair.second[i].count_);
+        res += ";";
     }
-    return os.str();
+    return res;
 }
 
 
@@ -312,7 +311,7 @@ void Glossary::add_value(Glossary::pair_type& res, std::string& str, bool def)
     
     VLOG2("Glossary::SET" << std::setw(20) << res.first << "[" << res.second.size() << "] = |" << val << "|\n");
 
-    res.second.push_back(val_type(val, def));
+    res.second.emplace_back(val, def);
 }
 
 
@@ -390,14 +389,15 @@ int Glossary::read_value(Glossary::pair_type& res, std::istream& is)
     }
     
     is.unget();
-    throw InvalidSyntax("syntax error: unexpected `"+std::string(1,c)+"'");
+    throw InvalidSyntax("syntax error: unexpected `"+std::string(1,(char)c)+"'");
 }
 
 
 /**
- If `no_overwrite == 0`, previous values can be erased without warning,
- If `no_overwrite == 1`, a prexisting symbol cannot be altered, but no exception is thrown
- If `no_overwrite == 2`, an exception is thrown for any duplicate symbol
+ The value of `mode' will determine how to handle duplicate values:
+ - `0`, previous values are erased without warning,
+ - `1`, a prexisting symbol in not altered, but no exception is thrown
+ - `2`, an exception is thrown for any duplicate symbol
  */
 void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
 {
@@ -407,30 +407,24 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
     
     if ( w == mTerms.end() )
     {
-        // for a new key, we accept all values
-        rec_type & rec = mTerms[pair.first];
-        for ( size_t i = 0; i < pair.second.size(); ++i )
-            rec.push_back(pair.second[i]);
+        mTerms.insert(pair);
     }
     else
     {
-        // for pre-existing keys, we check every values:
+        // the key already exists:
         rec_type & rec = w->second;
+        // check every value of the argument:
         for ( size_t i = 0; i < pair.second.size(); ++i )
         {
             if ( rec.size() <= i )
                 rec.push_back(pair.second[i]);
             else
             {
+                // the record already exists:
                 if ( !rec[i].defined_  ||  !no_overwrite )
                     rec[i] = pair.second[i];
                 else if ( pair.second[i].value_ != rec[i].value_  &&  no_overwrite > 1 )
-                {
-                    InvalidSyntax e("conflicting definitions:\n");
-                    e << PREF << format(*w) << "\n";
-                    e << PREF << format(pair) << "\n";
-                    throw e;
-                }
+                    throw InvalidSyntax("conflicting definition: "+format(*w)+" and "+format(pair));
             }
         }
     }
@@ -438,17 +432,17 @@ void Glossary::add_entry(Glossary::pair_type& pair, int no_overwrite)
 
 
 /// define one value for the key at specified index: `key[inx]=val`.
-void Glossary::define(key_type const& key, size_t inx, const std::string& str)
+void Glossary::define(key_type const& key, size_t inx, const std::string& arg)
 {
-    std::string val = Tokenizer::trim(str);
+    std::string val = Tokenizer::trim(arg);
     map_type::iterator w = mTerms.find(key);
     
     if ( w == mTerms.end() )
     {
-        // add new key and its value at index 0:
         if ( inx > 0 )
             throw InvalidSyntax("index out of range in Glossary::define");
-        mTerms[key].push_back(val_type(val, true));
+        // add new key and its value at index 0:
+        mTerms[key].emplace_back(val, true);
 
         VLOG1("Glossary::DEFINE    " << key << " = |" << val << "|\n");
     }
@@ -460,7 +454,7 @@ void Glossary::define(key_type const& key, size_t inx, const std::string& str)
         if ( rec.size() > inx )
             rec[inx] = val_type(val, true);
         else if ( rec.size() == inx )
-            rec.push_back(val_type(val, true));
+            rec.emplace_back(val, true);
         else
             throw InvalidSyntax("index out of range in Glossary::define");
         
@@ -472,9 +466,24 @@ void Glossary::define(key_type const& key, size_t inx, const std::string& str)
 /**
  This should be equivalent to read('k = rhs')
  */
-void Glossary::define(key_type const& k, const std::string& rhs)
+void Glossary::add_value(key_type const& key, const std::string& arg)
 {
-    define(k, 0, rhs);
+    std::string val = Tokenizer::trim(arg);
+    map_type::iterator w = mTerms.find(key);
+    // define a new key, or add value to existing key:
+    if ( w == mTerms.end() )
+        mTerms[key].emplace_back(val, true);
+    else
+        w->second.emplace_back(val, true);
+}
+
+
+/**
+ This should be equivalent to read('k = rhs')
+ */
+void Glossary::define(key_type const& key, const std::string& rhs)
+{
+    define(key, 0, rhs);
 }
 
 
@@ -492,16 +501,16 @@ void Glossary::write(std::ostream& os, std::string const& prefix) const
 }
 
 
-std::ostream& operator << (std::ostream& os, Glossary::pair_type const& pair)
+std::ostream& operator << (std::ostream& os, Glossary::pair_type const& arg)
 {
-    os << "  " << format(pair);
+    os << "  " << format(arg);
     return os;
 }
 
 
-std::ostream& operator << (std::ostream& os, Glossary const& glos)
+std::ostream& operator << (std::ostream& os, Glossary const& arg)
 {
-    glos.write(os, "  ");
+    arg.write(os, "  ");
     return os;
 }
 
@@ -541,7 +550,7 @@ void Glossary::read_entry(std::istream& is, int no_overwrite)
     }
     catch( Exception& e )
     {
-        e << "\n" << StreamFunc::marked_line(is, isp, PREF);
+        e << StreamFunc::marked_line(is, isp, PREF);
         throw;
     }
     
@@ -610,32 +619,23 @@ void Glossary::read_string(const char arg[], int no_overwrite)
     }
     else
     {
-        /*
-         Here is a key specified without any value:
-         */
+        // Handle a key specified without any value
         if ( FilePath::is_dir(arg) )
-        {
-            // this is a directory
-            pair.first = "directory";
-            pair.second.push_back(val_type(arg, true));
-        }
+            add_value("directory", arg);
         else
         {
-            // find last occurence of '.'
+            /*
+             Find last occurence of '.' to identify a potential file name,
+             while anything else is treated as a orphan string */
             char const* c = strrchr(arg, '.');
             if ( c )
-            {
-                // with a '.', this is a potential file name
-                pair.first = c;
-                pair.second.push_back(val_type(arg, true));
-            }
+                add_value(c, arg);
             else
             {
-                // anything else is just a orphan string
                 pair.first = arg;
+                add_entry(pair, no_overwrite);
             }
         }
-        add_entry(pair, no_overwrite);
     }
 }
 
@@ -680,6 +680,8 @@ std::istream& operator >> (std::istream& is, Glossary& glos)
 #pragma mark -
 
 /**
+ builds the warning message in `msg'.
+ 
  @returns:
  - 4 if the parameter was not read
  - 2 if one of the value was not read
@@ -687,58 +689,62 @@ std::istream& operator >> (std::istream& is, Glossary& glos)
  - 0 otherwise
  .
  */
-int Glossary::warnings(std::ostream& os, Glossary::pair_type const& pair, size_t threshold, std::string const& msg)
+int Glossary::warning(Glossary::pair_type const& pair, std::string& msg, size_t threshold)
 {
-    int used = 0, exhausted = 1, overused = 0;
+    int code = 0;
     const rec_type& rec = pair.second;
         
     for ( size_t i = 0; i < rec.size(); ++i )
     {
         val_type const& val = rec[i];
         if ( val.count_ > 0 )
-            used = 1;
+            code |= 4;  // one value used
         if ( !val.count_ && val.defined_ )
-            exhausted = 0;
+            code |= 2;  // one value not used
         else if ( val.count_ > threshold )
-            overused = 1;
+            code |= 1;  // one value overused
     }
     
-    std::string warn;
+    code ^= 4;  // invert highest bit
     
-    if ( !used )
-        warn = "Warning, this parameter was ignored";
-    else if ( !exhausted )
-        warn = "Warning, a value was ignored";
-    if ( overused )
-        warn = "Warning, some value might have been overused";
+    if ( code & 4 )
+        msg = "Warning, the parameter `" + pair.first + "' was ignored";
+    else if ( code & 2 )
+        msg = "Warning, a value was ignored: " + format_counts(pair);
+    else if ( code & 1 )
+        msg = "Warning, some value might have been overused: " + format_counts(pair);
     
-    if ( warn.size() )
-    {
-        if ( used )
-            print_yellow(os, warn + msg + ": " + format_counts(pair));
-        else
-            print_yellow(os, warn + msg + ": " + format(pair));
-        std::endl(os);
-        
-        if ( ! used )
-            return 4;
-        else if ( ! exhausted )
-            return 2;
-        return 1;
-    }
-    return 0;
+    return code;
 }
 
 
 /**
- @returns total number of warnings associated with entire set of terms
+ @returns the type of warning associated with entire set of terms
+ If the return value is not zero, a message was printed to 'os', and
+ at least a terminating '\n' should be printed to 'os' by the calling function.
  */
-int Glossary::warnings(std::ostream& os, size_t threshold, std::string const& msg) const
+int Glossary::has_warning(std::ostream& os, size_t threshold) const
 {
     int res = 0;
+    std::string msg;
     for ( map_type::const_iterator i = mTerms.begin(); i != mTerms.end(); ++i )
-        res |= warnings(os, *i, threshold, msg);
+    {
+        int val = warning(*i, msg, threshold);
+        if ( val )
+        {
+            if ( res ) os.put('\n');
+            print_yellow(os, msg);
+            res |= val;
+        }
+    }
     return res;
+}
+
+
+void Glossary::print_warning(std::ostream& os, size_t threshold, std::string const& msg) const
+{
+    if ( has_warning(os, threshold) )
+        os << msg;
 }
 
 //------------------------------------------------------------------------------

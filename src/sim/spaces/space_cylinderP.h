@@ -29,6 +29,9 @@ private:
     /// the radius of the cylinder
     real  radius_;
 
+    /// Object to handle periodic boundary conditions
+    Modulo modulo_;
+    
 public:
         
     ///creator
@@ -37,9 +40,12 @@ public:
     /// change dimensions
     void        resize(Glossary& opt);
  
-    /// initialize Modulo Object
-    Modulo *    makeModulo() const;
+    /// return Modulo Object
+    Modulo const* getModulo() const { return &modulo_; }
     
+    /// match sizes of Modulo object
+    void        update();
+
     /// return bounding box in `inf` and `sup`
     void        boundaries(Vector& inf, Vector& sup) const;
     
@@ -58,15 +64,21 @@ public:
     /// a random position inside the volume
     Vector      randomPlace() const;
     
+    /// direct normal direction calculation
+    Vector      normalToEdge(Vector const&) const;
+    
+    /// direct surface placement
+    Vector      randomPlaceOnEdge(real) const;
+
     /// set `proj` as the point on the edge that is closest to `point`
     Vector      project(Vector const& pos) const;
 
     
     /// apply a force directed towards the edge of the Space
-    void        setInteraction(Vector const& pos, Mecapoint const&, Meca &, real stiff) const;
+    void        setInteraction(Vector const& pos, Mecapoint const&, Meca&, real stiff) const;
     
     /// apply a force directed towards the edge of the Space
-    void        setInteraction(Vector const& pos, Mecapoint const&, real rad, Meca &, real stiff) const;
+    void        setInteraction(Vector const& pos, Mecapoint const&, real rad, Meca&, real stiff) const;
 
     
     /// OpenGL display function; returns true if successful

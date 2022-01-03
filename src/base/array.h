@@ -7,6 +7,14 @@
 #include "random.h"
 #include <iostream>
 
+
+/**
+ set to 1 if Array is expected to hold more than UINT32_MAX elements.
+ This is 4 294 967 295, a huge number!
+ */
+#define HANDLE_HUGE_ARRAYS 0
+
+
 /** 
  Array<typename VAL> stores objects of class VAL.
  
@@ -15,7 +23,7 @@
  added as needed:
  - remove_pack() will pack the array removing 'zero' values,
  - sort() will sort the array given a order function,
- - allocate(int s) ensures that array[s-1] can then be accessed, as with C-arrays.
+ - allocate() request memory with the conventions of C-arrays.
  - operator[](int) returns the object stored at a particular index.
  - shuffle() permutes the values to produce a random ordering.
  - data() returns a pointer to the underlying C-array.
@@ -143,8 +151,8 @@ public:
         return *this;
     }
     
-    
 #pragma mark -
+    
     /// Number of objects
     size_t size() const
     {
@@ -201,6 +209,20 @@ public:
         return val_[ii];
     }
     
+    /// return element at index 0
+    VAL const& front() const
+    {
+        assert_true( 0 < nbo_ );
+        return val_[0];
+    }
+    
+    /// return last element
+    VAL const& back() const
+    {
+        assert_true( 0 < nbo_ );
+        return val_[nbo_-1];
+    }
+
     
 #pragma mark -
     /// Allocate to hold `s` objects: valid indices are 0 <= indx < max
@@ -232,9 +254,9 @@ public:
     }
     
     /// Allocate and set new values to `zero`
-    size_t allocate_zero(const size_t size, VAL const& zero)
+    size_t allocate_zero(const size_t arg, VAL const& zero)
     {
-        size_t res = allocate(size);
+        size_t res = allocate(arg);
         if ( res )
         {
             //set the newly allocated memory to zero
@@ -244,26 +266,25 @@ public:
         return res;
     }
     
-    /// truncate Array to a smaller size
-    void truncate(const size_t size)
+    /// Reduce size to min(arg, actual_size), keeping elements starting from index 0
+    void truncate(const size_t arg)
     {
-        if ( size < nbo_ )
-            nbo_ = size;
+        nbo_ = std::min(arg, nbo_);
     }
     
-    /// Set the size of this Array to `size` (allocate or truncate if necessary)
-    void resize(const size_t size)
+    /// Set size to `arg`, allocating if necessary
+    void resize(const size_t arg)
     {
-        if ( size < nbo_ )
-            nbo_ = size;
-        else if ( size > nbo_ )
+        if ( arg < nbo_ )
+            nbo_ = arg;
+        else if ( arg > nbo_ )
         {
-            allocate(size);
-            nbo_ = size;
+            allocate(arg);
+            nbo_ = arg;
         }
     }
     
-    /// Release occupied memory
+    /// Release allocated memory
     void deallocate()
     {
         //printf("Array %p deallocate %i\n", this, allocated);
@@ -313,13 +334,19 @@ public:
     }
     
     /// Add `np` at the end of this Array
-    void push_back(const VAL& np)
+    void push_back(VAL const& v)
     {
         if ( nbo_ >= alc_ )
             reallocate(chunked(nbo_+1));
-        val_[nbo_++] = np;
+        val_[nbo_++] = v;
     }
     
+    /// remove last element
+    void pop_back()
+    {
+        --nbo_;
+    }
+
     /// Add the elements of `array` at the end of this Array
     void append(const Array<VAL> array)
     {
@@ -330,11 +357,11 @@ public:
     }
     
     /// Add the elements of `array` at the end of this Array
-    void append_except(const Array<VAL> array, const VAL& val)
+    void append_except(const Array<VAL> array, VAL const& v)
     {
         allocate(nbo_+array.nbo_);
         for ( size_t ii = 0; ii < array.nbo_; ++ii )
-            if ( array.val_[ii] != val )
+            if ( array.val_[ii] != v )
                 val_[nbo_++] = array.val_[ii];
     }
 
@@ -366,7 +393,7 @@ public:
 #pragma mark -
     
     /// set `np` at any position equal to `zero`, or at the end of the array
-    void push_pack(const VAL np, const VAL& zero)
+    void push_pack(const VAL np, VAL const& zero)
     {
         assert_true( val_ || nbo_==0 );
         for ( size_t ii = 0; ii < nbo_; ++ii )
@@ -382,24 +409,24 @@ public:
 
     
     /// Returns the number of occurence of 'val' in the array
-    size_t count(VAL const& val) const
+    size_t count(VAL const& v) const
     {
         if ( !val_ || nbo_==0 )
             return 0;
         size_t res = 0;
         for ( size_t ii = 0; ii < nbo_; ++ii )
-            if ( val_[ii] == val ) ++res;
+            if ( val_[ii] == v ) ++res;
         return res;
     }
 
     /// Number of values which are different from `val` in the array
-    size_t count_except(VAL const& val) const
+    size_t count_except(VAL const& v) const
     {
         if ( val_ == 0 || nbo_==0 )
             return 0;
         size_t res = 0;
         for ( size_t ii = 0; ii < nbo_; ++ii )
-            if ( val_[ii] != val ) ++res;
+            if ( val_[ii] != v ) ++res;
         return res;
     }
 
@@ -461,7 +488,11 @@ public:
     VAL& pick_one()
     {
         assert_true(nbo_>0);
-        return val_[RNG.plong(nbo_)];
+#if HANDLE_HUGE_ARRAYS
+        return val_[RNG.pint64(nbo_)];
+#else
+        return val_[RNG.pint32(nbo_)];
+#endif
     }
 
     /// Move the last Object on top, push all other values down by one slot
@@ -490,8 +521,13 @@ public:
     void permute()
     {
         assert_true(val_);
-        size_t ii = RNG.plong(nbo_);
-        size_t jj = RNG.plong(nbo_);
+#if HANDLE_HUGE_ARRAYS
+        size_t ii = RNG.pint64(nbo_);
+        size_t jj = RNG.pint64(nbo_);
+#else
+        size_t ii = RNG.pint32(nbo_);
+        size_t jj = RNG.pint32(nbo_);
+#endif
         if ( ii != jj )
             swap(val_+ii, val_+jj);
     }
@@ -503,14 +539,14 @@ public:
      This produces uniform shuffling in linear time.
      see Knuth's The Art of Programming, Vol 2 chp. 3.4.2 
      */
-    void shuffle_low()
+    void shuffle32()
     {
         assert_true( nbo_ <= UINT32_MAX );
         assert_true( val_ || nbo_==0 );
-        unsigned jj = nbo_, kk;
+        uint32_t jj = nbo_, kk;
         while ( jj > 1 )
         {
-            kk = RNG.pint(jj);  // in [0, j-1]
+            kk = RNG.pint32(jj);  // 32 bits in [0, j-1]
             --jj;
             swap(val_+jj, val_+kk);
         }
@@ -522,13 +558,13 @@ public:
      This produces uniform shuffling in linear time.
      see Knuth's The Art of Programming, Vol 2 chp. 3.4.2
      */
-    void shuffle_high()
+    void shuffle64()
     {
         assert_true( val_ || nbo_==0 );
-        size_t jj = nbo_, kk;
+        uint64_t jj = nbo_, kk;
         while ( jj > 1 )
         {
-            kk = RNG.plong(jj);  // in [0, j-1]
+            kk = RNG.pint64(jj);  // 64 bits in [0, j-1]
             --jj;
             swap(val_+jj, val_+kk);
         }
@@ -536,18 +572,16 @@ public:
 
     void shuffle()
     {
+#if HANDLE_HUGE_ARRAYS
+        assert_true( nbo_ < UINT32_MAX );
+        shuffle32();
+#else
         if ( nbo_ > UINT32_MAX )
-            shuffle_high();
+            shuffle64();
         else
-            shuffle_low();
+            shuffle32();
+#endif
     }
-    
-    /// return a randomly picked object in the array
-    VAL& random_pick()
-    {
-        return val_[RNG.plong(nbo_)];
-    }
-
 };
 
 

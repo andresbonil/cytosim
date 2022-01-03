@@ -50,7 +50,7 @@ public:
 
 private:
     
-    /// signals that engine is ready to perform a step
+    /// signals that Simul is ready to perform a Monte-Carlo step
     bool            sReady;
 
     /// preconditionning method used in last solve
@@ -169,13 +169,13 @@ public:
 
     
     /// call setInteractions(Meca) for all objects (this is called before `solve()`
-    void            setInteractions(Meca&) const;
+    void            setAllInteractions(Meca&) const;
 
     /// display Meca's links
-    void            drawLinks();
+    void            drawLinks() const;
     
-    /// call foldPosition() for all objects (implements periodic boundary conditions)
-    void            foldPosition() const;
+    /// bring all objects to centered image using periodic boundary conditions
+    void            foldPositions() const;
 
     /// simulate the mechanics of the system and move Mecables accordingly, corresponding to `time_step`
     void            solve();
@@ -237,11 +237,16 @@ public:
     /// return first Space with given name
     Space const*    findSpace(std::string const& name) const;
     
+    //---------------------------- PROPERTIES ----------------------------------
+
+    /// change the name of the simulation
+    void            rename(std::string const&);
+    
     /// read an Object reference and return the corresponding Object (`tag` is set)
     Object*         readReference(Inputter&, ObjectTag& tag);
 
-    /// check if `name` corresponds to a property class (eg. `simul`)
-    bool            isPropertyClass(const std::string& name) const;
+    /// check if `name` corresponds to a property class, but excluding 'simul'
+    bool            isCategory(const std::string& name) const;
     
     /// return existing property of given class and name, or return zero
     Property*       findProperty(const std::string&, const std::string&) const;
@@ -323,16 +328,21 @@ public:
     
     /// give a short inventory of the simulation state, obtained from ObjectSet::report()
     void      reportInventory(std::ostream&) const;
- 
+    
+    /// give a summary of the System
+    void      reportSystem(std::ostream&) const;
+
     /// print the length and the points of each fiber
-    void      reportFiber(std::ostream&, FiberProp const*) const;
+
+    /// print the length and the points of each fiber
+    void      reportFibers(std::ostream&, Property const*) const;
     
     /// print the length and the points of each fiber
-    void      reportFiber(std::ostream&, std::string const&) const;
-    
+    void      reportFibers(std::ostream&, std::string const&) const;
+
     /// print the length and the points of each fiber
-    void      reportFiber(std::ostream&) const;
-    
+    void      reportFibers(std::ostream&) const;
+
     /// print the coordinates of the vertices of each fiber
     void      reportFiberPoints(std::ostream&) const;
     

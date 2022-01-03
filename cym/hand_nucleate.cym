@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_nucleate.cym
  We create a Nucleator with `hand:activity=nucleate`
 
  F. Nedelec, April 2011
-*/
+}
 
 set simul system
 {

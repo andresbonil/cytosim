@@ -1,8 +1,8 @@
-/**
+%{
  @example frap.cym
  Deleting objects within a region
  F. Nedelec, April 2013
-*/
+}
 
 set simul system
 {

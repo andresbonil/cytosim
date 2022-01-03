@@ -32,7 +32,7 @@ bool Digit::attachmentAllowed(FiberSite& sit) const
             return false;
         
         // adjust to match selected lattice site:
-        sit.engageLattice(lat, s, lat->unit() * s + prop->site_shift);
+        sit.engageLattice(lat, s, prop->site_shift);
 #endif
         return true;
     }

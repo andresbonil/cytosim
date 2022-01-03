@@ -69,7 +69,6 @@ int main(int argc, char* argv[])
     {
         splash(std::cout);
         print_version(std::cout);
-        std::cout << "    DIM = " << DIM << "\n";
         return EXIT_SUCCESS;
     }
 
@@ -99,6 +98,11 @@ int main(int argc, char* argv[])
         // load all frames in the file:
         while ( 0 == reader.loadNextFrame(simul) )
         {
+            if ( DIM != reader.vectorSize() )
+            {
+                std::cerr << "Error: dimensionality missmatch between `report` and file\n";
+                return EXIT_FAILURE;
+            }
             snprintf(filename, sizeof(filename), "%s%04i.txt", root.c_str(), frame);
             std::ofstream out(filename);
             report(simul, out, what, arg);

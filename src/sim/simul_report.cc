@@ -63,7 +63,7 @@ void remove_plural(std::string & str)
 }
 
 
-/** 
+/**
  @copydetails Simul::report0
  This can report multiple data, separated by ';', for example:
  
@@ -78,10 +78,10 @@ void Simul::report(std::ostream& out, std::string arg, Glossary& opt) const
     opt.set(column_width, "column") || opt.set(column_width, "width");
 
     //out << "\n% start   " << prop->time; // historical
-    out << "\n% time " << std::fixed << std::setprecision(3) << prop->time;
+    out << "\n% time " << std::fixed << prop->time;
     out << "\n% report " << arg;
     try {
-        std::string::size_type pos = arg.find(';');
+        std::string::size_type pos = arg.find(',');
         while ( pos != std::string::npos )
         {
             report0(out, arg.substr(0, pos), opt);
@@ -167,7 +167,7 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
 {
     std::string who = arg, what, which;
     
-    // split argument string into 3 parts separated by ':': who, what, which
+    // split argument string into 3 parts separated by ':': who:what:which
     std::string::size_type pos = arg.find(':');
     if ( pos != std::string::npos )
     {
@@ -190,10 +190,10 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
     if ( who == "fiber" )
     {
         if ( !which.empty() )
-            return reportFiber(out, which);
+            return reportFibers(out, which);
 
         if ( what.empty() || what == "position" )
-            return reportFiber(out);
+            return reportFibers(out);
         if ( what == "end" )
             return reportFiberEnds(out);
         if ( what == "point" )
@@ -338,6 +338,10 @@ void Simul::report0(std::ostream& out, std::string const& arg, Glossary& opt) co
             return reportInventory(out);
         throw InvalidSyntax("I only know `inventory'");
     }
+    if ( who == "system" )
+    {
+        return reportSystem(out);
+    }
     if ( who == "property" || who == "parameter" )
     {
         if ( what.empty() )
@@ -450,16 +454,17 @@ void Simul::reportFiberLengthDistribution(std::ostream& out, Glossary & opt) con
     nbin = std::min(nbin, BMAX);
     
     std::streamsize p = out.precision();
-    out.precision(4);
 
     if ( 1 )
     {
+        out.precision(2);
         out << COM << "length_distribution (`scale` indicates the center of each bin)";
         out << LIN << ljust("scale", 2);
         for ( unsigned u = 0; u <= nbin; ++u )
             out << " " << std::setw(5) << delta * ( u + 0.5 );
     }
-    
+    out.precision(4);
+
     for ( Property * i : properties.find_all("fiber") )
     {
         FiberProp * fp = static_cast<FiberProp*>(i);
@@ -611,31 +616,35 @@ void Simul::reportFiberLattice(std::ostream& out, bool density) const
     for ( Fiber const* fib = fibers.first(); fib; fib = fib->next() )
         fib->infoLattice(len, cnt, sm, mn, mx);
 
+    int p = out.precision();
     out << LIN << ljust("fiber:lattice", 2);
     out << SEP << sm;
     out << SEP << std::setprecision(4) << sm / cnt;
     out << SEP << std::fixed << std::setprecision(6) << mn;
     out << SEP << std::fixed << std::setprecision(6) << mx;
     out << SEP << std::setprecision(3) << len;
+    out.precision(p);
 }
 
 
 //------------------------------------------------------------------------------
 #pragma mark - Fiber Individual Properties
 
+
 /**
  Export length, position and directions at center of fibers
  */
-void Simul::reportFiber(std::ostream& out, FiberProp const* selected) const
+void Simul::reportFibers(std::ostream& out, Property const* sel) const
 {
     out << COM << "class" << SEP << "identity" << SEP << "length";
     out << SEP << repeatXYZ("pos") << SEP << repeatXYZ("dir");
-    out << SEP << "endToEnd" << SEP << "cosinus" << SEP << "aster";
+    out << SEP << "endToEnd" << SEP << "cosinus" << SEP << "organizer";
+    //out << COM << "fiber class " + std::to_string(sel->number()) + " is " + sel->name();
 
     // list fibers in the order of the inventory:
     for ( Fiber const* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
     {
-        if ( fib->prop == selected )
+        if ( !sel || sel == fib->prop )
         {
             out << LIN << fib->prop->number();
             out << SEP << fib->identity();
@@ -644,13 +653,8 @@ void Simul::reportFiber(std::ostream& out, FiberProp const* selected) const
             out << SEP << fib->dirEnd(CENTER);
             out << SEP << (fib->posEndM()-fib->posEndP()).norm();
             out << SEP << dot(fib->dirEndM(), fib->dirEndP());
-            Organizer * o = organizers.findOrganizer(fib);
-            if ( o )
-                out << SEP << o->identity();
-            else
-                out << SEP << "0";
+            out << SEP << organizers.findOrganizerID(fib);
         }
-        
     }
 }
 
@@ -658,23 +662,23 @@ void Simul::reportFiber(std::ostream& out, FiberProp const* selected) const
 /**
  Export length, position and directions at center of fibers
  */
-void Simul::reportFiber(std::ostream& out, std::string const& which) const
+void Simul::reportFibers(std::ostream& out, std::string const& which) const
 {
     Property * p = properties.find_or_die("fiber", which);
-    reportFiber(out, static_cast<FiberProp*>(p));
+    reportFibers(out, static_cast<FiberProp*>(p));
 }
 
 
 /**
  Export length, position and directions at center of fibers
  */
-void Simul::reportFiber(std::ostream& out) const
+void Simul::reportFibers(std::ostream& out) const
 {
     for ( Property * i : properties.find_all("fiber") )
     {
         FiberProp const* fp = static_cast<FiberProp*>(i);
         out << COM << "fiber class " + std::to_string(fp->number()) + " is " + fp->name();
-        reportFiber(out, fp);
+        reportFibers(out, fp);
     }
 }
 
@@ -685,22 +689,21 @@ void Simul::reportFiber(std::ostream& out) const
 void Simul::reportFiberEnds(std::ostream& out) const
 {
     out << COM << "class" << SEP << "identity" << SEP << "length";
-    out << SEP << "stateM" << SEP << "posM" << SEP << "dirM";
-    out << SEP << "stateP" << SEP << "pos" << SEP << "dirP";
+    out << SEP << "stateM" << SEP << repeatXYZ("posM") << SEP << repeatXYZ("dirM");
+    out << SEP << "stateP" << SEP << repeatXYZ("posP") << SEP << repeatXYZ("dirP");
     
-    for ( Fiber * obj=fibers.first(); obj; obj=obj->next() )
+    for ( Fiber const* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
     {
-        out << LIN << obj->prop->number();
-        out << SEP << obj->identity();
-        out << SEP << obj->length();
-        out << SEP << obj->dynamicStateM();
-        out << SEP << obj->posEndM();
-        out << SEP << obj->dirEndM();
-        out << SEP << obj->dynamicStateP();
-        out << SEP << obj->posEndP();
-        out << SEP << obj->dirEndP();
+        out << LIN << fib->prop->number();
+        out << SEP << fib->identity();
+        out << SEP << fib->length();
+        out << SEP << fib->dynamicStateM();
+        out << SEP << fib->posEndM();
+        out << SEP << fib->dirEndM();
+        out << SEP << fib->dynamicStateP();
+        out << SEP << fib->posEndP();
+        out << SEP << fib->dirEndP();
     }
-    out << std::endl;
 }
 
 
@@ -1089,8 +1092,8 @@ void Simul::reportFiberIntersections(std::ostream& out, Glossary& opt) const
     opt.set(up, "threshold");
     opt.set(details, "details");
     
-    const real mds = up * up;
-    real abs1, abs2, dis;
+    const real sup = up * up;
+    real abs1, abs2;
     
     if ( details == 2 )
     {
@@ -1110,9 +1113,9 @@ void Simul::reportFiberIntersections(std::ostream& out, Glossary& opt) const
                 for ( unsigned jj = 0; jj < fob->nbSegments(); ++jj )
                 {
                     FiberSegment seg2(fob, jj);
-                    if ( seg1.shortestDistance(seg2, abs1, abs2, dis) )
+                    if ( seg1.shortestDistance(seg2, abs1, abs2) < sup )
                     {
-                        if ( dis <= mds )
+                        if ( seg1.within(abs1) & seg2.within(abs2) )
                         {
                             ++cnt;
                             Vector pos1 = seg1.pos(abs1/seg1.len());
@@ -1169,6 +1172,42 @@ void Simul::reportInventory(std::ostream& out) const
     couples.report(out);
     organizers.report(out);
     events.report(out);
+}
+
+
+template < typename SET >
+void reportSystemSet(std::ostream& out, SET& set, PropertyList const& properties)
+{
+    for ( Property const* i : properties.find_all(set.title()) )
+    {
+        unsigned points = 0, sup = 0;
+        ObjectList objs = set.collect(match_property, i);
+        for ( Object * o : objs )
+        {
+            Mecable * mec = Simul::toMecable(o);
+            if ( mec )
+            {
+                points += mec->nbPoints();
+                sup = std::max(sup, mec->nbPoints());
+            }
+        }
+        if ( points > 0 )
+        {
+            out << LIN << ljust(i->name(), 2);
+            out << SEP << objs.size();
+            out << SEP << points << SEP << sup;
+        }
+    }
+}
+
+
+void Simul::reportSystem(std::ostream& out) const
+{
+    out << COM << ljust("class", 2, 2) << SEP << "count" << SEP << "vertices" << SEP << "largest";
+    reportSystemSet(out,  fibers, properties);
+    reportSystemSet(out,  solids, properties);
+    reportSystemSet(out, spheres, properties);
+    reportSystemSet(out,   beads, properties);
 }
 
 
@@ -1389,11 +1428,7 @@ void write(std::ostream& out, Single const* obj, Simul const* simul)
         out << SEP << obj->force();
         out << SEP << fib->identity();
         out << SEP << obj->abscissa();
-        Organizer * o = simul->organizers.findOrganizer(fib);
-        if ( o )
-            out << SEP << o->identity();
-        else
-            out << SEP << "0";
+        out << SEP << simul->organizers.findOrganizerID(fib);
     }
     else
     {
@@ -1435,8 +1470,8 @@ void Simul::reportSinglePosition(std::ostream& out, std::string const& which) co
     if ( which.size() )
         selected = properties.find_or_die("single", which);
 
-    out << COM << "class" << SEP << "identity" << SEP << repeatXYZ("pos_hand");
-    out << SEP << repeatXYZ("pos") << SEP << "fiber" << SEP << "abscissa";
+    out << COM << "class" << SEP << "identity" << SEP << repeatXYZ("pos");
+    out << SEP << "fiber" << SEP << "abscissa";
 
     for ( Single const* obj = singles.firstID(); obj; obj = singles.nextID(obj) )
     {
@@ -1444,7 +1479,6 @@ void Simul::reportSinglePosition(std::ostream& out, std::string const& which) co
         {
             out << LIN << obj->prop->number();
             out << SEP << obj->identity();
-            out << SEP << obj->posHand();
             out << SEP << obj->posFoot();
             if ( obj->attached() )
             {
@@ -1925,7 +1959,7 @@ void reFlag(FiberSet const& set, ObjectFlag a, ObjectFlag b)
     if ( a < b )
         std::swap(a, b);
 
-    // replace a -> b
+    // replace a -> b = min(a, b)
     for ( Fiber* fib = set.first(); fib; fib=fib->next() )
     {
         if ( fib->flag() == a )
@@ -1943,16 +1977,6 @@ void Simul::flagClustersCouples() const
     {
         ObjectFlag f1 = cx->fiber1()->flag();
         ObjectFlag f2 = cx->fiber2()->flag();
-        if ( f1 == 0 )
-        {
-            f1 = cx->fiber1()->identity();
-            cx->fiber1()->flag(f1);
-        }
-        if ( f2 == 0 )
-        {
-            f2 = cx->fiber2()->identity();
-            cx->fiber2()->flag(f2);
-        }
         if ( f1 != f2 )
             reFlag(fibers, f1, f2);
     }
@@ -1967,8 +1991,13 @@ void Simul::flagClustersCouples(Property const* arg) const
 
     for ( Couple * cx = couples.firstAA(); cx ; cx=cx->next() )
     {
-        if ( cx->prop == arg  &&  cx->fiber1()->flag() != cx->fiber2()->flag() )
-            reFlag(fibers, cx->fiber1()->flag(), cx->fiber2()->flag());
+        if ( cx->prop == arg )
+        {
+            ObjectFlag f1 = cx->fiber1()->flag();
+            ObjectFlag f2 = cx->fiber2()->flag();
+            if ( f1 != f2 )
+                reFlag(fibers, f1, f2);
+        }
     }
 }
 
@@ -1988,10 +2017,8 @@ void Simul::flagClustersSolids() const
             if ( s->attached() )
             {
                 ObjectFlag f = s->fiber()->flag();
-                if ( flg == 0 )
+                if ( flg == 0 || f < flg )
                     flg = f;
-                else
-                    flg = std::min(f, flg);
             }
         }
         // reflag:
@@ -2008,13 +2035,19 @@ void Simul::flagClustersSolids() const
 
 
 /// class to store info about a Cluster
-struct ClusterInfo
+struct Cluster
 {
     ObjectFlag flg;
     size_t     cnt;
     
-    ClusterInfo(ObjectFlag f, size_t n) { flg = f; cnt = n; }
-    real operator < (ClusterInfo const&b) const { return cnt > b.cnt; }
+    Cluster(ObjectFlag f, size_t n) { flg = f; cnt = n; }
+        
+    /// Compare function
+    bool operator < (Cluster const&b) const
+    {
+        if ( cnt == b.cnt ) return flg < b.flg;
+        return cnt > b.cnt;
+    }
 };
 
 
@@ -2025,41 +2058,52 @@ flags according to the corresponding cluster index.
 */
 int Simul::orderClusters(std::ostream& out, size_t threshold, int details) const
 {
-    typedef std::set<Fiber*> list_t;
+    typedef std::vector<Fiber*> list_t;
     typedef std::map<ObjectFlag, list_t> map_t;
     // the std::set will keep its elements ordered:
-    typedef std::set<ClusterInfo> set_t;
+    typedef std::multiset<Cluster> set_t;
     map_t map;
     set_t clusters;
 
-    // extract clusters in 'map' and reset fiber flag:
-    for ( Fiber * fib = fibers.first(); fib; fib=fib->next() )
+    // extract clusters in 'map' and reset fiber's flag:
+    for ( Fiber* fib = fibers.firstID(); fib; fib = fibers.nextID(fib) )
     {
-        map[fib->flag()].insert(fib);
+        //std::clog << fib->reference() << " " << fib->flag() << "\n";
+        map[fib->flag()].push_back(fib);
         fib->flag(0);
     }
     
     // insert clusters with size information to get them sorted:
     for ( map_t::const_iterator c = map.begin(); c != map.end(); ++c )
-        if ( c->second.size() >= threshold )
-            clusters.insert(ClusterInfo(c->first, c->second.size()));
+    {
+        size_t s = c->second.size();
+        if ( s >= threshold )
+            clusters.emplace(c->first, s);
+    }
+    
+    if ( details > 0 )
+        out << LIN << clusters.size() << " clusters:";
     
     // consider clusters by decreasing size:
     int idx = 0;
     for ( set_t::const_iterator cc = clusters.begin(); cc != clusters.end(); ++cc )
     {
         ++idx;
-        list_t & list = map[cc->flg];
+        list_t const& list = map[cc->flg];
+        
         for ( Fiber * i : list )
             i->flag(idx);
 
         if ( details > 0 )
         {
-            out << LIN << cc->flg << SEP << cc->cnt << " :";
+            out << LIN << cc->flg << SEP << cc->cnt;
             
             if ( details > 1 )
+            {
+                out << " :";
                 for ( Fiber * i : list )
                     out << " " << i->identity();
+            }
         }
     }
     
@@ -2306,8 +2350,11 @@ void Simul::reportPlatelet(std::ostream& out) const
     if ( flagRing() == 1 )
         analyzeRing(1, len, rad);
 
+    int p = out.precision();
+    out.precision(std::min(p,3));
     out << COM << "nb_fiber" << SEP << "polymer" << SEP << "tension" << SEP << "force" << SEP << "length" << SEP << "radius";
-    out << LIN << nfib << SEP << std::fixed << std::setprecision(3) << pol << SEP << ten << SEP << force << SEP << len << SEP << rad;
+    out << LIN << nfib << SEP << std::fixed << pol << SEP << ten << SEP << force << SEP << len << SEP << rad;
+    out.precision(p);
 }
 
 

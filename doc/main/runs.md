@@ -1,7 +1,8 @@
 # How to Run Simulations with Cytosim
 
-This describes some simple ways to run one or many simulations on a personal computer,
-using the unix-style command line interface. If you are not familiar with the command line, [follow this first](starter.md).
+This is a brief introduction to using the command line interface to run one or many simulations on a personal computer.
+Although the command line may be unfamiliar material to many, it is present on most computers and is very convenient.
+If you are not familiar with the command line, [follow this first](starter.md).
 
 # Live Run
 
@@ -11,12 +12,11 @@ If cytosim's executable `play` is present in the current directory, you can type
  
 	./play live
 
-this should open a graphical window and start a live simulation using the file
-`config.cym` that is located in the current working directory.
+this should open a new window and start a live simulation using the file `config.cym`, which is the default.
+However, if this file does not exist in the current working directory you will get an error.
+You can specify any other configuration file, here in a subdirectory `cym`, if its extension is `.cym`:
 
-You can specify another configuration file, here in a subdirectory `cym`:
- 
-	./play live cym/self.cym
+	./play cym/self.cym
 
 In the following, only the executable name will be specified. If you get an error `command not found`, please check our [Unix starter](starter.md), as every details of the command matter. 
 
@@ -28,12 +28,17 @@ and then `play` to display the results once `sim` has finished:
 	sim
 	play
  
-By default, `sim` uses the configuration file `config.cym` in the current directory.
+By default, `sim` uses the configuration file `config.cym` in the current directory. 
+You can specify another file, but it is recommended to keep a copy of the config file for your records.
 If you do not want to wait until `sim` finishes, you may run `sim` in the background:
  
 	sim&
  
-You can then use `play` to display the partial results at any time, even if `sim` is still running. This works because `sim` access the result files for writting, and `play` only for reading. You could also open a second terminal window to run `play` while `sim` is still running. Learn [how to convert the results into a movie](making_movies.md).
+You can then use `play` to display the partial results at any time, even if `sim` is still running. 
+This usually works fine because `sim` only writes the files, while `play` only reads them. 
+You could also open a second terminal window to run `play` while `sim` is still running,
+or do this on different computers if you use a shared disc space.
+Learn [how to convert the results into a movie](making_movies.md).
 
 
 # Overnight Run
@@ -58,9 +63,10 @@ Here is an example:
 To automate this, you can use the script `/python/run/start.py`:
 it will automatically create the new directory, and start the simulation:
  
-start.py sim config.cym
+	start.py sim config.cym
  
 You can call `start.py` many times, and the new directories will be named `run0000`, `run0001`, etc.
+Other python scripts can be used to run many simulations in parallel.
 
 
 # Parametric Scan

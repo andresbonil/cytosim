@@ -8,9 +8,9 @@
 
 /// a Wrist with a non-zero resting length.
 /**
- The anchorage is described by Mecapoint sBase:
- - the Mecable is sBase.mecable()
- - the index of the vertex on this Mecable is sBase.point()
+ The anchorage is described by `anchor`:
+ - the Mecable is anchor.mecable()
+ - the index of the vertex on this Mecable is anchor.point()
  .
  It has a non-zero resting length.
  

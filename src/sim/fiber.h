@@ -64,7 +64,7 @@ private:
         SeverPos(real a, state_t p, state_t m) { abs=a; stateP=p; stateM=m; }
         
         /// sort from PLUS_END to MINUS_END, i.e. with decreasing abscissa
-        real operator < (SeverPos const&b) const { return abs > b.abs; }
+        bool operator < (SeverPos const&b) const { return abs > b.abs; }
     };
     
     /// ordered list of future severing positions
@@ -98,11 +98,14 @@ protected:
 
     
     /// viscous drag coefficient for a cylinder moving close to a surface
-    real           dragCoefficientSurface();
+    static real    dragCoefficientSurface(real len, FiberProp const*);
     
     /// viscous drag coefficient for a cylinder moving in an infinite volume of fluid
-    real           dragCoefficientVolume();
+    static real    dragCoefficientEllipsoid(real len, FiberProp const*);
     
+    /// viscous drag coefficient for a cylinder moving in an infinite volume of fluid
+    static real    dragCoefficientCylinder(real len, FiberProp const*);
+
 public:
     
     /// the Property of this object

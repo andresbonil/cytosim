@@ -1,6 +1,6 @@
 # Getting started with the *Command Line*
 
-This document describes how to use the [Unix Command Line](https://en.wikipedia.org/wiki/Command-line_interface) on a personal computer. 
+This document briefly describes how to use the [Unix Command Line](https://en.wikipedia.org/wiki/Command-line_interface) on a personal computer. 
 If you are already familiar with the Command-line, you can skip this.
 
 # Open a terminal
@@ -93,4 +93,4 @@ For more info on the Unix Command Line, check the resources online:
 
 - [Unix Command Line](https://en.wikipedia.org/wiki/Command-line_interface)
 - [lifehacker](https://lifehacker.com/5633909/who-needs-a-mouse-learn-to-use-the-command-line-for-almost-anything)
-
+- [Shell Scripting by Apple](https://developer.apple.com/library/archive/documentation/OpenSource/Conceptual/ShellScripting/shell_scripts/shell_scripts.html)

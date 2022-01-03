@@ -113,7 +113,7 @@ protected:
     static int   reshape_local(unsigned, const real*, real*, real cut, real* tmp, size_t);
 
     /// change segmentation
-    void         setSegmentation(real c) { fnCut = c; }
+    void         setSegmentation(real c) { fnCut = std::max(c, REAL_EPSILON); }
     
 public:
     
@@ -138,8 +138,8 @@ public:
     /// set position of 'ref', direction and length of Fiber
     void         setStraight(Vector const& pos, Vector const& dir, real len);
 
-    /// move Fiber around to put 'ref' where the CENTER was
-    void         moveEnd(FiberEnd ref);
+    /// translate Fiber to place 'ref' at the position where the CENTER is located
+    void         placeEnd(FiberEnd ref);
     
     /// set shape with `np` points from the given array of size DIM*n_pts
     void         setShape(const real pts[], unsigned n_pts, unsigned np);
@@ -222,18 +222,16 @@ public:
 
     //---------------------
     
-    /// displace the ORIGIN of abscissa
-    void         setOrigin(real a) { fnAbscissaM = -a; fnAbscissaP = fnCut*nbSegments() - a; }
+    /// displace the ORIGIN of abscissa at distance `a` from the MINUS_END
+    void         setOrigin(real a) { fnAbscissaM = -a; fnAbscissaP = fnCut * real(nbSegments()) - a; }
 
     /// signed distance from ORIGIN to MINUS_END (abscissa of MINUS_END)
     real         abscissaM() const { return fnAbscissaM; }
     
     /// abscissa of center, midway between MINUS_END and PLUS_END
-    //real       abscissaC()             const { return fnAbscissaM + 0.5 * length(); }
     real         abscissaC() const { return 0.5 * (fnAbscissaM + fnAbscissaP); }
 
     /// signed distance from ORIGIN to PLUS_END (abscissa of PLUS_END)
-    //real       abscissaP()             const { return fnAbscissaM + length(); }
     real         abscissaP() const { return fnAbscissaP; }
 
     /// signed distance from ORIGIN to vertex specified with index (or intermediate position)
@@ -261,7 +259,7 @@ public:
     Vector       pos(real ab) const { return posM(ab-fnAbscissaM); }
 
     /// position of a point specified by abscissa `ab` from reference `ref`
-    Vector       pos(real ab, FiberEnd ref) const { return posM(abscissaFrom(ab, ref)); }
+    Vector       posFrom(real ab, FiberEnd ref) const { return pos(abscissaFrom(ab, ref)); }
 
     /// position of the point taken mid-way along the curve
     Vector       posMiddle() const { return posM(0.5*length()); }
@@ -330,9 +328,12 @@ public:
     Vector       avgDirection() const { return normalize(posEndP()-posEndM()); }
     
     //--------------------- Segmentation / discrete representation
+
+    /// set desired segmentation
+    void         targetSegmentation(real c) { assert_true(c>0); fnSegmentation = c; }
     
-    /// set desired segmentation (the length of the segments might be different)
-    void         segmentation(real c) { assert_true(c>0); fnSegmentation = c; }
+    /// return desired segmentation (this is not the length of the segments)
+    real         targetSegmentation() const { return fnSegmentation; }
     
     /// the current segment length (distance between successive vertices)
     real         segmentation() const { return fnCut; }
@@ -346,6 +347,9 @@ public:
     /// automatically select the number of points if needed, and resegment the fiber
     void         adjustSegmentation();
     
+    /// change the target segmentation, and adjust number of points if needed
+    void         adjustSegmentation(real);
+
     /// change all vertices to given array of coordinates
     void         getPoints(real const*);
     
@@ -358,7 +362,10 @@ public:
     //--------------------- Info
     
     /// calculate the minimum and maximum segment length
-    void         segmentationMinMax(real&, real&) const;
+    void         segmentationMinMax(real const* ptr, real&, real&) const;
+    
+    /// calculate the minimum and maximum segment length
+    void         segmentationMinMax(real& n, real& x) const { segmentationMinMax(pPos, n, x); }
 
     /// calculate average and variance of the segment length
     void         segmentationVariance(real&, real&) const;
@@ -415,15 +422,21 @@ public:
 
     //---------------------
     
-    /// sum the length of the segments and compare with 'len'
-    int          checkLength(real len, bool = true) const;
+    /// print info such as length and segmentation
+    void         briefdoc(std::ostream&, real, real, real, real) const;
+
+    /// print info such as length and segmentation
+    void         document(std::ostream&, real, real, real, real) const;
     
-    /// check the length of all segments, and returns deviation
-    real         checkSegmentation(real tolerance, bool = true) const;
+    /// print info such as length and segmentation
+    void         document(real const* ptr, std::ostream&) const;
     
-    /// dump for debugging
-    void         dump(std::ostream&) const;
-    
+    /// return string with info such as length and segmentation
+    std::string  document(real const* ptr) const;
+
+    /// check length and segmentation and write if suspicious
+    int          checkLength(real const* ptr, std::ostream&, real len) const;
+
     /// write to Outputter
     void         write(Outputter&) const;
     

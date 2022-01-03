@@ -116,9 +116,11 @@ Vector Movable::readPosition0(std::istream& is, Space const* spc)
             
             if ( tok == "surface" )
             {
-                real e = 0.1;
-                is >> e;
-                return spc->randomPlaceOnEdge(e);
+                real R = 1;
+                is >> R;
+                if ( R < REAL_EPSILON )
+                    throw InvalidParameter("distance R must be > 0 in `surface R`");
+                return spc->randomPlaceOnEdge(R);
             }
 
             if ( tok == "outside_sphere" )
@@ -911,7 +913,16 @@ Rotation Movable::readOrientation(std::istream& is, Vector const& pos, Space con
     int c = Tokenizer::skip_space(is, false);
 
     if ( isalpha(c) )
-        return readRotation(is);
+    {
+        try {
+            return readRotation(is);
+        }
+        catch ( Exception& e )
+        {
+            // Some keywords are handled by readDirection(), so we just warn here
+            std::cerr << "Warning, " << e.message() << '\n';
+        }
+    }
 
     // normally a unit vector is specified:
     Vector vec = readDirection(is, pos, spc);

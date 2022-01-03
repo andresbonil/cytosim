@@ -52,16 +52,19 @@ public:
     Mecable const* base() const { return mec_; }
     
     /// position in space
-    Vector position() const;
+    Vector pos() const;
     
-    /// attachement point
-    Mecapoint point() const { return Mecapoint(mec_, ref_); }
+    /// number of points beeing interpolated
+    size_t rank() const { return ord_; }
 
-    /// create interLink with given Interpolation
-    void interLink(Meca&, Interpolation const&, const real stiffness) const;
+    /// first attachement point
+    Mecapoint vertex0() const { return Mecapoint(mec_, ref_); }
+
+    /// create addLink with given Interpolation
+    void addLink(Meca&, Interpolation const&, real weight) const;
     
-    /// create interLink with given Mecapoint
-    void interLink(Meca&, Mecapoint const&, const real stiffness) const;
+    /// create addLink with given Mecapoint
+    void addLink(Meca&, Mecapoint const&, real weight) const;
 
     /// output
     void write(Outputter& out) const;

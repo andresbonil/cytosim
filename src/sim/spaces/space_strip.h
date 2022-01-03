@@ -12,9 +12,10 @@
  The last dimension is Y in 2D and Z in 3D.
  
  Parameters:
-     - length = extent in X, Y and Z
-     .
-     
+     - length = extent in X, and Y in 3D
+     - bottom = lower limit in Z
+     - top    = upper limit in Z
+ 
  To display a periodic Space, use simul:display parameter 'tile'.
  @ingroup SpaceGroup
  */
@@ -22,6 +23,15 @@ class SpaceStrip : public Space
 {
     ///  half to total width in each dimension
     real   length_[3];
+    
+    /// Z-position of the bottom limit
+    real   bot_;
+    
+    /// Z-position of the top limit
+    real   top_;
+    
+    /// Object to handle periodic boundary conditions
+    Modulo modulo_;
 
 public:
     
@@ -31,9 +41,12 @@ public:
     /// change dimensions
     void        resize(Glossary& opt);
 
-    /// initialize Modulo Object
-    Modulo *    makeModulo() const;
-
+    /// return Modulo Object
+    Modulo const* getModulo() const { return &modulo_; }
+    
+    /// match sizes of Modulo object
+    void        update();
+    
     /// return bounding box in `inf` and `sup`
     void        boundaries(Vector& inf, Vector& sup) const;
     
@@ -48,10 +61,10 @@ public:
 
     
     /// apply a force directed towards the edge of the Space
-    void        setInteraction(Vector const& pos, Mecapoint const&, Meca &, real stiff) const;
+    void        setInteraction(Vector const& pos, Mecapoint const&, Meca&, real stiff) const;
     
     /// apply a force directed towards the edge of the Space
-    void        setInteraction(Vector const& pos, Mecapoint const&, real rad, Meca &, real stiff) const;
+    void        setInteraction(Vector const& pos, Mecapoint const&, real rad, Meca&, real stiff) const;
     
     
     /// OpenGL display function; returns true if successful
@@ -66,7 +79,6 @@ public:
     /// read from file
     void        read(Inputter&, Simul&, ObjectTag);
 
-    
 };
 
 #endif

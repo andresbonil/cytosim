@@ -419,7 +419,7 @@ ObjectList ObjectSet::collect(bool (*func)(Object const*, void const*), void con
 }
 
 
-ObjectList ObjectSet::collect(Property * p) const
+ObjectList ObjectSet::collect(Property const* p) const
 {
     return collect(match_property, p);
 }
@@ -474,115 +474,75 @@ void ObjectSet::writeNodes(Outputter& out, NodeList const& list)
 
 
 /**
- Load an object from file, overwritting the current object if it is found
- in the ObjectSet, to make it identical to what was saved in the file.
+ Load an object from file
+ 
+ If 'update==true', the corresponding object is changed, otherwise a new object is created.
+ If 'load==false', the record is not kept
  */
-Object * ObjectSet::readObject(Inputter& in, const ObjectTag tag, bool fat)
+void ObjectSet::loadObject(Inputter& in, const ObjectTag tag, bool fat, bool discard, bool update)
 {
     unsigned ix = 0;
     ObjectID id = 0;
     ObjectMark mk = 0;
+    Object * obj = nullptr;
 
-    assert_true(isprint(tag));
+    Object::readHeader(in, fat, ix, id, mk);
     
-    // read header:
-    if ( in.binary() )
+    if ( update )
     {
-        if ( fat )
+        obj = findID(id);
+        // check that property index has not changed:
+        if ( obj && obj->property()->number() != ix )
         {
-            ix = in.readUInt16();
-            id = in.readUInt32();
-#ifdef BACKWARD_COMPATIBILITY
-            if ( in.formatID() < 34 )
-                ;
-            else if ( in.formatID() < 39 )
-                mk = in.readUInt16();
-            else
+            Property const* P = obj->property();
+#if ( 1 )
+            std::clog << "Property mismatch: " << P->name() << "' is " << P->category() << P->number();
+            std::clog << " but loaded object has property #" << ix << '\n';
 #endif
-
-            mk = in.readUInt32();
-        }
-        else
-        {
-            ix = in.readUInt8();
-            id = in.readUInt16();
+            erase(obj);
+            obj = nullptr;
         }
     }
-    else
-    {
-        FILE * file = in.file();
-        if ( 1 != fscanf(file, "%u", &ix) )
-            throw InvalidIO("invalid Object header");
-        if ( in.get_char() != ':' )
-            throw InvalidIO("invalid Object header");
-        if ( 1 != fscanf(file, "%u", &id) )
-            throw InvalidIO("invalid Object header");
-        int c = in.get_char();
-        if ( c == ':' )
-        {
-            if ( 1 != fscanf(file, "%lu", &mk) )
-            throw InvalidIO("invalid Object header");
-        }
-        else
-            in.unget(c);
-    }
-#ifdef BACKWARD_COMPATIBILITY
-    if ( in.formatID() < 45 )
-        ++ix;
-#endif
-
-    if ( id == 0 )
-        throw InvalidIO("Invalid ObjectID referenced in file");
-
-    // find corresponding object:
-    Object * w = findID(id);
     
-    if ( !w )
+    if ( !obj )
     {
+        assert_true(isprint(tag));
         // create new object of required class
-        w = newObject(tag, ix);
-        if ( !w )
+        obj = newObject(tag, ix);
+        if ( !obj )
         {
             std::string str = std::to_string(tag);
             if ( isprint(tag) )
                 str += " ("+std::string(1,tag)+")";
             throw InvalidIO("invalid ObjectTag "+str+" referenced in file");
         }
-        w->identity(id);
+        obj->identity(id);
+        //std::clog << "- new " << Object::reference(tag, ix, id) << '\n';
     }
-    assert_true( w->identity() == id );
-    assert_true( w->property() );
+    assert_true( obj->identity() == id );
+    assert_true( obj->property() );
     
     try {
         //std::clog << "- loading " << Object::reference(tag, ix, id) << " at " << in.pos() << '\n';
         // read object data:
-        w->read(in, simul, tag);
+        obj->read(in, simul, tag);
     }
     catch( Exception & e )
     {
         e << ", while loading " << Object::reference(tag, ix, id);
         throw;
     }
-
-    w->mark(mk);
-    return w;
-}
-
-
-/**
- Load an object from file, overwritting the current object in the ObjectSet
- */
-void ObjectSet::loadObject(Inputter& in, const ObjectTag tag, bool fat, bool skip)
-{
-    Object * w = readObject(in, tag, fat);
     
-    // clear flag to indicate that object was refreshed:
-    w->flag(0);
-
-    if ( skip )
-        delete(w);
-    else if ( !w->linked() )
-        add(w);
+    if ( discard )
+        delete(obj);
+    else
+    {
+        if ( !obj->linked() )
+            add(obj);
+        // clear flag to indicate that object was refreshed:
+        obj->flag(0);
+        obj->mark(mk);
+    }
 }
 
 

@@ -60,11 +60,11 @@ new link
 
 repeat 10000
 {
-	run 1000 system
-	{
-	    nb_frames = 0
-	}
+    run 1000 system
+    {
+        nb_frames = 0
+    }
 
-	% report forces in the `link`:
-	report single:force forces.txt { verbose=0; }
+    % report forces in the `link`:
+    report single:force forces.txt { verbose=0; }
 }

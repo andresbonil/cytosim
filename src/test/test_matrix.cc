@@ -6,15 +6,13 @@
 #include "assert_macro.h"
 #include "exceptions.h"
 #include "random.h"
-#include "tictoc.h"
+#include "timer.h"
 #include "vecprint.h"
 
 #include "matsparsesym.h"
 #include "matsparsesym1.h"
 #include "matsparsesym2.h"
 #include "matsparsesymblk.h"
-
-using namespace TicToc;
 
 typedef MatrixSparseSymmetricBlock MatrixSparseSymmetricB;
 
@@ -57,8 +55,8 @@ void setIndices(int fill, int*& ii, int*& jj, int mx, int bs)
     {
         int i, j;
         do {
-            i = RNG.pint(mx) / bs;
-            j = RNG.pint(mx) / bs;
+            i = RNG.pint32(mx) / bs;
+            j = RNG.pint32(mx) / bs;
         } while ( i == j );
         ii[n] = bs * std::max(i,j);
         jj[n] = bs * std::min(i,j);
@@ -97,24 +95,24 @@ void compare(unsigned size,  MATRIXA & mat1, MATRIXB& mat2, unsigned fill)
     real * tmp1 = new_real(size*size);
     real * tmp2 = new_real(size*size);
     
-    mat1.reset();
-    mat2.reset();
-    
     mat1.resize(size);
     mat2.resize(size);
     
+    mat1.reset();
+    mat2.reset();
+
     for ( unsigned n = 0; n < fill; ++n )
     {
         real a = 10.0 * RNG.preal();
-        unsigned ii = RNG.pint(size);
-        unsigned jj = RNG.pint(size);
+        unsigned ii = RNG.pint32(size);
+        unsigned jj = RNG.pint32(size);
         mat1(ii, jj) += a;
         mat2(ii, jj) += a;
     }
     
     for ( unsigned nbc = DIM; nbc < size; nbc+=DIM )
     {
-        unsigned inx = DIM * ( RNG.pint(size-nbc) / DIM );
+        unsigned inx = DIM * ( RNG.pint32(size-nbc) / DIM );
         std::clog << "Comparing matrices: size " << size << " inx " << inx << " nbc " << nbc << " ";
         
         zero_real(size*size, tmp1);
@@ -432,13 +430,16 @@ void testMatrixBlock(const int size, const int fill)
     delete[] iny;
 }
 
-int compare_int(const void* i, const void* j) { return ( *(int*)i > *(int*)j ); }
+int compareInt(const void* p, const void* q)
+{
+    size_t i = *static_cast<size_t const*>(p);
+    size_t j = *static_cast<size_t const*>(q);
+    return ( i > j ) - ( j > i );
+}
 
 int main( int argc, char* argv[] )
 {
-#ifdef COMPILER_VERSION
-    printf("Compiled with %s\n", COMPILER_VERSION);
-#endif
+    printf("Matrix test and timing code --- %s\n", __VERSION__);
 
     RNG.seed();
     if ( 0 )
@@ -505,10 +506,10 @@ int main( int argc, char* argv[] )
     {
         //testMatrices(DIM*17, 23);
         int dim[5] = { 0 };
-        for ( int i = 0; i < 5; ++i ) dim[i] = RNG.pint(1<<(i+7));
-        qsort(dim, 5, sizeof(int), compare_int);
+        for ( int i = 0; i < 5; ++i ) dim[i] = RNG.pint32(1<<(i+7));
+        qsort(dim, 5, sizeof(int), compareInt);
         for ( int i = 0; i < 5; ++i )
-            testMatrices(DIM*dim[i], RNG.pint(dim[i]*dim[i]));
+            testMatrices(DIM*dim[i], RNG.pint32(dim[i]*dim[i]));
     }
     return EXIT_SUCCESS;
 }

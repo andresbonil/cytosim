@@ -21,7 +21,7 @@ void SphereProp::clear()
     steric_range      = 0;
     
     confine           = CONFINE_OFF;
-    confine_stiffness = -1;
+    confine_stiffness = 0;
     confine_space     = "first";
     confine_space_ptr = nullptr;
     

@@ -22,7 +22,7 @@ new cell
 
 set fiber microtubule
 {
-    surface_effect = 1, 0.015
+    drag_model = 1, 0.015
     rigidity = 10
     segmentation = 0.5
 }

@@ -96,8 +96,7 @@ public:
     void              revolve(Rotation const&);
     
     
-    /// perform modulo for periodic boundary conditions
-    /** This brings the object to the centered mirror image defined by Modulo*/
+    /// bring object to centered image using periodic boundary conditions
     virtual void      foldPosition(Modulo const*) {}
     
 };

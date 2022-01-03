@@ -35,7 +35,6 @@ specified by specifying an `activity`:
 - `dynamic`: follow a stochastic dynamic instability model with multiple states
 - `classic`: follows the two-state T. Hill model of dynamic instability
 - `treadmill`: grow at the plus end, shrink at the minus end
-- `tubule`: outdated class
  
 [class reference](doxygen/class_fiber.html) —
 [group reference](doxygen/group___fiber_group.html)

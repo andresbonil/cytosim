@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_rescue.cym
  We create a Rescuer with `hand:activity=rescue`
 
  F. Nedelec, September 2012
-*/
+}
 
 set simul system
 {

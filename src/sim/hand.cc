@@ -162,13 +162,12 @@ bool Hand::attachmentAllowed(FiberSite& sit) const
             break;
         case BOTH_ENDS:
         {
-            FiberEnd e = NO_END;
             if ( sit.abscissaFromM() > prop->bind_end_range )
             {
                 // too far from MINUS_END
                 if ( sit.abscissaFromP() > prop->bind_end_range )
                     return false;       // too far from PLUS_END
-                e = PLUS_END;
+                end = PLUS_END;
             }
             else
             {
@@ -294,7 +293,7 @@ void Hand::stepUnattached(Simul& sim, Vector const& pos)
 
 
 /**
- Test for spontaneous detachment at rate HandProp::unbinding_rate, 
+ By default, the unloaded Hand does nothing
  */
 void Hand::stepUnloaded()
 {
@@ -305,9 +304,7 @@ void Hand::stepUnloaded()
 
 
 /**
- Test for force-induced detachment following Kramers' law,
- vith basal rate HandProp::unbinding_rate, 
- and characteristic force HandProp::unbinding_force
+ By default, the loaded Hand does nothing
  */
 void Hand::stepLoaded(Vector const& force, real force_norm)
 {

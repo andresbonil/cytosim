@@ -56,7 +56,7 @@ private:
 public:
     
     /// constructor must provide a name
-    explicit     Property(const std::string& n);
+    explicit     Property(std::string const& n);
 
     /// destructor
     virtual     ~Property();
@@ -75,10 +75,10 @@ public:
     const char*  name_str()               const { return name_.c_str(); }
 
     /// change name
-    void         rename(const std::string& n)   { name_ = n; }
+    void         rename(std::string const& n)   { name_ = n; }
         
     /// true if this->name() is `n`
-    bool         is_named(const std::string& n) { return ( n == name_ ); }
+    bool         is_named(std::string const& n) { return ( n == name_ ); }
     
     //-------------------------------------------------------------------------------
     

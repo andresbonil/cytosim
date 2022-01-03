@@ -83,29 +83,27 @@ Vector Space::randomPlaceNearEdge(real rad, size_t nb_trials) const
  - return projection if the distance to `pos` is less than `rad`
  .
  */
-Vector Space::randomPlaceOnEdge(real rad, size_t nb_trials) const
+Vector Space::randomPlaceOnEdge(real rad, size_t max_trials) const
 {
-    if ( rad <= 0 )
-        throw InvalidParameter("a distance must be > 0");
-
     size_t ouf = 0;
-    real d, rr = rad * rad;
+    real D = fabs(rad), RR = rad * rad;
     Vector pos, res, inf, dif;
     
     boundaries(inf, dif);
-    inf -= Vector(rad, rad, rad);
-    dif += Vector(rad, rad, rad) - inf;
+    inf -= Vector(D, D, D);
+    dif += Vector(D, D, D) - inf;
     
     do {
         pos = inf + dif.e_mul(Vector::randP());
         res = project(pos);
-        d = ( pos - res ).normSqr();
-        if ( ++ouf > nb_trials )
-            throw InvalidParameter("edge placement failed for space `"+prop->name()+"'");
-    } while ( d > rr );
+        D = ( pos - res ).normSqr();
+        if ( ++ouf > max_trials )
+            throw InvalidParameter("surface placement failed for `"+prop->name()+"'");
+    } while ( D > RR );
     
     return res;
 }
+
 
 //------------------------------------------------------------------------------
 #pragma mark - Inside/Outside

@@ -20,7 +20,7 @@ Organizer contains an Array of pointers of type Mecable*.
 These Mecables are organized by Organizer::setInteraction()
 which is implemented in the derived classes, eg. Bundle, Aster & Nucleus.
 */
-class Organizer: public Object, private Buddy
+class Organizer: public Object, public Buddy
 {
 
 private:
@@ -97,7 +97,7 @@ public:
     real                  dragCoefficient() const;
     
     
-    /// retrieve ends link number `inx`, or returns zero if this link does not exist
+    /// retrieve end positions of link number `inx`, or returns zero if this link does not exist
     virtual bool          getLink(size_t inx, Vector&, Vector&) const { return false; }
     
     /// display parameters 

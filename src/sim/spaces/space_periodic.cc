@@ -16,24 +16,24 @@ SpacePeriodic::SpacePeriodic(SpaceProp const* p)
 
 void SpacePeriodic::resize(Glossary& opt)
 {
-    for ( int d = 0; d < DIM; ++d )
+    for ( unsigned d = 0; d < DIM; ++d )
     {
         real len = length_[d];
         if ( opt.set(len, "length", d) )
             len *= 0.5;
         if ( len <= 0 )
-            throw InvalidParameter("periodic:length[] must be > 0");
+            throw InvalidParameter("periodic:length[",d,"] must be > 0");
         length_[d] = len;
     }
+    update();
 }
 
 
-Modulo * SpacePeriodic::makeModulo() const
+void SpacePeriodic::update()
 {
-    Modulo * mod = new Modulo();
-    for ( int d = 0; d < DIM; ++d )
-        mod->enable(d, length_[d]);
-    return mod;
+    modulo_.reset();
+    for ( unsigned d = 0; d < DIM; ++d )
+        modulo_.enable(d, 2*length_[d]);
 }
 
 
@@ -130,6 +130,7 @@ void SpacePeriodic::setLengths(const real len[])
     length_[0] = len[0];
     length_[1] = len[1];
     length_[2] = len[2];
+    update();
 }
 
 

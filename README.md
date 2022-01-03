@@ -1,12 +1,11 @@
 # Cytosim
 
-Cytosim is a cytoskeleton simulation suite designed to handle large systems of flexible filaments with associated proteins such as molecular motors. It is a versatile base that has been used to study actin and microtubule systems in 1D, 2D and 3D. It is built around a cross-platform C++ core engine that runs on UNIX, Mac OSX, GNU/Linux and within Cygwin on Windows. The code is modular and extensible, making Cytosim a convenient base that can be customized to meet particular tasks. Some of the most upstream operations are implemented in Python.
+Cytosim is a cytoskeleton simulation suite designed to handle large systems of flexible filaments with associated proteins such as molecular motors. It is a versatile base that has been used to study actin and microtubule systems in 1D, 2D and 3D. It is built around a cross-platform C++ core engine running on UNIX, Mac OSX, GNU/Linux and within Cygwin on Windows. The code is modular and extensible, making Cytosim a convenient base that can be customized to meet particular tasks. Some of the most common tasks encountered during a simulation project are implemented in Python.
 
 ![Cytosim](doc/data/cytosim.png)
 
-Cytosim is a suite of command-line tools with simulation and display capabilities. The simulation is specified in a [configuration file](doc/sim/config.md), defining objects, their parameters and a suite of operations, such as advancing time, saving frames or [generating reports](doc/sim/report.md). Here is a basic example, with parameters specified in [units of second, micrometers and pico-Newtons](doc/sim/units.md).
+Cytosim is a suite of command-line tools with simulation and display capabilities. The simulation is specified in a [configuration file](doc/sim/config.md), defining objects with their parameters and a suite of operations, such as advancing time, saving frames or [generating reports](doc/sim/report.md). Here is a basic example, with parameters specified in [units of seconds, micrometers and pico-Newtons](doc/sim/units.md).
 
-	
 	set simul system
 	{
 	    time_step = 0.005
@@ -51,23 +50,28 @@ The documentation source files use [Markdown](https://en.wikipedia.org/wiki/Mark
 
 # Installation
 
-Cytosim is distributed as source code and [must be compiled](doc/compile/index.md) before use. On Mac OS X and Linux this should be uncomplicated even if you are not familiar with compilation in general. On Windows, this is more challenging, and we suggest to [compile within Cygwin](doc/compile/cygwin.md).
+Cytosim is distributed as source code and [must be compiled](doc/compile/index.md) before use. On Mac OS X and Linux this should be uncomplicated even if you are not familiar with program development. Compiling natively on Windows would require changes to the code, but Cytosim should [compile within Cygwin](doc/compile/cygwin.md).
 
-To compile, enter these commands in a terminal window:
+To download the source code, enter these commands in a terminal window:
 
 	git clone https://gitlab.com/f.nedelec/cytosim
 	cd cytosim
+	
+To compile using [make](https://www.gnu.org/software/make), try:
+	
 	make
 
-It is also possible to use [cmake](https://cmake.org):
+If this fails, parameters of `makefile.inc` need to be updated.
+Altermatively, it is possible to use [cmake](https://cmake.org) to configure `make` automatically:
 
 	mkdir build
 	cd build
 	cmake ..
 	make
 
-For more information, please check [the compile instructions](doc/compile/index.md).
-Once *cytosim* is running on your machine, check the tutorials, the page on [running simulations](doc/main/runs.md), and the examples contained in the folder `cym`. Inspect in particular the short configuration files (e.g. fiber.cym, self.cym). 
+For troubleshooting, please check [the compile instructions](doc/compile/index.md).
+Once *cytosim* is running on your machine, proceed with the [tutorials](doc/tutorials/index.md), the page on [running simulations](doc/main/runs.md), and the examples contained in the folder `cym`. 
+Inspect in particular the short configuration files (e.g. fiber.cym, self.cym). 
 
 # Contributors
 
@@ -75,7 +79,7 @@ Once *cytosim* is running on your machine, check the tutorials, the page on [run
  We hope cytosim can be useful for your research. 
  Sincerely yours, The Developers of Cytosim:
 
-*  Francois Nedelec        1995-
+*  Francois J. Nedelec     1995-
 *  Dietrich Foethke        2003-2007
 *  Cleopatra Kozlowski     2003-2007
 *  Elizabeth Loughlin      2006-2010
@@ -84,11 +88,12 @@ Once *cytosim* is running on your machine, check the tutorials, the page on [run
 *  Jonathan Ward           2008-2014
 *  Antonio Politi          2010-2012
 *  Andre-Claude Clapson    2011-2013
+*  Jamie-Li Rickman        2014-2019
 *  Serge Dmitrieff         2013-
-*  Gaelle Letort           2014-
 *  Julio Belmonte          2014-
-*  Jamie-Li Rickman        2014-
+*  Gaelle Letort           2014-
 *  Manuel Lera-Ramirez     2017-
+*  Maud Formanek           2020-
 
 # Contact
 

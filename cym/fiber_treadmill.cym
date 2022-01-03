@@ -1,9 +1,9 @@
-/**
+%{
  @example fiber_treadmill.cym
  We create a dynamic fiber with activity=treadmill
 
  F. Nedelec, February 2011
-*/
+}
 
 
 set simul system

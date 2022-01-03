@@ -17,7 +17,6 @@ _rigidity_ (unit : energy x length) is the rigidity of the filament. Typically 2
 *treadmill* : a simple model of fiber dynamics that can grow or shrink at both ends, in a force-dependent manner.  
 *dynamic* : a more advanced model of microtubule dynamics including the hydrolysis of a GTP cap.  
 *grow* : a simple growing filament  
-*tubule* : a (legacy) class of dynamic microtubules.  
 
 ### display
 How the filament is displayed.

@@ -33,7 +33,7 @@ class Simul;
  - object lists: size(), add(), remove(), erase().
  - object access: first(), find().
  - simulation: step(), shuffle().
- - I/O: readObject(), read(), write(), freeze(), thaw().
+ - I/O: loadObject(), read(), write(), freeze(), thaw().
  .
  */
 class ObjectSet
@@ -191,14 +191,11 @@ public:
     /// collect objects for which ( func(obj, val) == true )
     virtual ObjectList collect(bool (*func)(Object const*, void const*), void const*) const;
 
-    /// collect objects for which ( obj->property() == prop )
-    ObjectList         collect(Property* prop) const;
-
-    /// read one Object from file
-    Object *           readObject(Inputter&, ObjectTag tag, bool fat);
+    /// collect objects that have given Property
+    ObjectList         collect(Property const*) const;
     
     /// load one Object from file, or skip it if `skip==true`
-    void               loadObject(Inputter&, ObjectTag tag, bool fat, bool skip);
+    void               loadObject(Inputter&, ObjectTag tag, bool fat, bool skip, bool update);
     
     /// write all Objects to file
     virtual void       write(Outputter&) const = 0;

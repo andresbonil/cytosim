@@ -5,7 +5,7 @@
 
 void PropertyList::erase()
 {
-    for ( Property* i : vec_ )
+    for ( Property const* i : vec_ )
         delete(i);
     vec_.clear();
 }
@@ -20,7 +20,7 @@ void PropertyList::deposit(Property * p)
 {
     if ( p )
     {
-        unsigned cnt = 0;
+        size_t cnt = 0;
         for ( Property* i : vec_ )
         {
             if ( i->category() == p->category() )
@@ -28,9 +28,7 @@ void PropertyList::deposit(Property * p)
             if ( i->name() == p->name() )
                 throw InvalidParameter("Property '"+p->name()+"' is already defined");
         }
-        
-        //std::clog << "Property `" << p->name() << "' is " << p->category() << " # " << cnt+1 << std::endl;
-        
+                
         vec_.push_back(p);
         p->renumber(cnt+1);
     }
@@ -54,18 +52,18 @@ void PropertyList::remove(Property const* val)
 }
 
 
-unsigned int PropertyList::size(std::string const& cat) const
+size_t PropertyList::size(std::string const& cat) const
 {
-    unsigned res = 0;
+    size_t res = 0;
     
-    for ( Property* i : vec_ )
+    for ( Property const* i : vec_ )
         if ( i->category() == cat )
             ++res;
     
     return res;
 }
 
-
+/*
 Property * PropertyList::operator[] (const size_t n) const
 {
     if ( n >= vec_.size() )
@@ -76,6 +74,7 @@ Property * PropertyList::operator[] (const size_t n) const
     }
     return vec_[n];
 }
+*/
 
 //-------------------------------------------------------------------------------
 
@@ -91,14 +90,6 @@ void PropertyList::complete(Simul const& sim) const
     for ( Property* i : vec_ )
         i->complete(sim);
 }
-
-Property const* PropertyList::contains(Property const* p) const
-{
-    for ( Property* i : vec_ )
-        if ( i == p ) return p;
-    return nullptr;
-}
-
 
 //-------------------------------------------------------------------------------
 #pragma mark -
@@ -129,7 +120,7 @@ Property * PropertyList::find_or_die(std::string const& nom) const
 
     if ( !p )
     {
-        InvalidSyntax e("unknown class `"+nom+"'\n");
+        InvalidSyntax e("unknown class `"+nom+"'");
         e << all_names(PREF);
         throw e;
     }
@@ -154,7 +145,7 @@ Property * PropertyList::find(std::string const& cat, std::string const& nom) co
 }
 
 
-Property * PropertyList::find(std::string const& cat, const unsigned num) const
+Property * PropertyList::find(std::string const& cat, const size_t num) const
 {
     //std::clog << this << "->find(" << cat << ", " << idx << ")" << std::endl;
     if ( num <= 0 )
@@ -174,7 +165,7 @@ Property * PropertyList::find_or_die(std::string const& cat, std::string const& 
     
     if ( !res )
     {
-        InvalidSyntax e("unknown "+cat+" class `"+nom+"'\n");
+        InvalidSyntax e("unknown "+cat+" class `"+nom+"'");
         e << all_names(PREF);
         throw e;
     }
@@ -183,13 +174,13 @@ Property * PropertyList::find_or_die(std::string const& cat, std::string const& 
 }
 
 
-Property * PropertyList::find_or_die(std::string const& cat, const unsigned num) const
+Property * PropertyList::find_or_die(std::string const& cat, const size_t num) const
 {
     Property * res = find(cat, num);
     
     if ( !res )
     {
-        InvalidSyntax e("unknown class `"+cat+std::to_string(num)+"'\n");
+        InvalidSyntax e("unknown class `"+cat+std::to_string(num)+"'");
         e << all_names(PREF);
         throw e;
     }
@@ -289,7 +280,7 @@ PropertyList PropertyList::find_all_except(std::string const& cat) const
 void PropertyList::write_names(std::ostream& os, std::string const& pf) const
 {
     os << pf << "Known classes:\n";
-    for ( Property* i : vec_ )
+    for ( Property const* i : vec_ )
     {
         os << pf << std::setw(10);
         if ( i )
@@ -313,7 +304,7 @@ std::string PropertyList::all_names(std::string const& pf) const
  */
 void PropertyList::write(std::ostream& os, const bool prune) const
 {
-    for ( Property * i : vec_ )
+    for ( Property const* i : vec_ )
         i->write(os, prune);
 }
 

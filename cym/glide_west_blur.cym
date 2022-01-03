@@ -31,7 +31,7 @@ set fiber microtubule
 {
     rigidity = 10
     segmentation = 0.5
-    surface_effect = 1, 0.015
+    drag_model = 1, 0.015
     display = { line_width = 4; plus_end=16; }
 }
 

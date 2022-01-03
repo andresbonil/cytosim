@@ -35,14 +35,15 @@ void SpaceCylinderP::resize(Glossary& opt)
     
     length_ = len;
     radius_ = rad;
+
+    update();
 }
 
 
-Modulo * SpaceCylinderP::makeModulo() const
+void SpaceCylinderP::update()
 {
-    Modulo * mod = new Modulo();
-    mod->enable(0, length_);
-    return mod;
+    modulo_.reset();
+    modulo_.enable(0, 2*length_);
 }
 
 
@@ -55,31 +56,31 @@ void SpaceCylinderP::boundaries(Vector& inf, Vector& sup) const
 
 real SpaceCylinderP::volume() const
 {
-    return 2 * M_PI * length_ * radius_ * radius_;
+    return 2 * M_PI * length_ * square(radius_);
 }
 
 
-bool SpaceCylinderP::inside(Vector const& w) const
+bool SpaceCylinderP::inside(Vector const& W) const
 {
 #if ( DIM > 2 )
-    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
-    return ( RT <= radius_ * radius_ );
+    const real RT = W.YY * W.YY + W.ZZ * W.ZZ;
+    return ( RT <= square(radius_) );
 #elif ( DIM > 1 )
-    return ( fabs(w.YY) <= radius_ );
+    return ( fabs(W.YY) <= radius_ );
 #else
     return false;
 #endif
 }
 
 
-bool SpaceCylinderP::allInside(Vector const& w, const real rad ) const
+bool SpaceCylinderP::allInside(Vector const& W, const real rad) const
 {
     assert_true( rad >= 0 );
 #if ( DIM > 2 )
-    const real RT = w.YY * w.YY + w.ZZ * w.ZZ;
+    const real RT = W.YY * W.YY + W.ZZ * W.ZZ;
     return ( RT <= square(radius_-rad) );
 #elif ( DIM > 1 )
-    return ( fabs(w.YY) <= radius_-rad );
+    return ( fabs(W.YY) <= radius_-rad );
 #else
     return false;
 #endif
@@ -98,27 +99,49 @@ Vector SpaceCylinderP::randomPlace() const
 #endif
 }
 
-//------------------------------------------------------------------------------
-Vector SpaceCylinderP::project(Vector const& w) const
+
+Vector SpaceCylinderP::normalToEdge(Vector const& pos) const
 {
-    Vector p;
-    p.XX = w.XX;
+#if ( DIM >= 3 )
+    real n = 1.0 / pos.normYZ();
+    return Vector(0, n * pos.YY, n * pos.ZZ);
+#elif ( DIM >= 2 )
+    return Vector(0, std::copysign((real)1, pos.YY), 0);
+#endif
+    return Vector(0, 0, 0);  // intentionally invalid!
+}
+
+
+Vector SpaceCylinderP::randomPlaceOnEdge(real) const
+{
+#if ( DIM >= 3 )
+    const Vector2 YZ = Vector2::randU(radius_);
+    return Vector(0, YZ.XX, YZ.YY);
+#endif
+    return Vector(0, radius_*RNG.sflip(), 0);
+}
+
+
+//------------------------------------------------------------------------------
+Vector SpaceCylinderP::project(Vector const& W) const
+{
+    Vector P(W);
     
 #if ( DIM > 2 )
-    real n = w.normYZ();
+    real n = W.normYZ();
     if ( n > REAL_EPSILON )
     {
-        p.YY = w.YY * ( radius_ / n );
-        p.ZZ = w.ZZ * ( radius_ / n );
+        P.YY = W.YY * ( radius_ / n );
+        P.ZZ = W.ZZ * ( radius_ / n );
     }
     else
     {
         const Vector2 V = Vector2::randU();
-        p.YY = radius_ * V.XX;
-        p.ZZ = radius_ * V.YY;
+        P.YY = radius_ * V.XX;
+        P.ZZ = radius_ * V.YY;
     }
 #endif
-    return p;
+    return P;
 }
 
 //------------------------------------------------------------------------------
@@ -126,7 +149,7 @@ Vector SpaceCylinderP::project(Vector const& w) const
 /**
  This applies forces towards the cylindrical surface only
  */
-void SpaceCylinderP::setInteraction(Vector const& pos, Mecapoint const& pe, Meca & meca, real stiff) const
+void SpaceCylinderP::setInteraction(Vector const& pos, Mecapoint const& pe, Meca& meca, real stiff) const
 {
     meca.addCylinderClampX(pe, radius_, stiff);
 }
@@ -134,12 +157,11 @@ void SpaceCylinderP::setInteraction(Vector const& pos, Mecapoint const& pe, Meca
 /**
  This applies forces towards the cylindrical surface only
  */
-void SpaceCylinderP::setInteraction(Vector const& pos, Mecapoint const& pe, real rad, Meca & meca, real stiff) const
+void SpaceCylinderP::setInteraction(Vector const& pos, Mecapoint const& pe, real rad, Meca& meca, real stiff) const
 {
-    real eRadius = radius_ - rad;
-    if ( eRadius < 0 ) eRadius = 0;
-    
-    meca.addCylinderClampX(pe, eRadius, stiff);
+    real R = std::max((real)0, radius_ - rad);
+
+    meca.addCylinderClampX(pe, R, stiff);
 }
 
 //------------------------------------------------------------------------------
@@ -157,6 +179,7 @@ void SpaceCylinderP::setLengths(const real len[])
 {
     length_ = len[0];
     radius_ = len[1];
+    update();
 }
 
 

@@ -1,9 +1,9 @@
-/**
+%{
  @example hand_digit.cym
  We create a Digit with `hand:activity=digit`
 
  F. Nedelec, 2012
-*/
+}
 
 
 set simul system

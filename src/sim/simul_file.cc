@@ -6,7 +6,8 @@
 #include "filepath.h"
 #include "messages.h"
 #include "parser.h"
-
+#include "print_color.h"
+#include "tictoc.h"
 
 /**
  A number `currentFormatID` is used to define the format of trajectory files
@@ -126,7 +127,7 @@ void Simul::writeObjects(std::string const& name, bool append, bool binary) cons
 /**
  The Object is not modified
  */
-Object * Simul::readReference(Inputter& in, ObjectTag & tag)
+Object * Simul::readReference(Inputter& in, ObjectTag& tag)
 {
     int c = 0;
     do
@@ -596,8 +597,8 @@ int Simul::readObjects(Inputter& in, ObjectSet* subset)
                 {
                     // check that we are using the correct ObjectSet:
                     assert_true( objset == findSetT(tag) );
-                    bool skip = ( subset && subset!=objset );
-                    objset->loadObject(in, tag, fat, skip);
+                    const bool discard = ( subset && subset!=objset );
+                    objset->loadObject(in, tag, fat, discard, true);
                 }
                 else
                 {
@@ -605,8 +606,8 @@ int Simul::readObjects(Inputter& in, ObjectSet* subset)
                     ObjectSet * set = findSetT(tag);
                     if ( set )
                     {
-                        bool skip = ( subset && subset!=set );
-                        set->loadObject(in, tag, fat, skip);
+                        const bool discard = ( subset && subset!=set );
+                        set->loadObject(in, tag, fat, discard, true);
                     }
                 }
             }

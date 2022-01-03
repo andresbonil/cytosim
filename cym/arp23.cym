@@ -1,11 +1,11 @@
-/**
+%{
  @example arp23
  Basic implementation of the Arp23 complex:
  - a Couple with activity=fork is used to impose the angle
  - a trans-activated nucleator is used to create new filaments
 
  F. Nedelec, 10.09.2015
-*/
+}
 
 set simul system
 {
@@ -28,7 +28,7 @@ set fiber actin
     rigidity = 0.1
     segmentation = 0.05
     confine = inside, 1000
-    hydrodynamic_radius = 0.0035
+    drag_radius = 0.0035
 
     activity = grow
     growing_speed = 0.275

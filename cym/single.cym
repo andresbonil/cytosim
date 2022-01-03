@@ -1,8 +1,8 @@
-/**
+%{
  @example single.cym
 
  F. Nedelec, February 2013
-*/
+}
 
 set simul system
 {

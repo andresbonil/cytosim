@@ -22,28 +22,27 @@ class ClassicFiberProp;
  - stochastic rescues.
  .
  
- Only the PLUS_END can grow/shrink and does not have any granularity.
- The length is incremented at each time step by <em> time_step * tip_speed </em>.
+ Both ends may grow/shrink and do so smoothly:
+ The length is incremented at each time step by `time_step * tip_speed`.
  
  The speed of the tip `tip_speed` is a fraction of `prop->growing_speed`,
  because the growth speed is reduced under antagonistic force by an exponential factor:
- <em>
- <b>Measurement of the Force-Velocity Relation for Growing Microtubules</b>\n
- Marileen Dogterom and Bernard Yurke\n
- Science Vol 278 pp 856-860; 1997\n
- http://dx.doi.org/10.1126/science.278.5339.856 \n
- http://www.sciencemag.org/content/278/5339/856.abstract
- </em>
  
- ...and this increases the catastrophe rate:\n
- <em>
- <b>Dynamic instability of MTs is regulated by force</b>\n
- M.Janson, M. de Dood, M. Dogterom.\n
- Journal of Cell Biology Vol 161, Nb 6, 2003\n
- Figure 2 C\n
- </em>
- http://dx.doi.org/10.1083/jcb.200301147 \n
- http://jcb.rupress.org/content/161/6/1029
+     Measurement of the Force-Velocity Relation for Growing Microtubules\n
+     Marileen Dogterom and Bernard Yurke\n
+     Science Vol 278 pp 856-860; 1997\n
+     http://dx.doi.org/10.1126/science.278.5339.856 \n
+     http://www.sciencemag.org/content/278/5339/856.abstract
+ 
+ ...and this increases the catastrophe rate:
+
+     Dynamic instability of MTs is regulated by force\n
+     M.Janson, M. de Dood, M. Dogterom.\n
+     Journal of Cell Biology Vol 161, Nb 6, 2003\n
+     Figure 2 C\n
+     http://dx.doi.org/10.1083/jcb.200301147 \n
+     http://jcb.rupress.org/content/161/6/1029
+ 
  The growth speed is linearly proportional to free tubulin concentration.
 
  See the @ref ClassicFiberPar.

@@ -65,10 +65,25 @@ public:
     /// build a reference string by concatenating (tag, property_number, ObjectID)
     static std::string reference(ObjectTag, unsigned, ObjectID);
     
+    /// write a reference, but using the provided Tag
+    static void writeReference(Outputter&, ObjectTag, ObjectID);
+    
+    /// write a reference that does not refer to any Object
+    static void writeNullReference(Outputter&);
+
+    /// write a reference that identifies the Object uniquely
+    static void writeReference(Outputter&, Object const*);
+    
+    /// write header to object data, using provided tag
+    void        writeHeader(Outputter&, ObjectTag tag) const;
+    
+    /// read header
+    static void readHeader(Inputter& in, bool fat, unsigned& ix, ObjectID& id, ObjectMark& mk);
+
 public:
     
     /// constructor
-    Object() : mark_(0), flag_(0), signature_(RNG.pint()), set_(nullptr) { }
+    Object() : mark_(0), flag_(0), signature_(RNG.pint32()), set_(nullptr) { }
     
     /// copy constructor
     Object(Object const& o) : mark_(o.mark_), flag_(o.flag_), signature_(o.signature_), set_(nullptr) {}
@@ -107,19 +122,7 @@ public:
 
     /// concatenation of [ tag(), property()->number(), identity() ] in plain ascii
     std::string     reference() const;
-
-    /// write a reference, but using the provided Tag
-    void            writeReference(Outputter&, ObjectTag tag) const;
     
-    /// write a reference that identifies the Object uniquely
-    void            writeReference(Outputter& ow) const { writeReference(ow, tag()); }
-    
-    /// write a reference that does not refer to any Object
-    static void     writeNullReference(Outputter&);
-
-    /// write header to object data, but using the provided Tag
-    void            writeHeader(Outputter&, ObjectTag tag) const;
-
     //--------------------------
 
     /// get mark

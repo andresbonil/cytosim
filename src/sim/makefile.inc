@@ -2,7 +2,7 @@
 # Copyright 2018-- Francois J. Nedelec.
 
 
-OBJ_SPACE := space.o space_prop.o space_square.o space_sphere.o space_disc.o\
+OBJ_SPACE := space.o space_prop.o space_square.o space_sphere.o\
              space_dice.o space_torus.o space_polygon.o\
              space_polygonZ.o space_ellipse.o space_cylinder.o space_ring.o\
              space_cylinderZ.o space_capsule.o space_strip.o space_periodic.o\
@@ -78,29 +78,29 @@ INC_SIM=$(addprefix -Isrc/, base math sim sim/fibers sim/hands sim/singles sim/c
 
 #--- normal build:
 
-sim: sim.cc cytosim.a cytomath.a cytobase.a | bin
+sim: sim.cc cytosim.a cytomath.a cytobase.a SFMT.o | bin
 	$(COMPILE) $(INC_BM) $(INFO) $(OBJECTS) $(LINK) -o bin/$@
 	$(DONE)
 vpath sim  bin
 
 #--- build for debuging:
 
-simd: sim.cc cytosim.a cytomath.a cytobase.a | bin
+simd: sim.cc cytosim.a cytomath.a cytobase.a SFMT.o | bin
 	$(CXX) $(FlagsD) $(INC_BM) $(INFO) $(OBJECTS) $(LINK) -o bin/$@
 	$(DONE)
 vpath simd  bin
 
 #--- builds with specific dimension:
 
-bin1/sim: sim.cc cytosimD1.a cytomathD1.a cytobase.a | bin1
+bin1/sim: sim.cc cytosimD1.a cytomathD1.a cytobase.a SFMT.o | bin1
 	$(COMPILE) $(INC_BM) $(INFO) -DDIM=1 $(OBJECTS) $(LINK) -o bin1/sim
 	$(DONE)
 
-bin2/sim: sim.cc cytosimD2.a cytomathD2.a cytobase.a | bin2
+bin2/sim: sim.cc cytosimD2.a cytomathD2.a cytobase.a SFMT.o | bin2
 	$(COMPILE) $(INC_BM) $(INFO) -DDIM=2 $(OBJECTS) $(LINK) -o bin2/sim
 	$(DONE)
 
-bin3/sim: sim.cc cytosimD3.a cytomathD3.a cytobase.a | bin3
+bin3/sim: sim.cc cytosimD3.a cytomathD3.a cytobase.a SFMT.o | bin3
 	$(COMPILE) $(INC_BM) $(INFO) -DDIM=3 $(OBJECTS) $(LINK) -o bin3/sim
 	$(DONE)
 

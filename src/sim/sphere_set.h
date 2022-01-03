@@ -45,14 +45,20 @@ public:
         return static_cast<Sphere*>(nodes.front());
     }
     
+    /// first Sphere in inventory
+    Sphere * firstID() const
+    {
+        return static_cast<Sphere*>(inventory.first());
+    }
+
     /// return pointer to the Object of given ID, or zero if not found
     Sphere *    findID(ObjectID n) const
     {
         return static_cast<Sphere*>(inventory.get(n));
     }
     
-    /// modulo the position (periodic boundary conditions)
-    void        foldPosition(Modulo const* s) const;
+    /// bring all objects to centered image using periodic boundary conditions
+    void        foldPositions(Modulo const*) const;
     
     /// Monte-Carlo simulation step for every Object
     void        step() {}

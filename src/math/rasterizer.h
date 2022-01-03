@@ -9,18 +9,21 @@
 
 /// 2D and 3D rasterizer
 /**
- The different functions in the rasterizer call a given method func() for every point 
- of INTEGER coordinates inside a certain volume.
+ The various rasterizer methods call a given function `func(P)` for every
+ point `P` with INTEGER coordinates that are inside a certain volume.
  
- The volume can be specified in two ways:
+ The volume can be specified:
  - as a polygon described by a list of points, using paintPolygon?D(polygon) 
- - as a cylinder specified by two points P,Q and a scalar 'radius'.
- In 3D, the functions do not rasterize a cylinder, but rather a rectangular volume
- that contains all the points located at distance radius or less from [PQ].
+ - as a cylinder specified by two points [P,Q] and a scalar 'radius'
+ .
+ [P,Q] or the points defining the polygon do not need to be integers.
+ 
+ Note that in 3D, the functions do not rasterize the cylinder exactly, but a
+ generalized cylinder of axis [PQ], with a rectangular or hexagonal crosssection.
+ This slightly larger volume contains all the points located at distance `radius`
+ or less from [PQ].
 
- Important note:   The points defining the polygon do not need to be integers.
-
- F.Nedelec, EMBL 2002-2017, nedelec@embl.de
+ F.Nedelec, EMBL 2002-2017, Cambridge 2019-- nedelec@slcu.cam.ac.uk
 
 */
 namespace Rasterizer 
@@ -38,9 +41,9 @@ namespace Rasterizer
          With a long integer, this limits the number of edges to 64.
          A bigger integer could be used if needed.
         */
-        unsigned long UU;
+        size_t UU;
         
-        void set(Vector3 const& vec, unsigned long u)
+        void set(Vector3 const& vec, size_t u)
         {
             XX = vec.XX;
             YY = vec.YY;
@@ -100,14 +103,14 @@ namespace Rasterizer
      @returns The number of points in the convex hull (at most n_pts).
      */
     template<typename VEC>
-    unsigned convexHull2D(unsigned n_pts, VEC pts[])
+    size_t convexHull2D(size_t n_pts, VEC pts[])
     {
         //---------- find bottom and top points:
-        unsigned inx = 0, top = 0;
+        size_t inx = 0, top = 0;
         real y_bot = pts[0].YY;
         real y_top = pts[0].YY;
         
-        for ( unsigned n = 1; n < n_pts; ++n )
+        for ( size_t n = 1; n < n_pts; ++n )
         {
             if ( pts[n].YY < y_bot || ( pts[n].YY == y_bot  &&  pts[n].XX > pts[inx].XX ) )
             {
@@ -135,7 +138,7 @@ namespace Rasterizer
         inx = 0;
         
         // wrap upward on the right side of the hull
-        unsigned nxt;
+        size_t nxt;
         while ( 1 )
         {
             real pX = pts[inx].XX;
@@ -146,7 +149,7 @@ namespace Rasterizer
             real dx = pts[top].XX - pX;
             real dy = pts[top].YY - pY;
             
-            for ( unsigned n = inx; n < n_pts; ++n )
+            for ( size_t n = inx; n < n_pts; ++n )
             {
                 real dxt = pts[n].XX - pX;
                 real dyt = pts[n].YY - pY;
@@ -180,10 +183,10 @@ namespace Rasterizer
 
     /// Rasterizer function in 1D
     void paintFatLine1D(void (*paint)(int, int, int, int, void*),
-                        void * arg,            ///< last argument to paint()
-                        const Vector1& P,      ///< first end of the segment
-                        const Vector1& Q,      ///< second end of the segment
-                        real radius,           ///< width by which the segment [PQ] is inflated
+                        void* arg,             ///< last argument to paint()
+                        const Vector1& P,      ///< segment end point
+                        const Vector1& Q,      ///< other segment end point
+                        real  radius,          ///< half-width of painted area
                         const Vector1& offset, ///< phase of the grid
                         const Vector1& delta   ///< period for the grid
     );
@@ -200,7 +203,7 @@ namespace Rasterizer
      */  
     void paintPolygon2D(void (*paint)(int, int, int, int, void*),
                         void * arg,           ///< last argument to paint
-                        unsigned n_pts,       ///< number of points
+                        size_t n_pts,         ///< number of points
                         const Vector2[],      ///< the 2D points ( x0 y0 x1 y1 ...)
                         int zz                ///< third coordinate, passed as argument to paint()
                         );
@@ -208,38 +211,38 @@ namespace Rasterizer
     
     /// Paint the inside of a rectangle with edges parallel to the segment PQ
     void paintFatLine2D(void (*paint)(int, int, int, int, void*),
-                        void * arg,           ///< last argument to paint
-                        const Vector2& P,     ///< first end of the segment [dim=3]
-                        const Vector2& Q,     ///< second end of the segment [dim=3]
-                        real  length,         ///< length of segment PQ
-                        real  radius          ///< width by which PQ is inflated
+                        void* arg,            ///< last argument to paint
+                        const Vector2& P,     ///< segment end point [dim=3]
+                        const Vector2& Q,     ///< other segment end point [dim=3]
+                        real  iPQ,            ///< 1 / (length of PQ)
+                        real  radius          ///< half-width of painted area
                         );
     
     
     /// Paint the inside of a rectangle with edges parallel to the segment PQ
     void paintFatLine2D(void (*paint)(int, int, int, int, void*),
-                        void * arg,           ///< last argument to paint
-                        const Vector2& P,     ///< first end of the segment
-                        const Vector2& Q,     ///< second end of the segment
-                        real  length,         ///< length of segment PQ
-                        const real radius,    ///< width by which the line PQ is extended, to make a round cylinder
-                        const Vector2& offset,  ///< phase of the grid
-                        const Vector2& delta    ///< period for the grid
+                        void* arg,             ///< last argument to paint
+                        const Vector2& P,      ///< segment end point
+                        const Vector2& Q,      ///< other segment end point
+                        real  iPQ,             ///< 1 / (length of PQ)
+                        const real radius,     ///< radius of cylinder
+                        const Vector2& offset, ///< phase of the grid
+                        const Vector2& delta   ///< period for the grid
                         );
     
     /// Paint a 2D rectangular volume with edges parallel to the main axes
     /**
      The painted volume is square and aligned with the principal axes (X, Y, Z)
-     It contains all the points at a distance 'radius' or less from the segment [p,q].
+     It contains all the points at a distance 'radius' or less from the segment [P,Q].
      This is the fastest rasterizer, but the volume can be much greater than that of the cylinder.
      However, the volume is nearly optimal if PQ is aligned with one of the main axis, 
      and paintBox3D is then the best choice.
      */
     void paintBox2D(void (*paint)(int, int, int, int, void*),
-                    void * arg,            ///< last argument to paint
-                    const Vector2& P,      ///< first end of the segment
-                    const Vector2& Q,      ///< second end of the segment
-                    real radius,           ///< radius of cylinder contained in the volume
+                    void* arg,             ///< last argument to paint
+                    const Vector2& P,      ///< segment end point
+                    const Vector2& Q,      ///< other segment end point
+                    real radius,           ///< radius of cylinder
                     const Vector2& offset, ///< phase of the grid
                     const Vector2& delta   ///< period for the grid
                     );
@@ -251,7 +254,7 @@ namespace Rasterizer
     /// Polygon rasterizer function in 2D, for Vertex2
     void paintPolygon2D(void (*paint)(int, int, int, int, void*),
                         void * arg,           ///< last argument to paint
-                        unsigned nbpts,       ///< number of points
+                        size_t nbpts,         ///< number of points
                         const Vertex2[],      ///< points containing additional data
                         int zz = 0            ///< third coordinate, passed as argument to paint()
                         );
@@ -265,23 +268,23 @@ namespace Rasterizer
      */
     void paintPolygon3D(void (*paint)(int, int, int, int, void*),
                         void * arg,           ///< last argument to paint
-                        unsigned n_pts,       ///< number of points
+                        size_t n_pts,         ///< number of points
                         Vertex3 pts[]         ///< coordinates + connectivity
                         );
     
     
     /// Paint a 3D cylinder with square section, aligned with the segment [P,Q]
     /**
-     A volume is painted around the segment [p,q], containing the cylinder of
-     all the points located at a distance 'radius' or less from [p,q].
+     A volume is painted around the segment [P,Q], containing the cylinder of
+     all the points located at a distance 'radius' or less from [P,Q].
      The volume is a right cylinder with a square section.
      */
     void paintFatLine3D(void (*paint)(int, int, int, int, void*),
-                        void * arg,            ///< last argument to paint
-                        const Vector3& P,      ///< first end of the segment
-                        const Vector3& Q,      ///< second end of the segment
-                        real  length,          ///< length of segment PQ
-                        real  radius,          ///< radius of cylinder contained in the volume
+                        void* arg,             ///< last argument to paint
+                        const Vector3& P,      ///< segment end point
+                        const Vector3& Q,      ///< other segment end point
+                        real  iPQ,             ///< 1 / (length of PQ)
+                        real  radius,          ///< radius of cylinder
                         const Vector3& offset, ///< phase of the grid
                         const Vector3& delta   ///< period for the grid
                         );
@@ -289,17 +292,17 @@ namespace Rasterizer
     
     /// Paint a 3D cylinder with hexagonal section, aligned with the segment [P,Q]
     /**
-     A volume is painted around points [p,q], which contains the cylinder of
-     all the points at a distance 'radius' or less from the segment [p,q].
+     A volume is painted around points [P,Q], which contains the cylinder of
+     all the points at a distance 'radius' or less from the segment [P,Q].
      The volume is a right cylinder with hexagonal section.
      This is a tighter approximation of the cylinder than the square cylinder of paintFatLine3D.
      */
     void paintHexLine3D(void (*paint)(int, int, int, int, void*),
-                        void * arg,            ///< last argument to paint
-                        const Vector3& P,      ///< first end of the segment
-                        const Vector3& Q,      ///< second end of the segment
-                        real  length,          ///< length of segment PQ
-                        real radius,           ///< radius of cylinder contained in the volume
+                        void* arg,             ///< last argument to paint
+                        const Vector3& P,      ///< segment end point
+                        const Vector3& Q,      ///< other segment end point
+                        real  iPQ,             ///< 1 / (length of PQ)
+                        real  radius,          ///< radius of cylinder
                         const Vector3& offset, ///< phase of the grid
                         const Vector3& delta   ///< period for the grid
                         );
@@ -308,7 +311,7 @@ namespace Rasterizer
     /// Paint a 3D rectangular volume with edges parallel to the main axes
     /**
      The painted volume is square and its edges are parallel to the principal axes (X, Y, Z)
-     It contains all the points at a distance 'radius' or less from the segment [p,q].
+     It contains all the points at a distance 'radius' or less from the segment [P,Q].
      This is the fastest rasterizer, but the volume can be much greater than that of the cylinder,
      in particular in the case where PQ >> radius, and PQ is oriented along a diagonal.
      However, the volume is nearly optimal if PQ is almost aligned with one of the main axis, 
@@ -316,10 +319,10 @@ namespace Rasterizer
      because it is much faster.
      */
     void paintBox3D(void (*paint)(int, int, int, int, void*),
-                    void * arg,           ///< last argument to paint
-                    const Vector3& P,     ///< first end of the segment
-                    const Vector3& Q,     ///< second end of the segment
-                    real radius,          ///< radius of cylinder contained in the volume
+                    void * arg,            ///< last argument to paint
+                    const Vector3& P,      ///< segment end point
+                    const Vector3& Q,      ///< other segment end point
+                    real radius,           ///< radius of cylinder
                     const Vector3& offset, ///< phase of the grid
                     const Vector3& delta   ///< period for the grid
                    );

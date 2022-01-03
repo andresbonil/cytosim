@@ -41,12 +41,12 @@ test_matrix: test_matrix.cc matsparsesymblk.o matsparsesym.o matsparsesym1.o mat
 	$(DONE)
 vpath test_matrix bin
 
-test_glos: test_glos.cc glossary.o filepath.o tokenizer.o stream_func.o exceptions.o backtrace.o ansi_colors.o | bin
+test_glos: test_glos.cc glossary.o filepath.o tokenizer.o stream_func.o exceptions.o backtrace.o print_color.o | bin
 	$(COMPILE) -Isrc/base -Isrc/math $(OBJECTS) $(LINK) -o bin/$@
 	$(DONE)
 vpath test_glos bin
 
-test_quaternion: test_quaternion.cc cytomath.a SFMT.o cytobase.a  | bin
+test_quaternion: test_quaternion.cc matrix33.o random_vector.o random.o SFMT.o | bin
 	$(COMPILE) -Isrc/base -Isrc/math $(OBJECTS) $(LINK) -o bin/$@
 	$(DONE)
 vpath test_quaternion bin
@@ -108,7 +108,7 @@ vpath test_gillespie bin
 
 #----------------------------Targets with Graphics------------------------------
 
-OBJ_GLAP := $(OBJ_DISP) offscreen.o cytobase.a cytomath.a
+OBJ_GLAP := $(OBJ_DISP) offscreen.o cytobase.a cytomath.a SFMT.o
 
 test_opengl: test_opengl.cc | bin
 	$(CXX) $^ $(GRAFIX) -o bin/$@
@@ -161,7 +161,7 @@ test_grid: test_grid.cc tictoc.o $(OBJ_GLAP) grid_display.o | bin
 	$(DONE)
 vpath test_grid bin
 
-test_solve: test_solve.cc cytomath.a cytobase.a | bin
+test_solve: test_solve.cc cytomath.a cytobase.a SFMT.o | bin
 	$(GLTEST_MAKE)
 	$(DONE)
 vpath test_solve bin

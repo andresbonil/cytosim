@@ -6,7 +6,7 @@
 #include "real.h"
 #include "cblas.h"
 
-/// Iterative Solvers
+/// Iterative methods to solve a system of linear equations
 namespace LinearSolvers
 {
     /// records the number of iterations, and the convergence
@@ -14,31 +14,37 @@ namespace LinearSolvers
     {
     private:
         
-        /// flag
+        /// exit flag
         int      flag_;
         
+        /// maximum allowed number of iterations
+        size_t   limit_;
+
         /// counter for iterations or number of matrix-vector operations
-        unsigned cnt_,  cntMax_, cntOld_;
+        size_t   cnt_, cntOld_;
         
         /// desired residual
-        real     resMax_;
+        real     target_;
 
-        /// achieved residual
+        /// residual achieved in last step
         real     res_;
+        
+        /// residual from the past
+        real     resOld_;
         
     public:
         
         /// set the maximum number of iterations, and the residual threshold
-        Monitor(unsigned i, real r) { reset(); cntMax_ = i; resMax_ = r; }
+        Monitor(size_t i, real r) { reset(); limit_=i; target_=r; }
         
         /// reset state variables (counters, flags and residual)
-        void reset() { flag_ = 0; cnt_ = 0; res_ = INFINITY; cntOld_ = 32; }
+        void reset() { flag_=0; cnt_=0; res_=INFINITY; cntOld_=0; resOld_=INFINITY; }
         
         /// increment counter
         void operator ++() { ++cnt_; }
         
         /// increment counter by `i`
-        void operator +=(unsigned i) { cnt_ += i; }
+        void operator +=(size_t i) { cnt_ += i; }
        
         /// value of return flag
         int flag()       const { return flag_; }
@@ -47,30 +53,29 @@ namespace LinearSolvers
         void flag(const int f) { flag_ = f; }
 
         /// iteration count
-        unsigned count() const { return cnt_; }
+        size_t count() const { return cnt_; }
         
         /// last achieved residual
         real residual()  const { return res_; }
         
         /// true if achieve residual < residual threshold
-        bool converged() const { return res_ < resMax_; }
+        bool converged() const { return res_ < target_; }
         
         /// check given residual and return true if threshold is achieved
         bool finished(real res)
         {
             res_ = res;
             
-            if ( cnt_ > cntMax_ )
+            if ( cnt_ > limit_ )
                 return true;
             
-            return ( res < resMax_ );
+            return ( res < target_ );
         }
 
         /// calculate residual from `x` and return true if threshold is achieved
         bool finished(unsigned size, const real* x)
         {
-            //fprintf(stderr, "Solver %3u residual %9.6f %9.6f\n", cnt_, blas::nrm2(size, x), blas::nrm8(size, x));
-            
+            //fprintf(stderr, "Solver %4lu residual %9.6f %9.6f\n", cnt_, blas::nrm2(size, x), blas::nrm8(size, x));
 #if ( 1 )
             // use the 'infinite' norm (i.e. the largest element)
             real res = blas::nrm8(size, x);
@@ -79,20 +84,22 @@ namespace LinearSolvers
             real res = blas::nrm2(size, x);
 #endif
 #if ( 1 )
-            if ( cnt_ > cntOld_+128 )
+            // monitor convergence: the residual from a linear solver may occasionally 
+            if ( 1 == (16&cnt_) )
             {
-                if ( res > 2*res_ )
+                if ( res > 2*resOld_ )
                 {
-                    printf("Warning: slow convergence (time_step may be too big)");
-                    printf(" residual %.3e at iteration %3u, %.3e at %3u\n", res_, cntOld_, res, cnt_);
+                    printf("Warning: slow convergence (reduce time_step?)");
+                    printf(" residual %.3e at iteration %lu, %.3e at %lu\n", resOld_, cntOld_, res, cnt_);
                 }
+                resOld_ = res;
                 cntOld_ = cnt_;
             }
 #endif
             
             if ( res != res )
             {
-                fprintf(stderr, "Solver diverged at step %3u (residual is not a number)\n", cnt_);
+                fprintf(stderr, "Solver diverged at step %3lu (residual is not a number)\n", cnt_);
                 return true;
             }
             

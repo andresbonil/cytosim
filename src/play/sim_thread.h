@@ -14,7 +14,7 @@ class SimThread : private Parser
     /// disabled default constructor
     SimThread();
     
-    /// for cleanup
+    /// cleanup callback
     friend void child_cleanup(void*);
     
 private:
@@ -23,7 +23,7 @@ private:
     FrameReader     reader_;
 
     
-    /// callback invoked when the thread is halted
+    /// callback invoked when the thread is halted, set in constructor
     void           (*hold_callback)(void);
     
     /// slave thread

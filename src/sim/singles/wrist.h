@@ -43,7 +43,7 @@ public:
     /// translate object's position by the given vector
     void    translate(Vector const&) { }
     
-    /// modulo the position of the grafted
+    /// bring object to centered image using periodic boundary conditions
     void    foldPosition(Modulo const*) { }
     
     /// stiffness of the interaction
@@ -55,7 +55,7 @@ public:
     Mecable const* base() const { return anchor.base(); }
 
     /// the position of the anchoring point
-    Vector  posFoot() const { return anchor.position(); }
+    Vector  posFoot() const { return anchor.pos(); }
     
     
     /// true if Single creates a link

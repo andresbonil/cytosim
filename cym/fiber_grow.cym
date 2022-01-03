@@ -1,9 +1,9 @@
-/**
+%{
  @example fiber_grow.cym
  We create a dynamic fiber with activity=grow
 
  F. Nedelec, November 2013
-*/
+}
 
 
 set simul system

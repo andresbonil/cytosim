@@ -3,6 +3,7 @@
 
 set simul contract 
 {
+    dim = 3
     time_step = 0.001
     viscosity = 1
     steric = 1, 1000

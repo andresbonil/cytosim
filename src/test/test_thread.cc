@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
     {
         pthread_cancel(slave);
         pthread_join(slave, 0);
-        pthread_detach(slave);
     }
     
     pthread_cond_destroy(&condition);

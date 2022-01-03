@@ -1,9 +1,9 @@
-/**
+%{
  @example fiber_forces.cym
  We display the forces acting on a confined fiber
 
  F. Nedelec, 23 Jan 2010
-*/
+}
 
 
 set simul system

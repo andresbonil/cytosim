@@ -7,6 +7,7 @@
 #include <time.h>
 #include "sim_thread.h"
 #include "exceptions.h"
+#include "print_color.h"
 #include "picket.h"
 #include "glapp.h"
 
@@ -94,7 +95,7 @@ void SimThread::run()
     }
     catch( Exception & e ) {
         simul.relax();
-        std::cerr << "\nError: " << e.what() << std::endl;
+        std::cerr << "\nError: " << e.what() << '\n';
         //flashText("Error: the simulation died");
     }
     hold_callback();
@@ -105,9 +106,9 @@ void SimThread::run()
 void child_cleanup(void * arg)
 {
     SimThread * st = static_cast<SimThread*>(arg);
-    //st->debug("cleanup");
     st->hasChild = 0;
     st->unlock();
+    //st->debug("ended");
 }
 
 
@@ -120,7 +121,6 @@ void* run_launcher(void * arg)
     pthread_cleanup_push(child_cleanup, arg);
     st->run();
     pthread_cleanup_pop(1);
-    pthread_detach(st->child());
     return nullptr;
 }
 
@@ -150,7 +150,7 @@ void SimThread::extend_run()
 {
     assert_true( isChild() );
     try {
-        Parser::execute_run(100000);
+        Parser::execute_run(1<<20);
     }
     catch( Exception & e ) {
         std::cerr << "\nError: " << e.what() << '\n';
@@ -170,7 +170,6 @@ void* extend_launcher(void * arg)
     pthread_cleanup_push(child_cleanup, arg);
     st->extend_run();
     pthread_cleanup_pop(1);
-    pthread_detach(st->child());
     return nullptr;
 }
 
@@ -215,11 +214,14 @@ void SimThread::stop()
         // request clean termination:
         mFlag = 1;
         signal();
-        //debug("join...");
         // wait for termination:
-        pthread_join(child_, nullptr);
-        pthread_detach(child_);
-        hasChild = 0;
+        if ( hasChild )
+        {
+            //debug("join...");
+            // wait for termination:
+            pthread_join(child_, nullptr);
+            hasChild = 0;
+        }
     }
 }
 
@@ -238,7 +240,6 @@ void SimThread::cancel()
         {
             // wait for termination:
             pthread_join(child_, nullptr);
-            pthread_detach(child_);
             hasChild = 0;
             unlock();
         }
@@ -278,7 +279,7 @@ SingleProp * SimThread::makeHandleProperty(real range)
 
     SingleProp * sip = new SingleProp("user_single");
     sip->hand = "user_hand";
-    sip->stiffness = 1000;
+    sip->stiffness = 2000;
     sip->complete(simul);
     simul.properties.deposit(sip);
     

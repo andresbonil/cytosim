@@ -22,6 +22,42 @@ Fiber* FiberProp::newFiber() const
 
 
 /**
+ Return the length specified by the user in 'opt'
+ */
+real FiberProp::newFiberLength(Glossary& opt) const
+{
+    real len = 1.0, var = 0.0;
+
+    if ( 0 < opt.nb_values("fiber_length") )
+    {
+        opt.set_from_least_used_value(len, "fiber_length");
+        return len;
+    }
+    
+    opt.set(len, "length");
+
+    if ( opt.value_is("length", 1, "exponential") )
+    {
+        // exponential distribution, truncated (Julio M.Belmonte's student):
+        real L;
+        do {
+            L = len * RNG.exponential();
+        } while (( L < min_length ) | ( L > max_length ));
+        len = L;
+    }
+    else if ( opt.set(var, "length", 1) )
+    {
+        // add variability without changing mean:
+        len += var * RNG.sreal();
+    }
+    
+    len = std::max(len, min_length);
+    len = std::min(len, max_length);
+    return len;
+}
+
+
+/**
  @addtogroup FiberGroup
  @{
  <hr>
@@ -112,33 +148,6 @@ Fiber* FiberProp::newFiber() const
 Fiber* FiberProp::newFiber(Glossary& opt) const
 {
     Fiber * fib = newFiber();
-    real len = 1.0;
-    
-    /* 
-     initial length and reference point for placement can be specified in 'opt'
-     */
-#ifdef BACKWARD_COMPATIBILITY
-    opt.set(len, "initial_length");
-#endif
-    opt.set(len, "length") || opt.set(len, "fiber_length");
-
-    // exponential distribution:
-    if ( opt.value_is("length", 1, "exponential") )
-    {
-        len *= RNG.exponential();
-    }
-    else
-    {
-        // add variability without changing mean:
-        real var = 0;
-        if ( opt.set(var, "length", 1) || opt.set(var, "fiber_length", 1) )
-        {
-            len += var * RNG.sreal();
-        }
-    }
-
-    len = std::max(len, min_length);
-    len = std::min(len, max_length);
     
 #if ( 1 )
     // specify the vertices directly:
@@ -154,7 +163,7 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
             fib->setPoint(p, vec);
         }
         if ( opt.has_key("length") )
-            fib->imposeLength(len);
+            fib->imposeLength(newFiberLength(opt));
     }
     else
 #endif
@@ -163,23 +172,24 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         unsigned nbp = opt.nb_values("shape");
         
         if ( nbp < 2 )
-            throw InvalidParameter("fiber:shape must be a list of comma-separated vectors");
+            throw InvalidParameter("fiber:shape must be a list of comma-separated points");
 
         real* tmp = new_real(DIM*nbp);
         for ( unsigned p = 0; p < nbp; ++p )
         {
             Vector vec(0,0,0);
             if ( ! opt.set(vec, "shape", p) )
-                throw InvalidParameter("fiber:shape must be a list of comma-separated vectors");
+                throw InvalidParameter("fiber:shape must be a list of comma-separated points");
             vec.store(tmp+DIM*p);
         }
         fib->setShape(tmp, nbp, 0);
         if ( fib->nbPoints() < 2 )
-            throw InvalidParameter("the vectors specified in fiber:shape must be different");
+            throw InvalidParameter("the vectors specified in fiber:shape must not overlap");
         free_real(tmp);
     }
     else
     {
+        const real len = newFiberLength(opt);
         real pl = 0; // persistence length
         // place fiber horizontally with center at the origin:
         if ( opt.set(pl, "equilibrate") && pl > 0 )
@@ -189,7 +199,7 @@ Fiber* FiberProp::newFiber(Glossary& opt) const
         
         FiberEnd ref = CENTER;
         if ( opt.set(ref, "reference", {{"plus_end", PLUS_END}, {"minus_end", MINUS_END}, {"center", CENTER}}) )
-            fib->moveEnd(ref);
+            fib->placeEnd(ref);
     }
     
     // possible dynamic states of the ends
@@ -251,10 +261,10 @@ void FiberProp::clear()
     persistent          = false;
 
     viscosity           = -1;
-    hydrodynamic_radius[0] = 0.0125;  // radius of a Microtubule
-    hydrodynamic_radius[1] = 5;
-    surface_effect      = false;
-    cylinder_height     = 0;
+    drag_radius         = 0.0125;  // radius of a Microtubule
+    drag_length         = 5;
+    drag_model          = false;
+    drag_gap            = 0;
     
     binding_key         = ~0U;  //all bits at 1
 
@@ -262,7 +272,7 @@ void FiberProp::clear()
     lattice_unit        = 0;
 
     confine             = CONFINE_OFF;
-    confine_stiffness   = -1;
+    confine_stiffness   = 0;
     confine_space       = "first";
     confine_space_ptr   = nullptr;
 
@@ -312,19 +322,23 @@ void FiberProp::read(Glossary& glos)
     if ( glos.set(ds, "delete_stub") )
     {
         persistent = !ds;
-        if ( ds )
-            Cytosim::warn << "use `persistent=0` instead of `delete_stub=1`\n";
-        else
-            Cytosim::warn << "use `persistent=1` instead of `delete_stub=0`\n";
+        Cytosim::warn << "use `persistent="<<!ds<<"' instead of `delete_stub="<<ds<<"'\n";
     }
 #endif
     
-    glos.set(viscosity,         "viscosity");
-    glos.set(hydrodynamic_radius, 2, "hydrodynamic_radius");
-    glos.set(surface_effect,    "surface_effect");
-    glos.set(cylinder_height,   "surface_effect", 1);
-    
-    glos.set(binding_key,       "binding_key");
+    glos.set(viscosity,    "viscosity");
+    glos.set(drag_radius,  "drag_radius");
+    glos.set(drag_length,  "drag_length");
+    glos.set(drag_model,   "drag_model");
+    glos.set(drag_gap,     "drag_model", 1);
+#ifdef BACKWARD_COMPATIBILITY
+    glos.set(drag_radius,  "hydrodynamic_radius");
+    glos.set(drag_length,  "hydrodynamic_radius", 1);
+    glos.set(drag_model,   "surface_effect");
+    glos.set(drag_gap,     "surface_effect", 1);
+#endif
+
+    glos.set(binding_key,  "binding_key");
     
     glos.set(lattice,           "lattice");
     glos.set(lattice_unit,      "lattice", 1);
@@ -438,7 +452,7 @@ void FiberProp::complete(Simul const& sim)
         if ( lattice_unit <= 0 )
             throw InvalidParameter("fiber:lattice_unit (known as fiber:lattice[1]) must be specified and > 0");
 #else
-        throw InvalidParameter("cytosim cannot run with fiber:lattice");
+        throw InvalidParameter("Cytosim cannot handle fiber:lattice. Please recompile after setting FIBER_HAS_LATTICE to 1");
 #endif
     }
 
@@ -447,27 +461,23 @@ void FiberProp::complete(Simul const& sim)
     
     if ( segmentation <= 0 )
         throw InvalidParameter("fiber:segmentation must be > 0");
- 
-#if ( 1 )
-    // Adjust the segmentation of all Fibers with this FiberProp:
-    for ( Fiber* fib = sim.fibers.first(); fib; fib=fib->next() )
+
+    if ( sim.ready() )
     {
-        if ( fib->property() == this  &&  fib->segmentation() != segmentation )
-        {
-            fib->segmentation(segmentation);
-            fib->updateFiber();
-        }
+        // Adjust the segmentation of all Fibers having this FiberProp
+        for ( Fiber* fib = sim.fibers.first(); fib; fib=fib->next() )
+            if ( fib->property() == this )
+                fib->adjustSegmentation(segmentation);
     }
-#endif
     
     if ( steric && steric_radius <= 0 )
         throw InvalidParameter("fiber:steric[1] (radius) must be specified and > 0");
     
-    if ( hydrodynamic_radius[0] <= 0 )
-        throw InvalidParameter("fiber:hydrodynamic_radius[0] must be > 0");
+    if ( drag_radius <= 0 )
+        throw InvalidParameter("fiber:drag_radius must be > 0");
     
-    if ( hydrodynamic_radius[1] <= 0 )
-        throw InvalidParameter("fiber:hydrodynamic_radius[1] must be > 0");
+    if ( drag_length <= 0 )
+        throw InvalidParameter("fiber:drag_length must be > 0");
 
 #if OLD_SQUEEZE_FORCE
     if ( max_chewing_speed < 0 )
@@ -507,8 +517,9 @@ void FiberProp::write_values(std::ostream& os) const
     write_value(os, "total_polymer",       total_polymer);
     write_value(os, "persistent",          persistent);
     write_value(os, "viscosity",           viscosity);
-    write_value(os, "hydrodynamic_radius", hydrodynamic_radius, 2);
-    write_value(os, "surface_effect",      surface_effect, cylinder_height);
+    write_value(os, "drag_radius",         drag_radius);
+    write_value(os, "drag_length",         drag_length);
+    write_value(os, "drag_model",          drag_model, drag_gap);
 #if OLD_SQUEEZE_FORCE
     write_value(os, "squeeze",             squeeze, squeeze_force, squeeze_range);
 #endif

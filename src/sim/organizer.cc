@@ -76,6 +76,8 @@ void Organizer::eraseOrganized()
 }
 
 //------------------------------------------------------------------------------
+#pragma mark - Placement
+
 /**
  \return The centroid from all the object positions
  */
@@ -146,6 +148,7 @@ real Organizer::dragCoefficient() const
 
 
 //------------------------------------------------------------------------------
+#pragma mark - I/O
 
 void Organizer::write(Outputter& out) const
 {
@@ -154,10 +157,7 @@ void Organizer::write(Outputter& out) const
     for ( Mecable const* i : mObjects )
     {
         out.writeSoftSpace();
-        if ( i )
-            i->writeReference(out);
-        else
-            Object::writeNullReference(out);
+        i->writeReference(out, i);
     }
 }
 

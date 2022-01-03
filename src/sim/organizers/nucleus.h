@@ -54,7 +54,7 @@ public:
     
     
     
-    /// retrieve links end-points for display
+    /// retrieve link between Sphere and ends of Fiber
     bool          getLink(size_t, Vector&, Vector&) const;
     
     /// display parameters 

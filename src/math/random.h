@@ -3,7 +3,6 @@
 #define RANDOM_H
 
 #include <stdint.h>
-#include <cmath>
 
 #ifndef REAL_H
 #  include "real.h"
@@ -13,9 +12,12 @@
 
 #include "SFMT.h"
 
-constexpr real TWO_POWER_MINUS_31 = 0x1p-31;
-constexpr real TWO_POWER_MINUS_32 = 0x1p-32;
-constexpr real TWO_POWER_MINUS_64 = 0x1p-64;
+/// the maximum value of a signed 32-bit integer is 2^31-1
+#define TWO_POWER_MINUS_31 0x1p-31
+/// the maximum value of a unsigned 32-bit integer is 2^32-1
+#define TWO_POWER_MINUS_32 0x1p-32
+/// the maximum value of a unsigned 64-bit integer is 2^64-1
+#define TWO_POWER_MINUS_64 0x1p-64
 
 
 /// Random Number Generator
@@ -31,24 +33,36 @@ constexpr real TWO_POWER_MINUS_64 = 0x1p-64;
  
  F. Nedelec, reclassified on 13.09.2018
 */
-class alignas(32) Random
+class alignas(64) Random
 {
+    /// reserve of random integers
+    uint32_t integers_[SFMT_N32];
+
     /// reserve of standard normally-distributed numbers ~ N(0,1)
     real gaussians_[SFMT_N32];
 
-    /// Mersenne Twister state variables
+    /// Mersenne Twister Generator
     sfmt_t twister_;
 
-    /// pointer to Mersenne Twister state vector
+    /// pointer to integer reserve, at unused lower end
     uint32_t const* start_;
 
-    /// pointer to Mersenne Twister state vector
+    /// pointer to integer reserve, at unused upper end + 1
     uint32_t const* end_;
     
     /// pointer to access the next value in `gaussians_[]`
     real * next_gaussian_;
     
 protected:
+    
+    /// replenish state vector
+    void refill()
+    {
+        memcpy(integers_, twister_.state, 4*SFMT_N32);
+        start_ = integers_;
+        end_ = start_ + SFMT_N32;
+        sfmt_gen_rand_all(&twister_);
+    }
 
     /// extract next 32 random bits
     uint32_t URAND32()
@@ -90,6 +104,19 @@ protected:
         return *p;
     }
     
+    /// a non-negative 'real' using 31 random bits, in [0, 1[
+    real ZERO2ONE()
+    {
+        // the cast gives a number with (x <= 2^31-1)
+        return std::fabs(static_cast<real>(RAND32())) * TWO_POWER_MINUS_31;
+    }
+
+    /// a signed 'real' using 31 random bits + sign bit (-2^31+1 < x <= 2^31-1)
+    real BIGREAL()
+    {
+        return static_cast<real>(RAND32());
+    }
+
 public:
     
     /// Constructor sets the state vector to zero
@@ -99,81 +126,71 @@ public:
     ~Random();
 
     /// true if state vector is not entirely zero
-    bool      seeded();
+    bool     seeded();
 
     /// seed with given 32 bit integer
-    void      seed(const uint32_t s);
+    void     seed(const uint32_t s);
     
     /// seed by reading /dev/random and if this fails using the clock
-    uint32_t  seed();
-   
-    /// replenish state vector
-    void refill()
-    {
-        sfmt_gen_rand_all(&twister_);
-        start_ = twister_.state[0].u;
-        end_ = start_ + SFMT_N32;
-    }
-    /// access to immutable state vector
-    uint32_t const* data() { return twister_.state[0].u; }
+    uint32_t seed();
 
     /// signed integer in [-2^31+1, 2^31-1];
-    int32_t  sint()  { return RAND32(); }
+    int32_t  sint32() { return RAND32(); }
 
     /// unsigned integer in [0, 2^32-1]
-    uint32_t pint()  { return URAND32(); }
+    uint32_t pint32() { return URAND32(); }
     
     /// unsigned integer in [0, 2^64-1]
-    int64_t  slong() { return RAND64(); }
+    int64_t  sint64() { return RAND64(); }
 
     /// unsigned integer in [0, 2^64-1]
-    uint64_t plong() { return URAND64(); }
+    uint64_t pint64() { return URAND64(); }
 
     /// unsigned integer in [0,n-1] for n < 2^32
-    uint32_t pint(const uint32_t& n)  { return uint32_t(URAND32()*TWO_POWER_MINUS_32*n); }
+    uint32_t pint32(const uint32_t& n) { return uint32_t(ZERO2ONE()*n); }
 
     /// unsigned integer in [0,n-1] for n < 2^64
-    uint64_t plong(const uint64_t& n) { return uint32_t(URAND64()*TWO_POWER_MINUS_64*n); }
+    uint64_t pint64(const uint64_t& n) { return uint64_t(URAND64()*n); }
  
     /// integer in [0,n] for n < 2^32, (slow) bitwise algorithm
-    uint32_t  pint_slow(uint32_t n);
+    uint32_t pint32_slow(uint32_t n);
     
     /// a random unsigned integer with exactly `b` bit equal to `1`
-    uint32_t  distributed_bits(int b);
+    uint32_t distributed_bits(int b);
 
     /// integer in [0 N], with probabilities given in ratio[] of size N, with sum(ratio)>0
-    uint32_t  pint_ratio(uint32_t n, const int ratio[]);
+    uint32_t pint32_ratio(uint32_t n, const uint32_t ratio[]);
 
     /// integer k of probability distribution p(k,E) = exp(-E) * pow(E,k) / factorial(k)
-    uint32_t  poisson(real E);
+    uint32_t poisson(real E);
     
     /// integer k of probability distribution p(k,E) = EL * pow(E,k) / factorial(k)
-    uint32_t  poissonE(real EL);
+    uint32_t poissonE(real EL);
     
     /// integer k of probability distribution p(k,E) = exp(-E) * pow(E,k) / factorial(k)
-    uint32_t  poisson_knuth(real E);
+    uint32_t poisson_knuth(real E);
 
     /// number of successive unsuccessful trials, when success has probability p (result >= 0)
-    uint32_t  geometric(real p);
+    uint32_t geometric(real p);
 
     /// number of sucesses among n trials of probability p
-    uint32_t  binomial(int n, real p);
+    uint32_t binomial(int n, real p);
     
     
     /// returns true with probability (p), and false with probability (1-p)
-    bool test(real p)     { return ( URAND32() * TWO_POWER_MINUS_32 <  p ); }
+    bool test(real p)     { return ( ZERO2ONE() <  p ); }
     
     /// returns true with probability (1-p), and false with probability (p)
-    bool test_not(real p) { return ( URAND32() * TWO_POWER_MINUS_32 >= p ); }
+    bool test_not(real p) { return ( ZERO2ONE() >= p ); }
     
     /// 0  or  1  with equal chance
     int  flip()           { return URAND32() & 1U; }
     
     /// returns -1  or  1 with equal chance
-    int  flipsign()       { return (int)( URAND32() & 2U ) - 1; }
+    real flipsign()       { return std::copysign(1, RAND32()); }
     
     /// returns 1 with probability P and -1 with probability 1-P
-    int  flipsign(real p) { return 2*(int)test(p) - 1; }
+    real flipsign(real p) { return 2*(int)test(p) - 1; }
 
     /// True with probability 1/8
     bool flip_8th()       { return URAND32() < 1<<29; }
@@ -194,32 +211,28 @@ public:
     double sdouble();
     
     /// positive real number in [0,1[, zero included
-    real preal()                 { return URAND32() * TWO_POWER_MINUS_32; }
+    real preal()           { return ZERO2ONE(); }
     
     /// positive real number in [0,n[ = n * preal() : deprecated, use preal() * n
-    //real preal(const real n)     { return n * ( URAND32() * TWO_POWER_MINUS_32 ); }
+    real preal(real n)     { return n * ( ZERO2ONE() ); }
     
     /// signed real number in ]-1,1[, boundaries excluded
-    real sreal()                 { return RAND32() * TWO_POWER_MINUS_31; }
+    real sreal()           { return BIGREAL() * TWO_POWER_MINUS_31; }
     
     /// signed real number in ]-1/2, 1/2[, boundaries excluded
-    real shalf()                 { return RAND32() * TWO_POWER_MINUS_32; }
+    real shalf()           { return BIGREAL() * TWO_POWER_MINUS_32; }
     
     /// returns -1.0 or 1.0 with equal chance
-    real sflip()                 { return std::copysign(1.0, RAND32()); }
+    real sflip()           { return sign_real(BIGREAL()); }
     
     /// returns -a or a with equal chance
-    real sflip(real a)           { return std::copysign(a, RAND32()); }
-
-    /// returns the sign of `a` if `a != 0` and -1 or +1 randomly, otherwise
-    real sign_exc(real a)        { return std::copysign(1.0, (a==0)?RAND32():a); }
+    real sflip(real a)     { return std::copysign(a, BIGREAL()); }
 
     /// non-zero real number in ]0,1]
-    real preal_exc()             { return URAND32() * TWO_POWER_MINUS_32 + TWO_POWER_MINUS_32; }
-    
+    real preal_exc()       { return 1 - ZERO2ONE(); }
     
     /// non-zero real number in ]0,n]
-    real preal_exc(const real n) { return preal_exc() * n; }
+    real preal_exc(real n) { return preal_exc() * n; }
     
     /// real number uniformly distributed in [a,b[
     real real_uniform(real a, real b) { return a + preal() * ( b - a ); }
@@ -248,19 +261,19 @@ public:
     void gauss_set(real vec[], size_t n, real v);
 
     /// signed real number, following a normal law N(0,1), slower algorithm
-    void gauss_slow(real &, real&);
+    void gauss_boxmuller(real &, real&);
     
     /// random in [0, inf[, with P(x) = exp(-x), mean = 1.0, variance = 1.0
-    real exponential() { return -log( URAND32() * TWO_POWER_MINUS_32 + TWO_POWER_MINUS_32 );  }
+    real exponential() { return -std::log(1 - ZERO2ONE());  }
     
     /// exponentially distributed positive real, with P(x) = exp(-x/E) / E,  parameter E is 1/Rate
-    real exponential(const real E) { return -E * log( URAND32() * TWO_POWER_MINUS_32 + TWO_POWER_MINUS_32 );  }
+    real exponential(const real E) { return -E * std::log(1 - ZERO2ONE());  }
 
     /// fair choice among two given values
     template<typename T>
     T choice(const T& x, const T& y)
     {
-        if ( flip() )
+        if ( RAND32() > 0 )
             return x;
         else
             return y;
@@ -270,7 +283,7 @@ public:
     template<typename T>
     T choice(const T val[], uint32_t size)
     {
-        return val[ pint(size) ];
+        return val[ pint32(size) ];
     }
     
     /// uniform shuffling of array `T[]`.
@@ -281,7 +294,7 @@ public:
         uint32_t jj = size, kk;
         while ( jj > 1 )
         {
-            kk = pint(jj);
+            kk = pint32(jj);
             --jj;
             T tmp   = val[jj];
             val[jj] = val[kk];
@@ -306,12 +319,12 @@ extern Random RNG;
  
  */
 
-inline uint32_t lcrng1(uint32_t z) { return z * 2024337845U + 797082193U; }
+inline static uint32_t lcrng1(uint32_t z) { return z * 2024337845U + 797082193U; }
 
-inline uint32_t lcrng2(uint32_t z) { return z * 279470273U + 4294967291U; }
+inline static uint32_t lcrng2(uint32_t z) { return z * 279470273U + 4294967291U; }
 
-inline uint32_t lcrng3(uint32_t z) { return z * 1372383749U + 1289706101U; }
+inline static uint32_t lcrng3(uint32_t z) { return z * 1372383749U + 1289706101U; }
 
-inline uint32_t lcrng4(uint32_t z) { return z * 1103515245U + 12345U; }
+inline static uint32_t lcrng4(uint32_t z) { return z * 1103515245U + 12345U; }
 
 #endif  //RANDOM_H

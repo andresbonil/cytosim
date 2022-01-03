@@ -292,15 +292,9 @@ public:
     /// returns the force on point `p` calculated at the previous Meca::solve()
     Vector          netForce(const unsigned p) const;
     
-    /// replaces current forces by the ones provided as argument
-    void            getForces(const real* ptr) { pForce = ptr; pForceMax = nPoints; }
+    /// replace current forces by the ones provided as argument
+    virtual void    getForces(const real* ptr) { pForce = ptr; pForceMax = nPoints; }
     
-    /// compute Lagrange multiplier corresponding to mechanical constraints
-    virtual void    computeTensions(const real* force) {}
-    
-    /// save Lagrange multipliers computed in projectForces()
-    virtual void    storeTensions(const real* force) {}
-
     //--------------------------------------------------------------------------
     
     /// Add rigidity terms Y <- Y + Rigidity * X
@@ -368,7 +362,7 @@ public:
     /// Rotate object by given rotation
     virtual void    rotate(Rotation const&);
     
-    /// Modulo around the first point
+    /// bring object to centered image using periodic boundary conditions
     virtual void    foldPosition(Modulo const*);
     
     /// true if all points are inside Space

@@ -32,9 +32,6 @@ private:
     
     /// connections
     std::vector<Mecapoint> asterPoints, solidPoints;
-    
-    /// find aster
-    Aster *    findAster(std::string const&, Simul&);
 
 public:
     
@@ -55,7 +52,7 @@ public:
 
     //------------------------------ read/write --------------------------------
     
-    /// retrieve links end-points for display
+    /// retrieve link between Solid and Aster's core
     bool       getLink(size_t, Vector&, Vector&) const;
     
     /// return PointDisp of Solid

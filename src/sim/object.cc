@@ -109,24 +109,22 @@ std::string Object::reference() const
  The ascii based format always the same.
  All formats are read by Simul::readReference()
  */
-void Object::writeReference(Outputter& out, ObjectTag g) const
+void Object::writeReference(Outputter& out, ObjectTag g, ObjectID id)
 {
-    assert_true( property() );
-    assert_true( property()->number() > 0 );
-    assert_true( identity() > 0 );
+    assert_true( id > 0 );
 
-    if ( identity() > 65535 )
+    if ( id > 65535 )
     {
         // long format (5 bytes)
         // set the highest bit of the byte, which is not used by ASCII codes
         out.writeChar(g, 128);
-        out.writeUInt32(identity(), 0);
+        out.writeUInt32(id, 0);
     }
     else
     {
         // short format (3 bytes)
         out.put_char(g);
-        out.writeUInt16(identity(), 0);
+        out.writeUInt16(id, 0);
     }
 }
 
@@ -134,6 +132,15 @@ void Object::writeReference(Outputter& out, ObjectTag g) const
 void Object::writeNullReference(Outputter& out)
 {
     out.put_char(TAG);
+}
+
+
+void Object::writeReference(Outputter& out, Object const* i)
+{
+    if ( i )
+        writeReference(out, i->tag(), i->identity());
+    else
+        writeNullReference(out);
 }
 
 
@@ -153,8 +160,7 @@ Writes the info that is common to all objects to file
      - 4 bytes for the mark
      .
  .
- The ascii based format is always the same.
- This header is read by ObjectSet::readObject()
+ The ascii based format is invariant.
  */
 void Object::writeHeader(Outputter& out, ObjectTag g) const
 {
@@ -175,6 +181,59 @@ void Object::writeHeader(Outputter& out, ObjectTag g) const
         out.writeUInt16(identity(), ':');
     }
 }
+
+
+void Object::readHeader(Inputter& in, bool fat, unsigned& ix, ObjectID& id, ObjectMark& mk)
+{
+    if ( in.binary() )
+    {
+        // read header in binary format
+        if ( fat )
+        {
+            ix = in.readUInt16();
+            id = in.readUInt32();
+#ifdef BACKWARD_COMPATIBILITY
+            if ( in.formatID() < 34 )
+                ;
+            else if ( in.formatID() < 39 )
+                mk = in.readUInt16();
+            else
+#endif
+            mk = in.readUInt32();
+        }
+        else
+        {
+            ix = in.readUInt8();
+            id = in.readUInt16();
+        }
+    }
+    else
+    {
+        // read header in text format
+        FILE * file = in.file();
+        if ( 1 != fscanf(file, "%u", &ix) )
+            throw InvalidIO("invalid Object header");
+        if ( in.get_char() != ':' )
+            throw InvalidIO("invalid Object header");
+        if ( 1 != fscanf(file, "%u", &id) )
+            throw InvalidIO("invalid Object header");
+        int c = in.get_char();
+        if ( c == ':' )
+        {
+            if ( 1 != fscanf(file, "%lu", &mk) )
+            throw InvalidIO("invalid Object header");
+        }
+        else
+            in.unget(c);
+    }
+#ifdef BACKWARD_COMPATIBILITY
+    if ( in.formatID() < 45 )
+        ++ix;
+#endif
+    if ( id == 0 )
+        throw InvalidIO("Invalid ObjectID referenced in file");
+}
+
 
 
 /// print a list of objects

@@ -325,13 +325,13 @@ void NodeList::shuffle()
     size_t pp, qq;
     if ( nSize > UINT32_MAX )
     {
-        pp = RNG.plong(nSize);
-        qq = RNG.plong(nSize);
+        pp = RNG.pint64(nSize);
+        qq = RNG.pint64(nSize);
     }
     else
     {
-        pp = RNG.pint(nSize);
-        qq = RNG.pint(nSize);
+        pp = RNG.pint32(nSize);
+        qq = RNG.pint32(nSize);
     }
 
     size_t n = 0;

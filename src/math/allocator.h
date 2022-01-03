@@ -7,15 +7,16 @@
 #include "assert_macro.h"
 #include <cstdio>
 
-/** A custom of smart pointer to allocat memory for vectors */
+/// Iterative methods to solve a system of linear equations
 namespace LinearSolvers
 {
     /// allocates vectors of real
+    /** An class to allocate and keep track of memory used for vectors */
     class Allocator
     {
     private:
         
-        /// size of the vector to be allocated
+        /// length of vectors to be allocated
         size_t siz_;
         
         /// number of vectors allocated

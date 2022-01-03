@@ -52,9 +52,6 @@ Sphere::Sphere(SphereProp const* p, real rad)
         addPoint( Vector(0,spRadius,0) );
         addPoint( Vector(0,0,spRadius) );
     }
-    
-    // this only needs to be called once:
-    setDragCoefficient();
 }
 
 
@@ -63,7 +60,6 @@ Sphere::Sphere(const Sphere & o)
 {
     prop     = o.prop;
     spRadius = o.spRadius;
-    setDragCoefficient();
 }
 
 
@@ -71,7 +67,6 @@ Sphere & Sphere::operator =(const Sphere & o)
 {
     prop     = o.prop;
     spRadius = o.spRadius;
-    setDragCoefficient();
     return *this;
 }
 
@@ -252,20 +247,20 @@ void Sphere::resize(const real R)
     {
         spRadius = R;
         reshape();
-        //recalculate drag:
-        setDragCoefficient();
     }
 }
 
 /**
- the mobility is that of a sphere in an infinite fluid:
- Stokes law:
+ The mobility is that of a sphere in an infinite fluid (Stokes law):
  
- mu_translation = 6 * PI * viscosity * radius
- dposition/dt   = mu_trans * force
+ Translation:
+     dposition/dtime = mu_T * force
+     mu_T = 6 * PI * viscosity * radius
  
- mu_rotation = 8 * PI * viscosity * radius^3
- dangle/dt   = mu_rotation * torque
+ Rotation:
+     dangle/dtime = mu_R * torque
+     mu_R = 8 * PI * viscosity * radius^3
+ 
  */
 void Sphere::setDragCoefficientStokes()
 {
@@ -304,10 +299,7 @@ void Sphere::setDragCoefficientPiston()
     real thickness = prop->confine_space_ptr->thickness();
     real eps = ( thickness - rad ) / rad;
     
-    if ( eps <= 0 )
-        throw InvalidParameter("Error: piston formula yields invalid value");
-
-    if ( eps > 1 )
+    if ( eps <= 0 || eps > 1 )
         throw InvalidParameter("Error: piston formula yields invalid value");
 
     spDrag    = 9*M_PI*M_PI * prop->viscosity * rad * M_SQRT2 / ( 4 * pow(eps,2.5) );
@@ -355,9 +347,7 @@ void Sphere::release()
 
 void Sphere::prepareMecable()
 {
-    //setDragCoefficient() was already called by the constructor
-    //setDragCoefficient();
-    
+    setDragCoefficient();
     assert_true( spDrag > 0 );
     assert_true( spDragRot > 0 );
     
@@ -497,7 +487,7 @@ void Sphere::reshape()
     }
     
 #if ( DIM == 3 )
-    orthogonalize(RNG.pint(3));
+    orthogonalize(RNG.pint32(3));
 #endif
 }
 
