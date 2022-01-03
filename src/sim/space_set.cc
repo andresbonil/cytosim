@@ -6,7 +6,6 @@
 #include "simul.h"
 #include "space.h"
 #include "modulo.h"
-#include "space_dynamic_ellipse_prop.h"
 
 //---------------------------- GLOBAL VARIABLES --------------------------------
 
@@ -45,22 +44,10 @@ void SpaceSet::setMaster(Space const* spc)
 
 //------------------------------------------------------------------------------
 
-Property * SpaceSet::newProperty(const std::string& cat,const std::string& nom, Glossary& opt) const
+Property * SpaceSet::newProperty(const std::string& cat,const std::string& nom, Glossary&) const
 {
-    
-    if ( cat == "space" ) {
-        
-        std::string shape;
-        
-        if ( opt.peek(shape, "shape") )
-		{
-			if ( shape == "dynamic_ellipse" or shape == "contractile")
-                return new SpaceDynamicEllipseProp(nom);
-		}
-        
+    if ( cat == "space" )
         return new SpaceProp(nom);
-    }
-    
     return nullptr;
 }
 
