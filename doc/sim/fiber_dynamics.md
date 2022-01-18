@@ -215,7 +215,7 @@ It is possible to set the state of the ends of a filament when it is created:
 
 The first value applies to the plus end and the second value to the minus end.
 
-While playing with this features, press `i` in the keyboard once to display information about the microtubules lengths and states while displaying the simulation.
+While playing with this features, press `r` to display information about the microtubules lengths and states while displaying the simulation.
 
 
 # 4. Discrete Microtubule Dynamic Instability 
