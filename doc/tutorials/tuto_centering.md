@@ -22,7 +22,7 @@ This is the basis of [this article](http://dx.doi.org/10.1016/j.celrep.2016.01.0
 
 We assume here that you have already followed [Tutorial 1](tuto_introduction.md), and that you are now familiar with the general syntax of Cytosim's configuration files, and you can run a live simulation from the command-line.
 
-# Step 1 - Defining microtubules
+# Step 1 - Microtubules
 
 You should first set a basic configuration file, defining a `fiber` class called `microtubule`.
 Start with a fresh empty directory and a new configuration file:
@@ -97,7 +97,7 @@ Where `free_polymer` is a number in [0,1], representing the fraction of free mon
 
     free_polymer = 1.0 - sum(all_fiber_length) / total_polymer
 
-You can press `i` in the live simulation to display detailed information about the length of the filaments.
+You can press `r` in the live simulation to display detailed information about the length of the filaments.
 You will notice that the growth slows down as the length approaches the 'total_polymer' value of 10um.
 
 ### Frictionless boundaries
@@ -122,7 +122,7 @@ What is the buckling force of a microtubule of length L? What is the value for L
 Can you adjust the parameters of the simulation such as to stall microtubule growth?
 
 
-# Step 2 - Defining an aster of microtubules
+# Step 2 - Aster of microtubules
 
 An aster is a composite objects, in which microtubules are anchored at their minus-end onto a object called a `solid`. The `solid` is an object that behaves like a rigid body: it can move by translation and rotation, but it will not deform. By anchoring the microtubules to a solid, we can establish a radial array that resembles a real aster. The structure of the aster is however imposed by the simulation, i.e. its structural integrity is completely independent from the action of motor complexes, which are absent here.
 
@@ -137,12 +137,12 @@ and define a solid called `core` and the aster, by adding these paragraphs:
         display = ( style = 3; )
     }
     
-    set aster centrosome
+    set aster star
     {
         stiffness = 1000, 500
     }
     
-    new centrosome
+    new star
     {
         solid = core
         radius = 0.5
@@ -169,15 +169,15 @@ What happens when microtubules are able to grow longer than this?
 
 ### Links and stiffnesses
 
-To anchors the Fiber to the Solid, both in position and direction, each Fiber is attached to the Solid in two points:
+To physically connect Fibers and Solid, constraining both position and direction, each Fiber is attached to the Solid in two points:
 
-* at the end of the Fiber
-* at a intermediate point of the Fiber at some distance from this end.
+* at the end of the Fiber (the minus-end)
+* at an intermediate point of the Fiber at some distance from this end.
 
-Thus two sorts of links are used to anchor the filaments onto the solid, and this is why two values of stiffness can be defined:
+These different links can have different stiffnesses:
 
-* stiffness[0] for the link to the end of the Fiber
-* stiffness[1] for the link to the intermediate point of the Fiber. 
+* stiffness[0] for the link 1 at the end of the Fiber
+* stiffness[1] for the link 2 at the intermediate point of the Fiber. 
 
 Set one of the stiffness value to zero, and observe the effect on the aster.
 
@@ -188,7 +188,7 @@ Can you observe centering? Is it stable?
 You can specify two values for `radius` to place the microtubules minus-end a little away from the center.
 This can be useful to avoid the very high density of filaments in the center, which is not realistic.
 
-    new centrosome
+    new star
     {
         radius = 0.5, 0.5
         ...
@@ -200,7 +200,7 @@ Check the difference visually.
 
 You can specify the initial position within he `new` command, in the same way as most objects:
 
-    new centrosome
+    new star
     {
         ...
         position = center
@@ -208,7 +208,7 @@ You can specify the initial position within he `new` command, in the same way as
 
 or to place it near the edge: 
 
-    new centrosome
+    new star
     {
         ...
         position = 4 0 0
@@ -220,7 +220,7 @@ In the model, the drag of an aster is the sum of all the drag of the solid and m
 
 The drag coefficient affect the speed at which an aster will move under some force, but this should not have much effect on the equilibrium position that will eventually be reached, if one waits long enough.
 
-# Step 3 - Centering by pushing
+# Step 3 - Centering by Pushing
 
 ## Small cell
 
@@ -228,7 +228,7 @@ Microtubules growing from a centrosome will exert pushing forces against the cel
 
     F = 2 * rigidity / length^2 
 
-Position the centrosome 1 um away from the cell edge to start with, in a cell with a radius of 5 um and a total amount of polymer such that the microtubule lengths are equal to the cell radius . Does the centrosome center itself? How stable is the final position? 
+Position the aster 1 um away from the cell edge to start with, in a cell with a radius of 5 um and a total amount of polymer such that the microtubule lengths are equal to the cell radius . Does the aster center itself? How stable is the final position? 
 
 ## Large cell
 
@@ -240,16 +240,16 @@ Change cell size by modifying the geometry line:
         radius = 15
     }
 
-Place the centrosome 1 um away from the cell membrane by modifying the position line:
+Place the aster 1 um away from the cell membrane by modifying the position line:
     
-    new centrosome
+    new star
     {
         position = 14 0 0
     }
 
 What happens? Adjust the total amount of polymer so that all fibers can growth up to a length equal to the radius of the cell
 
-## Impact of cell shape
+## Cell shape
 
 Try different shapes, while keeping the size similar:
 
@@ -277,7 +277,7 @@ and:
 Do you find that centration is different when the cells has 'corners'?
 
 
-# Step 4 - Impact of microtubule dynamicity
+# Step 4 - Microtubule Dynamicity
 
 Set the cell radius back to 5 um and the position to “4 0”. Now you will explore the importance of microtubule dynamics. Enable the standard two-state model of dynamic instability as follows:
 
@@ -302,7 +302,7 @@ Make sure that the fibers start with a length larger than `min_length`.
 
 If the fiber class from which the aster is constructed is dynamic, you can specify a nucleation rate:
     
-    set aster centrosome
+    set aster star
     {
         ...
         nucleate = 1, microtubule, ( length = 1 )
@@ -313,9 +313,9 @@ This will be the rate a which an empty site will be re-populated, leading to a s
 The mean length of the microtubules is then equal to `growing_speed/catastrophe_rate` at equilibrium.
 Increase (and then decrease) microtubule catastrophe rate, and run the two simulations in turn. Describe the events.
 
-# Step 5 - Impact of cytoplasmic motors
+# Step 5 - Cytoplasmic Motors
 
-Reset catastrophe rate to 0.1 and add 2000 motors distributed at fixed points throughout the cytoplasm:
+Reset `catastrophe_rate` to 0.1 and add 2000 motors distributed at fixed points throughout the cytoplasm:
 
     set hand dynein
     {
@@ -355,12 +355,12 @@ Place the motors at a maximum distance of 0.1 from the edge of the cell:
         position = edge 0.1
     }
 
-Take a few minutes to guess what will happen with plus-end or minus-end directed motors...
-write it down and, only then, run the simulation,
+Take a few minutes to guess what will happen with plus-end and with minus-end directed motors... write your predictions on paper and only then, run the corresponding simulations.
+Check the outcome and verify your prediction.
 
 
 ## The end
 
 Congratulation, you have completed the tutorial.
-
+Please help us to improve this material by sending us your feedback.
 

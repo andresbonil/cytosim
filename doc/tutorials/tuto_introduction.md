@@ -439,7 +439,7 @@ Remember that the "kinesin" is of class *hand* and cannot exist by itself. It mu
 Finally, we have specified that each "kinesin" should be displayed as a yellow dot of size 4 pixels. Choosing different colors is very helpful if you want to define multiple types of hands.
 
 Do you see the molecules binding and unbinding from the filaments?
-Press `i` three times in the keyboard to display information about the states of the singles during the simulation.
+Press `r` a few times to display information about the states of the singles during the simulation.
 
 ### Visualizing binding events
 
