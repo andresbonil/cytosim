@@ -228,6 +228,9 @@ public:
 #endif
     }
     
+    /// interpolate 'rank' points starting from 'ref'
+    Vector interpolatePoints(size_t ref, real const coef[], size_t rank) const;
+    
     //--------------------------------------------------------------------------
     
     /// Allocate memory to store given number of vertices
