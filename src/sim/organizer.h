@@ -112,6 +112,9 @@ public:
     Organizer *   prev()  const  { return static_cast<Organizer*>(nPrev); }
     
     //--------------------------------------------------------------------------
+    
+    /// read list of Mecables
+    void          readOrganized(Inputter&, Simul&, size_t);
 
     /// read
     void          read(Inputter&, Simul&, ObjectTag);

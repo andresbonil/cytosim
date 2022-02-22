@@ -162,22 +162,28 @@ void Organizer::write(Outputter& out) const
 }
 
 
-void Organizer::read(Inputter& in, Simul& sim, ObjectTag tag)
+
+void Organizer::readOrganized(Inputter& in, Simul& sim, size_t nbo)
 {
-    unsigned nbo = in.readUInt16();
     nbOrganized(nbo);
     
-    //std::clog << " Organizer::read with " << nb << " objects" << std::endl;
+    //std::clog << " Organizer::read with " << nb << " objects" << '\n';
     ObjectTag g;
-    for ( unsigned i = 0; i < nbo; ++i )
+    for ( size_t i = 0; i < nbo; ++i )
     {
         Object * w = sim.readReference(in, g);
         if ( w )
         {
-            //std::clog << " Organized(" << i << ") is " << w->reference() << std::endl;
+            //std::clog << " Organized(" << i << ") is " << w->reference() << '\n';
             grasp(Simul::toMecable(w), i);
         }
         else
             grasp(nullptr, i);
     }
+}
+
+
+void Organizer::read(Inputter& in, Simul& sim, ObjectTag)
+{
+    readOrganized(in, sim, in.readUInt16());
 }
