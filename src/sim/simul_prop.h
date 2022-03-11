@@ -166,13 +166,12 @@ public:
     /**
      This parameter can affect the performance greatly, and it is always a good idea
      to try the different accepted values of `precondition`:
-     - 0 : never use preconditionning
-     - 1 : use a block preconditionner recalculated at every time step
-     - 2 : use a block preconditionner recalculated occasionally
+     - 0 : do not use preconditionning
+     - 1 : use a block preconditionner
      .
      
      With `precondition = 1`, Cytosim calculates a matrix (the preconditionner)
-     that is approximately equal to the invert of the matrix that characterize the
+     that is approximately equal to the inverse of the matrix that characterize the
      dynamical system. Using this preconditionner can reduce the number of iterations
      needed to converge to a solution, resulting in a potential overall speedup.
      However, calculating the preconditionner itself is costly, and performing an
