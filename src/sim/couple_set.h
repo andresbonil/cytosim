@@ -75,7 +75,7 @@ private:
     void          uniAttach2(Array<FiberSite>&, CoupleReserveList&);
     
     /// attach both Hands of `nb` Couple at crossing points specified by first argument
-    void          uniAttach12(Array<FiberSite>&, Array<FiberSite>&, CoupleReserveList&, unsigned nb);
+    void          uniAttach12(Array<FiberSite>&, Array<FiberSite>&, CoupleReserveList&, size_t nb);
     
     /// couple:fast_diffusion attachment algorithm; assumes free Couples are uniformly distributed
     void          uniAttach(FiberSet const&);

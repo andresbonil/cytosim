@@ -150,7 +150,7 @@ public:
     uint32_t pint32(const uint32_t& n) { return uint32_t(ZERO2ONE()*n); }
 
     /// unsigned integer in [0,n-1] for n < 2^64
-    uint64_t pint64(const uint64_t& n) { return uint64_t(URAND64()*n); }
+    uint64_t pint64(const uint64_t& n) { return uint64_t(ZERO2ONE()*n); }
  
     /// integer in [0,n] for n < 2^32, (slow) bitwise algorithm
     uint32_t pint32_slow(uint32_t n);

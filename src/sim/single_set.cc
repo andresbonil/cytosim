@@ -474,31 +474,24 @@ void SingleSet::removeWrists(Object const* arg)
 /**
  Distribute Singles on the sites specified in `loc`.
  */
-void SingleSet::uniAttach(Array<FiberSite>& loc, SingleReserveList& reserve)
+void SingleSet::uniAttach(Array<FiberSite>& loc, SingleReserveList& can)
 {
     for ( FiberSite & i : loc )
     {
-        if ( reserve.empty() )
+        if ( can.empty() )
             return;
-        Single * s = reserve.back();
+        Single * s = can.back();
         Hand const* h = s->hand();
         
         if ( h->attachmentAllowed(i) )
         {
             Vector pos = i.pos();
-            Space const* spc = i.fiber()->prop->confine_space_ptr;
-
-            // Only attach if position is within the confining Space:
-            if ( spc && spc->outside(pos) )
-                continue;
-
-            if ( s->prop->fast_diffusion == 3 )
+            
+            if ( s->prop->confine == CONFINE_ON )
             {
-                if ( ! spc )
-                    continue;
                 // Only attach if position is near the edge of the Space:
-                Vector prj = spc->project(pos);
-                if ( distanceSqr(pos, prj) > h->prop->binding_range_sqr )
+                Vector prj = s->confineSpace()->project(pos);
+                if ( distanceSqr(pos, prj) >= square(h->prop->binding_range) )
                     continue;
                 // Single will be placed on the edge of the Space:
                 pos = prj;
@@ -515,7 +508,7 @@ void SingleSet::uniAttach(Array<FiberSite>& loc, SingleReserveList& reserve)
 #endif
             }
 
-            reserve.pop_back();
+            can.pop_back();
             s->setPosition(pos);
             s->attach(i);
             link(s);

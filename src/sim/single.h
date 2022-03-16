@@ -181,6 +181,9 @@ public:
     
     /// return PointDisp of associated Hand
     PointDisp const* disp() const { return sHand->prop->disp; }
+    
+    /// return Property::confine_space_ptr
+    Space const* confineSpace() const { return prop->confine_space_ptr; }
 
     /// read from file
     virtual void    read(Inputter&, Simul&, ObjectTag);
