@@ -3,7 +3,7 @@
 #ifndef OBJECT_SET_H
 #define OBJECT_SET_H
 
-#include "node.h"
+#include "noder.h"
 #include "object.h"
 #include "node_list.h"
 #include "inventory.h"

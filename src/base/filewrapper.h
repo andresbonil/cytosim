@@ -45,7 +45,7 @@ public:
     FileWrapper(const char* name, const char* mode);
 
     /// destructor 
-    virtual ~FileWrapper();
+    virtual ~FileWrapper()=0;
     
     /// constructor from an already opened file
     void operator =(FILE *);

@@ -1,7 +1,7 @@
 # Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 
-TOOLS:=frametool sieve reader report reportF
+TOOLS:=frametool sieve reader report reportF report_python
 
 .PHONY: tools
 tools: $(TOOLS)
@@ -42,6 +42,11 @@ report: report.cc frame_reader.o $(TOOL_OBJ) | bin
 	$(COMPILE) $(TOOL_INC) $(OBJECTS) $(LINK) -o bin/$@
 	$(DONE)
 vpath report bin
+
+report_python: report_python.cc frame_reader.o $(TOOL_OBJ) | bin
+	$(COMPILE) $(TOOL_INC) $(OBJECTS) $(LINK) -fPIC $(python3 -m pybind11 --includes) -o bin/example$(python3-config --extension-suffix)
+	$(DONE)
+vpath example$(python3-config --extension-suffix) bin
 
 
 bin1/report: report.cc frame_reader.o cytosimD1.a cytomathD1.a cytobase.a SFMT.o | bin1
