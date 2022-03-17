@@ -6,7 +6,7 @@
 
 #include "sim.h"
 #include "real.h"
-#include "node.h"
+#include "noder.h"
 #include "vector.h"
 #include "object.h"
 #include "common.h"
