@@ -161,7 +161,7 @@ public:
     Vector         otherPosition() const;
     
     /// return stiffness of associated link
-    real           interactionStiffness() const;
+    real           linkStiffness() const;
 
     
     /// read from file

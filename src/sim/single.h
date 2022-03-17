@@ -54,11 +54,11 @@ private:
     /// specialization of HandMonitor
     Vector    otherPosition(Hand const*) const { return posFoot(); }
     /// = identity() of the Object on which a Wrist is attached, or Single::identity()
-    ObjectID  nucleatorID()              const { return base()?base()->identity():Object::identity(); }
+    ObjectID  nucleatorID()       const { return base()?base()->identity():Object::identity(); }
     /// specialization of HandMonitor
-    real      interactionLength()        const { return prop->length; }
+    real      linkRestingLength() const { return prop->length; }
     /// stiffness of the interaction
-    real      interactionStiffness()     const { return 0; }
+    real      linkStiffness()     const { return 0; }
 
 protected:
     
@@ -181,6 +181,9 @@ public:
     
     /// return PointDisp of associated Hand
     PointDisp const* disp() const { return sHand->prop->disp; }
+    
+    /// return Property::confine_space_ptr
+    Space const* confineSpace() const { return prop->confine_space_ptr; }
 
     /// read from file
     virtual void    read(Inputter&, Simul&, ObjectTag);

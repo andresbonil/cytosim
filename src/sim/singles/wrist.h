@@ -47,7 +47,7 @@ public:
     void    foldPosition(Modulo const*) { }
     
     /// stiffness of the interaction
-    real    interactionStiffness() const { return prop->stiffness; }
+    real    linkStiffness() const { return prop->stiffness; }
 
     //--------------------------------------------------------------------------
     

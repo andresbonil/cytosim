@@ -49,10 +49,10 @@ public:
     virtual Vector otherDirection(Hand const*) const { return Vector::randU(); }
 
     /// resting length of the interaction
-    virtual real   interactionLength() const { return 0; }
+    virtual real   linkRestingLength() const { return 0; }
     
     /// stiffness of the interaction
-    virtual real   interactionStiffness() const { return 0; }
+    virtual real   linkStiffness() const { return 0; }
 
     /// identity() of containing object
     virtual ObjectID nucleatorID() const { return 0; }

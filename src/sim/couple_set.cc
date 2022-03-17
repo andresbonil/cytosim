@@ -613,16 +613,16 @@ int CoupleSet::bad() const
 /**
 Distribute Hand1 of Couples on the sites specified in `loc`.
  */
-void CoupleSet::uniAttach1(Array<FiberSite>& loc, CoupleReserveList& reserve)
+void CoupleSet::uniAttach1(Array<FiberSite>& loc, CoupleReserveList& can)
 {
     for ( FiberSite & i : loc )
     {
-        if ( reserve.empty() )
+        if ( can.empty() )
             return;
-        Couple * c = reserve.back();
+        Couple * c = can.back();
         if ( c->hand1()->attachmentAllowed(i) )
         {
-            reserve.pop_back();
+            can.pop_back();
             c->attach1(i);
             link(c);
         }
@@ -633,16 +633,16 @@ void CoupleSet::uniAttach1(Array<FiberSite>& loc, CoupleReserveList& reserve)
 /**
  Distribute Hand2 of Couples on the sites specified in `loc`.
  */
-void CoupleSet::uniAttach2(Array<FiberSite>& loc, CoupleReserveList& reserve)
+void CoupleSet::uniAttach2(Array<FiberSite>& loc, CoupleReserveList& can)
 {
     for ( FiberSite & i : loc )
     {
-        if ( reserve.empty() )
+        if ( can.empty() )
             return;
-        Couple * c = reserve.back();
+        Couple * c = can.back();
         if ( c->hand2()->attachmentAllowed(i) )
         {
-            reserve.pop_back();
+            can.pop_back();
             c->attach2(i);
             link(c);
         }
@@ -656,16 +656,17 @@ void CoupleSet::uniAttach2(Array<FiberSite>& loc, CoupleReserveList& reserve)
  as returned by FiberSet::allIntersections()
  */
 void CoupleSet::uniAttach12(Array<FiberSite>& loc1, Array<FiberSite>& loc2,
-                            CoupleReserveList& reserve, unsigned nb)
+                            CoupleReserveList& can, size_t nb)
 {
     size_t nbc = loc1.size();
-    for ( size_t n = 0; n < nb; ++n )
+    assert_true(nbc == loc2.size());
+    const size_t sup = std::min(nb, can.size());
+
+    for ( size_t n = 0; n < sup; ++n )
     {
-        if ( reserve.empty() )
-            return;
-        Couple * c = reserve.back();
-        reserve.pop_back();
-        size_t p = RNG.pint64(nbc);
+        Couple * c = can.back();
+        can.pop_back();
+        size_t p = RNG.pint32(nbc);
         c->attach1(loc1[p]);
         c->attach2(loc2[p]);
         link(c);

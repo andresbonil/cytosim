@@ -51,6 +51,9 @@ public:
      */
     std::string  fiber_spec;
     
+    /// angle of newly made fiber, relative to mother filament for Nucleator in Couple
+    real nucleation_angle;
+
     /// specifies the direction of the new Fiber
     /**
      The `specificity` can be:

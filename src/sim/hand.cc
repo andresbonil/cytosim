@@ -40,9 +40,9 @@ Vector Hand::otherPosition() const
 }
 
 
-real Hand::interactionStiffness() const
+real Hand::linkStiffness() const
 {
-    return haMonitor->interactionStiffness();
+    return haMonitor->linkStiffness();
 }
 
 
