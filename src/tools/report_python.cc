@@ -22,16 +22,6 @@ int prefix = 0;
 size_t cnt = 0;
 
 
-int add(int i, int j) {
-    return i + j;
-}
-
-PYBIND11_MODULE(example, m) {
-    m.doc() = "pybind11 example plugin"; // optional module docstring
-
-    m.def("add", &add, "A function that adds two numbers");
-}
-
 void help(std::ostream& os)
 {
     os << "Cytosim-report "<<DIM<<"D, file version " << Simul::currentFormatID << '\n';
@@ -126,6 +116,8 @@ void report(Simul const& simul, std::ostream& os, std::string const& what, int f
         exit(EXIT_FAILURE);
     }
 }
+
+
 
 
 //------------------------------------------------------------------------------
@@ -267,4 +259,108 @@ int reporter(int argc, char* argv[])
     arg.print_warning(std::cerr, cnt, "\n");
 
     return EXIT_SUCCESS;
+}
+
+
+
+
+
+
+
+int report_fiber_frame(int fr)
+{
+   
+    
+    Glossary arg;
+
+    std::string input = TRAJECTORY;
+    std::string str, what;
+    std::ostream * osp = &std::cout;
+    std::ofstream ofs;
+
+    // check for prefix:
+    int ax = 1;
+    what = "fiber";
+
+    
+    unsigned frame = fr;
+    unsigned period = 1;
+
+    arg.set(input, ".cmo") || arg.set(input, "input");
+    arg.set(verbose, "verbose");
+    if ( arg.use_key("-") ) verbose = 0;
+
+    Simul simul;
+    FrameReader reader;
+
+    try
+    {
+        RNG.seed();
+        simul.loadProperties();
+        reader.openFile(input);
+    }
+    catch( Exception & e )
+    {
+        std::clog << "Aborted: " << e.what() << '\n';
+        return EXIT_FAILURE;
+    }
+
+    if ( arg.set(str, "output") )
+    {
+        try {
+            ofs.open(str.c_str());
+        }
+        catch( ... )
+        {
+            std::clog << "Cannot open output file\n";
+            return EXIT_FAILURE;
+        }
+        osp = &ofs;
+    }
+    
+    Cytosim::all_silent();
+    
+    // get arguments:
+    if ( arg.set(frame, "frame") )
+        period = 0;
+    arg.set(period, "period");
+    
+    // process first record, at index 'frame':
+    if ( reader.loadFrame(simul, frame) )
+    {
+        std::cerr << "Error: missing frame " << frame << '\n';
+        return EXIT_FAILURE;
+    }
+    if ( DIM != reader.vectorSize() )
+    {
+        std::cerr << "Error: dimensionality missmatch between `report` and file\n";
+        return EXIT_FAILURE;
+    }
+
+    report(simul, *osp, what, frame, arg);
+
+    if ( ofs.is_open() )
+        ofs.close();
+
+    /// check if all specified parameters were used:
+    arg.print_warning(std::cerr, cnt, "\n");
+
+    return EXIT_SUCCESS;
+}
+
+
+
+int add(int i, int j) {
+    return i + j;
+}
+
+int ff_report(int i) {
+    return report_fiber_frame(i);
+}
+
+PYBIND11_MODULE(example, m) {
+    m.doc() = "pybind11 example plugin"; // optional module docstring
+
+    m.def("add", &add, "A function that adds two numbers");
+    m.def("report", &ff_report, "A function that reports fiber frame f");
 }
