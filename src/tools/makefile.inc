@@ -18,8 +18,8 @@ TOOL_MAKE = $(COMPILE) $(TOOL_INC) $(OBJECTS) $(LINK) -o bin/$@
 
 #PYTHONI = -fPIC -shared  -I/home/dmitrief/conda3/include/python3.7m -I/home/dmitrief/.local/lib/python3.7/site-packages/pybind11/include
 
-TEST := $(shell python3.7 -m pybind11 --includes)
-PYTHONI := -fPIC -shared $(TEST)
+TEST := $(shell python3 -m pybind11 --includes)
+PYTHONI := -fPIC -shared $(TEST) -Wl,-undefined,dynamic_lookup
 SUFFIX := $(shell python3-config --extension-suffix)
 #-------------------targets----------------------------------------------------
 
