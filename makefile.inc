@@ -6,7 +6,7 @@
 MACHINE := auto
 
 #---------------- COMPILER = {gcc, icc, clang}
-COMPILER := clang
+COMPILER := gcc
 
 #---------------- MODE = {F = Fast; D = Debug; P = Profiling; C = Coverage}
 MODE := F
@@ -64,7 +64,7 @@ endif
 # common options for all C++ objects:
 CXXFLG := -std=gnu++14 -Wredeclared-class-member -Wno-deprecated-declarations
 CXXFLG := -std=gnu++14 -fopenmp #-g -fno-inline
-CXXFLG := -std=gnu++14 -shared -fPIC -I/home/dmitrief/anaconda3/include/python3.8 -I/home/dmitrief/anaconda3/lib/python3.8/site-packages/pybind11/include
+CXXFLG := -std=gnu++14 -fPIC
 
 # option concerning memory alignment:
 ALIGN  := -malign-double -falign-loops -falign-jumps -falign-functions
@@ -88,7 +88,7 @@ ifeq ($(COMPILER),gcc)
 
 # Intel SIMD: -march=core2 (SSE3); -march=sandybridge (AVX); -march=haswell (AVX2)
 # You can use g++-8 to support Intel OMP directives
-    CXX      := g++ -Wfatal-errors -Wno-deprecated-declarations -fPIC -I/home/dmitrief/anaconda3/include/python3.8 -I/home/dmitrief/anaconda3/lib/python3.8/site-packages/pybind11/include
+    CXX      := g++ -Wfatal-errors -Wno-deprecated-declarations
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops #-floop-optimize2 -ftree-vectorize -mavx2 -mfma
     FAST     :=-O3 -fno-trapping-math -ffast-math -funroll-loops -ffp-contract=fast
 

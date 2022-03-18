@@ -16,10 +16,13 @@ TOOL_INC  = $(addprefix -Isrc/, math base sim sim/spaces sim/fibers sim/singles 
 
 TOOL_MAKE = $(COMPILE) $(TOOL_INC) $(OBJECTS) $(LINK) -o bin/$@
 
+#PYTHONI = -fPIC -shared  -I/home/dmitrief/conda3/include/python3.7m -I/home/dmitrief/.local/lib/python3.7/site-packages/pybind11/include
 
+TEST := $(shell python3.7 -m pybind11 --includes)
+PYTHONI := -fPIC -shared $(TEST)
+SUFFIX := $(shell python3-config --extension-suffix)
 #-------------------targets----------------------------------------------------
- 
- 
+
 frametool: frametool.cc | bin
 	$(COMPILE) $^ -o bin/$@
 	$(DONE)
@@ -44,9 +47,9 @@ report: report.cc frame_reader.o $(TOOL_OBJ) | bin
 vpath report bin
 
 report_python: report_python.cc frame_reader.o $(TOOL_OBJ) | bin
-	$(COMPILE) $(TOOL_INC) $(OBJECTS) $(LINK) -fPIC $(python3 -m pybind11 --includes) -o bin/example$(python3-config --extension-suffix)
+	$(COMPILE) $(PYTHONI) $(TOOL_INC) $(OBJECTS) $(LINK) -fPIC $(INCS) -o bin/example$(SUFFIX)
 	$(DONE)
-vpath example$(python3-config --extension-suffix) bin
+vpath report_python bin
 
 
 bin1/report: report.cc frame_reader.o cytosimD1.a cytomathD1.a cytobase.a SFMT.o | bin1
