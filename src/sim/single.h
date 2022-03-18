@@ -5,7 +5,7 @@
 #include "dim.h"
 #include "vector.h"
 #include "movable.h"
-#include "object.h"
+#include "objecter.h"
 #include "hand_monitor.h"
 #include "mecapoint.h"
 #include "single_prop.h"

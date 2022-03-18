@@ -5,7 +5,7 @@
 
 #include "dim.h"
 #include "array.h"
-#include "object.h"
+#include "objecter.h"
 #include "mecable.h"
 #include "bead_prop.h"
 

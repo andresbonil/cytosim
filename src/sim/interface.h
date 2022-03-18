@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include "isometry.h"
-#include "object.h"
+#include "objecter.h"
 
 class Glossary;
 class Property;

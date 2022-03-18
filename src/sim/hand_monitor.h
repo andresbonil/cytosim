@@ -6,7 +6,7 @@
 #include "real.h"
 #include "vector.h"
 #include "inventoried.h"
-#include "object.h"
+#include "objecter.h"
 
 class Hand;
 class Simul;

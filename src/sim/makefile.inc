@@ -47,7 +47,7 @@ OBJ_ORGANIZERS := organizer.o organizer_set.o \
                   aster.o aster_prop.o nucleus.o nucleus_prop.o\
                   fake.o fake_prop.o bundle.o bundle_prop.o
 
-OBJ_SIM := modulo.o movable.o mecable.o object.o object_set.o\
+OBJ_SIM := modulo.o movable.o mecable.o objecter.o object_set.o\
            sphere_prop.o sphere.o sphere_set.o\
            solid_prop.o solid.o solid_set.o bead.o bead_set.o\
            field.o field_prop.o field_set.o\

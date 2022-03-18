@@ -4,7 +4,7 @@
 #define OBJECT_SET_H
 
 #include "noder.h"
-#include "object.h"
+#include "objecter.h"
 #include "node_list.h"
 #include "inventory.h"
 #include <vector>

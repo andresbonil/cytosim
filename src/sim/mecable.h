@@ -5,7 +5,7 @@
 #define MECABLE_H
 
 #include "dim.h"
-#include "object.h"
+#include "objecter.h"
 #include "matrix.h"
 #include "buddy.h"
 #include "sim.h"

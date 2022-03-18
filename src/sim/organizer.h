@@ -5,7 +5,7 @@
 
 #include "assert_macro.h"
 #include "glossary.h"
-#include "object.h"
+#include "objecter.h"
 #include "buddy.h"
 
 class Meca;
