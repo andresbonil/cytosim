@@ -3,7 +3,7 @@
 #ifndef BUNDLE_H
 #define BUNDLE_H
 
-#include "object.h"
+#include "objecter.h"
 #include "organizer.h"
 #include "bundle_prop.h"
 #include "fiber.h"
