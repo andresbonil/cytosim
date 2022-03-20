@@ -406,6 +406,9 @@ public:
     /// print summary of Fiber's lattice quantities
     void      reportFiberLattice(std::ostream&, bool density) const;
     
+    /// print network surface area
+    void      reportNetworkSize(std::ostream&) const;
+
     /// print positions of interection between two fibers
     void      reportFiberIntersections(std::ostream&, Glossary&) const;
 

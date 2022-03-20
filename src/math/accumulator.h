@@ -82,6 +82,16 @@ public:
 #endif
     }
     
+    real total_length() const
+    {
+        return sum;
+    }
+    
+    real total_variance() const
+    {
+        return var[0] + var[4] + var[8];
+    }
+
     void print_doc(std::ostream& out) const
     {
         out << COM << "cnt";
