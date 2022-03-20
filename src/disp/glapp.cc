@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <cstdarg>
 #include "exceptions.h"
-#include "saveimage.h"
+#include "save_image.h"
 #include "glossary.h"
 #include "tictoc.h"
 #include "gle.h"

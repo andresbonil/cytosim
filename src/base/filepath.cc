@@ -10,6 +10,25 @@
 #include "exceptions.h"
 
 
+FILE * FilePath::open_file(const char name[], const char mode[2])
+{
+    if ( name[0] == 0 )
+        throw InvalidIO("an empty file name was specified");
+
+    FILE* f = fopen(name, "w");
+
+    if ( !f )
+        throw InvalidIO("file `"+std::string(name)+"' could not be opened");
+    if ( ferror(f) )
+    {
+        fclose(f);
+        f = nullptr;
+        throw InvalidIO("file `"+std::string(name)+"'  opened with error");
+    }
+    return f;
+}
+
+
 std::string FilePath::get_cwd()
 {
     char cwd[1024] = { 0 };
@@ -40,17 +59,46 @@ bool FilePath::is_dir(const char path[])
 
 int FilePath::make_dir(const char name[])
 {
-    return mkdir(name, S_IRWXU|S_IRWXG|S_IRWXG|S_IXOTH);
+    return mkdir(name, S_IRWXU|S_IRWXG|S_IXOTH);
+}
+
+
+int FilePath::change_dir(const char path[])
+{
+    if ( path && *path )
+    {
+        if ( chdir(path) )
+        {
+            perror("Could not change directory");
+            return -1;
+        }
+    }
+    return 0;
 }
 
 
 int FilePath::change_dir(const char path[], bool make)
 {
-    if ( !path || *path == 0 )
-        return 0;
-    if ( make )
-        mkdir(path, S_IRWXU|S_IRWXG|S_IRWXG|S_IXOTH);
-    return chdir(path);
+    int cwd = -1;
+    if ( *path )
+    {
+        cwd = dirfd(opendir("."));
+        if ( make )
+            (void)mkdir(path, 0777);
+        if ( chdir(path) )
+            perror("Could not change directory");
+    }
+    return cwd;
+}
+
+
+void FilePath::change_dir(int file)
+{
+    if ( file >= 0 )
+    {
+        (void)fchdir(file);
+        (void)close(file);
+    }
 }
 
 
@@ -94,7 +142,7 @@ std::vector<std::string> FilePath::list_dir(const char path[], std::string const
     
 #if ( 0 )
     for ( size_t i = 0; i < res.size(); ++i )
-        std::clog << "   " << res[i] << std::endl;
+        std::clog << "   " << res[i] << '\n';
 #endif
     return res;
 }

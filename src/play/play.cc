@@ -4,7 +4,7 @@
 #include "glossary.h"
 #include "messages.h"
 #include "offscreen.h"
-#include "saveimage.h"
+#include "save_image.h"
 #include "filepath.h"
 #include "splash.h"
 #include "print_color.h"
@@ -336,9 +336,9 @@ int main(int argc, char* argv[])
                     if ( multi )
                         blitBuffers(fbo, multi, W, H);
                     if ( magnify > 1 )
-                        player.saveView("poster", frm, 2);
+                        player.saveView("poster", frm, 1);
                     else
-                        player.saveView("image", frm, 2);
+                        player.saveView("image", frm, 1);
                 }
             } while ( arg.set(frm, "frame", ++inx) );
         }
@@ -352,13 +352,13 @@ int main(int argc, char* argv[])
                     displayOffscreen(view, magnify);
                     if ( multi )
                         blitBuffers(fbo, multi, W, H);
-                    player.saveView("movie", frm++, 2);
+                    player.saveView("movie", frm++, 1);
                     s = 0;
                 }
             } while ( 0 == thread.loadNextFrame() );
         }
-        
-        printf("\n");
+        if ( simul.prop->verbose > 0 )
+            printf("\n");
         if ( multi )
             OffScreen::releaseBuffer();
         OffScreen::releaseBuffer();

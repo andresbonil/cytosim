@@ -50,6 +50,7 @@ INFO = -D'CODE_VERSION="$(CODE_VERSION)"'
 #-------------------------make's search paths-----------------------------------
 
 vpath %.h     $(SRCDIR)
+vpath %.c     $(SRCDIR)
 vpath %.cc    $(SRCDIR)
 vpath %.o     build/
 vpath %.a     lib/
