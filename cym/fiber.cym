@@ -1,4 +1,4 @@
-% A confined fiber
+% A confined filament
 % F. Nedelec, April 2010
 
 set simul system
@@ -17,14 +17,14 @@ new cell
     radius = 5
 }
 
-set fiber microtubule
+set fiber filament
 {
     rigidity = 20
     segmentation = 0.5
     confine = inside, 200, cell
 }
 
-new 1 microtubule
+new 1 filament
 {
     length = 12
 }
