@@ -56,9 +56,10 @@ OBJ_SIM := modulo.o movable.o mecable.o objecter.o object_set.o\
            meca.o fiber_grid.o point_grid.o space_set.o\
            simul_prop.o simul.o interface.o parser.o
 
+OBJ_PYTHON := objecter_python.o
 
 OBJ_CYTOSIM:=$(OBJ_SPACE) $(OBJ_SIM) $(OBJ_HANDS) $(OBJ_DIGITS) $(OBJ_FIBERS)\
-             $(OBJ_SINGLES) $(OBJ_COUPLES) $(OBJ_ORGANIZERS)
+             $(OBJ_SINGLES) $(OBJ_COUPLES) $(OBJ_ORGANIZERS) $(OBJ_PYTHON)
 
 OBJ_CYTOSIMD1:=$(OBJ_CYTOSIM:%.o=%D1.o)
 OBJ_CYTOSIMD2:=$(OBJ_CYTOSIM:%.o=%D2.o)
