@@ -95,6 +95,13 @@ std::string Object::reference() const
 }
 
 
+/** Returns a python object
+*/
+PyObj* Object::make_python() { 
+    return new PyObj(this) ; 
+};
+
+
 /**
  Two binary formats are used:
  - A slim format:

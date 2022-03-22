@@ -8,6 +8,7 @@
 #include "random.h"
 #include "array.h"
 #include "noder.h"
+#include "objecter_python.h"
 
 class Simul;
 class Property;
@@ -15,6 +16,7 @@ class Inputter;
 class Outputter;
 class ObjectSet;
 class Display;
+class PyObj;
 
 /// Type for unique class identifier used to read/write objects from file
 typedef int ObjectTag;
@@ -58,6 +60,9 @@ private:
     ObjectSet *        set_;
     
 public:
+    
+    /// Returns a python-ready class
+    virtual PyObj* make_python();
     
     /// Object::TAG = 'v' represents the 'void' pointer
     static const ObjectTag TAG = 'v';
