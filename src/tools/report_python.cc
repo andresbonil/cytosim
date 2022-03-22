@@ -177,3 +177,15 @@ PYBIND11_MODULE(example, m) {
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
     m.def("get_objs", &get_objs, "A function that reports fiber frame f");
 }
+
+
+/*
+
+  To use in python : move the example...._.so file to a folder with *.cmo 
+   
+    Then run : 
+    import example
+    example.add(1,2)
+    example.getobj(1)
+    etc...
+*/
