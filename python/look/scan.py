@@ -22,7 +22,7 @@ Examples:
     scan.py 'play image' run* jobs=2
     
     
-F. Nedelec, 02.2011, 09.2012, 03.2013, 01.2014, 06.2017, 07.2021, 20.03.2022
+F. Nedelec, 02.2011, 09.2012, 03.2013, 01.2014, 06.2017, 07.2021, 21.03.2022
 S. Dmitreff, 06.2017
 """
 
@@ -70,17 +70,16 @@ def main(args):
         read command line arguments and process command
     """
     global verbose
-    inx = 0
     
     if args[0] == '-':
         verbose = 0
-        inx += 1
+        args.pop(0)
     elif args[0] == '+':
         verbose = 1
-        inx += 1
+        args.pop(0)
     
     try:
-        tool = args[i]
+        tool = args[0]
     except:
         out.write("Missing command: scan.py command [-][+] directory1 [directory2]...\n")
         return 1
