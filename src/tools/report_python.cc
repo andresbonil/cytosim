@@ -25,16 +25,21 @@ namespace py = pybind11;
 int verbose = 1;
 int prefix = 0;
 size_t cnt = 0;
+Simul simul;
+FrameReader reader;
 
+extern Simul simul;
+extern FrameReader reader;
+
+extern int status;
+int status = 0;
 typedef py::array_t<double> pyarray;
 typedef std::vector<PyObj> obj_vec;
 typedef std::unordered_map<std::string,real> prop_reals;
 typedef std::unordered_map<std::string,std::string> prop_strings;
 typedef std::unordered_map<std::string,PyObj> map_objs;
 
-/// A function that reads a frame and returns a numpy array 
-// Returns the first position of the first fiber
-pyarray report_fiber_frame(int fr)
+int load_simul()
 {
     
     Glossary arg;
@@ -42,15 +47,12 @@ pyarray report_fiber_frame(int fr)
     std::string input = TRAJECTORY;
     std::string str;
 
-    unsigned frame = fr;
+    
     unsigned period = 1;
 
     arg.set(input, ".cmo") || arg.set(input, "input");
     arg.set(verbose, "verbose");
     if ( arg.use_key("-") ) verbose = 0;
-
-    Simul simul;
-    FrameReader reader;
 
     try
     {
@@ -58,31 +60,55 @@ pyarray report_fiber_frame(int fr)
         simul.loadProperties();
         reader.openFile(input);
         Cytosim::all_silent();
+        status = 1;
 
-        reader.loadFrame(simul, frame);
     }
     catch( Exception & e )
     {
         std::clog << "Aborted: " << e.what() << '\n';
-        //return EXIT_FAILURE;
+        return EXIT_FAILURE;
+    }
+
+    return 0;
+}
+
+
+/// A function that reads a frame and returns a numpy array 
+// Returns the first position of the first fiber
+pyarray report_loaded_frame(int fr)
+{
+    
+
+    unsigned frame = fr;
+    std::array<real,DIM> pts;
+
+    if (status == 1 ) {
+        reader.loadFrame(simul, frame);
+        Vector pos = simul.fibers.firstID()->posP(0);
+
+        for (unsigned p=0;p<DIM;++p) {
+            pts[p] = pos[p];
+        }
+    }
+    else {
+        std::array<real,1> pts{0};
     }
 
 
     // Reading reporting the first position of the first fiber
-    std::array<real,DIM> pts;
-    Vector pos = simul.fibers.firstID()->posP(0);
-    for (unsigned p=0;p<DIM;++p) {
-        pts[p] = pos[p];
-    }
     pyarray pypts = py::cast(pts);
 
 
-    /// check if all specified parameters were used:
-    arg.print_warning(std::cerr, cnt, "\n");
-    
     return pypts;
 }
 
+void change_status(int s) {
+    status = s;
+}
+
+int get_status() {
+    return status;
+}
 // Just returns a PyObj, i.e. a struct with a py::array and a real
 PyObj report_fib_frame(int fr)
 {
@@ -130,7 +156,7 @@ int add(int i, int j) {
 // reports a py::array directy
 pyarray ff_report(int i) {
     // Returns a numpy array for the position of the first point of the fiber at frame i
-    pyarray arr = report_fiber_frame(i);
+    pyarray arr = report_loaded_frame(i);
     return arr;
 }
 
@@ -176,6 +202,10 @@ PYBIND11_MODULE(example, m) {
     m.def("get_two", &get_frames, "A function that reports fiber frame f");
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
     m.def("get_objs", &get_objs, "A function that reports fiber frame f");
+    m.def("set_status", &change_status, "A function that reports fiber frame f");
+    m.def("status", &get_status, "blaaa");
+    m.def("report_loaded", &report_loaded_frame, "blaaa");
+    m.def("load", &load_simul, "load simulation");
 }
 
 
