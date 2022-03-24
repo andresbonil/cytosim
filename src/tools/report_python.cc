@@ -3,40 +3,18 @@
  This is a program to analyse simulation results:
  it reads a trajectory-file, and print some data from it.
 */
-
-#include <fstream>
-#include <sstream>
-
-#include "stream_func.h"
-#include "frame_reader.h"
-#include "iowrapper.h"
-#include "glossary.h"
-#include "messages.h"
-#include "splash.h"
-#include "parser.h"
-#include "simul.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
-#include "objecter_python.h"
-#include "objecter_python.h"
+#include "report_python.h"
 
 namespace py = pybind11;
 
-size_t cnt = 0;
 Simul simul;
 FrameReader reader;
+int status = 0;
 
 extern Simul simul;
 extern FrameReader reader;
-
 extern int status;
-int status = 0;
-typedef py::array_t<double> pyarray;
-typedef std::vector<PyObj> obj_vec;
-typedef std::unordered_map<std::string,real> prop_reals;
-typedef std::unordered_map<std::string,std::string> prop_strings;
-typedef std::unordered_map<std::string,PyObj> map_objs;
+
 
 int load_simul()
 {   
