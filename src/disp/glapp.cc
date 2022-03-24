@@ -461,7 +461,7 @@ void glApp::switchUserMode(int dir)
 
 
 ///\todo flexible key assignment map to accomodate different keyboard layouts
-void glApp::processNormalKey(unsigned char c, int, int)
+void glApp::processNormalKey(unsigned char c, int modifiers)
 {
     View & view = glApp::currentView();
     
@@ -472,7 +472,7 @@ void glApp::processNormalKey(unsigned char c, int, int)
     switch (c)
     {
         case 17:
-            if ( glutGetModifiers() & GLUT_ACTIVE_CTRL )
+            if ( modifiers & GLUT_ACTIVE_CTRL )
                 exit(EXIT_SUCCESS);
             break;
         
@@ -551,14 +551,14 @@ void glApp::processNormalKey(unsigned char c, int, int)
         //------------------------- Zoom in and out:
         
         case '/':
-            if ( glutGetModifiers() & GLUT_ACTIVE_SHIFT )
+            if ( modifiers & GLUT_ACTIVE_SHIFT )
                 view.zoom_out(1.071773463);
             else
                 view.zoom_out(1.4142135623f);
             break;
         
         case '*':
-            if ( glutGetModifiers() & GLUT_ACTIVE_SHIFT )
+            if ( modifiers & GLUT_ACTIVE_SHIFT )
                 view.zoom_in(1.071773463f);
             else
                 view.zoom_in(1.4142135623f);
@@ -591,6 +591,12 @@ void glApp::processNormalKey(unsigned char c, int, int)
 }
 
 
+///\todo flexible key assignment map to accomodate different keyboard layouts
+void glApp::processNormalKey(unsigned char c, int, int)
+{
+    processNormalKey(c, glutGetModifiers());
+}
+
 void glApp::normalKeyFunc(void (*func)(unsigned char, int, int))
 {
     normalKeyCallback = func;
@@ -604,13 +610,13 @@ void glApp::normalKeyFunc(void (*func)(unsigned char, int, int))
  
  motion is reduced by holding down SHIFT.
  */
-void glApp::processSpecialKey(int key, int, int)
+void glApp::processSpecialKey(int key, int modifiers)
 {
     Vector3 vec(0,0,0), dxy(0, 0, 0);
     View & view = glApp::currentView();
-    real F = ( glutGetModifiers() & GLUT_ACTIVE_SHIFT ) ? 0.0625 : 1;
+    real F = ( modifiers & GLUT_ACTIVE_SHIFT ) ? 0.0625 : 1;
 
-    //std::clog << "special key " << key << ": " << glutGetModifiers() << "  ";
+    //std::clog << "special key " << key << ": " << modifiers << "  ";
     switch ( key )
     {
         case GLUT_KEY_HOME:      view.reset();            glutPostRedisplay(); return;
@@ -625,7 +631,7 @@ void glApp::processSpecialKey(int key, int, int)
     // inverse the rotation of the current view:
     Quaternion<real> rot = view.rotation.conjugated();
     
-    if ( glutGetModifiers() & GLUT_ACTIVE_ALT )
+    if ( modifiers & GLUT_ACTIVE_ALT )
     {
         // Rotate view
         rot.rotateVector(vec, cross(Vector3(0, 0, 1), dxy));
@@ -635,7 +641,7 @@ void glApp::processSpecialKey(int key, int, int)
     else
     {
         // Translate view
-        if ( (glutGetModifiers() & GLUT_ACTIVE_CTRL) ^ (userMode == MOUSE_TRANSLATEZ) )
+        if ( (modifiers & GLUT_ACTIVE_CTRL) ^ (userMode == MOUSE_TRANSLATEZ) )
             dxy.set(dxy.XX, 0, dxy.YY);
         rot.rotateVector(vec, dxy);
         //std::clog << "vec " << dxy << " >>> " << vec << "\n";
@@ -644,6 +650,10 @@ void glApp::processSpecialKey(int key, int, int)
     glutPostRedisplay();
 }
 
+void glApp::processSpecialKey(int key, int, int)
+{
+    processSpecialKey(key, glutGetModifiers());
+}
 
 void glApp::specialKeyFunc(void (*func)(int, int, int))
 {

@@ -602,14 +602,14 @@ void helpKeys(std::ostream& os)
 }
 
 
-void processKey(unsigned char key)
+void processKey(unsigned char key, int modifiers = 0)
 {
     //std::cerr << "processing key `" << key << "'\n";
     // the view associated with the current window
     View & view = glApp::currentView();
     
-    const bool altKeyDown = glutGetModifiers() & GLUT_ACTIVE_ALT;
-    const bool shiftKeyDown = glutGetModifiers() & GLUT_ACTIVE_SHIFT;
+    const bool altKeyDown = modifiers & GLUT_ACTIVE_ALT;
+    const bool shiftKeyDown = modifiers & GLUT_ACTIVE_SHIFT;
     /*
      In the switch below:
      - use break if the display need to be refreshed,
@@ -980,5 +980,5 @@ void processNormalKey(const unsigned char key, const int x, const int y)
         }
     }
     
-    processKey(key);
+    processKey(key, glutGetModifiers());
 }
