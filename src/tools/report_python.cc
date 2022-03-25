@@ -63,22 +63,32 @@ pyarray report_loaded_frame(int fr)
 
     if (status == 1 ) {
         reader.loadFrame(simul, frame);
+        const real * data = simul.fibers.firstID()->data();
+        int size = simul.fibers.firstID()->nbPoints();
+        
+        
         Vector pos = simul.fibers.firstID()->posP(0);
 
         for (unsigned p=0;p<DIM;++p) {
-            pts[p] = pos[p];
-        }
+              pts[p] = pos[p];
+            }
+        std::vector<int> sizes = {size, (int)DIM};
+        std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
+        real_array array_pts{data, sizes, strides};
+        //pyarray test = pyarray ({std::get<1>(array_pts),DIM},{DIM*8,8},std::get<0>(array_pts),py::return_value_policy::copy);
+        py::array_t<real> test = py::array_t<double>(std::get<1>(array_pts),std::get<2>(array_pts), std::get<0>(array_pts));
+        return test;
     }
     else {
         std::array<real,1> pts{0};
+        pyarray pypts;
+        return pypts;
     }
 
 
     // Reading reporting the first position of the first fiber
-    pyarray pypts = py::cast(pts);
-
-
-    return pypts;
+    //pyarray pypts = py::cast(pts);
+    
 }
 
 
@@ -105,7 +115,7 @@ py::dict get_props() {
  //   return objs;
 //}
 
-PYBIND11_MODULE(example, m) {
+PYBIND11_MODULE(cytosim, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
     auto a = py::class_<PyObj>(m, "PyObj")
         .def_readwrite("id", &PyObj::id);
