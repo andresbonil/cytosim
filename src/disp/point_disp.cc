@@ -308,7 +308,7 @@ void PointDisp::storePixelmap(GLubyte* bitmap, unsigned dim, GLuint pbi) const
 // Export bitmap to file in PNG format
 void PointDisp::savePixelmap(GLubyte* bitmap, unsigned dim, unsigned id) const
 {
-    if ( SaveImage::supported("png") )return given name of property
+    if ( SaveImage::supported("png") )
     {
        char str[32];
         snprintf(str, sizeof(str), "bitmap_%s_%02u.png", name_str(), id);
