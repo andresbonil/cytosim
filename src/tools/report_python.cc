@@ -59,24 +59,33 @@ pyarray report_loaded_frame(int fr)
     
 
     unsigned frame = fr;
-    std::array<real,DIM> pts;
+    //std::array<real,DIM> pts;
 
     if (status == 1 ) {
         reader.loadFrame(simul, frame);
-        const real * data = simul.fibers.firstID()->data();
-        int size = simul.fibers.firstID()->nbPoints();
+        std::cout << "blaaaa" << std::endl;
+        //const real * data = simul.fibers.firstID()->data();
+        //int size = simul.fibers.firstID()->nbPoints();
         
         
-        Vector pos = simul.fibers.firstID()->posP(0);
+       
+        //Vector pos = simul.fibers.firstID()->posP(0);
 
-        for (unsigned p=0;p<DIM;++p) {
-              pts[p] = pos[p];
-            }
-        std::vector<int> sizes = {size, (int)DIM};
-        std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
-        real_array array_pts{data, sizes, strides};
+        //for (unsigned p=0;p<DIM;++p) {
+        //      pts[p] = pos[p];
+        //    }
+        //std::vector<int> sizes = {size, (int)DIM};
+        //std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
+        //real_array array_pts{data, sizes, strides};
         //pyarray test = pyarray ({std::get<1>(array_pts),DIM},{DIM*8,8},std::get<0>(array_pts),py::return_value_policy::copy);
-        py::array_t<real> test = py::array_t<double>(std::get<1>(array_pts),std::get<2>(array_pts), std::get<0>(array_pts));
+        //py::array_t<real> test = py::array_t<double>(std::get<1>(array_pts),std::get<2>(array_pts), std::get<0>(array_pts));
+    
+        ObjReport * rep = simul.fibers.firstID()->report();
+        
+        int id = rep->id;
+        
+        
+        py::array_t<real> test = py::array_t<double>(std::get<1>(*rep->points),std::get<2>(*rep->points), std::get<0>(*rep->points));
         return test;
     }
     else {
@@ -117,10 +126,10 @@ py::dict get_props() {
 
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
-    auto a = py::class_<PyObj>(m, "PyObj")
-        .def_readwrite("id", &PyObj::id);
+    //auto a = py::class_<ObjReport>(m, "ObjReport")
+    //    .def_readwrite("id", &ObjReport::id);
         //.def_readwrite("pos0", &PyObj::position);
-    a.def_readwrite("pos0", &PyObj::position);
+    //a.def_readwrite("pos0", &ObjReport::pos0);
 
     
     m.def("get_reals", &get_props, "A function that reports fiber frame f");

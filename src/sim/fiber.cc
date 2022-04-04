@@ -1396,3 +1396,19 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
 }
 
 
+/** Reports in a python-ready format
+ */
+ObjReport * Fiber::report() const {
+    ObjReport * rep = Object::report();
+    const real * dat = data();
+    int siz = nbPoints();
+    
+    
+    std::vector<int> sizes = {siz, (int)DIM};
+    std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
+    
+    
+    rep->points =  new real_array{dat, sizes, strides};
+    
+    return rep;
+}

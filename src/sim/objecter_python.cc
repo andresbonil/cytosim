@@ -1,19 +1,26 @@
 #include "objecter_python.h"
 
-PyObj::PyObj(const Object* obj ) {
-    pos0 = Vector(1,0);
-    std::array<real,DIM> pts;
-    for (int i=0;i<DIM;++i) {
-        pts[i] = pos0[i];
-    }
-    //std::cout << pts << std::endl;
-    position = py::cast(pts);
+ObjReport::ObjReport() {
+    // Object identity
+    /* const Object* obj 
     id = obj->identity();
+    ints.insert({"id",id});
+    
+    const real * data = nullptr;
+    int size = 0;
+    
+    std::vector<int> sizes = {size, (int)DIM};
+    std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
+    points = real_array{data, sizes, strides};
+     */
+    id = -1;
+    points = new real_array;
+    
+    reals  = new real_dict ;
+    ints = new int_dict;
+    vecs = new vector_dict;
+    arrays = new array_dict;
+    strings = new string_dict;
+
 } ;
 
-/*  
-PyObj::~PyObj() {
-    id = 0;
-    pos0 = 0;
-}
- */

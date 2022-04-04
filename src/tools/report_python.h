@@ -21,19 +21,6 @@ namespace py = pybind11;
 
 typedef py::array_t<double> pyarray;
 
-typedef std::vector<int> int_vect;
-// contains adress, sizes, and strides
-typedef std::tuple<const real*, int_vect, int_vect> real_array;
-typedef std::vector<PyObj> obj_vec;
-typedef std::unordered_map<std::string,real> prop_reals;
-typedef std::unordered_map<std::string,std::string> prop_strings;
-typedef std::unordered_map<std::string,PyObj> map_objs;
-
-typedef std::unordered_map<std::string,std::string> string_dict;
-typedef std::unordered_map<std::string,real> real_dict;
-typedef std::unordered_map<std::string,Vector> vector_dict;
-typedef std::unordered_map<std::string,pyarray> pyarray_dict;
-typedef std::unordered_map<std::string,real_array> array_dict;
 
 /// Reporter is a construction to report several kind of things to a python dictionarry
 struct Reporter {
@@ -48,6 +35,12 @@ struct Reporter {
         strings = nullptr;
     }
     ~Reporter() = default;
+};
+
+struct PyObj {
+    pyarray points;
+    int id;
+    py::dict props;
 };
 
 

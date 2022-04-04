@@ -124,6 +124,9 @@ public:
 
     //--------------------------------------------------------------------------
     
+    /// Reports in python-ready format
+    virtual ObjReport * report() const ;
+    
     /// calculate viscous drag coefficient
     void           setDragCoefficient();
     
