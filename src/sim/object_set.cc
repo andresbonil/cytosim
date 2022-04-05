@@ -579,7 +579,7 @@ SetReport * ObjectSet::report() const {
     for ( Object * obj=this->first(); obj; obj=obj->next() )
     {
         //*objs.push_back(obj->report());
-        rep->objects->push_back(obj->report());
+        rep->objects.push_back(obj->report());
     }
     // Do something with props
     //*rep.objects = 

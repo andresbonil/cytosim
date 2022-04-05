@@ -108,7 +108,7 @@ ObjReport* Object::report() const {
     
     std::vector<int> sizes = {size, (int)DIM};
     std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
-    rep->points = new real_array{data, sizes, strides};
+    rep->points = real_array{data, sizes, strides};
     return rep;
 };
 

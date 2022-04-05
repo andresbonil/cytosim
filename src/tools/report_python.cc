@@ -19,46 +19,46 @@ PyObj::PyObj(ObjReport* rep) {
                 
         id = rep->id;
         
-        points = py::array_t<double>(std::get<1>(*rep->points),std::get<2>(*rep->points), std::get<0>(*rep->points));
+        points = py::array_t<double>(std::get<1>(rep->points),std::get<2>(rep->points), std::get<0>(rep->points));
         
-        props = py::cast(*rep->reals);
-        props.attr("update")(py::cast(*rep->strings));
-        props.attr("update")(py::cast(*rep->ints));
-        props.attr("update")(py::cast(*rep->vecs));        
+        props = py::cast(rep->reals);
+        props.attr("update")(py::cast(rep->strings));
+        props.attr("update")(py::cast(rep->ints));
+        props.attr("update")(py::cast(rep->vecs));
 }
 
 PySet::PySet(SetReport* rep) {
         
-        props = py::cast(*rep->reals);
-        props.attr("update")(py::cast(*rep->strings));
-        props.attr("update")(py::cast(*rep->ints));
-        props.attr("update")(py::cast(*rep->vecs));
+        props = py::cast(rep->reals);
+        props.attr("update")(py::cast(rep->strings));
+        props.attr("update")(py::cast(rep->ints));
+        props.attr("update")(py::cast(rep->vecs));
         
-        for (auto obj: *rep->objects) {
+        for (auto obj: rep->objects) {
             objects.attr("append")(PyObj(obj));
         }
 }
 
 PySetter::PySetter(SetReport* rep) {
         
-        props = py::cast(*rep->reals);
-        props.attr("update")(py::cast(*rep->strings));
-        props.attr("update")(py::cast(*rep->ints));
-        props.attr("update")(py::cast(*rep->vecs));
+        props = py::cast(rep->reals);
+        props.attr("update")(py::cast(rep->strings));
+        props.attr("update")(py::cast(rep->ints));
+        props.attr("update")(py::cast(rep->vecs));
         
-        for (auto obj: *rep->objects) {
+        for (auto obj: rep->objects) {
             this->attr("append")(PyObj(obj));
         }
 }
 
 PyObjs::PyObjs(SetReport* rep) {
         
-        props = py::cast(*rep->reals);
-        props.attr("update")(py::cast(*rep->strings));
-        props.attr("update")(py::cast(*rep->ints));
-        props.attr("update")(py::cast(*rep->vecs));
+        props = py::cast(rep->reals);
+        props.attr("update")(py::cast(rep->strings));
+        props.attr("update")(py::cast(rep->ints));
+        props.attr("update")(py::cast(rep->vecs));
         
-        for (auto obj: *rep->objects) {
+        for (auto obj: rep->objects) {
             this->push_back(PyObj(obj));
         }
 }
@@ -154,54 +154,6 @@ PyObjs report_framer2(int frame) {
 
 
 
-/// A function that reads a frame and returns a numpy array 
-// Returns the first position of the first fiber
-pyarray report_loaded_frame(int fr)
-{
-    
-
-    unsigned frame = fr;
-    //std::array<real,DIM> pts;
-
-    if (status == 1 ) {
-        reader.loadFrame(simul, frame);
-        
-        //const real * data = simul.fibers.firstID()->data();
-        //int size = simul.fibers.firstID()->nbPoints();
-        
-        
-       
-        //Vector pos = simul.fibers.firstID()->posP(0);
-
-        //for (unsigned p=0;p<DIM;++p) {
-        //      pts[p] = pos[p];
-        //    }
-        //std::vector<int> sizes = {size, (int)DIM};
-        //std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
-        //real_array array_pts{data, sizes, strides};
-        //pyarray test = pyarray ({std::get<1>(array_pts),DIM},{DIM*8,8},std::get<0>(array_pts),py::return_value_policy::copy);
-        //py::array_t<real> test = py::array_t<double>(std::get<1>(array_pts),std::get<2>(array_pts), std::get<0>(array_pts));
-    
-        ObjReport * rep = simul.fibers.firstID()->report();
-        
-        int id = rep->id;
-        
-        
-        py::array_t<real> test = py::array_t<double>(std::get<1>(*rep->points),std::get<2>(*rep->points), std::get<0>(*rep->points));
-        return test;
-    }
-    else {
-        std::array<real,1> pts{0};
-        pyarray pypts;
-        return pypts;
-    }
-
-
-    // Reading reporting the first position of the first fiber
-    //pyarray pypts = py::cast(pts);
-    
-}
-
 
 int get_status() {
     return status;
@@ -260,7 +212,6 @@ PYBIND11_MODULE(cytosim, m) {
     
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
     m.def("status", &get_status, "blaaa");
-    m.def("report_loaded", &report_loaded_frame, "blaaa");
     m.def("report_frame_single", &report_fframe, "blaaa");
     m.def("report_frame", &report_frame, "blaaa");
     m.def("report_framer", &report_framer, "blaaa");

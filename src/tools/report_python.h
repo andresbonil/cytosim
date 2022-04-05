@@ -62,8 +62,5 @@ class PyObjs : public std::vector<PyObj>
 };
 
 
-int load_simul();
-pyarray report_loaded_frame(int);
-py::dict get_props();
 
 #endif

@@ -33,17 +33,17 @@ class Object;
 struct ObjReport {
     int id;
     
-    real_array * points;
+    real_array points;
     
-    real_dict * reals;
-    int_dict * ints;
-    vector_dict * vecs;
-    string_dict * strings;
+    real_dict reals;
+    int_dict ints;
+    vector_dict vecs;
+    string_dict strings;
     
   
   
   //ObjReport(const Object* obj  ) ;
-  ObjReport() ;
+  ObjReport() = default;
   ~ObjReport()  = default;
 };
 

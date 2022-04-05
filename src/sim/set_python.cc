@@ -1,5 +1,6 @@
 #include "set_python.h"
 
+/*
 SetReport::SetReport() {
     //for ( Object * obj=Set->first(); obj; obj=obj->next() )
     //{
@@ -13,7 +14,7 @@ SetReport::SetReport() {
     strings = new string_dict;
     objects = new reportSet;
 }
-
+*/
 /*  
 PyObj::~PyObj() {
     id = 0;
