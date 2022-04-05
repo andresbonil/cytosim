@@ -1403,11 +1403,7 @@ ObjReport * Fiber::report() const {
 
     std::vector<int> sizes = {(int)nbPoints(), (int)DIM};
     std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
-    
-    
     rep->points = real_array{data(), sizes, strides};
-    rep->strings.insert({"name",prop->name()});
-    //rep->strings->insert(std::make_pair("name",prop->name));
     
     return rep;
 }
