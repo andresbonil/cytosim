@@ -228,6 +228,7 @@ PYBIND11_MODULE(cytosim, m) {
     import cytosim
     cytosim.load()
     fibers = cytosim.report_fibers_frame(1)
+    fibers.props
     fibers[0].points
     fibers[0].props
     etc...
