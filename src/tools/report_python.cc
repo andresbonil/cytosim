@@ -217,7 +217,6 @@ PYBIND11_MODULE(cytosim, m) {
     b.def_readwrite("props", &PySet::props);
     
     auto c = py::class_<PySetter>(m, "setter");
-    
     //c.def_readwrite("props", &PySetter::props);
     
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
