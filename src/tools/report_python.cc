@@ -220,9 +220,9 @@ PYBIND11_MODULE(cytosim, m) {
 }
 
 
-/*
+/**
 
-  To use in python : move the example...._.so file to a folder with *.cmo 
+  To use in python : move the cytosim...._.so file to a folder with *.cmo files
    
     Then run : 
     import cytosim
@@ -230,6 +230,6 @@ PYBIND11_MODULE(cytosim, m) {
     fibers = cytosim.report_fibers_frame(1)
     fibers.props
     fibers[0].points
-    fibers[0].props
+    fibers[0].id
     etc...
 */
