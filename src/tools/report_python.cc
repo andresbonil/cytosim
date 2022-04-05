@@ -51,6 +51,18 @@ PySetter::PySetter(SetReport* rep) {
         }
 }
 
+PyObjs::PyObjs(SetReport* rep) {
+        
+        props = py::cast(*rep->reals);
+        props.attr("update")(py::cast(*rep->strings));
+        props.attr("update")(py::cast(*rep->ints));
+        props.attr("update")(py::cast(*rep->vecs));
+        
+        for (auto obj: *rep->objects) {
+            this->push_back(PyObj(obj));
+        }
+}
+
 
 
 int load_simul()
@@ -124,6 +136,19 @@ PySetter report_framer(int frame) {
     }
     else {
         return PySetter();
+    }
+}
+
+PyObjs report_framer2(int frame) {
+    if (status == 1 ) {
+        reader.loadFrame(simul, frame);
+        SetReport * rep = simul.fibers.report();
+        PyObjs fibers(rep);
+        delete rep;
+        return fibers;
+    }
+    else {
+        return PyObjs();
     }
 }
 
@@ -219,12 +244,27 @@ PYBIND11_MODULE(cytosim, m) {
     auto c = py::class_<PySetter>(m, "setter");
     //c.def_readwrite("props", &PySetter::props);
     
+    auto d = py::class_<PyObjs>(m, "objects")
+        .def_readwrite("props", &PyObjs::props)
+        .def(py::init<>())
+        .def("__len__", [](const PyObjs &v) { return v.size(); })
+        .def("__iter__", [](PyObjs &v) {
+            return py::make_iterator(v.begin(), v.end());
+        }, py::keep_alive<0, 1>())
+        .def("__getitem__",[](const PyObjs &v, size_t i) {
+                 if (i >= v.size()) {
+                     throw py::index_error();
+                 }
+                 return v[i];
+             });
+    
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
     m.def("status", &get_status, "blaaa");
     m.def("report_loaded", &report_loaded_frame, "blaaa");
     m.def("report_frame_single", &report_fframe, "blaaa");
     m.def("report_frame", &report_frame, "blaaa");
     m.def("report_framer", &report_framer, "blaaa");
+    m.def("report_fibers_frame", &report_framer2, "blaaa");
     m.def("load", &load_simul, "load simulation");
 }
 

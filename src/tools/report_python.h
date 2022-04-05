@@ -52,6 +52,16 @@ class PySetter : public py::list
 };
 
 
+class PyObjs : public std::vector<PyObj>
+{
+    public:
+        py::dict props;
+        PyObjs() = default;
+        PyObjs(SetReport*);
+        ~PyObjs() = default;
+};
+
+
 int load_simul();
 pyarray report_loaded_frame(int);
 py::dict get_props();
