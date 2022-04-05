@@ -23,6 +23,8 @@ typedef py::array_t<real> pyarray;
 
 /// Reporter is a construction to report several kind of things to a python dictionarry
 
+
+/// PyObj is the python representation of an object report
 struct PyObj {
     pyarray points;
     int id;
@@ -32,6 +34,7 @@ struct PyObj {
     ~PyObj() = default;
 };
 
+/// PySet is the python representation of an set report
 struct PySet {
     
     py::dict props;
@@ -41,7 +44,7 @@ struct PySet {
     ~PySet() = default;
 };
 
-
+/// PySetter is the python representation of a set report
 class PySetter : public py::list
 {
     public:
@@ -51,7 +54,7 @@ class PySetter : public py::list
         ~PySetter() = default;
 };
 
-
+/// PyObjs is the python representation of a set report 
 class PyObjs : public std::vector<PyObj>
 {
     public:

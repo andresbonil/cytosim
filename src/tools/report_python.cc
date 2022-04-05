@@ -211,10 +211,10 @@ PYBIND11_MODULE(cytosim, m) {
              });
     
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
-    m.def("status", &get_status, "blaaa");
-    m.def("report_frame_single", &report_fframe, "blaaa");
-    m.def("report_frame", &report_frame, "blaaa");
-    m.def("report_framer", &report_framer, "blaaa");
+    m.def("status", &get_status, "Status of the simul  : loaded or not");
+    //m.def("report_frame_single", &report_fframe, "blaaa");
+    //m.def("report_frame", &report_frame, "blaaa");
+    //m.def("report_framer", &report_framer, "blaaa");
     m.def("report_fibers_frame", &report_framer2, "blaaa");
     m.def("load", &load_simul, "load simulation");
 }
@@ -225,8 +225,10 @@ PYBIND11_MODULE(cytosim, m) {
   To use in python : move the example...._.so file to a folder with *.cmo 
    
     Then run : 
-    import example
-    example.add(1,2)
-    example.getobj(1)
+    import cytosim
+    cytosim.load()
+    fibers = cytosim.report_fibers_frame(1)
+    fibers[0].points
+    fibers[0].props
     etc...
 */
