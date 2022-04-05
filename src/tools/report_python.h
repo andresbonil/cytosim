@@ -42,6 +42,16 @@ struct PySet {
 };
 
 
+class PySetter : public py::list
+{
+    public:
+        py::dict props;
+        PySetter() = default;
+        PySetter(SetReport*);
+        ~PySetter() = default;
+};
+
+
 int load_simul();
 pyarray report_loaded_frame(int);
 py::dict get_props();

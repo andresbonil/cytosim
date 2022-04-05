@@ -28,7 +28,7 @@ PyObj::PyObj(ObjReport* rep) {
 }
 
 PySet::PySet(SetReport* rep) {
-        objects = py::list();
+        
         props = py::cast(*rep->reals);
         props.attr("update")(py::cast(*rep->strings));
         props.attr("update")(py::cast(*rep->ints));
@@ -38,6 +38,19 @@ PySet::PySet(SetReport* rep) {
             objects.attr("append")(PyObj(obj));
         }
 }
+
+PySetter::PySetter(SetReport* rep) {
+        
+        props = py::cast(*rep->reals);
+        props.attr("update")(py::cast(*rep->strings));
+        props.attr("update")(py::cast(*rep->ints));
+        props.attr("update")(py::cast(*rep->vecs));
+        
+        for (auto obj: *rep->objects) {
+            this->attr("append")(PyObj(obj));
+        }
+}
+
 
 
 int load_simul()
@@ -98,8 +111,23 @@ PySet report_frame(int frame) {
     }
     else {
         return PySet();
-        }
+    }
 }
+
+PySetter report_framer(int frame) {
+    if (status == 1 ) {
+        reader.loadFrame(simul, frame);
+        SetReport * rep = simul.fibers.report();
+        PySetter fibers(rep);
+        delete rep;
+        return fibers;
+    }
+    else {
+        return PySetter();
+    }
+}
+
+
 
 /// A function that reads a frame and returns a numpy array 
 // Returns the first position of the first fiber
@@ -188,12 +216,16 @@ PYBIND11_MODULE(cytosim, m) {
     b.def_readwrite("objects", &PySet::objects);
     b.def_readwrite("props", &PySet::props);
     
+    auto c = py::class_<PySetter>(m, "setter");
+    
+    //c.def_readwrite("props", &PySetter::props);
     
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
     m.def("status", &get_status, "blaaa");
     m.def("report_loaded", &report_loaded_frame, "blaaa");
     m.def("report_frame_single", &report_fframe, "blaaa");
     m.def("report_frame", &report_frame, "blaaa");
+    m.def("report_framer", &report_framer, "blaaa");
     m.def("load", &load_simul, "load simulation");
 }
 
