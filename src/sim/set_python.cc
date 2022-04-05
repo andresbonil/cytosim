@@ -5,6 +5,13 @@ SetReport::SetReport() {
     //{
     //    reports.push_back(obj->report());
     //}
+     
+    
+    reals  = new real_dict ;
+    ints = new int_dict;
+    vecs = new vector_dict;
+    strings = new string_dict;
+    objects = new reportSet;
 }
 
 /*  

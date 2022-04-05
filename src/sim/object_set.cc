@@ -575,10 +575,13 @@ void ObjectSet::writeAssets(std::ostream& os, const std::string& title) const
 
 SetReport * ObjectSet::report() const {
     SetReport * rep = new SetReport;
+    //reportSet * objs = new reportSet;
     for ( Object * obj=this->first(); obj; obj=obj->next() )
     {
-        (rep->reports).push_back(obj->report());
+        //*objs.push_back(obj->report());
+        rep->objects->push_back(obj->report());
     }
     // Do something with props
+    //*rep.objects = 
     return rep;
 }

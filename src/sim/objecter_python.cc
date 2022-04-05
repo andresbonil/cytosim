@@ -19,7 +19,6 @@ ObjReport::ObjReport() {
     reals  = new real_dict ;
     ints = new int_dict;
     vecs = new vector_dict;
-    arrays = new array_dict;
     strings = new string_dict;
 
 } ;

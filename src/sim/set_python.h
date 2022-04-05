@@ -12,12 +12,11 @@ class ObjectSet;
 
 struct SetReport {
     
-    real_dict reals;
-    int_dict ints;
-    vector_dict vecs;
-    array_dict arrays;
-    string_dict strings;
-    reportSet reports;
+    real_dict * reals;
+    int_dict * ints;
+    vector_dict * vecs;
+    string_dict * strings;
+    reportSet * objects;
     
     
     SetReport() ;

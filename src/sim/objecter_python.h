@@ -38,7 +38,6 @@ struct ObjReport {
     real_dict * reals;
     int_dict * ints;
     vector_dict * vecs;
-    array_dict * arrays;
     string_dict * strings;
     
   

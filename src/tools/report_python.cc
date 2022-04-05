@@ -15,6 +15,30 @@ extern Simul simul;
 extern FrameReader reader;
 extern int status;
 
+PyObj::PyObj(ObjReport* rep) {
+                
+        id = rep->id;
+        
+        points = py::array_t<double>(std::get<1>(*rep->points),std::get<2>(*rep->points), std::get<0>(*rep->points));
+        
+        props = py::cast(*rep->reals);
+        props.attr("update")(py::cast(*rep->strings));
+        props.attr("update")(py::cast(*rep->ints));
+        props.attr("update")(py::cast(*rep->vecs));        
+}
+
+PySet::PySet(SetReport* rep) {
+        objects = py::list();
+        props = py::cast(*rep->reals);
+        props.attr("update")(py::cast(*rep->strings));
+        props.attr("update")(py::cast(*rep->ints));
+        props.attr("update")(py::cast(*rep->vecs));
+        
+        for (auto obj: *rep->objects) {
+            objects.attr("append")(PyObj(obj));
+        }
+}
+
 
 int load_simul()
 {   
@@ -51,6 +75,31 @@ int load_simul()
     return 0;
 }
 
+PyObj report_fframe(int fr) {
+    if (status == 1 ) {
+        reader.loadFrame(simul, fr);
+        ObjReport * rep = simul.fibers.firstID()->report();
+        PyObj obj(rep);
+        delete rep;
+        return obj;
+    }
+    else {
+        return PyObj();
+        }
+}
+
+PySet report_frame(int frame) {
+    if (status == 1 ) {
+        reader.loadFrame(simul, frame);
+        SetReport * rep = simul.fibers.report();
+        PySet fibers(rep);
+        delete rep;
+        return fibers;
+    }
+    else {
+        return PySet();
+        }
+}
 
 /// A function that reads a frame and returns a numpy array 
 // Returns the first position of the first fiber
@@ -63,7 +112,7 @@ pyarray report_loaded_frame(int fr)
 
     if (status == 1 ) {
         reader.loadFrame(simul, frame);
-        std::cout << "blaaaa" << std::endl;
+        
         //const real * data = simul.fibers.firstID()->data();
         //int size = simul.fibers.firstID()->nbPoints();
         
@@ -130,11 +179,21 @@ PYBIND11_MODULE(cytosim, m) {
     //    .def_readwrite("id", &ObjReport::id);
         //.def_readwrite("pos0", &PyObj::position);
     //a.def_readwrite("pos0", &ObjReport::pos0);
-
+    auto a = py::class_<PyObj>(m, "object")
+        .def_readwrite("id", &PyObj::id);
+    a.def_readwrite("points", &PyObj::points);
+    a.def_readwrite("props", &PyObj::props);
+    
+    auto b = py::class_<PySet>(m, "set");
+    b.def_readwrite("objects", &PySet::objects);
+    b.def_readwrite("props", &PySet::props);
+    
     
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
     m.def("status", &get_status, "blaaa");
     m.def("report_loaded", &report_loaded_frame, "blaaa");
+    m.def("report_frame_single", &report_fframe, "blaaa");
+    m.def("report_frame", &report_frame, "blaaa");
     m.def("load", &load_simul, "load simulation");
 }
 

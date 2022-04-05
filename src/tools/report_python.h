@@ -19,30 +19,27 @@
 #include "objecter_python.h"
 namespace py = pybind11;
 
-typedef py::array_t<double> pyarray;
-
+typedef py::array_t<real> pyarray;
 
 /// Reporter is a construction to report several kind of things to a python dictionarry
-struct Reporter {
-    vector_dict* vectors;
-    array_dict* arrays;
-    real_dict* reals;
-    string_dict* strings;
-    Reporter() {
-        vectors = nullptr;
-        arrays = nullptr;
-        reals = nullptr;
-        strings = nullptr;
-    }
-    ~Reporter() = default;
-};
 
 struct PyObj {
     pyarray points;
     int id;
     py::dict props;
+    PyObj(ObjReport* );
+    PyObj() = default;
+    ~PyObj() = default;
 };
 
+struct PySet {
+    
+    py::dict props;
+    py::list objects;
+    PySet(SetReport* );
+    PySet() = default;
+    ~PySet() = default;
+};
 
 
 int load_simul();
