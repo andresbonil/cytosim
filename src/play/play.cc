@@ -35,7 +35,6 @@ void helpKeys(std::ostream& os) { os << "This is a headless display\n"; }
 #  include "fiber_disp.h"
 #  include "point_disp.h"
 using glApp::flashText;
-void buildMenus();
 #  include "play_keys.cc"
 #  include "play_menus.cc"
 #  include "play_mouse.cc"
@@ -395,7 +394,7 @@ int main(int argc, char* argv[])
     {
         gle::initialize();
         player.setStyle(disp.style);
-        buildMenus();
+        rebuildMenus();
         glutAttachMenu(GLUT_RIGHT_BUTTON);
         glutMenuStatusFunc(menuCallback);
         if ( glApp::isFullScreen() )

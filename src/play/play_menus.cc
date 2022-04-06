@@ -459,7 +459,7 @@ void processTopMenu(int item)
 }
 
 
-void buildMenus()
+void rebuildMenus()
 {
     static int menuID = 0;
     int m1 = buildMenuDisplay();
@@ -488,7 +488,7 @@ void menuCallback(int status, int x, int y)
 {
     //printf("menu status(%i, %i, %i)\n", status, x, y);
     
-    if ( GLUT_MENU_NOT_IN_USE )
-        buildMenus();
+    if ( status == GLUT_MENU_NOT_IN_USE )
+        rebuildMenus();
 }
 
