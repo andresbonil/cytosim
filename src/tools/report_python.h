@@ -20,7 +20,7 @@
 namespace py = pybind11;
 
 typedef py::array_t<real> pyarray;
-
+class simul;
 /// Reporter is a construction to report several kind of things to a python dictionarry
 
 

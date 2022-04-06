@@ -9,7 +9,7 @@ namespace py = pybind11;
 
 Simul simul;
 FrameReader reader;
-int status = 0;
+int status = -2;
 
 extern Simul simul;
 extern FrameReader reader;
@@ -88,7 +88,7 @@ int load_simul()
         simul.loadProperties();
         reader.openFile(input);
         Cytosim::all_silent();
-        status = 1;
+        status = -1;
 
     }
     catch( Exception & e )
@@ -101,7 +101,7 @@ int load_simul()
 }
 
 PyObj report_fframe(int fr) {
-    if (status == 1 ) {
+    if (status >= -1 ) {
         reader.loadFrame(simul, fr);
         ObjReport * rep = simul.fibers.firstID()->report();
         PyObj obj(rep);
@@ -114,7 +114,7 @@ PyObj report_fframe(int fr) {
 }
 
 PySet report_frame(int frame) {
-    if (status == 1 ) {
+    if (status >= -1 ) {
         reader.loadFrame(simul, frame);
         SetReport * rep = simul.fibers.report();
         PySet fibers(rep);
@@ -127,7 +127,7 @@ PySet report_frame(int frame) {
 }
 
 PySetter report_framer(int frame) {
-    if (status == 1 ) {
+    if (status >= -1 ) {
         reader.loadFrame(simul, frame);
         SetReport * rep = simul.fibers.report();
         PySetter fibers(rep);
@@ -139,8 +139,13 @@ PySetter report_framer(int frame) {
     }
 }
 
+void select_frame(int frame) {
+    reader.loadFrame(simul, frame);
+    status = frame;
+}
+
 PyObjs report_framer2(int frame) {
-    if (status == 1 ) {
+    if (status >= -1 ) {
         reader.loadFrame(simul, frame);
         SetReport * rep = simul.fibers.report();
         PyObjs fibers(rep);
@@ -152,14 +157,34 @@ PyObjs report_framer2(int frame) {
     }
 }
 
-
+Fiber * get_first_fiber(int frame) {
+    if (status >= -1 ) {
+        reader.loadFrame(simul, frame);
+        
+        Fiber * fib = simul.fibers.first();
+        return fib;
+    }
+}
 
 
 int get_status() {
     return status;
 }
 
+/*
+FiberSet & get_fiber_set() {
+    if (status >= 0 ) {
+        //FiberSet * set = simul.fibers;
+        return  simul.fibers;
+    }
+}*/
 
+FiberSet * get_fiber_set() {
+    if (status >= 0 ) {
+        //FiberSet * set = simul.fibers;
+        return  &simul.fibers;
+    }
+}
 
 /// Showcasing making dictionaries
 py::dict get_props() {
@@ -210,6 +235,20 @@ PYBIND11_MODULE(cytosim, m) {
                  return v[i];
              });
     
+    py::class_<FiberSet>(m, "fiberSet")
+        .def("__len__", [](const FiberSet * v) { return v->size(); })
+        .def("__iter__", [](FiberSet *v) {
+            return py::make_iterator(v->first(), v->last());
+        }, py::keep_alive<0, 1>());
+    
+    
+    auto e = py::class_<Fiber>(m, "fiber")
+        .def("pyobj", [](const Fiber * fib) {return PyObj(fib->report());})
+        .def("next", [](const Fiber * fib) {return ++fib;})
+        .def("points", [](const Fiber * fib) {return PyObj(fib->report()).points;})
+        .def("nexta", [](const Fiber * fib) {return fib->next();})
+        .def("__next__", [](const Fiber * fib) {return fib->next();});
+    
     m.def("get_reals", &get_props, "A function that reports fiber frame f");
     m.def("status", &get_status, "Status of the simul  : loaded or not");
     //m.def("report_frame_single", &report_fframe, "blaaa");
@@ -217,6 +256,10 @@ PYBIND11_MODULE(cytosim, m) {
     //m.def("report_framer", &report_framer, "blaaa");
     m.def("report_fibers_frame", &report_framer2, "blaaa");
     m.def("load", &load_simul, "load simulation");
+    m.def("get_first_fiber", &get_first_fiber, "load simulation");
+    m.def("frame", &select_frame, "load simulation");
+    m.def("fibers", &get_fiber_set, "load simulation");
+
 }
 
 

@@ -297,6 +297,9 @@ public:
     //--------------------------------------------------------------------------
 
     /// a static_cast<> of Node::next()
+    Fiber *  operator++() const  { return static_cast<Fiber*>(nNext); }
+
+    /// a static_cast<> of Node::next()
     Fiber *  next()  const  { return static_cast<Fiber*>(nNext); }
     
     /// a static_cast<> of Node::prev()
