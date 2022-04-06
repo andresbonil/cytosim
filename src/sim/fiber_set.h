@@ -22,10 +22,12 @@ class FiberSet : public ObjectSet
 {
 private:
     
-    FiberSet();
-
+   
 public:
     
+    /// Default creator
+    FiberSet();
+
     /// creator
     FiberSet(Simul& s) : ObjectSet(s) {}
     
@@ -62,6 +64,9 @@ public:
     
     /// first Fiber in inventory
     Fiber * firstID()          const { return static_cast<Fiber*>(inventory.first()); }
+    
+    /// next Fiber in inventory
+    Fiber * next(Fiber const* obj) const { return static_cast<Fiber*>(inventory.next(obj)); }
 
     /// next Fiber in inventory
     Fiber * nextID(Fiber const* obj) const { return static_cast<Fiber*>(inventory.next(obj)); }
