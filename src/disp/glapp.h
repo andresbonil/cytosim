@@ -24,7 +24,7 @@ namespace glApp
     void       setDimensionality(int d);
 
     /// set display function `func`
-    int        createWindow(void (*func)(View&, int));
+    int        createWindow(void (*func)(View&));
     
     /// destroy window
     void       destroyWindow(int win);

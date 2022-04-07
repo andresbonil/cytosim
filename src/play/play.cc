@@ -21,7 +21,7 @@ Simul&      simul = player.simul;
 PlayerProp&  prop = player.prop;
 DisplayProp& disp = player.disp;
 
-void displayLive(View& view, int mag);
+void displayLive(View& view);
 
 /// enable to create a player for command-line-only offscreen rendering
 #define HEADLESS_PLAYER 0
@@ -52,7 +52,7 @@ void goodbye()
 /**
  display is done only if data can be accessed by current thread
  */
-void displayLive(View& view, int mag)
+void displayLive(View& view)
 {
     if ( 0 == thread.trylock() )
     {
@@ -65,7 +65,7 @@ void displayLive(View& view, int mag)
             simul.prop->display_fresh = false;
         }
         //thread.debug("display");
-        player.prepareDisplay(view, mag);
+        player.prepareDisplay(view, 1);
         player.displayCytosim();
         thread.unlock();
     }

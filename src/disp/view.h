@@ -42,7 +42,7 @@ private:
     std::string full_label;
 
     /// display callback
-    void (*displayCallback)(View&, int);
+    void (*displayCallback)(View&);
     
     /// set OpenGL Fog, with mode (GL_EXP or GL_LINEAR), intensity and color
     void       setFog(GLint mode, GLfloat density, gle_color) const;
@@ -94,7 +94,7 @@ public:
     //---------------------------------------------------------------------------
     
     /// set display callback
-    void       setDisplayFunc(void (*f)(View&, int)) { displayCallback = f; }
+    void       setDisplayFunc(void (*f)(View&)) { displayCallback = f; }
 
     /// set clipping planes and fog parameters
     void       openDisplay();
@@ -106,7 +106,7 @@ public:
     void       drawInteractiveFeatures() const;
     
     /// call displayCallback
-    void       display() { displayCallback(*this, 1); }
+    void       callDraw() { displayCallback(*this); }
     
     //---------------------------------------------------------------------------
     
@@ -196,9 +196,6 @@ public:
     /// adjust zoom and focus to match the ROI specificed by two corner points
     void       matchROI(Vector3, Vector3);
     
-    /// display zoomed in regions around position (mX, mY)
-    void       displayMagnifier(GLint factor, Vector3 foc, GLint mX, GLint mY) const;
-
     //---------------------------------------------------------------------------
     
     /// draw text using gleDrawText
