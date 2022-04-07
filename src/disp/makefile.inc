@@ -43,7 +43,7 @@ miniz.o: miniz.c miniz.h
 	$(CXX) $(FAST) -x c -c $< -o build/$@
 
 libspng.o: spng.c spng.h
-	$(CXX) -DSPNG_USE_MINIZ -DNDEBUG $(FAST) -x c -c $< -o build/$@
+	$(CXX) -DSPNG_USE_MINIZ -DSPNG_STATIC -DSPNG_USE_MINIZ $(FAST) -x c -c $< -o build/$@
 
 save_image.o: save_image.cc save_image.h
 	$(COMPILE) -DDISPLAY $(IMAGES_DEF) -c $< -o build/$@
