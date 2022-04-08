@@ -4,7 +4,7 @@
 //#include "objecter.h"
 #include "objecter_python.h"
 
-
+/*
 typedef std::vector<ObjReport *> reportSet;
 
 class Object;
@@ -22,7 +22,7 @@ struct SetReport {
     SetReport() = default;
     ~SetReport()  = default;
 };
-
+*/
 /*
 struct PPyObj : public PyObj {
     

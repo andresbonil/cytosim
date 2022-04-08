@@ -124,8 +124,11 @@ public:
 
     //--------------------------------------------------------------------------
     
-    /// Reports in python-ready format
-    virtual ObjReport * report() const ;
+    /// export points in python-ready format
+    virtual real_array * points() const ;
+    
+    /// exports informatoin in python-ready format
+    virtual ObjectInfo * info() const ;
     
     /// calculate viscous drag coefficient
     void           setDragCoefficient();
@@ -295,9 +298,6 @@ public:
     void           makeGlue(Single*& glue);
     
     //--------------------------------------------------------------------------
-
-    /// a static_cast<> of Node::next()
-    Fiber *  operator++() const  { return static_cast<Fiber*>(nNext); }
 
     /// a static_cast<> of Node::next()
     Fiber *  next()  const  { return static_cast<Fiber*>(nNext); }

@@ -26,10 +26,19 @@ typedef std::unordered_map<std::string,int> int_dict;
 typedef std::unordered_map<std::string,Vector> vector_dict;
 typedef std::unordered_map<std::string,real_array> array_dict;
 
+/// Basically a dictionnary
+struct ObjectInfo {
 
-class Object;
+    real_dict reals;
+    int_dict ints;
+    vector_dict vecs;
+    string_dict strings;
+
+};
+
+//class Object;
 //class ObjectSet;
-
+/*
 struct ObjReport {
     int id;
     
@@ -46,5 +55,5 @@ struct ObjReport {
   ObjReport() = default;
   ~ObjReport()  = default;
 };
-
+*/
 #endif

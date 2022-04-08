@@ -7,8 +7,6 @@
 #include "objecter.h"
 #include "node_list.h"
 #include "inventory.h"
-#include "set_python.h"
-
 
 class Outputter;
 class Property;
@@ -164,9 +162,6 @@ public:
 
     /// mix the order of elements in the doubly linked list nodes
     virtual void       shuffle()                { nodes.shuffle(); }
-    
-    /// Reporter
-    virtual SetReport * report() const;
     
     /// first Object in the list
     Object *           first()            const { return static_cast<Object*>(nodes.front()); }

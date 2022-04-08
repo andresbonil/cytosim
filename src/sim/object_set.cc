@@ -573,6 +573,7 @@ void ObjectSet::writeAssets(std::ostream& os, const std::string& title) const
     }
 }
 
+/*
 SetReport * ObjectSet::report() const {
     SetReport * rep = new SetReport;
     //reportSet * objs = new reportSet;
@@ -593,3 +594,4 @@ SetReport * ObjectSet::report() const {
     //*rep.objects = 
     return rep;
 }
+*/

@@ -96,8 +96,7 @@ std::string Object::reference() const
 
 
 /** Returns a python object
-*/
-ObjReport* Object::report() const {
+  ObjReport* Object::report() const {
     ObjReport * rep =  new ObjReport ;
     rep->id = this->identity();
     
@@ -112,6 +111,8 @@ ObjReport* Object::report() const {
     return rep;
 };
 
+
+*/
 
 /**
  Two binary formats are used:

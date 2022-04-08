@@ -16,7 +16,6 @@ class Inputter;
 class Outputter;
 class ObjectSet;
 class Display;
-class ObjReport;
 
 /// Type for unique class identifier used to read/write objects from file
 typedef int ObjectTag;
@@ -60,9 +59,6 @@ private:
     ObjectSet *        set_;
     
 public:
-    
-    /// Returns a python-ready class
-    virtual ObjReport* report() const;
     
     /// Object::TAG = 'v' represents the 'void' pointer
     static const ObjectTag TAG = 'v';

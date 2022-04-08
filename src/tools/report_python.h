@@ -23,7 +23,32 @@ typedef py::array_t<real> pyarray;
 class simul;
 /// Reporter is a construction to report several kind of things to a python dictionarry
 
+class FiberGroup : public std::vector<Fiber*>
+{
+    public:
+        //py::dict props;
+        FiberProp * prop;
+        FiberGroup() = default;
+        FiberGroup(FiberProp * p) : FiberGroup() {prop = p ;};
+        ~FiberGroup() = default;
+};
 
+//typedef std::pair<Property *, FiberGroup> 
+typedef std::map<std::string, FiberGroup> Fibers;
+
+struct Frame 
+{
+    py::dict objects;
+    Fibers fibers;
+    int time;
+};
+
+Frame & prepare_frame(int ) ;
+Frame & prepared_frame( Simul * , int ) ;
+
+#endif
+
+/*
 /// PyObj is the python representation of an object report
 struct PyObj {
     pyarray points;
@@ -63,7 +88,4 @@ class PyObjs : public std::vector<PyObj>
         PyObjs(SetReport*);
         ~PyObjs() = default;
 };
-
-
-
-#endif
+*/
