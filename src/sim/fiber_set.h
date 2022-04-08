@@ -22,12 +22,10 @@ class FiberSet : public ObjectSet
 {
 private:
     
-   
-public:
-    
-    /// Default creator
     FiberSet();
 
+public:
+    
     /// creator
     FiberSet(Simul& s) : ObjectSet(s) {}
     
@@ -51,9 +49,6 @@ public:
     /// print a summary of the content (nb of objects, class)
     void        report(std::ostream& out) const { writeAssets(out, title()); }
     
-    /// Should not be needed
-    virtual SetReport * report() {return ObjectSet::report();};
-
     //--------------------------
 
     /// first Fiber
@@ -64,9 +59,6 @@ public:
     
     /// first Fiber in inventory
     Fiber * firstID()          const { return static_cast<Fiber*>(inventory.first()); }
-    
-    /// next Fiber in inventory
-    Fiber * next(Fiber const* obj) const { return static_cast<Fiber*>(inventory.next(obj)); }
 
     /// next Fiber in inventory
     Fiber * nextID(Fiber const* obj) const { return static_cast<Fiber*>(inventory.next(obj)); }
