@@ -206,9 +206,20 @@ PYBIND11_MODULE(cytosim, m) {
     
     m.def("status", &get_status, "Status of the simul  : loaded or not");
     m.def("open", &open, "loads simulation from object files");
-    m.def("frame", &prepare_frame, "load frame");
+    //m.def("frame", &prepare_frame, "load frame");
     
 }
+
+
+
+
+
+
+
+
+
+
+
     //m.def("get_first_fiber", &get_first_fiber, "load simulation");
     //m.def("select_frame", &select_frame, "load simulation");
     //m.def("report_frame_single", &report_fframe, "blaaa");
