@@ -110,6 +110,8 @@ public:
     /// read from Inputter
     void        read(Inputter&, Simul&, ObjectTag);
     
+    /// exports informatoin in python-ready format
+    virtual ObjectInfo * info() const ;
 };
 
 
