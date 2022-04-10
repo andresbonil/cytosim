@@ -145,27 +145,27 @@ cytosimGD3.a: $(OBJ_CYTOSIMG:%.o=%D3.o) | lib
 $(OBJ_CYTOSIM): %.o: %.cc %.h | build
 	$(COMPILE) $(INC_SIM) -c $< -o build/$@
 
-$(OBJ_CYTOSIMD1): %D1.o: %.cc %.h | build
+$(OBJ_CYTOSIMD1): %D1.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=1 $(INC_SIM) -c $< -o build/$@
 
-$(OBJ_CYTOSIMD2): %D2.o: %.cc %.h | build
+$(OBJ_CYTOSIMD2): %D2.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=2 $(INC_SIM) -c $< -o build/$@
 
-$(OBJ_CYTOSIMD3): %D3.o: %.cc %.h | build
+$(OBJ_CYTOSIMD3): %D3.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=3 $(INC_SIM) -c $< -o build/$@
 
 
 # builds with DISPLAY enabled:
 
-$(OBJ_GRAFIX:%.o=%G.o): %G.o: %.cc %.h | build
+$(OBJ_GRAFIX:%.o=%G.o): %G.o: %.cc %.h %.o | build
 	$(COMPILE) -DDISPLAY $(INC_BMD) -c $< -o build/$@
 
-$(OBJ_GRAFIX:%.o=%GD1.o): %GD1.o: %.cc %.h | build
+$(OBJ_GRAFIX:%.o=%GD1.o): %GD1.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=1 -DDISPLAY $(INC_BMD) -c $< -o build/$@
 
-$(OBJ_GRAFIX:%.o=%GD2.o): %GD2.o: %.cc %.h | build
+$(OBJ_GRAFIX:%.o=%GD2.o): %GD2.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=2 -DDISPLAY $(INC_BMD) -c $< -o build/$@
 
-$(OBJ_GRAFIX:%.o=%GD3.o): %GD3.o: %.cc %.h | build
+$(OBJ_GRAFIX:%.o=%GD3.o): %GD3.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=3 -DDISPLAY $(INC_BMD) -c $< -o build/$@
 

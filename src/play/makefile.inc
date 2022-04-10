@@ -30,7 +30,7 @@ vpath play bin
 playerD1.o: $(FILES_PLAYER) | build
 	$(COMPILE) -DDIM=1 $(PLAY_INC) -c $< -o build/$@
 
-$(OBJ_PLAY1D): %D1.o: %.cc %.h | build
+$(OBJ_PLAY1D): %D1.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=1 $(PLAY_INC) -c $< -o build/$@
 
 bin1/play: play.cc playerD1.o $(OBJ_PLAY1D) cytosimGD1.a cytodisp.a cytomathD1.a cytobase.a SFMT.o | bin1
@@ -43,7 +43,7 @@ vpath bin1/play bin1
 playerD2.o: $(FILES_PLAYER) | build
 	$(COMPILE) -DDIM=2 $(PLAY_INC) -c $< -o build/$@
 
-$(OBJ_PLAY2D): %D2.o: %.cc %.h | build
+$(OBJ_PLAY2D): %D2.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=2 $(PLAY_INC) -c $< -o build/$@
 
 bin2/play: play.cc playerD2.o $(OBJ_PLAY2D) cytosimGD2.a cytodisp.a cytomathD2.a cytobase.a SFMT.o | bin2
@@ -56,7 +56,7 @@ vpath bin2/play bin2
 playerD3.o: $(FILES_PLAYER) | build
 	$(COMPILE) -DDIM=3 $(PLAY_INC) -c $< -o build/$@
 
-$(OBJ_PLAY3D): %D3.o: %.cc %.h | build
+$(OBJ_PLAY3D): %D3.o: %.cc %.h %.o | build
 	$(COMPILE) -DDIM=3 $(PLAY_INC) -c $< -o build/$@
 
 bin3/play: play.cc playerD3.o $(OBJ_PLAY3D) cytosimGD3.a cytodisp.a cytomathD3.a cytobase.a SFMT.o | bin3
