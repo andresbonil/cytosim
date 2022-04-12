@@ -20,54 +20,6 @@
     etc...
 */
 
-
-/**
-    @BUG
-    
-     
-      The problem with return pointer to python is that deleting pointer deletes the original object ! 
-       
-        Makes sense, since we are not copying
-         
-          
-  >>> sim = cytosim.open()
-  >>> fr = sim.frame(0)
-  >>> fib = fr["microtubule"][0]
-  >>> del fib
-  >>> fib = fr["microtubule"][0]
-  zsh: segmentation fault (core dumped)  python3
-
-  
-@Todo : Crashes when frame.["...."][n].info()  (or any other method) is called twice
-    sim = cytosim.open()
-    frame = cytosim.frame(0)
-    frame["microtubule"][0].info()
-    frame["microtubule"][0].points() -> crash
-
-Does not happen if fiber is stored : 
-    sim = cytosim.open()
-    frame = cytosim.frame(0)
-    fib = frame["microtubule"][0]
-    fib.info()
-    fin.info() -> does NOT crash
-
- Still happens if FiberGroup is stored : 
-    sim = cytosim.open()
-    frame = cytosim.frame(0)
-    mts = frame["microtubule"]
-    mts[0].info()
-    mts[0].info() -> crash
-   
-    
-    Program received signal SIGSEGV, Segmentation fault.
-0x00007ffff5e869a5 in void pybind11::cpp_function::initialize
- <pybind11_init_cytosim(pybind11::module_&)::{lambda(FiberGroup const&, unsigned long)#4}, Fiber*, FiberGroup const&, unsigned long, pybind11::name, pybind11::is_method, pybind11::sibling>
-(pybind11_init_cytosim(pybind11::module_&)::{lambda(FiberGroup const&, unsigned long)#4}&&, Fiber* (*)(FiberGroup const&, unsigned long), pybind11::name const&, 
- pybind11::is_method const&, pybind11::sibling const&)::{lambda(pybind11::detail::function_call&)#3}::_FUN(pybind11::detail::function_call) ()
-   from /home/dmitrief/code/srj_mac_pybind/bin/cytosim.cpython-37m-x86_64-linux-gnu.so
-
-
- */
 #include "report_python.h"
 
 namespace py = pybind11;
@@ -229,23 +181,7 @@ PYBIND11_MODULE(cytosim, m) {
                      throw py::index_error();
                  }
                  return v[i];
-             });
-             
-                 
-    /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
-    py::class_<ObjGroup<Fiber>>(m, "FiberGroup2")
-        .def("__len__", [](const ObjGroup<Fiber> &v) { return v.size(); })
-        .def("prop",  [](const ObjGroup<Fiber> & v) {return to_dict(static_cast<const FiberProp*>(v.prop)->info());})
-        .def("__iter__", [](ObjGroup<Fiber> &v) {
-            return py::make_iterator(v.begin(), v.end());
-        }, py::keep_alive<0, 1>())
-        .def("__getitem__",[](const ObjGroup<Fiber> &v, size_t i) {
-                 if (i >= v.size()) {
-                     throw py::index_error();
-                 }
-                 return v[i];
-             });
-             
+             }, py::return_value_policy::reference);
              
     /// Python interface to SolidGroup : behaves roughly as a Python list of solids
     py::class_<SolidGroup>(m, "SolidGroup")
@@ -259,7 +195,7 @@ PYBIND11_MODULE(cytosim, m) {
                      throw py::index_error();
                  }
                  return v[i];
-             });
+             }, py::return_value_policy::reference);
              
     /// Python interface to SpaceGroup, given as a single space
     py::class_<SpaceGroup>(m, "Space")
@@ -275,7 +211,7 @@ PYBIND11_MODULE(cytosim, m) {
         }, py::keep_alive<0, 1>())
         .def("__getitem__",[](const Frame &f, std::string s) {
                  return f.objects[py::cast(s)];
-             });
+             }, py::return_value_policy::reference);
     
     /// Python interface to Fiber
     py::class_<Fiber>(m, "Fiber")
@@ -295,29 +231,11 @@ PYBIND11_MODULE(cytosim, m) {
         .def("next", [](const Solid * sol) {return sol->next();})
         .def("__next__", [](const Solid * sol) {return sol->next();});
         
-     
-    py::class_<ObjWrapper<Fiber>>(m, "Object")
-        .def("points", [](const ObjWrapper<Fiber> * w) {return to_numpy(w->obj->points());})
-        .def("id",  [](const ObjWrapper<Fiber> * w) {return w->obj->identity();})
-        .def("info",  [](const ObjWrapper<Fiber> * w) {return to_dict(w->obj->info());})
-        .def("prop",  [](const ObjWrapper<Fiber> * w) {return to_dict(static_cast<FiberProp const *>(w->obj->property())->info());})
-        .def("next", [](const ObjWrapper<Fiber> * w) {return w->obj->next();})
-        .def("__next__", [](const ObjWrapper<Fiber> * w) {return w->obj->next();});
-    
   
-    /*
-    py::class_<ObjWrapper>(m, "Object")
-        .def("points", [](const ObjWrapper * w) {return to_numpy(w->obj->points());})
-        .def("id",  [](const ObjWrapper * w) {return w->obj->identity();})
-        .def("info",  [](const ObjWrapper * w) {return to_dict(w->obj->info());})
-        .def("prop",  [](const ObjWrapper * w) {return to_dict(w->obj->property()->info());})
-        .def("next", [](const ObjWrapper * w) {return w->obj->next();})
-        .def("__next__", [](const ObjWrapper * w) {return w->obj->next();});
-    */
-    
     /// Python interface to simul
     py::class_<Simul>(m, "Simul")
-        .def("frame", [](Simul * sim, size_t i) {return prepare_frame(sim, i);});
+        .def("frame", [](Simul * sim, size_t i) 
+            {return prepare_frame(sim, i);}, py::return_value_policy::reference);
         /*
        .def("__getitem__",[](Simul * sim, size_t i) {
                  //if (i >= v.size()) {
@@ -327,7 +245,7 @@ PYBIND11_MODULE(cytosim, m) {
              });*/
     
     m.def("status", &get_status, "Status of the simul  : loaded or not");
-    m.def("open", &open, "loads simulation from object files");
+    m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
     //m.def("frame", &prepare_frame, "load frame");
     
 }
