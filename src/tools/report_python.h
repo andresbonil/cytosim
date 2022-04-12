@@ -12,6 +12,7 @@
 #include "splash.h"
 #include "parser.h"
 #include "simul.h"
+#include "simul_prop.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -20,7 +21,8 @@
 namespace py = pybind11;
 
 typedef py::array_t<real> pyarray;
-class simul;
+class Simul;
+class SimulProp;
 
 /*
 class ObjWrapper {

@@ -234,6 +234,7 @@ PYBIND11_MODULE(cytosim, m) {
   
     /// Python interface to simul
     py::class_<Simul>(m, "Simul")
+        .def("prop",  [](Simul * sim) {return to_dict(sim->prop->info());})
         .def("frame", [](Simul * sim, size_t i) 
             {return prepare_frame(sim, i);}, py::return_value_policy::reference);
         /*
