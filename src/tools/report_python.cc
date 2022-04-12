@@ -20,6 +20,54 @@
     etc...
 */
 
+
+/**
+    @BUG
+    
+     
+      The problem with return pointer to python is that deleting pointer deletes the original object ! 
+       
+        Makes sense, since we are not copying
+         
+          
+  >>> sim = cytosim.open()
+  >>> fr = sim.frame(0)
+  >>> fib = fr["microtubule"][0]
+  >>> del fib
+  >>> fib = fr["microtubule"][0]
+  zsh: segmentation fault (core dumped)  python3
+
+  
+@Todo : Crashes when frame.["...."][n].info()  (or any other method) is called twice
+    sim = cytosim.open()
+    frame = cytosim.frame(0)
+    frame["microtubule"][0].info()
+    frame["microtubule"][0].points() -> crash
+
+Does not happen if fiber is stored : 
+    sim = cytosim.open()
+    frame = cytosim.frame(0)
+    fib = frame["microtubule"][0]
+    fib.info()
+    fin.info() -> does NOT crash
+
+ Still happens if FiberGroup is stored : 
+    sim = cytosim.open()
+    frame = cytosim.frame(0)
+    mts = frame["microtubule"]
+    mts[0].info()
+    mts[0].info() -> crash
+   
+    
+    Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff5e869a5 in void pybind11::cpp_function::initialize
+ <pybind11_init_cytosim(pybind11::module_&)::{lambda(FiberGroup const&, unsigned long)#4}, Fiber*, FiberGroup const&, unsigned long, pybind11::name, pybind11::is_method, pybind11::sibling>
+(pybind11_init_cytosim(pybind11::module_&)::{lambda(FiberGroup const&, unsigned long)#4}&&, Fiber* (*)(FiberGroup const&, unsigned long), pybind11::name const&, 
+ pybind11::is_method const&, pybind11::sibling const&)::{lambda(pybind11::detail::function_call&)#3}::_FUN(pybind11::detail::function_call) ()
+   from /home/dmitrief/code/srj_mac_pybind/bin/cytosim.cpython-37m-x86_64-linux-gnu.so
+
+
+ */
 #include "report_python.h"
 
 namespace py = pybind11;
@@ -97,7 +145,7 @@ Simul * open()
  * @param frame
  * @return 
  */
-Frame & prepare_frame( Simul * sim, int frame) 
+Frame * prepare_frame( Simul * sim, int frame) 
 {
     reader.loadFrame(*sim, frame);
     Frame * current = new Frame;
@@ -152,7 +200,8 @@ Frame & prepare_frame( Simul * sim, int frame)
         current->objects[py::cast(name)] = group;
     }
     
-    return *current;
+    //return *current;
+    return current;
 }
 
 int get_status() {

@@ -76,8 +76,8 @@ class Frame
 };
 
 //Frame & prepare_frame(int ) ;
-Frame & prepare_frame( Simul * , int ) ;
-
+//Frame & prepare_frame( Simul * , int ) ;
+Frame * prepare_frame( Simul * , int ) ;
 #endif
 
 /*
