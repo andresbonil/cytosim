@@ -151,7 +151,6 @@ Frame & prepare_frame( Simul * sim, int frame)
     for (const auto &[name, group] : current->solids) {
         current->objects[py::cast(name)] = group;
     }
-    //current->attr("update")(py::cast(current->fibers));
     
     return *current;
 }
@@ -161,17 +160,6 @@ int get_status() {
 }
 
 
-
-/// Showcasing making dictionaries
-py::dict get_props() {
-    //prop_reals reals{std::pair<std::string,real>{"TEST",1.0}};
-    prop_reals reals{{"TEST",1.0},{"TEST2",2.0}};
-    prop_strings strings{{"type","essai"}};
-    py::dict dict;
-    dict = py::cast(reals);
-    dict.attr("update")(py::cast(strings));
-    return dict;
-}
 
 /**
  * @brief  A module to get cytosim in python 
@@ -266,6 +254,20 @@ PYBIND11_MODULE(cytosim, m) {
 
 
 /*
+ 
+/// Showcasing making dictionaries
+py::dict get_props() {
+    //prop_reals reals{std::pair<std::string,real>{"TEST",1.0}};
+    prop_reals reals{{"TEST",1.0},{"TEST2",2.0}};
+    prop_strings strings{{"type","essai"}};
+    py::dict dict;
+    dict = py::cast(reals);
+    dict.attr("update")(py::cast(strings));
+    return dict;
+}
+ 
+  
+  
  void select_frame(int frame) {
     reader.loadFrame(simul, frame);
     status = frame;
