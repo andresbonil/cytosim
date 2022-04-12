@@ -61,15 +61,16 @@ endif
 #------------------------  Compiler Specifications  ----------------------------
 #-------------------------------------------------------------------------------
 
-TEST1 := $(shell python3 -m pybind11 --includes)
-PYTHON1 := -fPIC -shared $(TEST1) -Wl,-undefined,dynamic_lookup
+#TEST1 := $(shell python3 -m pybind11 --includes)
+#PYTHON1 := -fPIC -shared $(TEST1) -Wl,-undefined,dynamic_lookup
 
 
 
 # common options for all C++ objects:
 CXXFLG := -std=gnu++14 -Wredeclared-class-member -Wno-deprecated-declarations
 CXXFLG := -std=gnu++14 -fopenmp #-g -fno-inline
-CXXFLG := -std=gnu++14 -fPIC $(PYTHON1)
+#CXXFLG := -std=gnu++14 -fPIC $(PYTHON1)
+CXXFLG := -std=gnu++14 -fPIC
 
 # option concerning memory alignment:
 ALIGN  := -malign-double -falign-loops -falign-jumps -falign-functions
