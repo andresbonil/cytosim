@@ -36,16 +36,19 @@ class FiberGroup : public std::vector<Fiber*>
 typedef std::map<std::string, FiberGroup> Fibers;
 
 /// A time frame ; basicaly 
-struct Frame 
+class Frame 
 {
-    
-    py::dict objects;
-    Fibers fibers;
-    int time;
+    //py::dict objects;
+    public:
+        Fibers fibers;
+        int time;
+        py::dict objects;
+        Frame() = default;
+        ~Frame() = default;
 };
 
 //Frame & prepare_frame(int ) ;
-Frame & prepared_frame( Simul * , int ) ;
+Frame & prepare_frame( Simul * , int ) ;
 
 #endif
 

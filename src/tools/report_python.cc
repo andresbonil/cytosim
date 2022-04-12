@@ -11,8 +11,9 @@
    
     Then run : 
     import cytosim
-    cytosim.load()
-    fibers = cytosim.report_fibers_frame(1)
+    sim = cytosim.open()
+    frame = cytosim.frame(0)
+    fibers = frame["microtubule"]
     fibers.props
     fibers[0].points
     fibers[0].id
@@ -85,15 +86,18 @@ Simul * open()
 }
 
 
-
-//Frame & prepare_frame(int frame) {
-//    return prepared_frame(&simul, frame);
-//}
-
-Frame & prepared_frame( Simul * sim, int frame) 
+/**
+ * @brief Prepares a frame from the simulation
+ * @param sim
+ * @param frame
+ * @return 
+ */
+Frame & prepare_frame( Simul * sim, int frame) 
 {
     reader.loadFrame(*sim, frame);
     Frame * current = new Frame;
+    
+    // First deal with the fibers
     PropertyList plist = sim->properties.find_all("fiber");
     for ( Property * i : plist )
     {
@@ -106,6 +110,15 @@ Frame & prepared_frame( Simul * sim, int frame)
         current->fibers[fiber->property()->name()].push_back(fiber);
     }
     current->fibers[sim->fibers.last()->property()->name()].push_back(sim->fibers.last());
+    
+    // Deal with whatever
+    // ....
+    
+    // Grouping in dict
+    for (const auto &[name, group] : current->fibers) {
+        current->objects[py::cast(name)] = group;
+    }
+    //current->attr("update")(py::cast(current->fibers));
     
     return *current;
 }
@@ -127,10 +140,14 @@ py::dict get_props() {
     return dict;
 }
 
-
+/**
+ * @brief  A module to get cytosim in python 
+ * @return 
+ */
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
              
+    /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
     py::class_<FiberGroup>(m, "fiberGroup")
         .def("__len__", [](const FiberGroup &v) { return v.size(); })
         .def("prop",  [](const FiberGroup & v) {return to_dict(v.prop->info());})
@@ -144,9 +161,17 @@ PYBIND11_MODULE(cytosim, m) {
                  return v[i];
              });
              
+    /// Python interface to FiberGroup : behaves roughly as a Python dict of ObjectGroup
     py::class_<Frame>(m, "timeFrame")
-        .def_readwrite("fibers", &Frame::fibers);
-
+        .def_readwrite("fibers", &Frame::fibers)
+        .def("__iter__", [](Frame &f) {
+            return py::make_iterator(f.objects.begin(), f.objects.end());
+        }, py::keep_alive<0, 1>())
+        .def("__getitem__",[](const Frame &f, std::string s) {
+                 return f.objects[py::cast(s)];
+             });
+    
+    /// Python interface to Fiber
     py::class_<Fiber>(m, "fiber")
         .def("points", [](const Fiber * fib) {return to_numpy(fib->points());})
         .def("id",  [](const Fiber * fib) {return fib->identity();})
@@ -154,10 +179,10 @@ PYBIND11_MODULE(cytosim, m) {
         .def("prop",  [](const Fiber * fib) {return to_dict(fib->property()->info());})
         .def("next", [](const Fiber * fib) {return fib->next();})
         .def("__next__", [](const Fiber * fib) {return fib->next();});
-        //.def("pyobj", [](const Fiber * fib) {return PyObj(fib->report());})
-    
+        
+    /// Python interface to simul
     py::class_<Simul>(m, "simul")
-        .def("frame", [](Simul * sim, size_t i) {return prepared_frame(sim, i);});
+        .def("frame", [](Simul * sim, size_t i) {return prepare_frame(sim, i);});
         /*
        .def("__getitem__",[](Simul * sim, size_t i) {
                  //if (i >= v.size()) {
@@ -173,6 +198,10 @@ PYBIND11_MODULE(cytosim, m) {
 }
 
 
+
+//Frame & prepare_frame(int frame) {
+//    return prepared_frame(&simul, frame);
+//}
 
 
 /*
