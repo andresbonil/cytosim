@@ -21,29 +21,30 @@ namespace py = pybind11;
 
 typedef py::array_t<real> pyarray;
 class simul;
-/// Reporter is a construction to report several kind of things to a python dictionarry
 
+/// A class containing a vect of fibers with the same properties
 class FiberGroup : public std::vector<Fiber*>
 {
     public:
-        //py::dict props;
         FiberProp * prop;
         FiberGroup() = default;
         FiberGroup(FiberProp * p) : FiberGroup() {prop = p ;};
         ~FiberGroup() = default;
 };
 
-//typedef std::pair<Property *, FiberGroup> 
+/// A dictionary of FiberGroups
 typedef std::map<std::string, FiberGroup> Fibers;
 
+/// A time frame ; basicaly 
 struct Frame 
 {
+    
     py::dict objects;
     Fibers fibers;
     int time;
 };
 
-Frame & prepare_frame(int ) ;
+//Frame & prepare_frame(int ) ;
 Frame & prepared_frame( Simul * , int ) ;
 
 #endif

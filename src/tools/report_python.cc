@@ -23,20 +23,21 @@
 
 namespace py = pybind11;
 
-Simul simul;
+//Simul simul;
 FrameReader reader;
 int status = -2;
 
-extern Simul simul;
+//extern Simul simul;
 extern FrameReader reader;
 extern int status;
 
-
+/// Converts a real array * to numpy array
 pyarray & to_numpy(real_array * rar) {
     pyarray * arr =new pyarray(std::get<1>(*rar),std::get<2>(*rar), std::get<0>(*rar));
     return *arr;
 }
 
+/// Converts an ObjectInfo * to a python dict
 py::dict & to_dict(ObjectInfo * info) {
     py::dict * dico = new py::dict;
     dico->attr("update")(py::cast(info->reals));
@@ -46,42 +47,6 @@ py::dict & to_dict(ObjectInfo * info) {
     
     return *dico;
 }
-
-int load_simul()
-{   
-    int verbose = 1;
-    int prefix = 0;
-    
-    Glossary arg;
-
-    std::string input = TRAJECTORY;
-    std::string str;
-
-    
-    unsigned period = 1;
-
-    arg.set(input, ".cmo") || arg.set(input, "input");
-    //arg.set(verbose, "verbose");
-    if ( arg.use_key("-") ) verbose = 0;
-
-    try
-    {
-        RNG.seed();
-        simul.loadProperties();
-        reader.openFile(input);
-        Cytosim::all_silent();
-        status = -1;
-
-    }
-    catch( Exception & e )
-    {
-        std::clog << "Aborted: " << e.what() << '\n';
-        return EXIT_FAILURE;
-    }
-
-    return 0;
-}
-
 
 Simul * open()
 {   
@@ -121,9 +86,9 @@ Simul * open()
 
 
 
-Frame & prepare_frame(int frame) {
-    return prepared_frame(&simul, frame);
-}
+//Frame & prepare_frame(int frame) {
+//    return prepared_frame(&simul, frame);
+//}
 
 Frame & prepared_frame( Simul * sim, int frame) 
 {
@@ -149,10 +114,7 @@ int get_status() {
     return status;
 }
 
-void select_frame(int frame) {
-    reader.loadFrame(simul, frame);
-    status = frame;
-}
+
 
 /// Showcasing making dictionaries
 py::dict get_props() {
@@ -213,7 +175,50 @@ PYBIND11_MODULE(cytosim, m) {
 
 
 
+/*
+ void select_frame(int frame) {
+    reader.loadFrame(simul, frame);
+    status = frame;
+}
+  
+int load_simul()
+{   
+    int verbose = 1;
+    int prefix = 0;
+    
+    Glossary arg;
 
+    std::string input = TRAJECTORY;
+    std::string str;
+
+    
+    unsigned period = 1;
+
+    arg.set(input, ".cmo") || arg.set(input, "input");
+    //arg.set(verbose, "verbose");
+    if ( arg.use_key("-") ) verbose = 0;
+
+    try
+    {
+        RNG.seed();
+        simul.loadProperties();
+        reader.openFile(input);
+        Cytosim::all_silent();
+        status = -1;
+
+    }
+    catch( Exception & e )
+    {
+        std::clog << "Aborted: " << e.what() << '\n';
+        return EXIT_FAILURE;
+    }
+
+    return 0;
+}
+
+
+   
+  */
 
 
 
