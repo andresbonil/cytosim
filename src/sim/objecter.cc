@@ -265,3 +265,10 @@ std::ostream& operator << (std::ostream& os, ObjectList const& list)
     return os;
 }
 
+/** Exports info in a python-ready format
+ */
+ObjectInfo * Object::info() const {
+    ObjectInfo * info = new ObjectInfo;
+    info->ints["id"]=identity();
+    return info;
+}

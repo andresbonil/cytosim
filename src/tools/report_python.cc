@@ -34,8 +34,13 @@ extern int status;
 
 /// Converts a real array * to numpy array
 pyarray & to_numpy(real_array * rar) {
-    pyarray * arr =new pyarray(std::get<1>(*rar),std::get<2>(*rar), std::get<0>(*rar));
-    return *arr;
+    if (rar) {
+        pyarray * arr =new pyarray(std::get<1>(*rar),std::get<2>(*rar), std::get<0>(*rar));
+        return *arr;
+    } else {
+        pyarray * arr = new pyarray();
+        return *arr;
+    }
 }
 
 /// Converts an ObjectInfo * to a python dict
@@ -103,19 +108,44 @@ Frame & prepare_frame( Simul * sim, int frame)
     {
         FiberProp * fp = static_cast<FiberProp*>(i);
         current->fibers[fp->name()] = FiberGroup(fp);
-        //current->fibers[fp->name()] = fp;
-        
     }
     for (auto fiber = sim->fibers.first(); fiber != sim->fibers.last() ; fiber = fiber->next() ) {
         current->fibers[fiber->property()->name()].push_back(fiber);
     }
     current->fibers[sim->fibers.last()->property()->name()].push_back(sim->fibers.last());
     
+    // Then deals with spaces
+    plist = sim->properties.find_all("space");
+    for ( Property * i : plist )
+    {
+        SpaceProp * fp = static_cast<SpaceProp*>(i);
+        current->spaces[fp->name()] = SpaceGroup(fp);
+    }
+    for (auto space = sim->spaces.first(); space != sim->spaces.last() ; space = space->next() ) {
+        current->spaces[space->property()->name()].push_back(space);
+    }
+    current->spaces[sim->spaces.last()->property()->name()].push_back(sim->spaces.last());
+    
+    // Deals with solids
+    plist = sim->properties.find_all("solid");
+    for ( Property * i : plist )
+    {
+        SolidProp * fp = static_cast<SolidProp*>(i);
+        current->solids[fp->name()] = SolidGroup(fp);
+    }
+    for (auto solid = sim->solids.first(); solid != sim->solids.last() ; solid = solid->next() ) {
+        current->solids[solid->property()->name()].push_back(solid);
+    }
+    current->solids[sim->solids.last()->property()->name()].push_back(sim->solids.last());
+    
     // Deal with whatever
     // ....
     
     // Grouping in dict
     for (const auto &[name, group] : current->fibers) {
+        current->objects[py::cast(name)] = group;
+    }
+     for (const auto &[name, group] : current->spaces) {
         current->objects[py::cast(name)] = group;
     }
     //current->attr("update")(py::cast(current->fibers));
@@ -148,7 +178,7 @@ PYBIND11_MODULE(cytosim, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
              
     /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
-    py::class_<FiberGroup>(m, "fiberGroup")
+    py::class_<FiberGroup>(m, "FiberGroup")
         .def("__len__", [](const FiberGroup &v) { return v.size(); })
         .def("prop",  [](const FiberGroup & v) {return to_dict(v.prop->info());})
         .def("__iter__", [](FiberGroup &v) {
@@ -160,9 +190,28 @@ PYBIND11_MODULE(cytosim, m) {
                  }
                  return v[i];
              });
+    /// Python interface to SolidGroup : behaves roughly as a Python list of solids
+    py::class_<SolidGroup>(m, "SolidGroup")
+        .def("__len__", [](const SolidGroup &v) { return v.size(); })
+        .def("prop",  [](const SolidGroup & v) {return to_dict(v.prop->info());})
+        .def("__iter__", [](SolidGroup &v) {
+            return py::make_iterator(v.begin(), v.end());
+        }, py::keep_alive<0, 1>())
+        .def("__getitem__",[](const SolidGroup &v, size_t i) {
+                 if (i >= v.size()) {
+                     throw py::index_error();
+                 }
+                 return v[i];
+             });
              
-    /// Python interface to FiberGroup : behaves roughly as a Python dict of ObjectGroup
-    py::class_<Frame>(m, "timeFrame")
+    /// Python interface to SpaceGroup, given as a single space
+    py::class_<SpaceGroup>(m, "Space")
+        //.def("__len__", [](const FiberGroup &v) { return v.size(); })
+        .def("prop",  [](const SpaceGroup & v) {return to_dict(v.prop->info());})
+        .def("info",  [](const SpaceGroup & v) {return to_dict(v[0]->info());});     
+        
+    /// Python interface to timeframe : behaves roughly as a Python dict of ObjectGroup
+    py::class_<Frame>(m, "Timeframe")
         .def_readwrite("fibers", &Frame::fibers)
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
@@ -172,16 +221,25 @@ PYBIND11_MODULE(cytosim, m) {
              });
     
     /// Python interface to Fiber
-    py::class_<Fiber>(m, "fiber")
+    py::class_<Fiber>(m, "Fiber")
         .def("points", [](const Fiber * fib) {return to_numpy(fib->points());})
         .def("id",  [](const Fiber * fib) {return fib->identity();})
         .def("info",  [](const Fiber * fib) {return to_dict(fib->info());})
         .def("prop",  [](const Fiber * fib) {return to_dict(fib->property()->info());})
         .def("next", [](const Fiber * fib) {return fib->next();})
         .def("__next__", [](const Fiber * fib) {return fib->next();});
-        
+    
+    /// Python interface to Solid
+    py::class_<Solid>(m, "Solid")
+        .def("points", [](const Solid * sol) {return to_numpy(sol->points());})
+        .def("id",  [](const Solid * sol) {return sol->identity();})
+        .def("info",  [](const Solid * sol) {return to_dict(sol->info());})
+        .def("prop",  [](const Solid * sol) {return to_dict(sol->property()->info());})
+        .def("next", [](const Solid * sol) {return sol->next();})
+        .def("__next__", [](const Solid * sol) {return sol->next();});
+    
     /// Python interface to simul
-    py::class_<Simul>(m, "simul")
+    py::class_<Simul>(m, "Simul")
         .def("frame", [](Simul * sim, size_t i) {return prepare_frame(sim, i);});
         /*
        .def("__getitem__",[](Simul * sim, size_t i) {

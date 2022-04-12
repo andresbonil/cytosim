@@ -32,8 +32,34 @@ class FiberGroup : public std::vector<Fiber*>
         ~FiberGroup() = default;
 };
 
+/// A class containing a vect of spaces with the same properties
+class SpaceGroup : public std::vector<Space*>
+{
+    public:
+        SpaceProp * prop;
+        SpaceGroup() = default;
+        SpaceGroup(SpaceProp * p) : SpaceGroup() {prop = p ;};
+        ~SpaceGroup() = default;
+};
+
+/// A class containing a vect of spaces with the same properties
+class SolidGroup : public std::vector<Solid*>
+{
+    public:
+        SolidProp * prop;
+        SolidGroup() = default;
+        SolidGroup(SolidProp * p) : SolidGroup() {prop = p ;};
+        ~SolidGroup() = default;
+};
+
 /// A dictionary of FiberGroups
 typedef std::map<std::string, FiberGroup> Fibers;
+
+/// A dictionary of SpaceGroups
+typedef std::map<std::string, SpaceGroup> Spaces;
+
+/// A dictionary of SolidGroups
+typedef std::map<std::string, SolidGroup> Solids;
 
 /// A time frame ; basicaly 
 class Frame 
@@ -41,6 +67,8 @@ class Frame
     //py::dict objects;
     public:
         Fibers fibers;
+        Spaces spaces;
+        Solids solids;
         int time;
         py::dict objects;
         Frame() = default;
