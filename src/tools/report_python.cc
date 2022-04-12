@@ -145,7 +145,10 @@ Frame & prepare_frame( Simul * sim, int frame)
     for (const auto &[name, group] : current->fibers) {
         current->objects[py::cast(name)] = group;
     }
-     for (const auto &[name, group] : current->spaces) {
+    for (const auto &[name, group] : current->spaces) {
+        current->objects[py::cast(name)] = group;
+    }
+    for (const auto &[name, group] : current->solids) {
         current->objects[py::cast(name)] = group;
     }
     //current->attr("update")(py::cast(current->fibers));
