@@ -230,6 +230,23 @@ PYBIND11_MODULE(cytosim, m) {
                  }
                  return v[i];
              });
+             
+                 
+    /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
+    py::class_<ObjGroup<Fiber>>(m, "FiberGroup2")
+        .def("__len__", [](const ObjGroup<Fiber> &v) { return v.size(); })
+        .def("prop",  [](const ObjGroup<Fiber> & v) {return to_dict(static_cast<const FiberProp*>(v.prop)->info());})
+        .def("__iter__", [](ObjGroup<Fiber> &v) {
+            return py::make_iterator(v.begin(), v.end());
+        }, py::keep_alive<0, 1>())
+        .def("__getitem__",[](const ObjGroup<Fiber> &v, size_t i) {
+                 if (i >= v.size()) {
+                     throw py::index_error();
+                 }
+                 return v[i];
+             });
+             
+             
     /// Python interface to SolidGroup : behaves roughly as a Python list of solids
     py::class_<SolidGroup>(m, "SolidGroup")
         .def("__len__", [](const SolidGroup &v) { return v.size(); })
@@ -277,6 +294,26 @@ PYBIND11_MODULE(cytosim, m) {
         .def("prop",  [](const Solid * sol) {return to_dict(sol->property()->info());})
         .def("next", [](const Solid * sol) {return sol->next();})
         .def("__next__", [](const Solid * sol) {return sol->next();});
+        
+     
+    py::class_<ObjWrapper<Fiber>>(m, "Object")
+        .def("points", [](const ObjWrapper<Fiber> * w) {return to_numpy(w->obj->points());})
+        .def("id",  [](const ObjWrapper<Fiber> * w) {return w->obj->identity();})
+        .def("info",  [](const ObjWrapper<Fiber> * w) {return to_dict(w->obj->info());})
+        .def("prop",  [](const ObjWrapper<Fiber> * w) {return to_dict(static_cast<FiberProp const *>(w->obj->property())->info());})
+        .def("next", [](const ObjWrapper<Fiber> * w) {return w->obj->next();})
+        .def("__next__", [](const ObjWrapper<Fiber> * w) {return w->obj->next();});
+    
+  
+    /*
+    py::class_<ObjWrapper>(m, "Object")
+        .def("points", [](const ObjWrapper * w) {return to_numpy(w->obj->points());})
+        .def("id",  [](const ObjWrapper * w) {return w->obj->identity();})
+        .def("info",  [](const ObjWrapper * w) {return to_dict(w->obj->info());})
+        .def("prop",  [](const ObjWrapper * w) {return to_dict(w->obj->property()->info());})
+        .def("next", [](const ObjWrapper * w) {return w->obj->next();})
+        .def("__next__", [](const ObjWrapper * w) {return w->obj->next();});
+    */
     
     /// Python interface to simul
     py::class_<Simul>(m, "Simul")

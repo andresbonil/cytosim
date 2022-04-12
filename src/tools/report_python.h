@@ -22,6 +22,33 @@ namespace py = pybind11;
 typedef py::array_t<real> pyarray;
 class simul;
 
+template <class O>
+class ObjWrapper {
+    public:
+        O * obj;
+        ObjWrapper(O * o) { obj = o; };
+        ~ObjWrapper() {};
+};
+
+template <class W> 
+class ObjGroup : public std::vector<W*>
+{
+    public:
+        Property * prop;
+        ObjGroup() = default;
+        ObjGroup(Property * p) : ObjGroup() {prop = p ;};
+        ~ObjGroup() = default;
+};
+
+/*
+class ObjWrapper {
+    public:
+        Object * obj;
+        ObjWrapper(Object * o) { obj = o; };
+        ~ObjWrapper() {};
+};
+*/
+
 /// A class containing a vect of fibers with the same properties
 class FiberGroup : public std::vector<Fiber*>
 {
@@ -55,6 +82,10 @@ class SolidGroup : public std::vector<Solid*>
 /// A dictionary of FiberGroups
 typedef std::map<std::string, FiberGroup> Fibers;
 
+
+/// A dictionary of FiberGroups
+typedef std::map<std::string, ObjGroup<Fiber>> Fibers2;
+
 /// A dictionary of SpaceGroups
 typedef std::map<std::string, SpaceGroup> Spaces;
 
@@ -66,6 +97,7 @@ class Frame
 {
     //py::dict objects;
     public:
+        Fibers2 fibergroup;
         Fibers fibers;
         Spaces spaces;
         Solids solids;
