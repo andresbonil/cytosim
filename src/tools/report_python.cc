@@ -13,6 +13,7 @@
         
     import cytosim
     sim = cytosim.open()
+    sim.prop.timestep
     frame = cytosim.frame(0)
     fibers = frame["microtubule"]
     fibers.prop.segmentation = 1.337    # <- Yes, yes, yes.
@@ -177,8 +178,6 @@ PYBIND11_MODULE(cytosim, m) {
     /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
     py::class_<FiberGroup>(m, "FiberGroup")
         .def("__len__", [](const FiberGroup &v) { return v.size(); })
-        //.def("prop",  [](const FiberGroup & v) {return to_dict(v.prop->info());})
-        //.def("prop",  [](const FiberGroup & v) {return v.prop;}, py::return_value_policy::reference)
         .def_readwrite("prop",   &FiberGroup::prop , py::return_value_policy::reference)
         .def("__iter__", [](FiberGroup &v) {
             return py::make_iterator(v.begin(), v.end());
@@ -242,7 +241,7 @@ PYBIND11_MODULE(cytosim, m) {
   
     /// Python interface to simul
     py::class_<Simul>(m, "Simul")
-        //.def("prop",  [](Simul * sim) {return to_dict(sim->prop->info());})
+        .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
         .def("frame", [](Simul * sim, size_t i) 
             {return prepare_frame(sim, i);}, py::return_value_policy::reference);
         /*
