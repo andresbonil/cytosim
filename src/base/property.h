@@ -183,9 +183,6 @@ public:
     
     /// write header + data
     void         write(std::ostream&, bool prune = false) const;
-    
-    /// exports in python-ready format
-    virtual ObjectInfo * info() const ;
 
 };
 

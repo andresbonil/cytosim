@@ -168,11 +168,15 @@ int get_status() {
  */
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
-             
+    
+    load_props(m);
+        
     /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
     py::class_<FiberGroup>(m, "FiberGroup")
         .def("__len__", [](const FiberGroup &v) { return v.size(); })
-        .def("prop",  [](const FiberGroup & v) {return to_dict(v.prop->info());})
+        //.def("prop",  [](const FiberGroup & v) {return to_dict(v.prop->info());})
+        //.def("prop",  [](const FiberGroup & v) {return v.prop;}, py::return_value_policy::reference)
+        .def_readwrite("prop",   &FiberGroup::prop , py::return_value_policy::reference)
         .def("__iter__", [](FiberGroup &v) {
             return py::make_iterator(v.begin(), v.end());
         }, py::keep_alive<0, 1>())
@@ -186,7 +190,7 @@ PYBIND11_MODULE(cytosim, m) {
     /// Python interface to SolidGroup : behaves roughly as a Python list of solids
     py::class_<SolidGroup>(m, "SolidGroup")
         .def("__len__", [](const SolidGroup &v) { return v.size(); })
-        .def("prop",  [](const SolidGroup & v) {return to_dict(v.prop->info());})
+        //.def("prop",  [](const SolidGroup & v) {return to_dict(v.prop->info());})
         .def("__iter__", [](SolidGroup &v) {
             return py::make_iterator(v.begin(), v.end());
         }, py::keep_alive<0, 1>())
@@ -200,12 +204,12 @@ PYBIND11_MODULE(cytosim, m) {
     /// Python interface to SpaceGroup, given as a single space
     py::class_<SpaceGroup>(m, "Space")
         //.def("__len__", [](const FiberGroup &v) { return v.size(); })
-        .def("prop",  [](const SpaceGroup & v) {return to_dict(v.prop->info());})
+        //.def("prop",  [](const SpaceGroup & v) {return to_dict(v.prop->info());})
         .def("info",  [](const SpaceGroup & v) {return to_dict(v[0]->info());});     
         
     /// Python interface to timeframe : behaves roughly as a Python dict of ObjectGroup
     py::class_<Frame>(m, "Timeframe")
-        .def_readwrite("fibers", &Frame::fibers)
+        .def_readwrite("fibers", &Frame::fibers, py::return_value_policy::reference)
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())
@@ -218,7 +222,8 @@ PYBIND11_MODULE(cytosim, m) {
         .def("points", [](const Fiber * fib) {return to_numpy(fib->points());})
         .def("id",  [](const Fiber * fib) {return fib->identity();})
         .def("info",  [](const Fiber * fib) {return to_dict(fib->info());})
-        .def("prop",  [](const Fiber * fib) {return to_dict(fib->property()->info());})
+        //.def("prop",  [](const Fiber * fib) {return to_dict(fib->property()->info());})
+        .def_readwrite("prop",   &Fiber::prop , py::return_value_policy::reference)
         .def("next", [](const Fiber * fib) {return fib->next();})
         .def("__next__", [](const Fiber * fib) {return fib->next();});
     
@@ -227,14 +232,14 @@ PYBIND11_MODULE(cytosim, m) {
         .def("points", [](const Solid * sol) {return to_numpy(sol->points());})
         .def("id",  [](const Solid * sol) {return sol->identity();})
         .def("info",  [](const Solid * sol) {return to_dict(sol->info());})
-        .def("prop",  [](const Solid * sol) {return to_dict(sol->property()->info());})
+        //.def("prop",  [](const Solid * sol) {return to_dict(sol->property()->info());})
         .def("next", [](const Solid * sol) {return sol->next();})
         .def("__next__", [](const Solid * sol) {return sol->next();});
         
   
     /// Python interface to simul
     py::class_<Simul>(m, "Simul")
-        .def("prop",  [](Simul * sim) {return to_dict(sim->prop->info());})
+        //.def("prop",  [](Simul * sim) {return to_dict(sim->prop->info());})
         .def("frame", [](Simul * sim, size_t i) 
             {return prepare_frame(sim, i);}, py::return_value_policy::reference);
         /*

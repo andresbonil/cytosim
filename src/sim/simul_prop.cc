@@ -176,19 +176,3 @@ void SimulProp::write_values(std::ostream& os) const
     std::endl(os);
     write_value(os, "display", "("+display+")");
 }
-
-
-/**
- Returns a python-ready information
- */
-ObjectInfo * SimulProp::info() const {
-    ObjectInfo * info = Property::info();
-    info->reals["time_step"]=time_step;
-    info->reals["kT"]=kT;
-    info->reals["viscosity"]=viscosity;
-    info->reals["tolerance"]=tolerance;
-    info->reals["precondition"]=precondition;
-    info->reals["steric"]=steric;
-    info->reals["steric_max_range"]=steric_max_range;
-    return info;
-}

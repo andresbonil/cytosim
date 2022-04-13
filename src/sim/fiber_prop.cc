@@ -540,4 +540,3 @@ void FiberProp::write_values(std::ostream& os) const
     write_value(os, "activity",            activity);
     write_value(os, "display",             "("+display+")");
 }
-

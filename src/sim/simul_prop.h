@@ -288,10 +288,6 @@ public:
     /// write all values
     void write_values(std::ostream&) const;
     
-    
-    /// a python-ready prop
-    ObjectInfo * info() const;
-
 };
 
 #endif

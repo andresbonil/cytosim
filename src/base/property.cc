@@ -133,15 +133,6 @@ void Property::write(std::ostream& os, const bool prune) const
     os << "}\n";
 }
 
-/**
- Returns a python-ready information
- */
-ObjectInfo * Property::info() const {
-    ObjectInfo * info = new ObjectInfo;
-    info->strings["id"]=name();
-    return info;
-}
-
 std::ostream& operator << (std::ostream& os, const Property& p)
 {
     p.write(os, 0);
