@@ -8,6 +8,7 @@
 /**
 
   To use in python : move the cytosim...._.so file to a folder with *.cmo files
+    We recommend using cym/aster.cym for a demo.
    
     Then run : 
         
@@ -20,6 +21,9 @@
     fibers[0].points()
     fibers[0].id()
     fibers[0].prop
+    core = frame["core"][0]
+    core.points()
+     
     # etc...
 */
 
