@@ -10,14 +10,16 @@
   To use in python : move the cytosim...._.so file to a folder with *.cmo files
    
     Then run : 
+        
     import cytosim
     sim = cytosim.open()
     frame = cytosim.frame(0)
     fibers = frame["microtubule"]
-    fibers.props
-    fibers[0].points
-    fibers[0].id
-    etc...
+    fibers.prop.segmentation = 1.337    # <- Yes, yes, yes.
+    fibers[0].points()
+    fibers[0].id()
+    fibers[0].prop
+    # etc...
 */
 
 #include "report_python.h"
