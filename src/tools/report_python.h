@@ -20,6 +20,7 @@
 #include "objecter_python.h"
 #include "property_modules.h"
 #include "fiber_modules.h"
+#include "solid_modules.h"
 #include "python_utilities.h"
 
 namespace py = pybind11;

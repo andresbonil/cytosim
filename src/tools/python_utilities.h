@@ -20,14 +20,16 @@ pyarray & to_numpy(real_array * rar) {
     }
 }
 
-pyarray & to_numpy(Vector vec) {
+pyarray & to_numpy(Vector vec) {    
+    pyarray * par = new pyarray;
 #if DIM==1
-    return * new pyarray(std::vector<int>{vec[0]});
-#elseif DIM==2
-    return * new pyarray(std::vector<int>{vec[0],vec[1]});
+    *par = py::cast(std::vector<real>{vec[0]});
+#elif DIM==2
+    *par = py::cast(std::vector<real>{vec[0],vec[1]});
 #else
-    return * new pyarray(std::vector<int>{vec[0],vec[1],vec[2]});
+    *par = py::cast(std::vector<real>{vec[0],vec[1],vec[2]});
 #endif
+    return *par;
 }
 
 /// Converts an ObjectInfo * to a python dict

@@ -11,9 +11,11 @@ class Object;
 
 /// a utility to enrich the cytosim python module
 void load_solid_classes(py::module_ &m) {
-     /// Python interface to Fiber
-    py::class_<Solid,Object>(m, "Fiber")
+     /// Python interface to Solid
+    py::class_<Solid,Object>(m, "Solid")
         .def("position", [](const Solid * sol) {return to_numpy(sol->position());})
+        .def("points", [](const Solid * sol) {return to_numpy(sol->points());})
+        .def("nbPoints", [](const Solid * sol) {return sol->nbPoints();})
         .def("id",  [](const Solid * sol) {return sol->identity();})
         .def("info",  [](const Solid * sol) {return to_dict(sol->info());});
         /**
