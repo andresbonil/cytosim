@@ -167,6 +167,7 @@ int get_status() {
 /**
  * @brief  A module to get cytosim in python 
  * @return 
+ * @TODO : a lot should be put in specific files
  */
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
