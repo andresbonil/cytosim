@@ -161,6 +161,7 @@ PYBIND11_MODULE(cytosim, m) {
     /// Python interface to Object
     py::class_<Object>(m, "Object")
         .def("id",  [](const Object * obj) {return obj->identity();})
+        .def("points", [](const Object * obj) {return to_numpy(obj->points());})
         .def("info",  [](const Object * obj) {return to_dict(obj->info());});
     
     load_fiber_classes(m);
