@@ -9,7 +9,7 @@ class FiberProp;
 class Property;
 
 /// a utility to enrich the cytosim python module
-void load_props(py::module_ &m) {
+void load_prop_classes(py::module_ &m) {
     py::class_<Property>(m, "Prop")
         .def("name", &Property::name); // prop.name() outputs the name
     

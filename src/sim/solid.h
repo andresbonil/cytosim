@@ -211,6 +211,9 @@ public:
 
     /// Human friendly ouput
     void        print(std::ostream&, bool write_shape = false) const;
+    
+    /// export points in python-ready format
+    virtual real_array * points() const ;
 };
 
 /// output operator:

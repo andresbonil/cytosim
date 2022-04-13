@@ -196,7 +196,7 @@ public:
 
     /// return assembly/disassembly state of the FiberEnd
     state_t         dynamicState(FiberEnd end) const;
-
+    
     
     /// change state of MINUS_END
     virtual void   setDynamicStateM(state_t) {}

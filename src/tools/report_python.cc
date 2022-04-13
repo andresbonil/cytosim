@@ -35,27 +35,6 @@ int status = -2;
 extern FrameReader reader;
 extern int status;
 
-/// Converts a real array * to numpy array
-pyarray & to_numpy(real_array * rar) {
-    if (rar) {
-        pyarray * arr =new pyarray(std::get<1>(*rar),std::get<2>(*rar), std::get<0>(*rar));
-        return *arr;
-    } else {
-        pyarray * arr = new pyarray();
-        return *arr;
-    }
-}
-
-/// Converts an ObjectInfo * to a python dict
-py::dict & to_dict(ObjectInfo * info) {
-    py::dict * dico = new py::dict;
-    dico->attr("update")(py::cast(info->reals));
-    dico->attr("update")(py::cast(info->strings));
-    dico->attr("update")(py::cast(info->ints));
-    dico->attr("update")(py::cast(info->vecs));
-    
-    return *dico;
-}
 
 Simul * open()
 {   
@@ -172,9 +151,17 @@ int get_status() {
  */
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
-    
-    load_props(m);
+    /// Loading properties into the module
+    load_prop_classes(m);
         
+    /// Python interface to Object
+    py::class_<Object>(m, "Object")
+        .def("id",  [](const Object * obj) {return obj->identity();})
+        .def("info",  [](const Object * obj) {return to_dict(obj->info());});
+    
+    load_fiber_classes(m);
+    load_solid_classes(m);    
+    
     /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
     py::class_<FiberGroup>(m, "FiberGroup")
         .def("__len__", [](const FiberGroup &v) { return v.size(); })
@@ -219,26 +206,6 @@ PYBIND11_MODULE(cytosim, m) {
                  return f.objects[py::cast(s)];
              }, py::return_value_policy::reference);
     
-    /// Python interface to Fiber
-    py::class_<Fiber>(m, "Fiber")
-        .def("points", [](const Fiber * fib) {return to_numpy(fib->points());})
-        .def("id",  [](const Fiber * fib) {return fib->identity();})
-        .def("info",  [](const Fiber * fib) {return to_dict(fib->info());})
-        //.def("prop",  [](const Fiber * fib) {return to_dict(fib->property()->info());})
-        .def_readwrite("prop",   &Fiber::prop , py::return_value_policy::reference)
-        .def("next", [](const Fiber * fib) {return fib->next();})
-        .def("__next__", [](const Fiber * fib) {return fib->next();});
-    
-    /// Python interface to Solid
-    py::class_<Solid>(m, "Solid")
-        .def("points", [](const Solid * sol) {return to_numpy(sol->points());})
-        .def("id",  [](const Solid * sol) {return sol->identity();})
-        .def("info",  [](const Solid * sol) {return to_dict(sol->info());})
-        //.def("prop",  [](const Solid * sol) {return to_dict(sol->property()->info());})
-        .def("next", [](const Solid * sol) {return sol->next();})
-        .def("__next__", [](const Solid * sol) {return sol->next();});
-        
-  
     /// Python interface to simul
     py::class_<Simul>(m, "Simul")
         .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)

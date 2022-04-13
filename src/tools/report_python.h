@@ -19,9 +19,12 @@
 #include "objecter_python.h"
 #include "objecter_python.h"
 #include "property_modules.h"
+#include "fiber_modules.h"
+#include "python_utilities.h"
+
 namespace py = pybind11;
 
-typedef py::array_t<real> pyarray;
+
 class Simul;
 class SimulProp;
 
