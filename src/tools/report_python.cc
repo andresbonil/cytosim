@@ -14,7 +14,7 @@
         
     import cytosim
     sim = cytosim.open()
-    sim.prop.timestep
+    sim.prop.timestep 
     frame = cytosim.frame(0)
     fibers = frame["microtubule"]
     fibers.prop.segmentation = 1.337    # <- Yes, yes, yes.
