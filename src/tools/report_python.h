@@ -43,24 +43,6 @@ class ObjGroup : public std::vector<Obj*>{
 template<typename Obj, typename Prp> 
 using ObjMap = std::map<std::string,ObjGroup<Obj,Prp>> ;
 
-/// Distribute the objects (pointers) in the groups and in the dict.
-template<typename Obj, typename Prp, typename Set> 
-void distribute_objects(Simul * sim, Frame * current, ObjMap<Obj,Prp> mappe, Set & set, std::string categ ) {
-    PropertyList plist = sim->properties.find_all(categ);
-    for ( Property * i : plist )
-        {
-            Prp * fp = static_cast<Prp*>(i);
-            mappe[fp->name()] = ObjGroup<Obj,Prp>(fp);
-        }
-    for (auto obj = set.first(); obj != set.last() ; obj = obj->next() ) {
-        mappe[obj->property()->name()].push_back(obj);
-    }
-    mappe[set.last()->property()->name()].push_back(set.last());
-    for (const auto &[name, group] : mappe) {
-        current->objects[py::cast(name)] = group;
-    }
-}
- 
 /// A time frame ; basically a wrapper around a object dictionnary
 class Frame 
 {
@@ -80,6 +62,28 @@ public:
         Frame() = default;
         ~Frame() = default;
 };
+
+/// Distribute the objects (pointers) in the groups and in the dict.
+template<typename Obj, typename Prp, typename Set> 
+void distribute_objects(Simul * sim, Frame * current, ObjMap<Obj,Prp> mappe, Set & set, std::string categ ) {
+    // First we list all objects in category, and create the ObjGroups in the map
+    PropertyList plist = sim->properties.find_all(categ);
+    for ( Property * i : plist )
+        {
+            Prp * fp = static_cast<Prp*>(i);
+            mappe[fp->name()] = ObjGroup<Obj,Prp>(fp);
+        }
+    // Then we assign all objects to their groups
+    for (auto obj = set.first(); obj != set.last() ; obj = obj->next() ) {
+        mappe[obj->property()->name()].push_back(obj);
+    }
+    mappe[set.last()->property()->name()].push_back(set.last());
+    // Then we fill the dictionnary
+    for (const auto &[name, group] : mappe) {
+        current->objects[py::cast(name)] = group;
+    }
+}
+ 
 
 /// A function delcaration
 Frame * prepare_frame( Simul * , int ) ;

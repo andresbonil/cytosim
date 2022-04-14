@@ -139,6 +139,10 @@ PYBIND11_MODULE(cytosim, m) {
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())
+        .def("keys", [](Frame &f) {
+            return f.objects.attr("keys") ; })
+        .def("items", [](Frame &f) {
+            return f.objects.attr("items") ; })
         .def("__getitem__",[](const Frame &f, std::string s) {
                  return f.objects[py::cast(s)];
              }, py::return_value_policy::reference);
