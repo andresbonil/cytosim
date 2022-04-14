@@ -47,7 +47,7 @@ using ObjMap = std::map<std::string,ObjGroup<Obj,Prp>> ;
 class Frame 
 {
 public:
-        /// An Objectmap is map to an objectgroup
+        /// An Objectmap is map strings->objectgroups
         ObjMap<Fiber,FiberProp> fibers;
         ObjMap<Solid,SolidProp> solids;
         ObjMap<Space,SpaceProp> spaces;
