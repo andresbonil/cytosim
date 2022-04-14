@@ -87,24 +87,9 @@ Frame * prepare_frame( Simul * sim, int frame)
     reader.loadFrame(*sim, frame);
     Frame * current = new Frame;
     
-    
-    PropertyList plist = sim->properties.find_all("fiber");
-    if (!plist.empty()) {
-        create_groups(current->fibers, plist, static_cast<FiberProp*>(*plist.begin()), FiberGroup());
-        fill_group_and_dict(current, current->fibers, sim->fibers);
-    };
-    
-    plist = sim->properties.find_all("space");
-    if (!plist.empty()) {
-        create_groups(current->spaces, plist, static_cast<SpaceProp*>(*plist.begin()), SpaceGroup());
-        fill_group_and_dict(current, current->spaces, sim->spaces );
-    };
-    
-    plist = sim->properties.find_all("solid");
-    if (!plist.empty()) {
-        create_groups(current->solids, plist, static_cast<SolidProp*>(*plist.begin()), SolidGroup());
-        fill_group_and_dict(current, current->solids, sim->solids );
-    };
+    distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
+    distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
+    distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
     
     return current;
 }
@@ -144,9 +129,9 @@ PYBIND11_MODULE(cytosim, m) {
     load_space_classes(m);
     
     // Templated declaration of python classes !
-    auto fibs = declare_group(m, FiberGroup(), "FiberGroup");
-    auto sols = declare_group(m, SolidGroup(), "SolidGroup");
-    auto spas = declare_group(m, SpaceGroup(), "SpaceGroup");
+    auto fibs = declare_group(m, ObjGroup<Fiber,FiberProp>(), "FiberGroup");
+    auto sols = declare_group(m, ObjGroup<Solid,SolidProp>(), "SolidGroup");
+    auto spas = declare_group(m, ObjGroup<Space,SpaceProp>(), "SpaceGroup");
     
     /// Python interface to timeframe : behaves roughly as a Python dict of ObjectGroup
     py::class_<Frame>(m, "Timeframe")

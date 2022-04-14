@@ -23,98 +23,36 @@
 #include "solid_modules.h"
 #include "space_modules.h"
 #include "python_utilities.h"
-
 namespace py = pybind11;
-
 
 class Simul;
 class SimulProp;
 
-/*
-class ObjWrapper {
-    public:
-        Object * obj;
-        ObjWrapper(Object * o) { obj = o; };
-        ~ObjWrapper() {};
-};
-*/
 
-/// A class containing a vect of fibers with the same properties
-class FiberGroup : public std::vector<Fiber*>
-{
+/// ObjGroup : a vector of objects of same type having the same property
+template<typename Obj, typename Prp> 
+class ObjGroup : public std::vector<Obj*>{
     public:
-        FiberProp * prop;
-        FiberGroup() = default;
-        FiberGroup(FiberProp * p) : FiberGroup() {prop = p ;};
-        ~FiberGroup() = default;
+    Prp * prop;
+    ObjGroup() = default;
+    ObjGroup(Prp * p) : ObjGroup() {prop = p ;};
+    ~ObjGroup() = default;
 };
 
-/// A class containing a vect of spaces with the same properties
-class SpaceGroup : public std::vector<Space*>
-{
-    public:
-        SpaceProp * prop;
-        SpaceGroup() = default;
-        SpaceGroup(SpaceProp * p) : SpaceGroup() {prop = p ;};
-        ~SpaceGroup() = default;
-};
+/// ObjMap : a map <string, ObjGroup>
+template<typename Obj, typename Prp> 
+using ObjMap = std::map<std::string,ObjGroup<Obj,Prp>> ;
 
-/// A class containing a vect of spaces with the same properties
-class SolidGroup : public std::vector<Solid*>
-{
-    public:
-        SolidProp * prop;
-        SolidGroup() = default;
-        SolidGroup(SolidProp * p) : SolidGroup() {prop = p ;};
-        ~SolidGroup() = default;
-};
-
-/// A dictionary of FiberGroups
-typedef std::map<std::string, FiberGroup> Fibers;
-
-/// A dictionary of SpaceGroups
-typedef std::map<std::string, SpaceGroup> Spaces;
-
-/// A dictionary of SolidGroups
-typedef std::map<std::string, SolidGroup> Solids;
-
-/// A time frame ; basicaly 
-class Frame 
-{
-    //py::dict objects;
-    public:
-        Fibers fibers;
-        Spaces spaces;
-        Solids solids;
-        int time;
-        py::dict objects;
-        Frame() = default;
-        ~Frame() = default;
-};
-
-//Frame & prepare_frame(int ) ;
-//Frame & prepare_frame( Simul * , int ) ;
-Frame * prepare_frame( Simul * , int ) ;
-
-template<typename Group>
-auto declare_group(py::module &mod, Group group, std::string name) {
-        return py::class_<Group>(mod, name.c_str())
-        .def("__len__", [](const Group &v) { return v.size(); })
-        .def_readwrite("prop",   &Group::prop , py::return_value_policy::reference)
-        .def("__iter__", [](Group &v) {
-            return py::make_iterator(v.begin(), v.end());
-        }, py::keep_alive<0, 1>())
-        .def("__getitem__",[](const Group &v, size_t i) {
-                 if (i >= v.size()) {
-                     throw py::index_error();
-                 }
-                 return v[i];
-             }, py::return_value_policy::reference);
-}
-
-template<typename GMap,typename Set>
-void fill_group_and_dict(Frame * current, GMap & mappe, Set & set) {
-     for (auto obj = set.first(); obj != set.last() ; obj = obj->next() ) {
+/// Distribute the objects (pointers) in the groups and in the dict.
+template<typename Obj, typename Prp, typename Set> 
+void distribute_objects(Simul * sim, Frame * current, ObjMap<Obj,Prp> mappe, Set & set, std::string categ ) {
+    PropertyList plist = sim->properties.find_all(categ);
+    for ( Property * i : plist )
+        {
+            Prp * fp = static_cast<Prp*>(i);
+            mappe[fp->name()] = ObjGroup<Obj,Prp>(fp);
+        }
+    for (auto obj = set.first(); obj != set.last() ; obj = obj->next() ) {
         mappe[obj->property()->name()].push_back(obj);
     }
     mappe[set.last()->property()->name()].push_back(set.last());
@@ -122,15 +60,47 @@ void fill_group_and_dict(Frame * current, GMap & mappe, Set & set) {
         current->objects[py::cast(name)] = group;
     }
 }
+ 
+/// A time frame ; basically a wrapper around a object dictionnary
+class Frame 
+{
+public:
+        /// An Objectmap is map to an objectgroup
+        ObjMap<Fiber,FiberProp> fibers;
+        ObjMap<Solid,SolidProp> solids;
+        ObjMap<Space,SpaceProp> spaces;
 
-template<typename ObjProp,typename Group, typename Gmap>
-void create_groups(Gmap & mappe, PropertyList & plist, ObjProp * prop, Group group) {
-    for ( Property * i : plist )
-        {
-            ObjProp * fp = static_cast<ObjProp*>(i);
-            mappe[fp->name()] = Group(fp);
-        }
+        // Time of the frame
+        int time;
+        
+        /// The party zone
+        py::dict objects;
+        
+        /// Default constr and destrc
+        Frame() = default;
+        ~Frame() = default;
+};
+
+/// A function delcaration
+Frame * prepare_frame( Simul * , int ) ;
+
+/// declare_group() : creates a python interface for an ObjGroup
+template<typename Group>
+auto declare_group(py::module &mod, Group group, std::string name) {
+        return py::class_<Group>(mod, name.c_str())
+            .def("__len__", [](const Group &v) { return v.size(); })
+            .def_readwrite("prop",   &Group::prop , py::return_value_policy::reference)
+            .def("__iter__", [](Group &v) {
+                return py::make_iterator(v.begin(), v.end());
+            }, py::keep_alive<0, 1>())
+            .def("__getitem__",[](const Group &v, size_t i) {
+                     if (i >= v.size()) {
+                         throw py::index_error();
+                     }
+                     return v[i];
+                 }, py::return_value_policy::reference);
 }
+
 
 #endif
 /*
@@ -190,4 +160,68 @@ class PyObjs : public std::vector<PyObj>
         PyObjs(SetReport*);
         ~PyObjs() = default;
 };
+*/
+
+/// A class containing a vect of fibers with the same propertie
+/*
+class FiberGroup : public std::vector<Fiber*>
+{
+    public:
+        FiberProp * prop;
+        FiberGroup() = default;
+        FiberGroup(FiberProp * p) : FiberGroup() {prop = p ;};
+        ~FiberGroup() = default;
+};
+
+/// A class containing a vect of spaces with the same properties
+class SpaceGroup : public std::vector<Space*>
+{
+    public:
+        SpaceProp * prop;
+        SpaceGroup() = default;
+        SpaceGroup(SpaceProp * p) : SpaceGroup() {prop = p ;};
+        ~SpaceGroup() = default;
+};
+
+/// A class containing a vect of spaces with the same properties
+class SolidGroup : public std::vector<Solid*>
+{
+    public:
+        SolidProp * prop;
+        SolidGroup() = default;
+        SolidGroup(SolidProp * p) : SolidGroup() {prop = p ;};
+        ~SolidGroup() = default;
+};
+
+/// A dictionary of FiberGroups
+typedef std::map<std::string, FiberGroup> Fibers;
+
+/// A dictionary of SpaceGroups
+typedef std::map<std::string, SpaceGroup> Spaces;
+
+/// A dictionary of SolidGroups
+typedef std::map<std::string, SolidGroup> Solids;
+*/
+
+/*
+template<typename GMap,typename Set>
+void fill_group_and_dict(Frame * current, GMap & mappe, Set & set) {
+     for (auto obj = set.first(); obj != set.last() ; obj = obj->next() ) {
+        mappe[obj->property()->name()].push_back(obj);
+    }
+    mappe[set.last()->property()->name()].push_back(set.last());
+    for (const auto &[name, group] : mappe) {
+        current->objects[py::cast(name)] = group;
+    }
+}
+
+template<typename ObjProp,typename Group, typename Gmap>
+void create_groups(Gmap & mappe, PropertyList & plist, ObjProp * prop, Group group) {
+    for ( Property * i : plist )
+        {
+            ObjProp * fp = static_cast<ObjProp*>(i);
+            mappe[fp->name()] = Group(fp);
+        }
+}
+
 */
