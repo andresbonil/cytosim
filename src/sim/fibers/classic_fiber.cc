@@ -244,11 +244,4 @@ void ClassicFiber::read(Inputter& in, Simul& sim, ObjectTag tag)
         Fiber::read(in, sim, tag);
 }
 
-/** Exports info in a python-ready format
- */
-ObjectInfo * ClassicFiber::info() const {
-    ObjectInfo * info = Fiber::info();
-    info->reals["forceP"]=projectedForceEndP();
-    info->reals["forceM"]=projectedForceEndM();
-    return info;
 }
