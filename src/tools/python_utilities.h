@@ -5,9 +5,16 @@
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
 namespace py = pybind11;
-
-
 typedef py::array_t<real> pyarray;
+
+/// Get points for cytosim objects such as fibers or solids
+template<typename Obj>
+pyarray & get_obj_points(Obj * obj) {
+    int_vect sizes = {(int)obj->nbPoints(), (int)DIM};
+    int_vect strides = {DIM*sizeof(real), sizeof(real)};
+    pyarray * arr =new pyarray(sizes, strides, obj->data());
+    return *arr;
+};
 
 /// Converts a real array * to numpy array
 pyarray & to_numpy(real_array * rar) {
@@ -20,6 +27,13 @@ pyarray & to_numpy(real_array * rar) {
     }
 }
 
+/// Converts a real array to numpy array
+pyarray & to_numpy(real_array  rar) {
+    pyarray * arr =new pyarray(std::get<1>(rar),std::get<2>(rar), std::get<0>(rar));
+    return *arr;
+}
+
+/// Converts a Vector to numpy array
 pyarray & to_numpy(Vector vec) {    
     pyarray * par = new pyarray;
 #if DIM==1
