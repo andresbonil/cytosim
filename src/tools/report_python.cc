@@ -128,7 +128,8 @@ PYBIND11_MODULE(cytosim, m) {
     load_solid_classes(m);
     load_space_classes(m);
     
-    // Templated declaration of python classes !
+    /// We declare object groups
+    // We can later add additional def to any of these groups
     auto fibs = declare_group(m, ObjGroup<Fiber,FiberProp>(), "FiberGroup");
     auto sols = declare_group(m, ObjGroup<Solid,SolidProp>(), "SolidGroup");
     auto spas = declare_group(m, ObjGroup<Space,SpaceProp>(), "SpaceGroup");
@@ -139,10 +140,8 @@ PYBIND11_MODULE(cytosim, m) {
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())
-        .def("keys", [](Frame &f) {
-            return f.objects.attr("keys") ; })
-        .def("items", [](Frame &f) {
-            return f.objects.attr("items") ; })
+        .def("keys", [](Frame &f) {  return f.objects.attr("keys")() ; })
+        .def("items", [](Frame &f) { return f.objects.attr("items")() ; })
         .def("__getitem__",[](const Frame &f, std::string s) {
                  return f.objects[py::cast(s)];
              }, py::return_value_policy::reference);
