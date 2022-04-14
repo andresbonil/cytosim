@@ -90,6 +90,8 @@ Frame * prepare_frame( Simul * sim, int frame)
     distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
     distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
     distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
+    distribute_objects(sim,current, current->couples, sim->couples, std::string("couple") ) ;
+    distribute_objects(sim,current, current->singles, sim->singles, std::string("single") ) ;
     
     return current;
 }
@@ -127,12 +129,16 @@ PYBIND11_MODULE(cytosim, m) {
     load_fiber_classes(m);
     load_solid_classes(m);
     load_space_classes(m);
+    load_single_classes(m);
+    load_couple_classes(m);
     
     /// We declare object groups
     // We can later add additional def to any of these groups
     auto fibs = declare_group(m, ObjGroup<Fiber,FiberProp>(), "FiberGroup");
     auto sols = declare_group(m, ObjGroup<Solid,SolidProp>(), "SolidGroup");
     auto spas = declare_group(m, ObjGroup<Space,SpaceProp>(), "SpaceGroup");
+    auto sins = declare_group(m, ObjGroup<Single,SingleProp>(), "SingleGroup");
+    auto cous = declare_group(m, ObjGroup<Couple,CoupleProp>(), "CoupleGroup");
     
     /// Python interface to timeframe : behaves roughly as a Python dict of ObjectGroup
     py::class_<Frame>(m, "Timeframe")
