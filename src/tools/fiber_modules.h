@@ -1,6 +1,7 @@
 #include "fiber.h"
 #include <pybind11/pybind11.h>
 #include "python_utilities.h"
+#include "objecter_python.h"
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
 namespace py = pybind11;
@@ -8,6 +9,12 @@ namespace py = pybind11;
 class Fiber;
 class Object;
 //class Property;
+
+real_array * get_points(Fiber * fib) {
+    int_vect sizes = {(int)fib->nbPoints(), (int)DIM};
+    int_vect strides = {DIM*sizeof(real), sizeof(real)};
+    return new real_array{fib->data(), sizes, strides};
+}
 
 /// a utility to enrich the cytosim python module
 void load_fiber_classes(py::module_ &m) {
@@ -17,6 +24,7 @@ void load_fiber_classes(py::module_ &m) {
         .def("stateP",  [](const Fiber * fib) {return py::cast(fib->dynamicStateP());})
         .def("setStateM",  [](Fiber * fib, int stat) {return fib->setDynamicStateM(stat);})
         .def("setStateP",  [](Fiber * fib, int stat) {return fib->setDynamicStateP(stat);})
+        .def("points",  [](Fiber * fib) {return to_numpy(get_points(fib));})
         .def("__next__", [](const Fiber * fib) {return fib->next();});
         /**
          * 

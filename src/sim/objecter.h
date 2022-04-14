@@ -8,7 +8,6 @@
 #include "random.h"
 #include "array.h"
 #include "noder.h"
-#include "objecter_python.h"
 
 class Simul;
 class Property;
@@ -125,12 +124,6 @@ public:
 
     /// concatenation of [ tag(), property()->number(), identity() ] in plain ascii
     std::string     reference() const;
-    
-    /// exports information in python-ready format
-    virtual ObjectInfo * info() const ;
-    
-    /// export points in python-ready format
-    virtual real_array * points() const {return nullptr; };
     
     //--------------------------
 

@@ -1229,11 +1229,3 @@ std::ostream& operator << (std::ostream& os, Solid const& obj)
     obj.print(os, false);
     return os;
 }
-
-/** Exports points in a python-ready format
- */
-real_array * Solid::points() const {
-    int_vect sizes = {(int)nbPoints(), (int)DIM};
-    int_vect strides = {DIM*sizeof(real), sizeof(real)};
-    return new real_array{data(), sizes, strides};;
-}

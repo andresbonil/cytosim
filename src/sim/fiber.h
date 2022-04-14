@@ -124,12 +124,6 @@ public:
 
     //--------------------------------------------------------------------------
     
-    /// export points in python-ready format
-    virtual real_array * points() const ;
-    
-    /// exports informatoin in python-ready format
-    virtual ObjectInfo * info() const ;
-    
     /// calculate viscous drag coefficient
     void           setDragCoefficient();
     

@@ -1395,19 +1395,3 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     }
 }
 
-
-/** Exports points in a python-ready format
- */
-real_array * Fiber::points() const {
-    int_vect sizes = {(int)nbPoints(), (int)DIM};
-    int_vect strides = {DIM*sizeof(real), sizeof(real)};
-    return new real_array{data(), sizes, strides};;
-}
-
-/** Exports info in a python-ready format
- */
-ObjectInfo * Fiber::info() const {
-    ObjectInfo * info = new ObjectInfo;
-    info->ints["id"]=identity();
-    return info;
-}
