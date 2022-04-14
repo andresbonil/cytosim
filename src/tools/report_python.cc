@@ -87,57 +87,25 @@ Frame * prepare_frame( Simul * sim, int frame)
     reader.loadFrame(*sim, frame);
     Frame * current = new Frame;
     
-    // First deal with the fibers
+    
     PropertyList plist = sim->properties.find_all("fiber");
-    for ( Property * i : plist )
-    {
-        FiberProp * fp = static_cast<FiberProp*>(i);
-        current->fibers[fp->name()] = FiberGroup(fp);
-    }
-    for (auto fiber = sim->fibers.first(); fiber != sim->fibers.last() ; fiber = fiber->next() ) {
-        current->fibers[fiber->property()->name()].push_back(fiber);
-    }
-    current->fibers[sim->fibers.last()->property()->name()].push_back(sim->fibers.last());
+    if (!plist.empty()) {
+        create_groups(current->fibers, plist, static_cast<FiberProp*>(*plist.begin()), FiberGroup());
+        fill_group_and_dict(current, current->fibers, sim->fibers);
+    };
     
-    // Then deals with spaces
     plist = sim->properties.find_all("space");
-    for ( Property * i : plist )
-    {
-        SpaceProp * fp = static_cast<SpaceProp*>(i);
-        current->spaces[fp->name()] = SpaceGroup(fp);
-    }
-    for (auto space = sim->spaces.first(); space != sim->spaces.last() ; space = space->next() ) {
-        current->spaces[space->property()->name()].push_back(space);
-    }
-    current->spaces[sim->spaces.last()->property()->name()].push_back(sim->spaces.last());
+    if (!plist.empty()) {
+        create_groups(current->spaces, plist, static_cast<SpaceProp*>(*plist.begin()), SpaceGroup());
+        fill_group_and_dict(current, current->spaces, sim->spaces );
+    };
     
-    // Deals with solids
     plist = sim->properties.find_all("solid");
-    for ( Property * i : plist )
-    {
-        SolidProp * fp = static_cast<SolidProp*>(i);
-        current->solids[fp->name()] = SolidGroup(fp);
-    }
-    for (auto solid = sim->solids.first(); solid != sim->solids.last() ; solid = solid->next() ) {
-        current->solids[solid->property()->name()].push_back(solid);
-    }
-    current->solids[sim->solids.last()->property()->name()].push_back(sim->solids.last());
+    if (!plist.empty()) {
+        create_groups(current->solids, plist, static_cast<SolidProp*>(*plist.begin()), SolidGroup());
+        fill_group_and_dict(current, current->solids, sim->solids );
+    };
     
-    // Deal with whatever
-    // ....
-    
-    // Grouping in dict
-    for (const auto &[name, group] : current->fibers) {
-        current->objects[py::cast(name)] = group;
-    }
-    for (const auto &[name, group] : current->spaces) {
-        current->objects[py::cast(name)] = group;
-    }
-    for (const auto &[name, group] : current->solids) {
-        current->objects[py::cast(name)] = group;
-    }
-    
-    //return *current;
     return current;
 }
 
@@ -153,9 +121,15 @@ int get_status() {
  * @TODO : a lot should be put in specific files
  */
 PYBIND11_MODULE(cytosim, m) {
-    m.doc() = "pybind11 example plugin"; // optional module docstring
-    /// Loading properties into the module
-    load_prop_classes(m);
+    m.doc() = "sim = cytosim.open() \n"
+                "sim.prop.timestep \n"
+                "frame = cytosim.frame(0) \n"
+                "fibers = frame['microtubule'] \n"
+                "fibers.prop.segmentation = 1.337    # <- Yes, yes, yes. \n"
+                "fibers[0].points() \n"
+                "fibers[0].id() \n"
+                "core = frame['core'][0] \n"
+                "core.points()"; // optional module docstring
         
     /// Python interface to Object
     py::class_<Object>(m, "Object")
@@ -163,43 +137,17 @@ PYBIND11_MODULE(cytosim, m) {
         .def("points", [](const Object * obj) {return to_numpy(obj->points());})
         .def("info",  [](const Object * obj) {return to_dict(obj->info());});
     
+    /// Loading properties into the module
+    load_prop_classes(m);
     load_fiber_classes(m);
-    load_solid_classes(m);    
+    load_solid_classes(m);
+    load_space_classes(m);
     
-    /// Python interface to FiberGroup : behaves roughly as a Python list of fibers
-    py::class_<FiberGroup>(m, "FiberGroup")
-        .def("__len__", [](const FiberGroup &v) { return v.size(); })
-        .def_readwrite("prop",   &FiberGroup::prop , py::return_value_policy::reference)
-        .def("__iter__", [](FiberGroup &v) {
-            return py::make_iterator(v.begin(), v.end());
-        }, py::keep_alive<0, 1>())
-        .def("__getitem__",[](const FiberGroup &v, size_t i) {
-                 if (i >= v.size()) {
-                     throw py::index_error();
-                 }
-                 return v[i];
-             }, py::return_value_policy::reference);
-             
-    /// Python interface to SolidGroup : behaves roughly as a Python list of solids
-    py::class_<SolidGroup>(m, "SolidGroup")
-        .def("__len__", [](const SolidGroup &v) { return v.size(); })
-        //.def("prop",  [](const SolidGroup & v) {return to_dict(v.prop->info());})
-        .def("__iter__", [](SolidGroup &v) {
-            return py::make_iterator(v.begin(), v.end());
-        }, py::keep_alive<0, 1>())
-        .def("__getitem__",[](const SolidGroup &v, size_t i) {
-                 if (i >= v.size()) {
-                     throw py::index_error();
-                 }
-                 return v[i];
-             }, py::return_value_policy::reference);
-             
-    /// Python interface to SpaceGroup, given as a single space
-    py::class_<SpaceGroup>(m, "Space")
-        //.def("__len__", [](const FiberGroup &v) { return v.size(); })
-        //.def("prop",  [](const SpaceGroup & v) {return to_dict(v.prop->info());})
-        .def("info",  [](const SpaceGroup & v) {return to_dict(v[0]->info());});     
-        
+    // Templated declaration of python classes !
+    auto fibs = declare_group(m, FiberGroup(), "FiberGroup");
+    auto sols = declare_group(m, SolidGroup(), "SolidGroup");
+    auto spas = declare_group(m, SpaceGroup(), "SpaceGroup");
+    
     /// Python interface to timeframe : behaves roughly as a Python dict of ObjectGroup
     py::class_<Frame>(m, "Timeframe")
         .def_readwrite("fibers", &Frame::fibers, py::return_value_policy::reference)
@@ -215,17 +163,11 @@ PYBIND11_MODULE(cytosim, m) {
         .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
         .def("frame", [](Simul * sim, size_t i) 
             {return prepare_frame(sim, i);}, py::return_value_policy::reference);
-        /*
-       .def("__getitem__",[](Simul * sim, size_t i) {
-                 //if (i >= v.size()) {
-                 //    throw py::index_error();
-                 //}
-                 return prepared_frame(sim, i);
-             });*/
+
     
     m.def("status", &get_status, "Status of the simul  : loaded or not");
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
-    //m.def("frame", &prepare_frame, "load frame");
+    
     
 }
 

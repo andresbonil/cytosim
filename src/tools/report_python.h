@@ -21,6 +21,7 @@
 #include "property_modules.h"
 #include "fiber_modules.h"
 #include "solid_modules.h"
+#include "space_modules.h"
 #include "python_utilities.h"
 
 namespace py = pybind11;
@@ -94,8 +95,61 @@ class Frame
 //Frame & prepare_frame(int ) ;
 //Frame & prepare_frame( Simul * , int ) ;
 Frame * prepare_frame( Simul * , int ) ;
-#endif
 
+template<typename Group>
+auto declare_group(py::module &mod, Group group, std::string name) {
+        return py::class_<Group>(mod, name.c_str())
+        .def("__len__", [](const Group &v) { return v.size(); })
+        .def_readwrite("prop",   &Group::prop , py::return_value_policy::reference)
+        .def("__iter__", [](Group &v) {
+            return py::make_iterator(v.begin(), v.end());
+        }, py::keep_alive<0, 1>())
+        .def("__getitem__",[](const Group &v, size_t i) {
+                 if (i >= v.size()) {
+                     throw py::index_error();
+                 }
+                 return v[i];
+             }, py::return_value_policy::reference);
+}
+
+template<typename GMap,typename Set>
+void fill_group_and_dict(Frame * current, GMap & mappe, Set & set) {
+     for (auto obj = set.first(); obj != set.last() ; obj = obj->next() ) {
+        mappe[obj->property()->name()].push_back(obj);
+    }
+    mappe[set.last()->property()->name()].push_back(set.last());
+    for (const auto &[name, group] : mappe) {
+        current->objects[py::cast(name)] = group;
+    }
+}
+
+template<typename ObjProp,typename Group, typename Gmap>
+void create_groups(Gmap & mappe, PropertyList & plist, ObjProp * prop, Group group) {
+    for ( Property * i : plist )
+        {
+            ObjProp * fp = static_cast<ObjProp*>(i);
+            mappe[fp->name()] = Group(fp);
+        }
+}
+
+#endif
+/*
+template<typename ObjProp,typename Group, typename Gmap, typename Set>
+void assign_groups(Simul * sim, Gmap & mappe, std::string & name, ObjProp prop, Group group,  Set & set) {
+    PropertyList plist = sim->properties.find_all(name);
+    if (!plist.empty()) {
+        for ( Property * i : plist )
+        {
+            ObjProp * fp = static_cast<ObjProp*>(i);
+            mappe[fp->name()] = Group(fp);
+        }
+    }
+    for (auto obj = set.first(); obj != set.last() ; obj = obj->next() ) {
+        group[obj->property()->name()].push_back(obj);
+    }
+    group[set.last()->property()->name()].push_back(set.last());
+}
+*/
 /*
 /// PyObj is the python representation of an object report
 struct PyObj {
