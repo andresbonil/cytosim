@@ -12,9 +12,11 @@ class Object;
 
 /// a utility to enrich the cytosim python module
 void load_fiber_classes(py::module_ &m) {
-     /// Python interface to Fiber
+    /// Python interface to Fiber
+    // @TODO : add the methods from mecafil, chain, mecable... ?
     py::class_<Fiber,Object>(m, "Fiber")
         .def("points",  [](Fiber * fib) {return get_obj_points(fib);})
+        .def("nbPoints",  [](Fiber * fib) {return fib->nbPoints();})
         .def("cutM",  [](Fiber * fib, real len) {return fib->cutM(len);})
         .def("cutP",  [](Fiber * fib, real len) {return fib->cutP(len);})
         .def("sever",  [](Fiber * fib, real a, int p, int m) {return fib->sever(a, p, m);})

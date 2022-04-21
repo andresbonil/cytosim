@@ -60,5 +60,9 @@ void load_prop_classes(py::module_ &m) {
         .def_readwrite("display_fresh", &FiberProp::display_fresh)
         .def_readwrite("display", &FiberProp::display);
         
+    py::class_<HandProp,Property>(m, "HandProp");
+    py::class_<CoupleProp,Property>(m, "CoupleProp");
+    py::class_<SingleProp,Property>(m, "SingleProp");
+    py::class_<SpaceProp,Property>(m, "SpaceProp");
 }
 

@@ -32,11 +32,11 @@ void load_couple_classes(py::module_ &m) {
         .def("hand1",  [](Couple * s) {return s->hand1();}, py::return_value_policy::reference)
         .def("hand2",  [](Couple * s) {return s->hand2();}, py::return_value_policy::reference)
         .def("hand",  [](Couple * s, int i) {
-            if (i==1) {return s->hand1();} else {return s->hand2();} ;}
+            if (i==0) {return s->hand1();} else {return s->hand2();} ;}
             , py::return_value_policy::reference)
         .def("state",  [](Couple * s) {return s->state();})
-        .def("__getitem__",[](const Couple *s, int i) {
-            if (i==1) {return s->hand1();} else {return s->hand2();} ;}
+        .def("__getitem__",[](const Couple *s, int i) { // We can call couple[0]  to get the first hand ! thus couple[0].attachEnd(...) is available
+            if (i==0) {return s->hand1();} else {return s->hand2();} ;}
             , py::return_value_policy::reference);
         /**
          * 
