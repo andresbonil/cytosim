@@ -80,21 +80,47 @@ void distribute_objects(Simul * sim, Frame * current, ObjMap<Obj,Prp> mappe, Set
                 mappe[fp->name()] = ObjGroup<Obj,Prp>(fp);
             }
         // Then we assign all objects to their groups
-        // We need to add a static cast here because ...
-        // sometimes first, last comme from the base class ObjectSet, sometimes from a derived class, e.g. FiberSet
-        // but at least we are not touching the simulation files :)
-        for (Obj* obj = static_cast<Obj*>(set.first()); obj != static_cast<Obj*>(set.last()) ; obj = static_cast<Obj*>(obj->next()) ) {
+        Obj * obj = set.first();
+        while (obj) {
             mappe[obj->property()->name()].push_back(obj);
+            obj = obj->next();
         }
-        mappe[static_cast<Obj*>(set.last())->property()->name()].push_back(static_cast<Obj*>(set.last()));
         // Then we fill the dictionnary
         for (const auto &[name, group] : mappe) {
             current->objects[py::cast(name)] = group;
         }
+        
     }
 }
  
-
+/// Distribute the objects (pointers) in the groups and in the dict ; special case for couple, single, where firstID needs to be used
+template<typename Obj, typename Prp, typename Set> 
+void distribute_objects_wID(Simul * sim, Frame * current, ObjMap<Obj,Prp> mappe, Set & set, std::string categ ) {
+    // First we list all objects in category, and create the ObjGroups in the map
+    PropertyList plist = sim->properties.find_all(categ);
+    if (!plist.empty()) {
+        for ( Property * i : plist )
+            {
+                Prp * fp = static_cast<Prp*>(i);
+                mappe[fp->name()] = ObjGroup<Obj,Prp>(fp);
+            }
+        // Then we assign all objects to their groups
+        // (OUTDATED) We need to add a static cast here because ...
+        // sometimes first, last comme from the base class ObjectSet, sometimes from a derived class, e.g. FiberSet
+        // but at least we are not touching the simulation files :)
+        Obj* obj = set.firstID();
+        while (obj) 
+       {
+            mappe[obj->property()->name()].push_back(obj);
+            obj = set.nextID(obj);
+        }
+        // Then we fill the dictionnary
+        for (const auto &[name, group] : mappe) {
+            current->objects[py::cast(name)] = group;
+        }
+        
+    }
+}
 /// A function delcaration
 Frame * prepare_frame( Simul * , int ) ;
 
