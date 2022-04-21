@@ -13,24 +13,10 @@
 #define POINTDISP_USES_PIXEL_BUFFERS 0
 
 
-void PointDisp::clearPixelmaps()
-{
-#if POINTDISP_USES_PIXELMAPS
-    nPix = 0;
-    for ( int i = 0; i < 3; ++i )
-    {
-        bmp[i] = nullptr;
-        pbo[i] = 0;
-    }
-#endif
-}
-
-
 PointDisp::PointDisp(const std::string& k, const std::string& n)
 : Property(n)
 {
     mKind = k;
-    clearPixelmaps();
     clear();
 }
 
@@ -48,8 +34,6 @@ PointDisp::PointDisp(PointDisp const& o) : Property(o)
     style        = o.style;
     symbol       = o.symbol;
     symbol_color = o.symbol_color;
-
-    clearPixelmaps();
 }
 
 
@@ -67,27 +51,12 @@ PointDisp& PointDisp::operator = (PointDisp const& o)
     symbol       = o.symbol;
     symbol_color = o.symbol_color;
     
-    clearPixelmaps();
-    
     return *this;
 }
 
 
 PointDisp::~PointDisp()
 {
-#if POINTDISP_USES_PIXELMAPS
-    releasePixelmap();
-    
-#if POINTDISP_USES_PIXEL_BUFFERS
-    if ( pbo[0] > 0 )
-    {
-        glDeleteBuffers(3, pbo);
-        pbo[0] = 0;
-        pbo[1] = 0;
-        pbo[2] = 0;
-    }
-#endif
-#endif
 }
 
 
@@ -189,280 +158,12 @@ void PointDisp::strokeI() const
 
 #pragma mark - Bitmaps
 
-#if POINTDISP_USES_PIXELMAPS
-
-
-/**
- Allocate memory for pixelmaps of size `pixSize x pixSize`
- 3 bitmaps x 4 colors x pixSize x pixSize pixels
- \todo use Graphic card memory for the bitmaps
- */
-void PointDisp::allocatePixelmap()
-{
-    mOffs = -0.5f * pixSize;
-    
-    // allocate only if needed
-    if ( !bmp[0] || pixSize != nPix )
-    {
-        if ( bmp[0] )
-            delete(bmp[0]);
-    
-        unsigned dd = pixSize * pixSize;
-        GLubyte * mem = new GLubyte[12*dd];
-        bmp[0] = mem;
-        bmp[1] = mem + 4*dd;
-        bmp[2] = mem + 8*dd;
-        
-        for ( unsigned y = 0; y < 12*dd; ++y )
-            mem[y] = 0;
-        
-        nPix = pixSize;
-    }
-}
-
-
-void PointDisp::releasePixelmap()
-{
-    if ( bmp[0] )
-    {
-        delete(bmp[0]);
-        bmp[0] = nullptr;
-    }
-    nPix = 0;
-}
-
-
-/// print pixel map in ASCII
-void printPixels(GLubyte const* pix, unsigned sx, unsigned sy)
-{
-    for ( unsigned y = 0; y < sy; ++y )
-    {
-        for ( unsigned x = 0; x < sx; ++x )
-            printf("%02X", pix[4*(x+sx*y)+3]);
-        printf("\n");
-    }
-}
-
-/**
- This will downsample pixelmap `src` and set destination `dst`. The pixel
- array `dst` should be of size `4*sx*sy` with 4 bytes per pixels: R, G, B and A,
- while `src` should be `bin*bin` times larger. Pixels are stored in row order
- from the lowest to the highest row, left to right in each row (as in OpenGL).
- The pixels components of `src` are averaged to produce `dst`.
- */
-void PointDisp::downsampleRGBA(GLubyte dst[], unsigned sx, unsigned sy,
-                               GLubyte const src[], unsigned bin)
-{
-    const unsigned s = bin * bin;
-
-#if ( 0 )
-    //reset destination:
-    for ( unsigned u = 0; u < sx*sy; ++u )
-    {
-        dst[4*u  ] = 0xFF;
-        dst[4*u+1] = 0xFF;
-        dst[4*u+2] = 0xFF;
-        dst[4*u+3] = 0xFF;
-    }
-#endif
-    
-    for ( unsigned x = 0; x < sx; ++x )
-    for ( unsigned y = 0; y < sy; ++y )
-    {
-        unsigned r = 0, g = 0, b = 0, a = 0;
-        for ( unsigned dx = 0; dx < bin; ++dx )
-        for ( unsigned dy = 0; dy < bin; ++dy )
-        {
-            GLubyte const* p = src + 4 * ( dx+bin*(x+sx*(dy+bin*y)) );
-            r += p[0];
-            g += p[1];
-            b += p[2];
-            a += p[3];
-        }
-            
-        dst[4*(x+sx*y)  ] = (GLubyte)( r / s );
-        dst[4*(x+sx*y)+1] = (GLubyte)( g / s );
-        dst[4*(x+sx*y)+2] = (GLubyte)( b / s );
-        dst[4*(x+sx*y)+3] = (GLubyte)( a / s );
-    }
-}
-
-
-void PointDisp::storePixelmap(GLubyte* bitmap, unsigned dim, GLuint pbi) const
-{
-#if POINTDISP_USES_PIXEL_BUFFERS
-    assert_true(pbi);
-    glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, pbi);
-    glBufferData(GL_PIXEL_PACK_BUFFER_ARB, 4*dim*dim, bitmap, GL_STATIC_DRAW);
-    glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, 0);
-    assert_true(glIsBuffer(pbi));
-    //gle::gleReportErrors(stderr, "PointDisp::storePixelmap");
-#endif
-}
-
-
-#if ( 0 )
-
-#include "save_image.h"
-
-// Export bitmap to file in PNG format
-void PointDisp::savePixelmap(GLubyte* bitmap, unsigned dim, unsigned id) const
-{
-    if ( SaveImage::supported("png") )
-    {
-       char str[32];
-        snprintf(str, sizeof(str), "bitmap_%s_%02u.png", name_str(), id);
-        FILE * file = fopen(str, "w");
-        if ( file && !ferror(file ) )
-        {
-            SaveImage::saveAlphaPNG(file, bitmap, dim, dim);
-            fclose(file);
-            std::clog << "PointDisp saved " << str << '\n';
-        }
-    }
-}
-#endif
-
-
-void PointDisp::drawPixelmap(unsigned ii) const
-{
-    //translate to center the bitmap:
-    glBitmap(0,0,0,0,mOffs,mOffs,nullptr);
-#if POINTDISP_USES_PIXEL_BUFFERS
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, pbo[ii]);
-    glDrawPixels(nPix, nPix, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
-#else
-    glDrawPixels(nPix, nPix, GL_RGBA, GL_UNSIGNED_BYTE, bmp[ii]);
-#endif
-    gle::gleReportErrors(stderr, "PointDisp::drawPixelmap");
-}
-
-
-/**
- `sampling` defines the level of oversampling used to improve the quality of bitmaps
- */
-void PointDisp::makePixelmaps(GLfloat uFactor, unsigned sampling)
-{
-    assert_true(pixSize==nPix);
-    //gle::gleReportErrors(stderr, "1 PointDisp::makePixelmaps");
-    
-    glPushAttrib(GL_PIXEL_MODE_BIT|GL_VIEWPORT_BIT|GL_ENABLE_BIT|GL_COLOR_BUFFER_BIT);
-
-    unsigned dim = sampling * nPix;
-#ifdef __APPLE__
-    GLuint offscreen = OffScreen::createBuffer(dim, dim, 0);
-#else
-    GLuint offscreen = 0;
-#endif
-    GLfloat s = 0.5f * sampling * size * uFactor;
-    GLfloat t = 0.5f * dim;
-    GLfloat w = width * sampling * uFactor;
-    GLint vp[4];
-
-    glDisable(GL_LIGHTING);
-    glDisable(GL_BLEND);
-    glDisable(GL_ALPHA_TEST);
-    
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    
-    //match projection to viewport:
-    glGetIntegerv(GL_VIEWPORT, vp);
-    glOrtho(0, vp[2], 0, vp[3], 0, 1);
-    
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    
-    glTranslatef(t, t, 0);
-    glScalef(s,s,s);
-    if ( w > 0.0 ) glLineWidth(w);
-    // we use a transparent background, because points will overlap
-    glClearColor(0,0,0,0);
-    
-    for ( int i = 0; i < 3; ++i )
-    {
-        glClear(GL_COLOR_BUFFER_BIT);
-        switch ( i )
-        {
-            case 0:
-                color2.load();
-                strokeI();
-                break;
-            case 1:
-                color2.load();
-                strokeA();
-                break;
-            case 2:
-                color.load();
-                strokeA();
-                break;
-        }
-        if ( sampling > 1 )
-        {
-            GLubyte * tmp = new GLubyte[4*dim*dim];
-            glReadPixels(0, 0, dim, dim, GL_RGBA, GL_UNSIGNED_BYTE, tmp);
-            downsampleRGBA(bmp[i], nPix, nPix, tmp, sampling);
-            delete[] tmp;
-#if ( 0 )
-            //savePixelmap(tmp, dim, i);
-            std::clog << name() << i << "\n";
-            printPixels(bmp[i], nPix, nPix);
-#endif
-        }
-        else
-        {
-            glReadPixels(0, 0, nPix, nPix, GL_RGBA, GL_UNSIGNED_BYTE, bmp[i]);
-            //savePixelmap(bmp[i], nPix, i+10);
-        }
-        //gle::gleReportErrors(stderr, "5 PointDisp::makePixelmaps");
-        storePixelmap(bmp[i], nPix, pbo[i]);
-    }
- 
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    
-    // release offscreen if used
-    if ( offscreen )
-        OffScreen::releaseBuffer();
-
-    glPopAttrib();
-}
-
-#endif
 
 
 void PointDisp::prepare(GLfloat uf, GLfloat sf, bool make_maps)
 {
     realSize    = size * sf;
-    unsigned sz = (unsigned)ceil(uf*(size+width));
-    // use a multiple of 4 pixels:
-    pixSize     = ( sz + 4 ) & ~3;
     perceptible = visible && ( uf*(size+width) > 0.25 );
-    
-    if ( make_maps )
-    {
-#if POINTDISP_USES_PIXELMAPS
-#if POINTDISP_USES_PIXEL_BUFFERS
-        if ( pbo[0] == 0 )
-            glGenBuffers(3, pbo);
-#endif
-        
-        if ( pixSize != nPix )
-        {
-            //gle::gleReportErrors(stderr, "1 PointDisp::prepare");
-            allocatePixelmap();
-            //fprintf(stderr, " new %i bitmap for %s\n", pixSize, name_str());
-            //gle::gleReportErrors(stderr, "2 PointDisp::prepare");
-        }
-        
-        makePixelmaps(uf, 3);
-#endif
-    }
 }
 
 
@@ -498,10 +199,6 @@ void PointDisp::read(Glossary& glos)
     
     if ( ! isprint(symbol) )
         symbol = 0;
-    
-#if POINTDISP_USES_PIXELMAPS
-    releasePixelmap();
-#endif
 }
 
 
