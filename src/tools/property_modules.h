@@ -32,6 +32,7 @@ void load_prop_classes(py::module_ &m) {
         .def_readwrite("display_fresh", &SimulProp::display_fresh)
         .def_readwrite("display", &SimulProp::display);
     
+    // This should probably infor fiber_modules.h ?
     py::class_<FiberProp,Property>(m, "FiberProp")
         .def_readwrite("segmentation", &FiberProp::segmentation)
         .def_readwrite("rigidity", &FiberProp::rigidity)

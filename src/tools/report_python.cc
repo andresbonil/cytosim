@@ -20,6 +20,7 @@
     fibers.prop.segmentation = 1.337    # <- Yes, yes, yes.
     fibers[0].points()
     fibers[0].id()
+    fibers[0].join(fibers[1]) # <- yes, indeed
     core = frame["core"][0]
     core.points()
      
