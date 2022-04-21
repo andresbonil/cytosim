@@ -128,6 +128,7 @@ PYBIND11_MODULE(cytosim, m) {
     /// Loading properties into the module
     load_prop_classes(m);
     load_fiber_classes(m);
+    load_hand_classes(m);
     load_solid_classes(m);
     load_space_classes(m);
     load_single_classes(m);
