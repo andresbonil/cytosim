@@ -87,6 +87,7 @@ Simul * open()
 Frame * prepare_frame( Simul * sim, int frame) 
 {   
     Frame * current = new Frame;
+    current->simul = sim;
     if (__is_loaded__) {
     try 
     {
@@ -157,6 +158,9 @@ PYBIND11_MODULE(cytosim, m) {
     /// Python interface to timeframe : behaves roughly as a Python dict of ObjectGroup
     py::class_<Frame>(m, "Timeframe")
         .def_readwrite("fibers", &Frame::fibers, py::return_value_policy::reference)
+        .def_readwrite("time", &Frame::time)
+        .def_readwrite("index", &Frame::index)
+        .def("next", [](Frame &f) {return prepare_frame(f.simul, f.index+1);}, py::return_value_policy::reference)
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())

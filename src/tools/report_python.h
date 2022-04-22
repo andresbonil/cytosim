@@ -61,6 +61,9 @@ public:
         real time;
         int index;
         
+        /// pointer to simul
+        Simul * simul;
+        
         /// The party zone
         py::dict objects;
         
