@@ -90,16 +90,17 @@ Frame * prepare_frame( Simul * sim, int frame)
     if (__is_loaded__) {
     try 
     {
-    reader.loadFrame(*sim, frame);
-    
-    distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
-    distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
-    distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
-    // for couple and single we need to use firstID, nextID
-    distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
-    distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
-    
-    current->time = sim.time();
+        reader.loadFrame(*sim, frame);
+        
+        distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
+        distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
+        distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
+        // for couple and single we need to use firstID, nextID
+        distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
+        distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
+        
+        current->time = sim->time();
+        current->index = frame;
     }
     catch( Exception & e )
     {

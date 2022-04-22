@@ -58,7 +58,8 @@ public:
         ObjMap<Single,SingleProp> singles;
 
         // Time of the frame
-        int time;
+        real time;
+        int index;
         
         /// The party zone
         py::dict objects;
