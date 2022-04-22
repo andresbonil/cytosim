@@ -1,7 +1,7 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 /**
  This is a program to analyse simulation results:
- it reads a trajectory-file, and print some data from it.
+ it reads a trajectory-file, and provides a python interface to it.
 */
 
 
@@ -27,21 +27,24 @@
     # etc...
 */
 
+/*
+@TODO : an interface for FiberSet (problem : cannot iterate because of FiberSet interface)
+@TODO : support input arguments
+ */
 #include "report_python.h"
 
 namespace py = pybind11;
 
-//Simul simul;
+/// Using global vars, sorry not sorry.
 FrameReader reader;
-int status = -2;
-
-//extern Simul simul;
+bool __is_loaded__ = 0;
 extern FrameReader reader;
-extern int status;
+extern bool __is_loaded__;
 
-
+/// Open the simulation from the .cmo files
 Simul * open()
 {   
+    
     int verbose = 1;
     int prefix = 0;
     
@@ -54,8 +57,7 @@ Simul * open()
     
     unsigned period = 1;
 
-    arg.set(input, ".cmo") || arg.set(input, "input");
-    //arg.set(verbose, "verbose");
+    arg.set(input, ".cmo") || arg.set(input, "input");    
     if ( arg.use_key("-") ) verbose = 0;
 
     try
@@ -64,8 +66,7 @@ Simul * open()
         sim->loadProperties();
         reader.openFile(input);
         Cytosim::all_silent();
-        status = -1;
-
+        __is_loaded__ = 1;
     }
     catch( Exception & e )
     {
@@ -84,9 +85,12 @@ Simul * open()
  * @return 
  */
 Frame * prepare_frame( Simul * sim, int frame) 
-{
-    reader.loadFrame(*sim, frame);
+{   
     Frame * current = new Frame;
+    if (__is_loaded__) {
+    try 
+    {
+    reader.loadFrame(*sim, frame);
     
     distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
     distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
@@ -95,14 +99,20 @@ Frame * prepare_frame( Simul * sim, int frame)
     distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
     distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
     
+    current->time = sim.time();
+    }
+    catch( Exception & e )
+    {
+        std::clog << "Aborted: " << e.what() << '\n';
+    }
+    }
+    else{
+        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
+    }
+    
     return current;
+    
 }
-
-int get_status() {
-    return status;
-}
-
-
 
 /**
  * @brief  A module to get cytosim in python 
@@ -161,10 +171,8 @@ PYBIND11_MODULE(cytosim, m) {
         .def("frame", [](Simul * sim, size_t i) 
             {return prepare_frame(sim, i);}, py::return_value_policy::reference);
 
-    
-    m.def("status", &get_status, "Status of the simul  : loaded or not");
+    /// Opens the simulation from *.cmo files
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
-    
     
 }
 
