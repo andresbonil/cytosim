@@ -153,13 +153,8 @@ PYBIND11_MODULE(cytosim, m) {
                 "    print(frame.time) \n"
                 "    frame = frame.next()"; // optional module docstring
         
-    /// Python interface to Object
-    py::class_<Object>(m, "Object")
-        .def("id",  [](const Object * obj) {return obj->identity();})
-        .def("points", [](const Object * obj) {return pyarray();});
-
-    
     /// Loading properties into the module
+    load_object_classes(m);
     load_prop_classes(m);
     load_fiber_classes(m);
     load_hand_classes(m);

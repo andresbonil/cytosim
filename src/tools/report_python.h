@@ -24,6 +24,7 @@
 #include "single_modules.h"
 #include "couple_modules.h"
 #include "organizer_modules.h"
+#include "object_modules.h"
 #include "hand_modules.h"
 #include "python_utilities.h"
 namespace py = pybind11;
