@@ -48,7 +48,7 @@ public:
         
     /// print a summary of the content (nb of objects, class)
     void        report(std::ostream& out) const { writeAssets(out, title()); }
-
+    
     //--------------------------
 
     /// first Fiber

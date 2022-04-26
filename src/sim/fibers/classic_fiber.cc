@@ -243,4 +243,3 @@ void ClassicFiber::read(Inputter& in, Simul& sim, ObjectTag tag)
 #endif
         Fiber::read(in, sim, tag);
 }
-

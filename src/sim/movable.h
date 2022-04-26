@@ -58,7 +58,7 @@ public:
     
     /// constructor
     Movable() {}
-    
+    virtual ~Movable() {};
     
     /// true if object can be translated (default=false)
     /**

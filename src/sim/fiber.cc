@@ -1395,4 +1395,3 @@ void Fiber::read(Inputter& in, Simul& sim, ObjectTag tag)
     }
 }
 
-

@@ -1229,4 +1229,3 @@ std::ostream& operator << (std::ostream& os, Solid const& obj)
     obj.print(os, false);
     return os;
 }
-

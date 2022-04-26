@@ -3,17 +3,17 @@
 #ifndef OBJECT_SET_H
 #define OBJECT_SET_H
 
-#include "node.h"
-#include "object.h"
+#include "noder.h"
+#include "objecter.h"
 #include "node_list.h"
 #include "inventory.h"
-#include <vector>
 
 class Outputter;
 class Property;
 class PropertyList;
 class Glossary;
 class Simul;
+class Object;
 
 /// A set of Object
 /**
@@ -107,6 +107,7 @@ public:
 
     /// apply Isometry to unflagged Objects in list
     static void       moveObjects(ObjectList const&, Isometry const&, ObjectFlag f);
+    
 
 public:
     

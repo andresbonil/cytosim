@@ -9,6 +9,7 @@
 #include "space.h"
 #include "simul.h"
 #include <errno.h>
+#include <vector.h>
 
 extern Modulo const* modulo;
 
@@ -572,3 +573,25 @@ void ObjectSet::writeAssets(std::ostream& os, const std::string& title) const
     }
 }
 
+/*
+SetReport * ObjectSet::report() const {
+    SetReport * rep = new SetReport;
+    //reportSet * objs = new reportSet;
+    
+    for ( Object * obj=this->first(); obj; obj=obj->next() )
+    {
+        //*objs.push_back(obj->report());
+        rep->objects.push_back(obj->report());
+    }
+    auto first = this->first();
+    if (first) {
+        const Property* props = first->property();
+        rep->strings.insert({"name",props->name()});
+    } else {
+        const Property* props = nullptr;
+    }
+    // Do something with props
+    //*rep.objects = 
+    return rep;
+}
+*/

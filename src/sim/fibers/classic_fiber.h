@@ -109,7 +109,7 @@ public:
 
     /// read from Inputter
     void        read(Inputter&, Simul&, ObjectTag);
-    
+
 };
 
 

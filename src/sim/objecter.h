@@ -7,7 +7,7 @@
 #include "movable.h"
 #include "random.h"
 #include "array.h"
-#include "node.h"
+#include "noder.h"
 
 class Simul;
 class Property;
@@ -15,6 +15,8 @@ class Inputter;
 class Outputter;
 class ObjectSet;
 class Display;
+class ObjectInfo;
+
 
 /// Type for unique class identifier used to read/write objects from file
 typedef int ObjectTag;
@@ -92,7 +94,7 @@ public:
     Object& operator =(const Object& o) { mark_=o.mark_; flag_=o.flag_; signature_=o.signature_; set_=nullptr; return *this; }
     
     /// destructor
-    ~Object();
+    ~Object()=0;
     
     /// a character identifying the class of this object
     virtual ObjectTag tag() const { return TAG; }

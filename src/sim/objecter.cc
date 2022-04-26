@@ -1,6 +1,6 @@
 // Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
-#include "object.h"
+#include "objecter.h"
 #include "iowrapper.h"
 #include "exceptions.h"
 #include "property.h"
@@ -94,6 +94,25 @@ std::string Object::reference() const
         return reference(tag(), 0, identity());
 }
 
+
+/** Returns a python object
+  ObjReport* Object::report() const {
+    ObjReport * rep =  new ObjReport ;
+    rep->id = this->identity();
+    
+    //rep->ints.insert({"id",this->identity()});
+    
+    const real * data = nullptr;
+    int size = 0;
+    
+    std::vector<int> sizes = {size, (int)DIM};
+    std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
+    rep->points = real_array{data, sizes, strides};
+    return rep;
+};
+
+
+*/
 
 /**
  Two binary formats are used:
@@ -245,4 +264,3 @@ std::ostream& operator << (std::ostream& os, ObjectList const& list)
     os << "}" << '\n';
     return os;
 }
-

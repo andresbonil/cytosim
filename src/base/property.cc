@@ -133,11 +133,8 @@ void Property::write(std::ostream& os, const bool prune) const
     os << "}\n";
 }
 
-
 std::ostream& operator << (std::ostream& os, const Property& p)
 {
     p.write(os, 0);
     return os;
 }
-
-

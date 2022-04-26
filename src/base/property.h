@@ -59,7 +59,7 @@ public:
     explicit     Property(std::string const& n);
 
     /// destructor
-    virtual     ~Property();
+    virtual     ~Property()=0;
     
     //-------------------------------------------------------------------------------
     

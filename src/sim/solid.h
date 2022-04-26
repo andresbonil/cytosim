@@ -4,7 +4,7 @@
 
 #include "dim.h"
 #include "array.h"
-#include "object.h"
+#include "objecter.h"
 #include "mecable.h"
 #include "matrix33.h"
 #include "solid_prop.h"
@@ -211,6 +211,7 @@ public:
 
     /// Human friendly ouput
     void        print(std::ostream&, bool write_shape = false) const;
+    
 };
 
 /// output operator:

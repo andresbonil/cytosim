@@ -176,4 +176,3 @@ void SimulProp::write_values(std::ostream& os) const
     std::endl(os);
     write_value(os, "display", "("+display+")");
 }
-
