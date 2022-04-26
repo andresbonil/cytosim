@@ -10,6 +10,7 @@
 #include "glossary.h"
 #include "messages.h"
 #include "splash.h"
+#include "organizer.h"
 #include "parser.h"
 #include "simul.h"
 #include "simul_prop.h"
@@ -22,12 +23,14 @@
 #include "space_modules.h"
 #include "single_modules.h"
 #include "couple_modules.h"
+#include "organizer_modules.h"
 #include "hand_modules.h"
 #include "python_utilities.h"
 namespace py = pybind11;
 
 class Simul;
 class SimulProp;
+class Organizer;
 
 
 /// ObjGroup : a vector of objects of same type having the same property
@@ -51,6 +54,9 @@ public:
         /// An Objectmap is map of  (string,objectgroup)
         ObjMap<Fiber,FiberProp> fibers;
         ObjMap<Solid,SolidProp> solids;
+        ObjMap<Bead,BeadProp> beads;
+        ObjMap<Sphere,SphereProp> spheres;
+        ObjMap<Organizer,Property> organs;
         ObjMap<Space,SpaceProp> spaces;
         ObjMap<Couple,CoupleProp> couples;
         ObjMap<Single,SingleProp> singles;

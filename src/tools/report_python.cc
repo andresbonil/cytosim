@@ -43,7 +43,8 @@ FrameReader reader;
 bool __is_loaded__ = 0;
 extern FrameReader reader;
 extern bool __is_loaded__;
-
+std::vector<std::string> categories = std::vector<std::string>{"aster","nucleus","bundle","fake"};
+extern std::vector<std::string>  categories;
 /// Open the simulation from the .cmo files
 Simul * open()
 {   
@@ -101,6 +102,12 @@ Frame * prepare_frame( Simul * sim, int frame)
                 distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
                 distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
                 distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
+                distribute_objects(sim,current, current->beads, sim->beads, std::string("bead") ) ;
+                distribute_objects(sim,current, current->spheres, sim->spheres, std::string("sphere") ) ;
+                // For organizer, the we have to check the different categories
+                for (auto categ : categories) {
+                    distribute_objects(sim,current, current->organs, sim->organizers, std::string(categ) ) ;
+                }
                 // for couple and single we need to use firstID, nextID
                 distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
                 distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
@@ -160,12 +167,16 @@ PYBIND11_MODULE(cytosim, m) {
     load_space_classes(m);
     load_single_classes(m);
     load_couple_classes(m);
+    load_organizer_classes(m);
     
     /// We declare object groups
     // We can later add additional def to any of these groups
     auto fibs = declare_group(m, ObjGroup<Fiber,FiberProp>(), "FiberGroup");
     auto sols = declare_group(m, ObjGroup<Solid,SolidProp>(), "SolidGroup");
     auto spas = declare_group(m, ObjGroup<Space,SpaceProp>(), "SpaceGroup");
+    auto beds = declare_group(m, ObjGroup<Bead,BeadProp>(), "BeadGroup");
+    auto sfrs = declare_group(m, ObjGroup<Sphere,SphereProp>(), "SphereGroup");
+    auto orgs = declare_group(m, ObjGroup<Organizer,Property>(), "OrganizerGroup");
     auto sins = declare_group(m, ObjGroup<Single,SingleProp>(), "SingleGroup");
     auto cous = declare_group(m, ObjGroup<Couple,CoupleProp>(), "CoupleGroup");
     

@@ -48,6 +48,19 @@ pyarray & to_numpy(Vector vec) {
     return *par;
 }
 
+/// Converts a numpy array to a cytosim vector
+Vector to_vector(pyarray arr) {
+    try {
+        py::buffer_info buf1 = arr.request();
+        real *ptr1 = (real *) buf1.ptr;
+        return Vector(ptr1);
+    }
+    catch ( Exception & e ) {
+            e << "Unable to convert numpy array to Vector" ;
+    }
+    return Vector(0.0,0.0,0.0);
+}
+
 /// Converts an ObjectInfo * to a python dict
 py::dict & to_dict(ObjectInfo * info) {
     py::dict * dico = new py::dict;
