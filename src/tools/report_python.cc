@@ -23,6 +23,9 @@
     fibers[0].join(fibers[1]) # <- yes, indeed
     core = frame["core"][0]
     core.points()
+    while frame.loaded:
+        print(frame.time)
+        frame = frame.next()
      
     # etc...
 */
@@ -88,25 +91,33 @@ Frame * prepare_frame( Simul * sim, int frame)
 {   
     Frame * current = new Frame;
     current->simul = sim;
+    current->loaded = 0;
     if (__is_loaded__) {
-    try 
-    {
-        reader.loadFrame(*sim, frame);
-        
-        distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
-        distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
-        distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
-        // for couple and single we need to use firstID, nextID
-        distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
-        distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
-        
-        current->time = sim->time();
-        current->index = frame;
-    }
-    catch( Exception & e )
-    {
-        std::clog << "Aborted: " << e.what() << '\n';
-    }
+        try 
+        {
+            int load = reader.loadFrame(*sim, frame);
+            
+            if (load==0) {
+                distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
+                distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
+                distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
+                // for couple and single we need to use firstID, nextID
+                distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
+                distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
+                
+                current->time = sim->time();
+                current->index = frame;
+                current->loaded = 1;
+            }
+            else {
+                std::clog << "Unable to load frame " << frame << ". Maybe frame does not exist." << std::endl;
+            } 
+                
+        }
+        catch( Exception & e )
+        {
+            std::clog << "Aborted: " << e.what() << '\n';
+        }
     }
     else{
         std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
@@ -130,7 +141,10 @@ PYBIND11_MODULE(cytosim, m) {
                 "fibers[0].points() \n"
                 "fibers[0].id() \n"
                 "core = frame['core'][0] \n"
-                "core.points()"; // optional module docstring
+                "core.points() \n"
+                "while frame.loaded: \n"
+                "    print(frame.time) \n"
+                "    frame = frame.next()"; // optional module docstring
         
     /// Python interface to Object
     py::class_<Object>(m, "Object")
@@ -160,6 +174,7 @@ PYBIND11_MODULE(cytosim, m) {
         .def_readwrite("fibers", &Frame::fibers, py::return_value_policy::reference)
         .def_readwrite("time", &Frame::time)
         .def_readwrite("index", &Frame::index)
+        .def_readwrite("loaded", &Frame::loaded)
         .def("next", [](Frame &f) {return prepare_frame(f.simul, f.index+1);}, py::return_value_policy::reference)
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());

@@ -58,6 +58,7 @@ public:
         // Time of the frame
         real time;
         int index;
+        int loaded = 1;
         
         /// pointer to simul
         Simul * simul;
