@@ -156,8 +156,8 @@ PYBIND11_MODULE(cytosim, m) {
     /// Python interface to Object
     py::class_<Object>(m, "Object")
         .def("id",  [](const Object * obj) {return obj->identity();})
-        .def("points", [](const Object * obj) {return pyarray();})
-        .def("info",  [](const Object * obj) {return py::dict();});
+        .def("points", [](const Object * obj) {return pyarray();});
+
     
     /// Loading properties into the module
     load_prop_classes(m);
