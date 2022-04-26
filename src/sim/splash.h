@@ -23,7 +23,7 @@ inline void print_version(std::ostream& os)
     os << "   Dimension: " << DIM;
     os << "   Periodic: " << GRID_HAS_PERIODIC;
     os << "   Precision: " << sizeof(real) << " bytes\n";
-    os << "   Fiber: lattice " << FIBER_HAS_LATTICE << "\n";
+    os << "   Fiber lattice " << FIBER_HAS_LATTICE << "\n";
     os << "   Built " <<__DATE__<< " " <<__TIME__<< " with " <<__VERSION__<< "\n";
     
 #ifdef CODE_VERSION
@@ -36,10 +36,6 @@ inline void print_version(std::ostream& os)
     os << " (no assertions)\n";
 #else
     os << " with assertions\n";
-#endif
-
-#ifdef FIBER_HAS_LATTICE
-    os << "   Fiber Lattice " << FIBER_HAS_LATTICE << "\n";
 #endif
 }
 

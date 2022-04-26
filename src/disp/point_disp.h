@@ -7,8 +7,6 @@
 #include "gle.h"
 
 
-#define POINTDISP_USES_PIXELMAPS 1
-
 
 /// the parameters necessary to display a point-like object
 /**
@@ -22,9 +20,6 @@ class PointDisp : public Property
     /// used to differentiate between different uses of the class
     std::string mKind;
     
-    /// size of feature in pixels
-    unsigned    pixSize;
-    
     /// draw outline of shape
     void strokeShape() const;
     
@@ -36,46 +31,6 @@ class PointDisp : public Property
     
     /// draw inactive state with OpenGL vector primitives
     void strokeI() const;
-
-#if POINTDISP_USES_PIXELMAPS
-    
-    /// pointer to 3 square bitmaps with 4*nPix*nPix pixels each
-    GLubyte   *bmp[3];
-
-    /// index of the Pixel Buffer Objects on GPU
-    GLuint     pbo[3];
-    
-    /// center of bitmap
-    GLfloat    mOffs;
-    
-    /// allocated size of bitmap
-    unsigned   nPix;
-
-    /// allocate pixelmap memory
-    void allocatePixelmap();
-    
-    /// release pixelmap memory
-    void releasePixelmap();
-    
-    /// scale down pixelmap by factor 'bin'
-    void downsampleRGBA(GLubyte*, unsigned, unsigned, GLubyte const*, unsigned bin);
-    
-    /// create the pixelmaps
-    void makePixelmaps(GLfloat, unsigned supersampling);
-    
-    /// draw pixel map
-    void drawPixelmap(unsigned ii) const;
-    
-    /// save pixelmap to file
-    void savePixelmap(GLubyte*, unsigned dim, GLuint) const;
-    
-    /// save pixelmap on server side
-    void storePixelmap(GLubyte*, unsigned dim, GLuint) const;
-
-#endif
-    
-    /// clear pointers
-    void clearPixelmaps();
 
 public:
     
@@ -175,17 +130,12 @@ public:
     {
         if ( perceptible )
         {
-    #if POINTDISP_USES_PIXELMAPS
-            gle::gleRasterPos(pos);
-            drawPixelmap(0);
-    #else
             glPushMatrix();
             gle::gleTranslate(pos);
             gle::gleScale(realSize);
             color2.load();
             gle::gleDisc();
             glPopMatrix();
-    #endif
         }
     }
 
@@ -195,17 +145,12 @@ public:
     {
         if ( perceptible )
         {
-    #if POINTDISP_USES_PIXELMAPS
-            gle::gleRasterPos(pos);
-            drawPixelmap(1);
-    #else
             glPushMatrix();
             gle::gleTranslate(pos);
             gle::gleScale(realSize);
             color2.load();
             strokeA();
             glPopMatrix();
-    #endif
         }
     }
 
@@ -215,17 +160,12 @@ public:
     {
         if ( perceptible )
         {
-    #if POINTDISP_USES_PIXELMAPS
-            gle::gleRasterPos(pos);
-            drawPixelmap(2);
-    #else
             glPushMatrix();
             gle::gleTranslate(pos);
             gle::gleScale(realSize);
             color.load();
             strokeA();
             glPopMatrix();
-    #endif
         }
     }
 

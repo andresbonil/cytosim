@@ -22,14 +22,31 @@ endif
 
 #----------------------------targets--------------------------------------------
 
-
-cytodisp.a: $(OBJ_DISP) saveimage.o offscreen.o
+cytodisp.a: $(OBJ_DISP) save_image.o offscreen.o libspng.o miniz.o
 	$(MAKELIB)
 	$(DONE)
 
 
-saveimage.o: saveimage.cc saveimage.h
-	$(COMPILE) $(IMAGES_DEF) -c $< -o build/$@
+# Attention: FreeGLUT font are coded in C-language (use -x c):
+
+fg_font.o: fg_font.c fg_font.h
+	$(CXX) -DNDEBUG $(FAST) -x c -c $< -o build/$@
+
+fg_stroke_roman.o: fg_stroke_roman.c fg_font.h
+	$(CXX) -DNDEBUG $(FAST) -x c -c $< -o build/$@
+
+fg_stroke_mono_roman.o: fg_stroke_mono_roman.c fg_font.h
+	$(CXX) -DNDEBUG $(FAST) -x c -c $< -o build/$@
+
+
+miniz.o: miniz.c miniz.h
+	$(CXX) $(FAST) -x c -c $< -o build/$@
+
+libspng.o: spng.c spng.h
+	$(CXX) -DSPNG_USE_MINIZ -DSPNG_STATIC -DSPNG_USE_MINIZ $(FAST) -x c -c $< -o build/$@
+
+save_image.o: save_image.cc save_image.h
+	$(COMPILE) -DDISPLAY $(IMAGES_DEF) -c $< -o build/$@
 
 
 offscreen.o: offscreen.cc offscreen.h offscreen_fbo.cc offscreen_glx.cc

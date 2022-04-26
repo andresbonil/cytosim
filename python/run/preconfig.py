@@ -4,7 +4,7 @@
 #
 # Copyright Francois J. Nedelec and  Serge Dmitrieff, 
 # EMBL 2010--2017, Cambridge University 2019--2022
-# This is PRECONFIG version 1.50, last modified on 28.01.2022
+# This is PRECONFIG version 1.54, last modified on 21.03.2022
 
 """
 # SYNOPSIS
@@ -239,6 +239,15 @@ def version():
 
 #-------------------------------------------------------------------------------
 
+def cannonical_pattern(arg):
+    """check for repeated '%' character, replacing printf syntax: %04i """
+    c = arg.count('%')
+    for n in range(c,1,-1):
+        if arg.find('%'*n) > 0:
+            return arg.replace('%'*n, '%0'+str(n)+'i', 1);
+    return arg
+
+
 def pop_sequence(dic, protected):
     """
         Remove an entry in the dictionary that has multiple values
@@ -296,8 +305,7 @@ def get_block(file, S, E):
 #-------------------------------------------------------------------------------
 
 class Preconfig:
-    """ A class container for preconfig,
-    contains inner variables and methods """
+    """ A class container for preconfig """
     def __init__(self):
         self.verbose = 2
         # local dictionary with index of file being generated
@@ -318,6 +326,29 @@ class Preconfig:
         self.file_name = ''
         # name of current input file being processed (used for error reporting)
         self.template = ''
+    
+    def write_log(self, name):
+        """ record some info in the log """
+        keys = sorted(self.locals.keys())
+        # write column headers
+        if self.log_doc:
+            self.log.write('%20s' % 'file')
+            for k in keys:
+                self.log.write(', %10s' % k)
+            self.log.write('\n')
+            self.log_doc = 0
+        # write a line of data:
+        self.log.write('%20s' % name)
+        for k in keys:
+            self.log.write(', %10s' % repr(self.locals[k]))
+        self.log.write('\n')
+
+    def report(self, code, key, val):
+        """ print some info to output """
+        if key:
+            self.out.write("|%50s <-- %s\n" % (key, repr(val)) )
+        else:
+            self.out.write("|%50s --> %s\n" % (code, repr(val)) )
 
     def evaluate(self, arg):
         """ Return evaluation of `arg', checking for syntax error"""
@@ -340,7 +371,7 @@ class Preconfig:
                 pass
         return res
     
-    def try_assignment(self, arg, blok):
+    def try_assignment(self, code, blok):
         """
             Check if `arg` follows the format of a variable definition (X=RHS),
             and in that case return (key, self.evaluate(RHS)).
@@ -348,9 +379,9 @@ class Preconfig:
             If `arg` is not an assignment, return ('', self.evaluate(arg))
         """
         k = ''
-        v = arg
-        #print("Preconfig:try_assignment %s" % arg);
-        res = re.match(r" *([a-zA-Z]\w*) *= *(.*)", arg)
+        v = code
+        #print("Preconfig:try_assignment %s" % code);
+        res = re.match(r" *([a-zA-Z]\w*) *= *(.*)", code)
         #print(res.groups())
         if res and len(res.groups()) > 1:
             k = res.group(1)
@@ -367,20 +398,14 @@ class Preconfig:
         except NameError as e:
             if self.verbose > 1:
                 sys.stderr.write("\033[1m\033[96m")
-                sys.stderr.write("Preconfig kept `%s' verbatim since %s" % (arg, str(e)))
+                sys.stderr.write("Preconfig kept `%s' verbatim since %s" % (code, str(e)))
                 sys.stderr.write("\033[0m")
                 sys.stderr.write("\n")
             exit_code = 1
             #print(self.locals)
+            self.report(blok, '', blok)
             return ('', blok)
-        if self.verbose:
-            if k:
-                if v == str(res):
-                    self.out.write("|%50s = %s\n" % (k, v) )
-                else:
-                    self.out.write("|%50s = %s <-- %s\n" % (k, str(res), v) )
-            else:
-                self.out.write("|%50s --> %s\n" % (arg, str(res)) )
+        self.report(code, k, v)
         return (k, res)
     
     def process(self, file, text):
@@ -424,18 +449,14 @@ class Preconfig:
                     val = vals.pop()
                     ipos = file.tell()
                     for v in vals:
+                        self.report(code, key, v)
                         if key:
                             self.locals[key] = v
-                            self.out.write("|%50s <-- %s\n" % (key, repr(v)) )
                             self.process(file, output)
                         else:
-                            self.out.write("|%50s --> %s\n" % (vals, repr(v)) )
                             self.process(file, output+str(v))
                         file.seek(ipos)
-                    if key:
-                        self.out.write("|%50s <-- %s\n" % (key, repr(val)) )
-                    else:
-                        self.out.write("|%50s --> %s\n" % (vals, repr(v)) )
+                    self.report(code, key, val)
                 except (AttributeError, IndexError):
                     # a single value was specified:
                     val = vals
@@ -480,19 +501,6 @@ class Preconfig:
             n = 'config%04i.txt' % self.locals['n']
         return n
 
-    def write_log(self, log, name):
-        keys = sorted(self.locals.keys())
-        if self.log_doc:
-            log.write('%20s' % 'file')
-            for k in keys:
-                log.write(', %10s' % k)
-            log.write('\n')
-            self.log_doc = 0
-        log.write('%20s' % name)
-        for k in keys:
-            log.write(', %10s' % repr(self.locals[k]))
-        log.write('\n')
-
     def make_file(self, text):
         """
         Create a file with the specified text
@@ -510,7 +518,7 @@ class Preconfig:
         self.out.write('  \\'+('> '+dst+'\n').rjust(96, '-'))
         # write log:
         if self.log:
-            self.write_log(self.log, dst)
+            self.write_log(dst)
         # get ready for next file:
         self.locals['n'] += 1
 
@@ -525,7 +533,7 @@ class Preconfig:
             ipos = file.tell()
             for v in vals:
                 values[key] = v
-                self.out.write("|%50s <-- %s\n" % (key, str(v)) )
+                self.report('', key, v)
                 #print("|%50s <-- %s\n" % (key, str(v)) )
                 self.expand(values, file, text)
                 file.seek(ipos);
@@ -568,7 +576,7 @@ class Preconfig:
         # first argument may define the pattern:
         arg = args[0]
         if arg.find('%') >= 0 and not os.path.isfile(arg):
-            self.pattern = arg
+            self.pattern = cannonical_pattern(arg)
             args.pop(0)
         
         for arg in args:

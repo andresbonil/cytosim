@@ -4,7 +4,7 @@
 #include "glossary.h"
 #include "messages.h"
 #include "offscreen.h"
-#include "saveimage.h"
+#include "save_image.h"
 #include "filepath.h"
 #include "splash.h"
 #include "print_color.h"
@@ -21,7 +21,7 @@ Simul&      simul = player.simul;
 PlayerProp&  prop = player.prop;
 DisplayProp& disp = player.disp;
 
-void displayLive(View& view, int mag);
+void displayLive(View& view);
 
 /// enable to create a player for command-line-only offscreen rendering
 #define HEADLESS_PLAYER 0
@@ -35,7 +35,6 @@ void helpKeys(std::ostream& os) { os << "This is a headless display\n"; }
 #  include "fiber_disp.h"
 #  include "point_disp.h"
 using glApp::flashText;
-void buildMenus();
 #  include "play_keys.cc"
 #  include "play_menus.cc"
 #  include "play_mouse.cc"
@@ -53,7 +52,7 @@ void goodbye()
 /**
  display is done only if data can be accessed by current thread
  */
-void displayLive(View& view, int mag)
+void displayLive(View& view)
 {
     if ( 0 == thread.trylock() )
     {
@@ -66,7 +65,7 @@ void displayLive(View& view, int mag)
             simul.prop->display_fresh = false;
         }
         //thread.debug("display");
-        player.prepareDisplay(view, mag);
+        player.prepareDisplay(view, 1);
         player.displayCytosim();
         thread.unlock();
     }
@@ -336,9 +335,9 @@ int main(int argc, char* argv[])
                     if ( multi )
                         blitBuffers(fbo, multi, W, H);
                     if ( magnify > 1 )
-                        player.saveView("poster", frm, 2);
+                        player.saveView("poster", frm, 1);
                     else
-                        player.saveView("image", frm, 2);
+                        player.saveView("image", frm, 1);
                 }
             } while ( arg.set(frm, "frame", ++inx) );
         }
@@ -352,13 +351,13 @@ int main(int argc, char* argv[])
                     displayOffscreen(view, magnify);
                     if ( multi )
                         blitBuffers(fbo, multi, W, H);
-                    player.saveView("movie", frm++, 2);
+                    player.saveView("movie", frm++, 1);
                     s = 0;
                 }
             } while ( 0 == thread.loadNextFrame() );
         }
-        
-        printf("\n");
+        if ( simul.prop->verbose > 0 )
+            printf("\n");
         if ( multi )
             OffScreen::releaseBuffer();
         OffScreen::releaseBuffer();
@@ -395,7 +394,7 @@ int main(int argc, char* argv[])
     {
         gle::initialize();
         player.setStyle(disp.style);
-        buildMenus();
+        rebuildMenus();
         glutAttachMenu(GLUT_RIGHT_BUTTON);
         glutMenuStatusFunc(menuCallback);
         if ( glApp::isFullScreen() )

@@ -16,7 +16,7 @@ Syntax:
     and you must use quotes if you have multiple arguments to group them together.
     
     Unless specified otherwise, the queue is 'medium_priority'.
-    The amount of requested memory (default=2G) should be specified in MB:
+    The amount of requested memory (default=2GB) should be specified in MB:
        mem=1024 (for 1 GB)
        mem=512  (for 512 MB)
        ...
@@ -51,8 +51,8 @@ import sys, os, shutil, subprocess
 subcmd  = 'sbatch'
 queue   = 'htc'
 runtime = '5-00:00:00' # 5 days
-memory  = '4096'       # in MB
-ncpu    = 1            # nb of threads per job
+memory  = '2096'       # in MB
+ncpu    = 1 # nb of threads per job
 
 # parameters of the program:
 jdir    = 'job00'
@@ -127,7 +127,7 @@ def sub(exe):
     cmd += ['--signal=15@120']
     cmd += ['--signal=2@60']
     # request special hardware:
-    cmd += ['--constraint=avx2']
+    #cmd += ['--constraint=avx2']
     # redirect stderr and sdtout to files:
     cmd += ['--output='+jdir+'/logs/out']
     cmd += ['--error='+jdir+'/logs/err']
@@ -151,7 +151,7 @@ def array(jobcnt):
     cmd += ['#SBATCH --signal=INT@60']
     cmd += ['#SBATCH --signal=TERM@120']
     # request special hardware:
-    cmd += ['#SBATCH --constraint=avx2']
+    #cmd += ['#SBATCH --constraint=avx2']
     # redirect stderr and sdtout to files:
     cmd += ['#SBATCH --output='+jdir+'/logs/%a.out']
     cmd += ['#SBATCH --error='+jdir+'/logs/%a.err']

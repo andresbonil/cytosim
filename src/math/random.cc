@@ -371,14 +371,14 @@ uint32_t Random::pint32_slow(const uint32_t n)
  returns a random integer with exactly `b` bits equal to `1`,
  but randomly positionned.
  */
-uint32_t Random::distributed_bits(int b)
+uint32_t Random::distributed_bits(unsigned b)
 {
     uint32_t n = 0;
     if ( b < 16 )
     {
         while ( b > 0 )
         {
-            uint32_t x = 1 << ( URAND32() % 32 );
+            uint32_t x = 1 << ( URAND32() & 31 );
             if (!( n & x ))
             {
                 n += x;
@@ -391,7 +391,7 @@ uint32_t Random::distributed_bits(int b)
         n = ~0U;
         while ( b < 32 )
         {
-            uint32_t x = 1 << ( URAND32() % 32 );
+            uint32_t x = 1 << ( URAND32() & 31 );
             if ( n & x )
             {
                 n -= x;

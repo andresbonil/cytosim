@@ -182,7 +182,7 @@ If you are having trouble compiling `play`, check its requirements independently
 
 #### Check for GLAP (our own extension of GLUT)):
 
-	make test_glap
+	make test_glapp
 
 #### At this stage, you can compile `play`:
 

@@ -9,7 +9,8 @@
 #include "display1.h"
 #include "display2.h"
 #include "display3.h"
-#include "saveimage.h"
+#include "save_image.h"
+#include "filepath.h"
 #include <unistd.h>
 #include <cstdlib>
 #include "glut.h"
@@ -326,45 +327,45 @@ void Player::displayScene(View& view, int mag)
 /**
  Export image from the current OpenGL back buffer,
  in the format specified by 'PlayerProp::image_format',
- in the folder specified in `PlayerProp::image_dir`.
- The name of the file is formed by concatenating 'root' and 'indx'.
+ in the current working directory
  */
-int Player::saveView(const char* root, unsigned indx, int verbose) const
+int Player::saveView0(const char* filename, const char* format, int downsample) const
 {
-    char cwd[1024] = { 0 };
-    char name[1024];
-    char const* format = prop.image_format.c_str();
-    snprintf(name, sizeof(name), "%s%04i.%s", root, indx, format);
-    if ( prop.image_dir.length() )
-    {
-        if ( getcwd(cwd, sizeof(cwd)) )
-            chdir(prop.image_dir.c_str());
-    }
     GLint vp[4];
     glGetIntegerv(GL_VIEWPORT, vp);
-    int err = SaveImage::saveImage(name, format, vp, prop.downsample);
-    if ( err == 0 && verbose > 0 )
+    int err = SaveImage::saveImage(filename, format, vp, downsample);
+    if ( err == 0 && simul.prop->verbose > 0 )
     {
-        int W = vp[2] / prop.downsample;
-        int H = vp[3] / prop.downsample;
-        if ( verbose > 1 )
-            printf("\r saved %ix%i snapshot %s    ", W, H, name);
-        else
-            printf(" saved %ix%i snapshot %s\n", W, H, name);
+        printf("\r saved %ix%i (%i) snapshot %s    ", vp[2]/downsample, vp[3]/downsample, downsample, filename);
         fflush(stdout);
     }
-    if ( cwd[0] )
-        chdir(cwd);
     return err;
 }
 
+
+/**
+ Export image from the current OpenGL back buffer,
+ in the format specified by 'PlayerProp::image_format',
+ in the folder specified in `PlayerProp::image_dir`.
+ The name of the file is formed by concatenating 'root' and 'indx'.
+ */
+int Player::saveView(const char* root, size_t indx, int downsample) const
+{
+    char const* fmt = prop.image_format.c_str();
+    char str[1024] = { 0 };
+    snprintf(str, sizeof(str), "%s%04lu.%s", root, indx, fmt);
+    int cwd = FilePath::change_dir(prop.image_dir, true);
+    int err = saveView0(str, fmt, downsample);
+    FilePath::change_dir(cwd);
+    return err;
+}
 
 //------------------------------------------------------------------------------
 
 void displayMagnified(int mag, void * arg)
 {
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     static_cast<Player*>(arg)->displayCytosim();
-    gle::gleReportErrors(stderr, "in displayMagnified");
 }
 
 
@@ -372,34 +373,22 @@ void displayMagnified(int mag, void * arg)
  save an image where the resolution is magnified by a factor `mag`.
  This requires access to the simulation world.
  */
-int Player::saveViewMagnified(const int mag, const char* name, const char* format, const int downsample)
+int Player::saveScene(const int mag, const char* name, const char* format, const int downsample)
 {
-    if ( !SaveImage::supported(format) )
-    {
-        std::cerr << "Error unsupported image format `" << format << "'\n";
-        return -1;
-    }
-    
     View & view = glApp::currentView();
     const int W = view.width(), H = view.height();
-    
     thread.lock();
     
-    //std::clog << "saveMagnifiedImage " << W << "x" << H << " mag=" << mag << std::endl;
-
+    //std::clog << "saveMagnifiedImage " << W << "x" << H << " mag=" << mag << '\n';
     prepareDisplay(view, mag);
-    
     view.openDisplay();
     int err = SaveImage::saveMagnifiedImage(mag, name, format, W, H, displayMagnified, this, downsample);
     if ( err )
-    {
-        err = SaveImage::saveCompositeImage(mag, name, format, W, H, view.pixelSize(), displayMagnified, this);
-        if ( !err )
-            printf("saved %ix%i snapshot %s\n", W, H, name);
-    }
-    else
+        err = SaveImage::saveCompositeImage(mag, name, format, W, H, view.pixelSize(), displayMagnified, this, downsample);
+    if ( !err )
         printf("saved %ix%i snapshot %s\n", mag*W/downsample, mag*H/downsample, name);
     view.closeDisplay();
+    
     thread.unlock();
     return err;
 }
@@ -409,20 +398,14 @@ int Player::saveViewMagnified(const int mag, const char* name, const char* forma
  save an image where the resolution is magnified by a factor `mag`.
  This requires access to the simulation world.
  */
-int Player::saveViewMagnified(const int mag, const char* root, unsigned indx, const int downsample)
+int Player::saveScene(const int mag, const char* root, unsigned indx, const int downsample)
 {
-    char cwd[1024] = { 0 };
-    char name[1024];
+    char str[1024] = { 0 };
     char const* format = prop.image_format.c_str();
-    snprintf(name, sizeof(name), "%s%04i.%s", root, indx, format);
-    if ( prop.image_dir.length() )
-    {
-        if ( getcwd(cwd, sizeof(cwd)) )
-            chdir(prop.image_dir.c_str());
-    }
-    int err = saveViewMagnified(mag, name, format, downsample);
-    if ( cwd[0] )
-        chdir(cwd);
+    snprintf(str, sizeof(str), "%s%04i.%s", root, indx, format);
+    int cwd = FilePath::change_dir(prop.image_dir, true);
+    int err = saveScene(mag, str, format, downsample);
+    FilePath::change_dir(cwd);
     glApp::postRedisplay();
     return err;
 }

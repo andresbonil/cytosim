@@ -602,14 +602,14 @@ void helpKeys(std::ostream& os)
 }
 
 
-void processKey(unsigned char key)
+void processKey(unsigned char key, int modifiers = 0)
 {
     //std::cerr << "processing key `" << key << "'\n";
     // the view associated with the current window
     View & view = glApp::currentView();
     
-    const bool altKeyDown = glutGetModifiers() & GLUT_ACTIVE_ALT;
-    const bool shiftKeyDown = glutGetModifiers() & GLUT_ACTIVE_SHIFT;
+    const bool altKeyDown = modifiers & GLUT_ACTIVE_ALT;
+    const bool shiftKeyDown = modifiers & GLUT_ACTIVE_SHIFT;
     /*
      In the switch below:
      - use break if the display need to be refreshed,
@@ -629,7 +629,7 @@ void processKey(unsigned char key)
             // save current image, without decorations
             player.displayCytosim();
             glFinish();
-            player.saveView("image", prop.image_index++);
+            player.saveView("image", prop.image_index++, 1);
             // with over sampling and downsampling to get super-resolution:
             //player.saveViewMagnified(3, "image", prop.image_index++, 3);
             return;
@@ -962,8 +962,6 @@ void processKey(unsigned char key)
     
     // if break was called, redraw the scene:
     glApp::postRedisplay();
-    // rebuild the menus, that might have changed:
-    buildMenus();
 }
 
 
@@ -980,5 +978,5 @@ void processNormalKey(const unsigned char key, const int x, const int y)
         }
     }
     
-    processKey(key);
+    processKey(key, glutGetModifiers());
 }

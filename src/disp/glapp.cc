@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <cstdarg>
 #include "exceptions.h"
-#include "saveimage.h"
+#include "save_image.h"
 #include "glossary.h"
 #include "tictoc.h"
 #include "gle.h"
@@ -33,15 +33,14 @@ namespace glApp
         MOUSE_ACTIVE     = 2,
         MOUSE_TRANSLATEZ = 3,
         MOUSE_SPIN       = 4,
-        MOUSE_MAGNIFIER  = 5,
-        MOUSE_SET_ROI    = 6,
-        MOUSE_MOVE_ROI   = 7,
-        MOUSE_SELECT     = 8,
-        MOUSE_PASSIVE    = 9
+        MOUSE_SET_ROI    = 5,
+        MOUSE_MOVE_ROI   = 6,
+        MOUSE_SELECT     = 7,
+        MOUSE_PASSIVE    = 8
     };
     
     /// Specifies in which dimensionality each action is valid
-    int actionDimensionality[] = { 3, 1, 1, 3, 2, 1, 1, 1, 4, 4, 4, 0 };
+    int actionDimensionality[] = { 3, 1, 1, 3, 2, 1, 1, 4, 4, 4, 0 };
     
     /// the action controlled with the mouse
     UserMode     userMode = MOUSE_ROTATE;
@@ -207,7 +206,7 @@ void glApp::maximizeDisplay()
 //------------------------------------------------------------------------------
 #pragma mark -
 
-int glApp::createWindow(void (*func)(View&, int))
+int glApp::createWindow(void (*func)(View&))
 {
     View & view = views[0];
     
@@ -451,7 +450,6 @@ void glApp::switchUserMode(int dir)
         case MOUSE_ACTIVE:    flashText("Mouse: Active");       break;
         case MOUSE_TRANSLATEZ:flashText("Mouse: Translate-Z");  break;
         case MOUSE_SPIN:      flashText("Mouse: Spin & Zoom");  break;
-        case MOUSE_MAGNIFIER: flashText("Mouse: Magnifier");    break;
         case MOUSE_SET_ROI:   flashText("Mouse: Select ROI");   break;
         case MOUSE_MOVE_ROI:  flashText("Mouse: Move ROI");     break;
         case MOUSE_SELECT:    flashText("Mouse: Select");       break;
@@ -461,7 +459,7 @@ void glApp::switchUserMode(int dir)
 
 
 ///\todo flexible key assignment map to accomodate different keyboard layouts
-void glApp::processNormalKey(unsigned char c, int, int)
+void glApp::processNormalKey(unsigned char c, int modifiers)
 {
     View & view = glApp::currentView();
     
@@ -472,7 +470,7 @@ void glApp::processNormalKey(unsigned char c, int, int)
     switch (c)
     {
         case 17:
-            if ( glutGetModifiers() & GLUT_ACTIVE_CTRL )
+            if ( modifiers & GLUT_ACTIVE_CTRL )
                 exit(EXIT_SUCCESS);
             break;
         
@@ -551,14 +549,14 @@ void glApp::processNormalKey(unsigned char c, int, int)
         //------------------------- Zoom in and out:
         
         case '/':
-            if ( glutGetModifiers() & GLUT_ACTIVE_SHIFT )
+            if ( modifiers & GLUT_ACTIVE_SHIFT )
                 view.zoom_out(1.071773463);
             else
                 view.zoom_out(1.4142135623f);
             break;
         
         case '*':
-            if ( glutGetModifiers() & GLUT_ACTIVE_SHIFT )
+            if ( modifiers & GLUT_ACTIVE_SHIFT )
                 view.zoom_in(1.071773463f);
             else
                 view.zoom_in(1.4142135623f);
@@ -591,6 +589,12 @@ void glApp::processNormalKey(unsigned char c, int, int)
 }
 
 
+///\todo flexible key assignment map to accomodate different keyboard layouts
+void glApp::processNormalKey(unsigned char c, int, int)
+{
+    processNormalKey(c, glutGetModifiers());
+}
+
 void glApp::normalKeyFunc(void (*func)(unsigned char, int, int))
 {
     normalKeyCallback = func;
@@ -604,13 +608,13 @@ void glApp::normalKeyFunc(void (*func)(unsigned char, int, int))
  
  motion is reduced by holding down SHIFT.
  */
-void glApp::processSpecialKey(int key, int, int)
+void glApp::processSpecialKey(int key, int modifiers)
 {
     Vector3 vec(0,0,0), dxy(0, 0, 0);
     View & view = glApp::currentView();
-    real F = ( glutGetModifiers() & GLUT_ACTIVE_SHIFT ) ? 0.0625 : 1;
+    real F = ( modifiers & GLUT_ACTIVE_SHIFT ) ? 0.0625 : 1;
 
-    //std::clog << "special key " << key << ": " << glutGetModifiers() << "  ";
+    //std::clog << "special key " << key << ": " << modifiers << "  ";
     switch ( key )
     {
         case GLUT_KEY_HOME:      view.reset();            glutPostRedisplay(); return;
@@ -625,7 +629,7 @@ void glApp::processSpecialKey(int key, int, int)
     // inverse the rotation of the current view:
     Quaternion<real> rot = view.rotation.conjugated();
     
-    if ( glutGetModifiers() & GLUT_ACTIVE_ALT )
+    if ( modifiers & GLUT_ACTIVE_ALT )
     {
         // Rotate view
         rot.rotateVector(vec, cross(Vector3(0, 0, 1), dxy));
@@ -635,7 +639,7 @@ void glApp::processSpecialKey(int key, int, int)
     else
     {
         // Translate view
-        if ( (glutGetModifiers() & GLUT_ACTIVE_CTRL) ^ (userMode == MOUSE_TRANSLATEZ) )
+        if ( (modifiers & GLUT_ACTIVE_CTRL) ^ (userMode == MOUSE_TRANSLATEZ) )
             dxy.set(dxy.XX, 0, dxy.YY);
         rot.rotateVector(vec, dxy);
         //std::clog << "vec " << dxy << " >>> " << vec << "\n";
@@ -644,6 +648,10 @@ void glApp::processSpecialKey(int key, int, int)
     glutPostRedisplay();
 }
 
+void glApp::processSpecialKey(int key, int, int)
+{
+    processSpecialKey(key, glutGetModifiers());
+}
 
 void glApp::specialKeyFunc(void (*func)(int, int, int))
 {
@@ -1014,13 +1022,6 @@ void glApp::processMouseClick(int button, int state, int mX, int mY)
             mouseAxis  = normalize( viewFocus - savedView.focus );
             depthAxis  = mouseDown - viewFocus;
         } break;
-        
-        case MOUSE_MAGNIFIER:
-        {
-            mouseDown = savedView.unproject(mouseX, mouseY, midZ);
-            if ( mDIM == 2 ) mouseDown.ZZ = 0;
-            glutSetCursor(GLUT_CURSOR_NONE);
-        } break;
             
         case MOUSE_SET_ROI:
         case MOUSE_MOVE_ROI:
@@ -1108,14 +1109,7 @@ void glApp::processMouseDrag(int mX, int mY)
             view.move_to( savedView.focus - move );
         } break;
         
-        
-        case MOUSE_MAGNIFIER:
-        {
-            mouseDown = savedView.unproject(mouseX, mouseY, midZ);
-            if ( mDIM == 2 ) mouseDown.ZZ = 0;
-        } break;
 
-        
         case MOUSE_SET_ROI:
         {
             setROI(mouseDown, savedView.unproject(mouseX, mouseY, midZ));
@@ -1222,7 +1216,7 @@ void glApp::displayPlain()
     View & view = glApp::currentView();
 
     view.openDisplay();
-    view.display();
+    view.callDraw();
     view.closeDisplay();
 
     glFinish();
@@ -1242,12 +1236,9 @@ void glApp::displayMain()
     View & view = views[1];
     
     view.openDisplay();
-    view.display();
+    view.callDraw();
     view.closeDisplay();
     view.drawInteractiveFeatures();
-
-    if ( mouseAction == MOUSE_MAGNIFIER )
-        view.displayMagnifier(6, mouseDown, mouseX, mouseY);
 
     if ( flashString.size() )
     {

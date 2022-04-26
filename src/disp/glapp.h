@@ -24,7 +24,7 @@ namespace glApp
     void       setDimensionality(int d);
 
     /// set display function `func`
-    int        createWindow(void (*func)(View&, int));
+    int        createWindow(void (*func)(View&));
     
     /// destroy window
     void       destroyWindow(int win);
@@ -82,10 +82,16 @@ namespace glApp
     void       help(std::ostream&);
     
     /// callback function for normal keys
-    void       processNormalKey(unsigned char, int mouse_x, int mouse_y);
+    void       processNormalKey(unsigned char, int modifiers);
     
+    /// callback function for normal keys
+    void       processNormalKey(unsigned char, int mouse_x, int mouse_y);
+
     /// set callback for keyboard events
     void       normalKeyFunc(void (*func)(unsigned char, int, int));
+    
+    /// callback function for normal keys
+    void       processSpecialKey(int key, int modifiers);
 
     /// callback function for arrow/function keys
     void       processSpecialKey(int key, int mouse_x, int mouse_y);

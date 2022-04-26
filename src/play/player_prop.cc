@@ -2,7 +2,7 @@
 
 #include "player_prop.h"
 #include "glossary.h"
-#include "saveimage.h"
+#include "save_image.h"
 
 
 void PlayerProp::clear()

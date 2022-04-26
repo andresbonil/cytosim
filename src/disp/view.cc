@@ -673,67 +673,6 @@ int View::hasClipPlane(int ix) const
 #pragma mark -
 
 
-void View::displayMagnifier(GLint Z, Vector3 foc, GLint mX, GLint mY) const
-{
-#if ( 1 )
-    int W = width();
-    int H = height();
-    int P = ( W > H ? H : W ) / 4;
-    int M = 2 * P;
-
-/*
-    GLint readbuf = 0, drawbuf = 0;
-    glGetIntegerv(GL_READ_BUFFER, &readbuf);
-    glGetIntegerv(GL_DRAW_BUFFER, &drawbuf);
-    printf("normal buffers: read %i draw %i\n", readbuf, drawbuf);
-*/
-    
-    // create off-screen buffer
-    if ( OffScreen::createBuffer(M, M, 0) )
-    {
-        // operate with a copy of the current view:
-        View view = *this;
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        view.initGL();
-        view.view_size = M * pixelSize() / Z;
-        view.reshape(M, M);
-        view.move_to(foc);
-        view.zoom_to(1);
-        setLights();
-        setClipping();
-        displayCallback(view, 1+Z/3);
-        endClipping();
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-        glViewport(0, 0, W, H);
-/*
-        GLubyte * tmp = (GLubyte*)malloc(3*M*M*sizeof(GLubyte));
-        glReadPixels(0, 0, M, M, GL_RGB, GL_UNSIGNED_BYTE, tmp);
-        SaveImage::savePixels("pixels.png", "png", tmp, W, H, 0);
-        free(tmp);
-*/
-        //print_cap("read", GL_READ_BUFFER);
-        //print_cap("draw", GL_DRAW_BUFFER);
-        
-        // restore writing destination:
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        //glDrawBuffer(drawbuf);
-        
-        glBlitFramebuffer(0, 0, M, M, mX-P, mY-P, mX+P, mY+P, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-        //checkError("glBlitFramebuffer()");
-        
-        OffScreen::releaseBuffer();
-        //glReadBuffer(readbuf);
-    }
-#endif
-}
-
-
 void View::drawText(std::string const& str, void* font, gle_color col, int pos) const
 {
     gleDrawText(str.c_str(), font, col, pos, width(), height());

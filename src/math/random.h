@@ -156,7 +156,7 @@ public:
     uint32_t pint32_slow(uint32_t n);
     
     /// a random unsigned integer with exactly `b` bit equal to `1`
-    uint32_t distributed_bits(int b);
+    uint32_t distributed_bits(unsigned b);
 
     /// integer in [0 N], with probabilities given in ratio[] of size N, with sum(ratio)>0
     uint32_t pint32_ratio(uint32_t n, const uint32_t ratio[]);
