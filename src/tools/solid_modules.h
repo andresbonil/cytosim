@@ -1,7 +1,6 @@
 #include "solid.h"
 #include <pybind11/pybind11.h>
 #include "python_utilities.h"
-#include "objecter_python.h"
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
 namespace py = pybind11;

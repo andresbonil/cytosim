@@ -6,7 +6,6 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "../sim/objecter_python.h"
 
 class Glossary;
 class Simul;

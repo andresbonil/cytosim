@@ -1,9 +1,11 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
-#include "fiber.h"
+//#include "fiber.h"
 #include <pybind11/pybind11.h>
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
+#include "object_info.h"
+
 namespace py = pybind11;
 typedef py::array_t<real> pyarray;
 

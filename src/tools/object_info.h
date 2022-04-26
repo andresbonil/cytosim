@@ -37,24 +37,4 @@ struct ObjectInfo {
 
 };
 
-//class Object;
-//class ObjectSet;
-/*
-struct ObjReport {
-    int id;
-    
-    real_array points;
-    
-    real_dict reals;
-    int_dict ints;
-    vector_dict vecs;
-    string_dict strings;
-    
-  
-  
-  //ObjReport(const Object* obj  ) ;
-  ObjReport() = default;
-  ~ObjReport()  = default;
-};
-*/
 #endif
