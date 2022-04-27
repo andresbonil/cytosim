@@ -57,5 +57,17 @@ void load_solid_classes(py::module_ &m) {
          /**
             @TODO : ADD SPECIALIZED SOLID CLASSES
          */
+         
+    py::class_<SolidProp,Property>(m, "SolidProp")
+        .def_readwrite("drag", &SolidProp::drag)
+        .def_readwrite("viscosity", &SolidProp::viscosity)
+        .def_readwrite("steric", &SolidProp::steric)
+        .def_readwrite("steric_range", &SolidProp::steric_range)
+        .def_readwrite("confine", &SolidProp::confine)
+        .def_readwrite("confine_stiffness", &SolidProp::confine_stiffness)
+        .def_readwrite("confine_space", &SolidProp::confine_space)
+        .def_readwrite("display", &SolidProp::display)
+        .def_readwrite("display_fresh", &SolidProp::display_fresh);
+        
 }
 

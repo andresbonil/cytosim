@@ -43,7 +43,8 @@ FrameReader reader;
 bool __is_loaded__ = 0;
 extern FrameReader reader;
 extern bool __is_loaded__;
-
+std::vector<std::string> categories = std::vector<std::string>{"aster","nucleus","bundle","fake"};
+extern std::vector<std::string>  categories;
 /// Open the simulation from the .cmo files
 Simul * open()
 {   
@@ -109,8 +110,8 @@ PYBIND11_MODULE(cytosim, m) {
                 "    frame = frame.next()"; // optional module docstring
         
     /// Loading properties into the module
+    load_simul_classes(m);
     load_object_classes(m);
-    auto pysim = load_simul_classes(m);
     load_fiber_classes(m);
     load_hand_classes(m);
     load_solid_classes(m);
@@ -136,7 +137,7 @@ PYBIND11_MODULE(cytosim, m) {
         .def_readwrite("time", &Frame::time)
         .def_readwrite("index", &Frame::index)
         .def_readwrite("loaded", &Frame::loaded)
-        .def("next", [](Frame &f) {return prepare_frame(f.simul, &reader, f.index+1);}) //py::return_value_policy::reference
+        .def("next", [](Frame &f) {return prepare_frame(f.simul, f.index+1);}, py::return_value_policy::reference)
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())
@@ -148,8 +149,10 @@ PYBIND11_MODULE(cytosim, m) {
 
             
     /// Python interface to simul
-    pysim.def("frame", [](Simul * sim, size_t i) 
-            {if (__is_loaded__) {return prepare_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
+    py::class_<Simul>(m, "Simul")
+        .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
+        .def("frame", [](Simul * sim, size_t i) 
+            {return prepare_frame(sim, i);}, py::return_value_policy::reference);
             
     /// Opens the simulation from *.cmo files
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
