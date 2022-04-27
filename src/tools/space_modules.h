@@ -22,5 +22,6 @@ void load_space_classes(py::module_ &m) {
          /**
             @TODO : ADD SPECIALIZED FIBER CLASSES
          */
+    py::class_<SpaceProp,Property>(m, "SpaceProp");
 }
 

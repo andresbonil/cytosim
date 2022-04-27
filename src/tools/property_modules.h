@@ -32,37 +32,6 @@ void load_prop_classes(py::module_ &m) {
         .def_readwrite("display_fresh", &SimulProp::display_fresh)
         .def_readwrite("display", &SimulProp::display);
     
-    // This should probably infor fiber_modules.h ?
-    py::class_<FiberProp,Property>(m, "FiberProp")
-        .def_readwrite("segmentation", &FiberProp::segmentation)
-        .def_readwrite("rigidity", &FiberProp::rigidity)
-        .def_readwrite("min_length", &FiberProp::min_length)
-        .def_readwrite("max_length", &FiberProp::max_length)
-        .def_readwrite("total_polymer", &FiberProp::total_polymer)
-        .def_readwrite("persistent", &FiberProp::persistent)
-        .def_readwrite("viscosity", &FiberProp::viscosity)
-        .def_readwrite("drag_radius", &FiberProp::drag_radius)
-        .def_readwrite("drag_length", &FiberProp::drag_length)
-        .def_readwrite("drag_model", &FiberProp::drag_model)
-        .def_readwrite("drag_gap", &FiberProp::drag_gap)
-        .def_readwrite("binding_key", &FiberProp::binding_key)
-        .def_readwrite("lattice", &FiberProp::lattice)
-        .def_readwrite("lattice_unit", &FiberProp::lattice_unit)
-        .def_readwrite("confine", &FiberProp::confine)
-        .def_readwrite("confine_space", &FiberProp::confine_space)
-        .def_readwrite("confine_stiffness", &FiberProp::confine_stiffness)
-        .def_readwrite("steric", &FiberProp::steric)
-        .def_readwrite("steric_radius", &FiberProp::steric_radius)
-        .def_readwrite("steric_range", &FiberProp::steric_range)
-        .def_readwrite("glue", &FiberProp::glue)
-        .def_readwrite("glue_single", &FiberProp::glue_single)
-        .def_readwrite("activity", &FiberProp::activity)
-        .def_readwrite("display_fresh", &FiberProp::display_fresh)
-        .def_readwrite("display", &FiberProp::display);
-        
-    py::class_<HandProp,Property>(m, "HandProp");
-    py::class_<CoupleProp,Property>(m, "CoupleProp");
-    py::class_<SingleProp,Property>(m, "SingleProp");
-    py::class_<SpaceProp,Property>(m, "SpaceProp");
+
 }
 

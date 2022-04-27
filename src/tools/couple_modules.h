@@ -47,5 +47,22 @@ void load_couple_classes(py::module_ &m) {
          /**
             @TODO : ADD SPECIALIZED FIBER CLASSES
          */
+         
+        py::class_<CoupleProp,Property>(m, "CoupleProp")
+            .def_readwrite("hand1", &CoupleProp::hand1)
+            .def_readwrite("hand2", &CoupleProp::hand2)
+            .def_readwrite("stiffness", &CoupleProp::stiffness)
+            .def_readwrite("length", &CoupleProp::length)
+            .def_readwrite("diffusion", &CoupleProp::diffusion)
+            .def_readwrite("fast_diffusion", &CoupleProp::fast_diffusion)
+            .def_readwrite("stiff", &CoupleProp::stiff)
+            .def_readwrite("specificity", &CoupleProp::specificity)
+            .def_readwrite("confine", &CoupleProp::confine)
+            .def_readwrite("confine_space", &CoupleProp::confine_space)
+            .def_readwrite("activity", &CoupleProp::activity)
+            .def_readwrite("hand1_prop", &CoupleProp::hand1_prop)
+            .def_readwrite("hand2_prop", &CoupleProp::hand2_prop);
+            
+            
 }
 

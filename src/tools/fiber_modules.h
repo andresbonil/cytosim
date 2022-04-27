@@ -34,9 +34,9 @@ void load_fiber_classes(py::module_ &m) {
         .def("__next__", [](const Fiber * fib) {return fib->next();});
         
         
-        py::class_<ClassicFiber,Fiber>(m, "ClassicFiber")
-            .def("freshAssemblyM",  [](ClassicFiber * fib) {return fib->freshAssemblyM();})
-            .def("freshAssemblyP",  [](ClassicFiber * fib) {return fib->freshAssemblyP();});
+    py::class_<ClassicFiber,Fiber>(m, "ClassicFiber")
+        .def("freshAssemblyM",  [](ClassicFiber * fib) {return fib->freshAssemblyM();})
+        .def("freshAssemblyP",  [](ClassicFiber * fib) {return fib->freshAssemblyP();});
         /**
          * 
             @TODO : complete with fiber base functions
@@ -46,5 +46,34 @@ void load_fiber_classes(py::module_ &m) {
          /**
             @TODO : ADD SPECIALIZED FIBER CLASSES
          */
+         
+    /// Python interface to FiberProp
+    py::class_<FiberProp,Property>(m, "FiberProp")
+        .def_readwrite("segmentation", &FiberProp::segmentation)
+        .def_readwrite("rigidity", &FiberProp::rigidity)
+        .def_readwrite("min_length", &FiberProp::min_length)
+        .def_readwrite("max_length", &FiberProp::max_length)
+        .def_readwrite("total_polymer", &FiberProp::total_polymer)
+        .def_readwrite("persistent", &FiberProp::persistent)
+        .def_readwrite("viscosity", &FiberProp::viscosity)
+        .def_readwrite("drag_radius", &FiberProp::drag_radius)
+        .def_readwrite("drag_length", &FiberProp::drag_length)
+        .def_readwrite("drag_model", &FiberProp::drag_model)
+        .def_readwrite("drag_gap", &FiberProp::drag_gap)
+        .def_readwrite("binding_key", &FiberProp::binding_key)
+        .def_readwrite("lattice", &FiberProp::lattice)
+        .def_readwrite("lattice_unit", &FiberProp::lattice_unit)
+        .def_readwrite("confine", &FiberProp::confine)
+        .def_readwrite("confine_space", &FiberProp::confine_space)
+        .def_readwrite("confine_stiffness", &FiberProp::confine_stiffness)
+        .def_readwrite("steric", &FiberProp::steric)
+        .def_readwrite("steric_radius", &FiberProp::steric_radius)
+        .def_readwrite("steric_range", &FiberProp::steric_range)
+        .def_readwrite("glue", &FiberProp::glue)
+        .def_readwrite("glue_single", &FiberProp::glue_single)
+        .def_readwrite("activity", &FiberProp::activity)
+        .def_readwrite("display_fresh", &FiberProp::display_fresh)
+        .def_readwrite("display", &FiberProp::display);
+        
 }
 

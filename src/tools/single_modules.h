@@ -23,5 +23,15 @@ void load_single_classes(py::module_ &m) {
          /**
             @TODO : ADD SPECIALIZED FIBER CLASSES
          */
+    py::class_<SingleProp,Property>(m, "SingleProp")
+        .def_readwrite("hand", &SingleProp::hand)
+        .def_readwrite("stiffness", &SingleProp::stiffness)
+        .def_readwrite("length", &SingleProp::length)
+        .def_readwrite("diffusion", &SingleProp::diffusion)
+        .def_readwrite("fast_diffusion", &SingleProp::fast_diffusion)
+        .def_readwrite("confine", &SingleProp::confine)
+        .def_readwrite("confine_space", &SingleProp::confine_space)
+        .def_readwrite("activity", &SingleProp::activity)
+        .def_readwrite("hand_prop", &SingleProp::hand_prop);
 }
 

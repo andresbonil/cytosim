@@ -47,21 +47,21 @@ void load_hand_classes(py::module_ &m) {
         .def("otherPosition",  [](Hand * h) {return to_numpy(h->otherPosition());})
         .def("linkStiffness",  [](Hand * h) {return h->linkStiffness();});
         
-        //.def("attachEnd2",  [](Couple * s, Fiber * fib, int end) {return s->attachEnd2(fib, static_cast<FiberEnd>(end));})
-        //.def("moveToEnd1",  [](Couple * s,int end) {return s->moveToEnd1(static_cast<FiberEnd>(end));})
-        //.def("moveToEnd2",  [](Couple * s,int end) {return s->moveToEnd2(static_cast<FiberEnd>(end));})
-        //.def("fiber1",  [](Couple * s) {return s->fiber1();})
-        //.def("fiber2",  [](Couple * s) {return s->fiber2();})
-        //.def("abcissa",  [](Couple * s) {return to_numpy(s->posFree());})
-        
-        /**
-         * 
-            @TODO : complete with fiber base functions
-         * 
-        */
-         
          /**
-            @TODO : ADD SPECIALIZED FIBER CLASSES
+            @TODO : ADD SPECIALIZED HAND CLASSES
          */
+    py::class_<HandProp,Property>(m, "HandProp")
+        .def_readwrite("binding_rate", &HandProp::binding_rate)
+        .def_readwrite("binding_range", &HandProp::binding_range)
+        .def_readwrite("binding_key", &HandProp::binding_key)
+        .def_readwrite("unbinding_rate", &HandProp::unbinding_rate)
+        .def_readwrite("unbinding_force", &HandProp::unbinding_force)
+        .def_readwrite("bind_also_end", &HandProp::bind_also_end)
+        .def_readwrite("bind_end_range", &HandProp::bind_end_range)
+        .def_readwrite("hold_growing_end", &HandProp::hold_growing_end)
+        .def_readwrite("hold_shrinking_end", &HandProp::hold_shrinking_end)
+        .def_readwrite("activity", &HandProp::activity)
+        .def_readwrite("display", &HandProp::display);
+        
 }
 
