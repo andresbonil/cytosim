@@ -43,8 +43,7 @@ FrameReader reader;
 bool __is_loaded__ = 0;
 extern FrameReader reader;
 extern bool __is_loaded__;
-std::vector<std::string> categories = std::vector<std::string>{"aster","nucleus","bundle","fake"};
-extern std::vector<std::string>  categories;
+
 /// Open the simulation from the .cmo files
 Simul * open()
 {   
@@ -88,51 +87,7 @@ Simul * open()
  * @param frame
  * @return 
  */
-Frame * prepare_frame( Simul * sim, int frame) 
-{   
-    Frame * current = new Frame;
-    current->simul = sim;
-    current->loaded = 0;
-    if (__is_loaded__) {
-        try 
-        {
-            int load = reader.loadFrame(*sim, frame);
-            
-            if (load==0) {
-                distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
-                distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
-                distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
-                distribute_objects(sim,current, current->beads, sim->beads, std::string("bead") ) ;
-                distribute_objects(sim,current, current->spheres, sim->spheres, std::string("sphere") ) ;
-                // For organizer, the we have to check the different categories
-                for (auto categ : categories) {
-                    distribute_objects(sim,current, current->organs, sim->organizers, std::string(categ) ) ;
-                }
-                // for couple and single we need to use firstID, nextID
-                distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
-                distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
-                
-                current->time = sim->time();
-                current->index = frame;
-                current->loaded = 1;
-            }
-            else {
-                std::clog << "Unable to load frame " << frame << ". Maybe frame does not exist." << std::endl;
-            } 
-                
-        }
-        catch( Exception & e )
-        {
-            std::clog << "Aborted: " << e.what() << '\n';
-        }
-    }
-    else{
-        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
-    }
-    
-    return current;
-    
-}
+
 
 /**
  * @brief  A module to get cytosim in python 
@@ -155,7 +110,7 @@ PYBIND11_MODULE(cytosim, m) {
         
     /// Loading properties into the module
     load_object_classes(m);
-    load_prop_classes(m);
+    auto pysim = load_simul_classes(m);
     load_fiber_classes(m);
     load_hand_classes(m);
     load_solid_classes(m);
@@ -181,7 +136,7 @@ PYBIND11_MODULE(cytosim, m) {
         .def_readwrite("time", &Frame::time)
         .def_readwrite("index", &Frame::index)
         .def_readwrite("loaded", &Frame::loaded)
-        .def("next", [](Frame &f) {return prepare_frame(f.simul, f.index+1);}, py::return_value_policy::reference)
+        .def("next", [](Frame &f) {return prepare_frame(f.simul, &reader, f.index+1);}) //py::return_value_policy::reference
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())
@@ -190,13 +145,12 @@ PYBIND11_MODULE(cytosim, m) {
         .def("__getitem__",[](const Frame &f, std::string s) {
                  return f.objects[py::cast(s)];
              }, py::return_value_policy::reference);
-    
-    /// Python interface to simul
-    py::class_<Simul>(m, "Simul")
-        .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
-        .def("frame", [](Simul * sim, size_t i) 
-            {return prepare_frame(sim, i);}, py::return_value_policy::reference);
 
+            
+    /// Python interface to simul
+    pysim.def("frame", [](Simul * sim, size_t i) 
+            {if (__is_loaded__) {return prepare_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
+            
     /// Opens the simulation from *.cmo files
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
     

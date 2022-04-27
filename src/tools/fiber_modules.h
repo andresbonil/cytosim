@@ -75,5 +75,23 @@ void load_fiber_classes(py::module_ &m) {
         .def_readwrite("display_fresh", &FiberProp::display_fresh)
         .def_readwrite("display", &FiberProp::display);
         
+        py::enum_<FiberEnd>(m,"FiberEnd")
+            .value("NO_END", NO_END)
+            .value("PLUS_END", PLUS_END)
+            .value("MINUS_END", MINUS_END)
+            .value("BOTH_ENDS", BOTH_ENDS)
+            .value("ORIGIN", ORIGIN)
+            .value("CENTER", CENTER)
+            .export_values();
+
+        py::enum_<AssemblyState>(m,"AssemblyState")
+            .value("STATE_WHITE", STATE_WHITE)
+            .value("STATE_GREEN", STATE_GREEN)
+            .value("STATE_YELLOW", STATE_YELLOW)
+            .value("STATE_ORANGE", STATE_ORANGE)
+            .value("STATE_RED", STATE_RED)
+            .value("STATE_BLACK", STATE_BLACK)
+            .export_values();
+        
 }
 

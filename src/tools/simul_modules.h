@@ -5,14 +5,57 @@
 //#include <pybind11/stl.h>
 namespace py = pybind11;
 
-class FiberProp;
 class Property;
 
+/**
+ * @brief 
+ * @TODO : manage to have objectSet ! Now missing operator = ?////
+ * @param m
+ */
+
 /// a utility to enrich the cytosim python module
-void load_prop_classes(py::module_ &m) {
+auto load_simul_classes(py::module_ &m) {
+    /// Python interface to default property
     py::class_<Property>(m, "Prop")
         .def("name", &Property::name); // prop.name() outputs the name
     
+    py::class_<ObjectSet>(m, "ObjectSet");
+    py::class_<SpaceSet,ObjectSet>(m, "SpaceSet");
+    
+    auto pysim = py::class_<Simul>(m, "Simul")
+        .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
+        .def_readwrite("properties",   &Simul::properties , py::return_value_policy::reference)
+        //.def_readwrite("spaces",   &Simul::spaces)
+        //.def_readwrite("fields",   &Simul::fields , py::return_value_policy::reference)
+        //.def_readwrite("fibers",   &Simul::fibers , py::return_value_policy::reference)
+        //.def_readwrite("spheres",   &Simul::spheres , py::return_value_policy::reference)
+        //.def_readwrite("beads",   &Simul::beads , py::return_value_policy::reference)
+        //.def_readwrite("solids",   &Simul::solids , py::return_value_policy::reference)
+        //.def_readwrite("couples",   &Simul::couples , py::return_value_policy::reference)
+        //.def_readwrite("singles",   &Simul::singles , py::return_value_policy::reference)
+        //.def_readwrite("organizers",   &Simul::organizers , py::return_value_policy::reference)
+        .def("remove",  [](Simul * sim, Object* obj) {return sim->remove(obj);})
+        .def("erase",  [](Simul * sim, Object* obj) {return sim->erase(obj);})
+        .def("nuke",  [](Simul * sim) {return sim->erase();})
+        .def("time",  [](Simul * sim) {return sim->time();})
+        .def("time_step",  [](Simul * sim) {return sim->time_step();})
+        .def("step",  [](Simul * sim) {return sim->step();})
+        .def("solve",  [](Simul * sim) {return sim->solve();})
+        .def("solve_auto",  [](Simul * sim) {return sim->solve_auto();})
+        //.def("dump",  [](Simul * sim, std::string s) {return sim->dump( &s[0]);})
+        //.def("saveSystem",  [](Simul * sim, char s) {return sim->saveSystem((char) s);})
+        .def("evaluate",  [](Simul * sim, std::string s) {return sim->evaluate(s);} , py::return_value_policy::reference)
+        .def("toMecable",  [](Simul * sim, Object* o) {return sim->toMecable(o);} , py::return_value_policy::reference)
+        .def("findMecable",  [](Simul * sim, std::string s) {return sim->findMecable(s);} , py::return_value_policy::reference)
+        .def("findSpace",  [](Simul * sim, std::string s) {return sim->findSpace(s);} , py::return_value_policy::reference)
+        .def("rename",  [](Simul * sim, std::string s) {return sim->rename(s);} , py::return_value_policy::reference)
+        .def("isCategory",  [](Simul * sim, std::string s) {return sim->isCategory(s);} , py::return_value_policy::reference)
+        .def("findProperty",  [](Simul * sim, std::string s) {return sim->findProperty(s);} , py::return_value_policy::reference);
+        
+        
+        
+    
+    /// Python interface to simulProp
     py::class_<SimulProp,Property>(m, "SimulProp")
         .def_readwrite("time", &SimulProp::time)
         .def_readwrite("time_step", &SimulProp::time_step)
@@ -31,7 +74,7 @@ void load_prop_classes(py::module_ &m) {
         .def_readwrite("skip_free_couple", &SimulProp::skip_free_couple)
         .def_readwrite("display_fresh", &SimulProp::display_fresh)
         .def_readwrite("display", &SimulProp::display);
-    
 
+    return pysim;
 }
 
