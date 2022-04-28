@@ -31,6 +31,14 @@ Additionally, a points() function has been defined :
 ```  
 Yields a numpy array. 
 
+To know the methods available from an object, type dir():
+
+```python
+    print(dir(sim))
+    print(dir(frame))
+    print(dir(frame["core"][0]))
+```
+
 ## To load existing sim:
 Assuming that the cmo files and cytosim.-.so are in the current folder : 
 
