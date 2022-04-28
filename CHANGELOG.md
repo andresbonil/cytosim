@@ -63,7 +63,7 @@ Assuming that the cmo files and cytosim.-.so are in the current folder :
 Basically no code change was performed in cytosim except :   
 - object.cc/h was changed to objecter.cc/h
     -> all files with "#include object.h" need to change to "#include objecter.h"  
-- node.* was changed to noder.*  
+- node.cc/h was changed to noder.cc/h  
      -> all files with "#include node.h" need to change to "#include noder.h"  
 - In "sim_thread.cc", line 440 was commented : "//glApp::flashText0(str);"  
 - makefile.inc and tools/makefile.inc were changed to allow compilation.  
