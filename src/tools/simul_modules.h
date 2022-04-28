@@ -17,7 +17,8 @@ class Property;
 auto load_simul_classes(py::module_ &m) {
     /// Python interface to default property
     py::class_<Property>(m, "Prop")
-        .def("name", &Property::name); // prop.name() outputs the name
+        .def("name", &Property::name)
+        .def("complete",  [](Property * prop, Simul * sim) {return prop->complete(*sim);});
     
     py::class_<ObjectSet>(m, "ObjectSet");
     py::class_<SpaceSet,ObjectSet>(m, "SpaceSet");

@@ -127,32 +127,23 @@ Simul * start(std::string fname) {
     return simul;
 }
 
-/**
- * @brief Prepares a frame from the simulation
- * @param sim
- * @param frame
- * @return 
- */
-
-
-/**
- * @brief  A module to get cytosim in python 
- * @return 
- * @TODO : a lot should be put in specific files
- */
+/// A python module to run or play cytosim
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "sim = cytosim.open() \n"
                 "sim.prop.timestep \n"
                 "frame = cytosim.load(0) \n"
                 "fibers = frame['microtubule'] \n"
-                "fibers.prop.segmentation = 1.337    # <- Yes, yes, yes. \n"
-                "fibers[0].points() \n"
-                "fibers[0].id() \n"
-                "core = frame['core'][0] \n"
-                "core.points() \n"
+                "print(len(fibers)) \n"
                 "while frame.loaded: \n"
                 "    print(frame.time) \n"
-                "    frame = frame.next()"; // optional module docstring
+                "    frame = frame.next()"
+                "# --- OR --- \n"
+                "sim = cytosim.start('cym/aster.cym') \n"
+                "frame = sim.frame() \n"
+                "fibers = frame['microtubule'] \n"
+                "fibers[0].join(fibers[1])    # <- Yes, yes, yes. \n"
+                "sim.step() \n"
+                "sim.solve() \n"; // optional module docstring
         
     /// Loading properties into the module
     load_object_classes(m);
