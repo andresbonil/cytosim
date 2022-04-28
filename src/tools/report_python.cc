@@ -2,6 +2,12 @@
 /**
  This is a program to analyse simulation results:
  it reads a trajectory-file, and provides a python interface to it.
+   
+   * @TODO :    - manage to return ObjectSet from simul, in order to not necessitate frame()
+                - bead and sphere
+                - live player + python ? o_O
+                - specialized classes, including dynamic spaces
+                - and so on and so forth
 */
 
 
