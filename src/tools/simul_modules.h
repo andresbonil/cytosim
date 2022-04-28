@@ -10,7 +10,7 @@ class Property;
 /**
  * @brief 
  * @TODO : manage to have objectSet ! Now missing operator = ?////
- * @param m
+
  */
 
 /// a utility to enrich the cytosim python module
@@ -26,7 +26,6 @@ auto load_simul_classes(py::module_ &m) {
     auto pysim = py::class_<Simul>(m, "Simul")
         .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
         .def_readwrite("properties",   &Simul::properties , py::return_value_policy::reference)
-        //.def_readwrite("spaces",   &Simul::spaces)
         //.def_readwrite("fields",   &Simul::fields , py::return_value_policy::reference)
         //.def_readwrite("fibers",   &Simul::fibers , py::return_value_policy::reference)
         //.def_readwrite("spheres",   &Simul::spheres , py::return_value_policy::reference)

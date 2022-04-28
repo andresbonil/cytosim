@@ -206,6 +206,7 @@ PYBIND11_MODULE(cytosim, m) {
             {if (__is_loaded__) {return prepare_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
     pysim.def("frame", [](Simul * sim) 
             {if (__is_loaded__) {return make_frame(sim);} ; return new Frame; }); //py::return_value_policy::reference
+    //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
             
     /// Opens the simulation from *.cmo files
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
