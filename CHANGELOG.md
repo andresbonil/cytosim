@@ -1,4 +1,35 @@
-# Pytosim !
+# Pytosim 
+## Compilation
+First install pybind and then compile "report_python".
+
+```bash
+$ python3 -m pip install -U --user pybind11
+$ make -j4 report_python
+```
+This should yield a file cytosim.(...).so in your bin folder. E.g. : "cytosim.cpython-37m-x86_64-linux-gnu.so"
+
+## Principle
+Pytosim in an interface to native cytosim objects. However, there is currently still a sorting needed. Cytosim objects are better accessed through a Frame object. A frame is a dictionary of cytosom objects.
+
+For example   
+
+ ```python
+    frame = sim.frames()
+    fibers = frame["microtubule"]
+```
+Here fibers is a (python) list of (cytosim) Fiber objects. You can use native cytosim function for fibers, e.g.
+
+```python
+    fibers[0].nbPoints() 
+```
+Will yield the number of points.  
+Additionally, a points() function has been defined :  
+ 
+```python
+     fibers[0].points()
+```  
+Yields a numpy array. 
+
 ## To load existinig sim:
 Assuming that the cmo files and cytosim.-.so are in the current folder : 
 
@@ -18,8 +49,7 @@ Assuming that the cmo files and cytosim.-.so are in the current folder :
         frame = frame.next()
 ```
 
-Or, in live mode ! 
-
+## To run a simulation, from python
 ```python
     sim = cytosim.start('cym/aster.cym')
     frame = sim.frame() 
