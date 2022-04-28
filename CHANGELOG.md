@@ -1,6 +1,6 @@
 # Pytosim 
 ## Compilation
-First install pybind and then compile "report_python".
+First install pybind and then compile "report_python". Pytosim requires python >= 3.7 and a compiler supporting C++17.
 
 ```bash
 $ python3 -m pip install -U --user pybind11
@@ -9,12 +9,13 @@ $ make -j4 report_python
 This should yield a file cytosim.(...).so in your bin folder. E.g. : "cytosim.cpython-37m-x86_64-linux-gnu.so"
 
 ## Principle
-Pytosim in an interface to native cytosim objects. However, there is currently still a sorting needed. Cytosim objects are better accessed through a Frame object. A frame is a dictionary of cytosom objects.
+Pytosim in an interface to native cytosim objects. However, there is currently still a sorting needed. Cytosim objects are better accessed through a Frame object. A frame is a dictionary of cytosim objects.
 
 For example   
 
  ```python
     frame = sim.frame()
+    print(frame.keys())
     fibers = frame["microtubule"]
 ```
 Here fibers is a (python) list of (cytosim) Fiber objects. You can use native cytosim function for fibers, e.g.
