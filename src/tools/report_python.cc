@@ -26,6 +26,17 @@
     while frame.loaded:
         print(frame.time)
         frame = frame.next()
+         
+
+    OR, IN LIVE MODE !
+
+    sim = cytosim.start('cym/aster.cym')
+    frame = sim.frame() 
+    fibers = frame['microtubule'] 
+    fibers[0].join(fibers[1])    # <- Yes, yes, yes. 
+    sim.step()
+    sim.solve() 
+        
      
     # etc...
 */
@@ -41,12 +52,12 @@ namespace py = pybind11;
 /// Using global vars, sorry not sorry.
 FrameReader reader;
 bool __is_loaded__ = 0;
-//SimThread * thread;
+SimThread * thread;
 extern FrameReader reader;
 extern bool __is_loaded__;
-//extern thread;
+extern SimThread * thread;
 
-void bar(void) {};
+void gonna_callback(void) {};
 
 /// Open the simulation from the .cmo files
 Simul * open()
@@ -119,8 +130,8 @@ Simul * start(std::string fname) {
     Parser(*simul, 0, 1, 0, 0, 0).readConfig();
     //void foo(void) {};
     //void (*foofoo)(void) = &bar;
-    SimThread * thread = new SimThread(*simul, &bar);
-    
+    //SimThread * thread = new SimThread(*simul, &bar);
+    thread = new SimThread(*simul, &gonna_callback);
     //thread->period(1);
     thread->start();
     __is_loaded__ = 2;
