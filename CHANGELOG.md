@@ -14,7 +14,7 @@ Pytosim in an interface to native cytosim objects. However, there is currently s
 For example   
 
  ```python
-    frame = sim.frames()
+    frame = sim.frame()
     fibers = frame["microtubule"]
 ```
 Here fibers is a (python) list of (cytosim) Fiber objects. You can use native cytosim function for fibers, e.g.
