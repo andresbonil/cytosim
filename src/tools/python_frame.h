@@ -3,16 +3,15 @@
 
 #include <fstream>
 #include <sstream>
-
+#include "sim_thread.h"
 #include "stream_func.h"
-#include "frame_reader.h"
+//#include "frame_reader.h"
 #include "iowrapper.h"
 #include "glossary.h"
 #include "messages.h"
-#include "splash.h"
 #include "organizer.h"
-#include "parser.h"
-#include "simul.h"
+//#include "parser.h"
+//#include "simul.h"
 #include "simul_prop.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
@@ -152,39 +151,53 @@ auto declare_group(py::module &mod, Group group, std::string name) {
                  }, py::return_value_policy::reference);
 }
 
+
+
 /// Prepares a given frame by sorting objects into object groups
-Frame * prepare_frame( Simul * sim, FrameReader * reader, int frame) 
+Frame * make_frame( Simul * sim) 
 {   
     std::vector<std::string> categories = std::vector<std::string>{"aster","nucleus","bundle","fake"};
     //extern std::vector<std::string>  categories;
     Frame * current = new Frame;
     current->simul = sim;
-    current->loaded = 0;
+    
+    distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
+    distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
+    distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
+    distribute_objects(sim,current, current->beads, sim->beads, std::string("bead") ) ;
+    distribute_objects(sim,current, current->spheres, sim->spheres, std::string("sphere") ) ;
+    // For organizer, the we have to check the different categories
+    for (auto categ : categories) {
+        distribute_objects(sim,current, current->organs, sim->organizers, std::string(categ) ) ;
+    }
+    // for couple and single we need to use firstID, nextID
+    distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
+    distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
+    
+    current->time = sim->time();
+    //current->index = frame;
+    current->loaded = 1;
+
+    return current;
+    
+}
+
+/// Prepares a given frame by sorting objects into object groups
+Frame * prepare_frame( Simul * sim, FrameReader * reader, int fr) 
+{   
+
     if (1) {
         try 
         {
-            int load = reader->loadFrame(*sim, frame);
+            int load = reader->loadFrame(*sim, fr);
             
             if (load==0) {
-                distribute_objects(sim,current, current->fibers, sim->fibers, std::string("fiber") ) ;
-                distribute_objects(sim,current, current->solids, sim->solids, std::string("solid") ) ;
-                distribute_objects(sim,current, current->spaces, sim->spaces, std::string("space") ) ;
-                distribute_objects(sim,current, current->beads, sim->beads, std::string("bead") ) ;
-                distribute_objects(sim,current, current->spheres, sim->spheres, std::string("sphere") ) ;
-                // For organizer, the we have to check the different categories
-                for (auto categ : categories) {
-                    distribute_objects(sim,current, current->organs, sim->organizers, std::string(categ) ) ;
-                }
-                // for couple and single we need to use firstID, nextID
-                distribute_objects_wID(sim,current, current->couples, sim->couples, std::string("couple") ) ;
-                distribute_objects_wID(sim,current, current->singles, sim->singles, std::string("single") ) ;
-                
-                current->time = sim->time();
-                current->index = frame;
-                current->loaded = 1;
+                Frame * current = make_frame(sim);
+                current->index = fr;
+                return current;
             }
             else {
-                std::clog << "Unable to load frame " << frame << ". Maybe frame does not exist." << std::endl;
+                std::clog << "Unable to load frame " << fr << ". Maybe frame does not exist." << std::endl;
             } 
                 
         }
@@ -197,8 +210,10 @@ Frame * prepare_frame( Simul * sim, FrameReader * reader, int frame)
         std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
     }
     
-    return current;
+    return new Frame;
     
 }
+
+
 
 #endif
