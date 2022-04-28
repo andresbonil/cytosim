@@ -31,7 +31,7 @@ Additionally, a points() function has been defined :
 ```  
 Yields a numpy array. 
 
-## To load existinig sim:
+## To load existing sim:
 Assuming that the cmo files and cytosim.-.so are in the current folder : 
 
 ```python
