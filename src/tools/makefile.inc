@@ -46,7 +46,7 @@ report: report.cc frame_reader.o $(TOOL_OBJ) | bin
 	$(DONE)
 vpath report bin
 
-report_python: report_python.cc frame_reader.o $(TOOL_OBJ) | bin
+report_python: report_python.cc frame_reader.o sim_thread.o $(TOOL_OBJ) | bin
 	$(COMPILE) $(PYTHONI) $(TOOL_INC) $(OBJECTS) $(LINK) -fPIC $(INCS) -o bin/cytosim$(SUFFIX)
 	$(DONE)
 vpath report_python bin

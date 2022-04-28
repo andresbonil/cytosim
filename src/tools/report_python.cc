@@ -2,6 +2,12 @@
 /**
  This is a program to analyse simulation results:
  it reads a trajectory-file, and provides a python interface to it.
+   
+   * @TODO :    - manage to return ObjectSet from simul, in order to not necessitate frame()
+                - bead and sphere
+                - live player + python ? o_O
+                - specialized classes, including dynamic spaces
+                - and so on and so forth
 */
 
 
@@ -15,7 +21,7 @@
     import cytosim
     sim = cytosim.open()
     sim.prop.timestep 
-    frame = cytosim.frame(0)
+    frame = cytosim.load(0)
     fibers = frame["microtubule"]
     fibers.prop.segmentation = 1.337    # <- Yes, yes, yes.
     fibers[0].points()
@@ -26,6 +32,17 @@
     while frame.loaded:
         print(frame.time)
         frame = frame.next()
+         
+
+    OR, IN LIVE MODE !
+
+    sim = cytosim.start('cym/aster.cym')
+    frame = sim.frame() 
+    fibers = frame['microtubule'] 
+    fibers[0].join(fibers[1])    # <- Yes, yes, yes. 
+    sim.step()
+    sim.solve() 
+        
      
     # etc...
 */
@@ -41,8 +58,12 @@ namespace py = pybind11;
 /// Using global vars, sorry not sorry.
 FrameReader reader;
 bool __is_loaded__ = 0;
+SimThread * thread;
 extern FrameReader reader;
 extern bool __is_loaded__;
+extern SimThread * thread;
+
+void gonna_callback(void) {};
 
 /// Open the simulation from the .cmo files
 Simul * open()
@@ -80,33 +101,66 @@ Simul * open()
     return sim;
 }
 
+Simul * start(std::string fname) {
+    int n = fname.length();
+    char inp[n] ;
+    std::strcpy(inp, fname.c_str());
+    Glossary arg;
+    arg.read_string(inp,2);
+    
+    if ( ! arg.use_key("+") )
+    {
+        Cytosim::out.open("messages.cmo");
+        Cytosim::log.redirect(Cytosim::out);
+        Cytosim::warn.redirect(Cytosim::out);
+    }
+    
+    Simul * simul = new Simul;
+    try {
+        simul->initialize(arg);
+    }
+    catch( Exception & e ) {
+        print_magenta(std::cerr, e.brief());
+        std::cerr << '\n' << e.info() << '\n';
+    }
+    catch(...) {
+        print_red(std::cerr, "Error: an unknown exception occurred during initialization\n");
+    }
+    
+    //arg.print_warning(std::cerr, 1, " on command line\n");
+    time_t sec = TicToc::seconds_since_1970();
+    
+    std::string file = simul->prop->config_file;
+    std::string setup = file;
+    
+    Parser(*simul, 0, 1, 0, 0, 0).readConfig();
+    //void foo(void) {};
+    //void (*foofoo)(void) = &bar;
+    //SimThread * thread = new SimThread(*simul, &bar);
+    thread = new SimThread(*simul, &gonna_callback);
+    //thread->period(1);
+    thread->start();
+    __is_loaded__ = 2;
+    return simul;
+}
 
-/**
- * @brief Prepares a frame from the simulation
- * @param sim
- * @param frame
- * @return 
- */
-
-
-/**
- * @brief  A module to get cytosim in python 
- * @return 
- * @TODO : a lot should be put in specific files
- */
+/// A python module to run or play cytosim
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "sim = cytosim.open() \n"
                 "sim.prop.timestep \n"
-                "frame = cytosim.frame(0) \n"
+                "frame = cytosim.load(0) \n"
                 "fibers = frame['microtubule'] \n"
-                "fibers.prop.segmentation = 1.337    # <- Yes, yes, yes. \n"
-                "fibers[0].points() \n"
-                "fibers[0].id() \n"
-                "core = frame['core'][0] \n"
-                "core.points() \n"
+                "print(len(fibers)) \n"
                 "while frame.loaded: \n"
                 "    print(frame.time) \n"
-                "    frame = frame.next()"; // optional module docstring
+                "    frame = frame.next()"
+                "# --- OR --- \n"
+                "sim = cytosim.start('cym/aster.cym') \n"
+                "frame = sim.frame() \n"
+                "fibers = frame['microtubule'] \n"
+                "fibers[0].join(fibers[1])    # <- Yes, yes, yes. \n"
+                "sim.step() \n"
+                "sim.solve() \n"; // optional module docstring
         
     /// Loading properties into the module
     load_object_classes(m);
@@ -148,11 +202,14 @@ PYBIND11_MODULE(cytosim, m) {
 
             
     /// Python interface to simul
-    pysim.def("frame", [](Simul * sim, size_t i) 
+    pysim.def("load", [](Simul * sim, size_t i) 
             {if (__is_loaded__) {return prepare_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
+    pysim.def("frame", [](Simul * sim) 
+            {if (__is_loaded__) {return make_frame(sim);} ; return new Frame; }); //py::return_value_policy::reference
             
     /// Opens the simulation from *.cmo files
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
+    m.def("start", &start, "loads simulation from config files", py::return_value_policy::reference);
     
 }
 
