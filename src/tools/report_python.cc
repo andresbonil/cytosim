@@ -85,7 +85,6 @@ Simul * open()
 }
 
 Simul * start(std::string fname) {
-    std::cout << fname << std::endl;
     int n = fname.length();
     char inp[n] ;
     std::strcpy(inp, fname.c_str());
@@ -100,10 +99,8 @@ Simul * start(std::string fname) {
     }
     
     Simul * simul = new Simul;
-    std::cout << "new simul" << std::endl;
     try {
         simul->initialize(arg);
-        std::cout << "initialized" << std::endl;
     }
     catch( Exception & e ) {
         print_magenta(std::cerr, e.brief());
@@ -113,19 +110,17 @@ Simul * start(std::string fname) {
         print_red(std::cerr, "Error: an unknown exception occurred during initialization\n");
     }
     
-    std::cout << "before parse" << std::endl;
     //arg.print_warning(std::cerr, 1, " on command line\n");
     time_t sec = TicToc::seconds_since_1970();
-    //Parser(*simul, 1, 1, 1, 1, 1).readConfig();
+    
     std::string file = simul->prop->config_file;
     std::string setup = file;
-    std::cout << "before parse" << std::endl;
+    
     Parser(*simul, 0, 1, 0, 0, 0).readConfig();
     //void foo(void) {};
-    void (*foofoo)(void) = &bar;
-    std::cout << "before thread" << std::endl;
-    SimThread * thread = new SimThread(*simul, foofoo);
-    std::cout << "made thread" << std::endl;
+    //void (*foofoo)(void) = &bar;
+    SimThread * thread = new SimThread(*simul, &bar);
+    
     //thread->period(1);
     thread->start();
     __is_loaded__ = 2;
