@@ -9,27 +9,38 @@ $ make -j4 report_python
 This should yield a file cytosim.(...).so in your bin folder. E.g. : "cytosim.cpython-37m-x86_64-linux-gnu.so"
 
 ## Principle
-Pytosim in an interface to native cytosim objects. However, there is currently still a sorting needed. Cytosim objects are better accessed through a Frame object. A frame is a dictionary of cytosim objects.
+Pytosim in an interface to native cytosim objects. 
+
+ ```python
+    import cytosim
+    sim = cytosim.start("cym.aster.cym")
+    for fiber in sim.fibers:
+        print(fiber.length())
+```
+Here sim.fibers is a (cytosim) FiberSet, i.e. the set of all fibers.
+
+For complex simulations, with different types of fibers, couples, etc.,  we also offer a Frame object, in which objects are sorted by name : a Frame is a (python) dictionary of lists of cytosim objects, that all have the same property.
 
 For example   
 
  ```python
     frame = sim.frame()
-    print(frame.keys())
-    fibers = frame["microtubule"]
+    mts = frame["microtubule"]
+    for fiber in mts:
+        print(fiber.length())
 ```
-Here fibers is a (python) list of (cytosim) Fiber objects. You can use native cytosim function for fibers, e.g.
+Here mts is a (python) list of (cytosim) Fiber objects. You can use native cytosim function for fibers, e.g.
 
 ```python
-    fibers[0].nbPoints() 
+    mt = mts[0]
+    mt.nbPoints() 
 ```
 Will yield the number of points.  
-Additionally, a points() function has been defined :  
+Additionally, a points() function has been defined, yielding a numpy array :  
  
 ```python
-     fibers[0].points()
+     mt.points()
 ```  
-Yields a numpy array. 
 
 To know the methods available from an object, type dir():
 

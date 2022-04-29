@@ -218,7 +218,10 @@ PYBIND11_MODULE(cytosim, m) {
         .def_readwrite("time", &Frame::time)
         .def_readwrite("index", &Frame::index)
         .def_readwrite("loaded", &Frame::loaded)
-        .def("next", [](Frame &f) {return prepare_frame(f.simul, &reader, f.index+1);}) //py::return_value_policy::reference
+        .def("next", [](Frame &f)
+			  {	if (loader(f.simul, &reader, f.index+1)==0) 
+					{return make_frame_index(f.simul,f.index+1 );}
+				return new Frame;}) //py::return_value_policy::reference
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())
@@ -236,7 +239,7 @@ PYBIND11_MODULE(cytosim, m) {
             {loader(sim, &reader, i);  }); //py::return_value_policy::reference
 	pysim.def("loadframe", [](Simul * sim, size_t i) 
             {	if (loader(sim, &reader, i)==0) 
-					{return make_frame(sim);}
+					{return make_frame_index(sim,i);}
 				return new Frame;}); //py::return_value_policy::reference
     pysim.def("frame", [](Simul * sim) 
             {if (__is_loaded__) {return make_frame(sim);} ; return new Frame; }); //py::return_value_policy::reference

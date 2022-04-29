@@ -151,8 +151,6 @@ auto declare_group(py::module &mod, Group group, std::string name) {
                  }, py::return_value_policy::reference);
 }
 
-
-
 /// Prepares a given frame by sorting objects into object groups
 Frame * make_frame( Simul * sim) 
 {   
@@ -182,6 +180,12 @@ Frame * make_frame( Simul * sim)
     
 }
 
+/// Prepares a given frame and attibutes an index
+Frame * make_frame_index( Simul * sim, int i)  {
+	Frame * current = make_frame(sim);
+	current->index = i;
+	return current;
+}
 
 
 #endif
