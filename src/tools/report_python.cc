@@ -57,10 +57,10 @@ namespace py = pybind11;
 
 /// Using global vars, sorry not sorry.
 FrameReader reader;
-bool __is_loaded__ = 0;
+int __is_loaded__ = 0;
 SimThread * thread;
 extern FrameReader reader;
-extern bool __is_loaded__;
+extern int __is_loaded__;
 extern SimThread * thread;
 
 void gonna_callback(void) {};
@@ -242,7 +242,7 @@ PYBIND11_MODULE(cytosim, m) {
 					{return make_frame_index(sim,i);}
 				return new Frame;}); //py::return_value_policy::reference
     pysim.def("frame", [](Simul * sim) 
-            {if (__is_loaded__) {return make_frame(sim);} ; return new Frame; }); //py::return_value_policy::reference
+            {return make_frame(sim);} ); //py::return_value_policy::reference
     //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
             
     /// Opens the simulation from *.cmo files
