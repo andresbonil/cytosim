@@ -10,7 +10,6 @@
 class SpaceProp;
 class Simul;
 class Space;
-class ObjectInfo;
 
 /**
  Enables capacity to simulate constant fluid flow that transports all objects

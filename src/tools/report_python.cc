@@ -144,6 +144,11 @@ Simul * start(std::string fname) {
     return simul;
 }
 
+/// Converts a string to a glossary
+Glossary & str_to_glos(std::string str) {
+    Glossary * glos = new Glossary(str);
+    return *glos;
+}
 
 /// Prepares a given frame by sorting objects into object groups
 int loader( Simul * sim, FrameReader * reader, int fr) 
@@ -248,6 +253,6 @@ PYBIND11_MODULE(cytosim, m) {
     /// Opens the simulation from *.cmo files
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
     m.def("start", &start, "loads simulation from config files", py::return_value_policy::reference);
-    
+    m.def("str_to_glos", &str_to_glos, "converts string to Glossary");
 }
 

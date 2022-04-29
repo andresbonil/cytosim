@@ -15,7 +15,6 @@ class Inputter;
 class Outputter;
 class ObjectSet;
 class Display;
-class ObjectInfo;
 
 
 /// Type for unique class identifier used to read/write objects from file

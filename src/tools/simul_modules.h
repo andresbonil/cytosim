@@ -1,6 +1,8 @@
 #include "fiber_prop.h"
 #include "simul_prop.h"
+#include "python_utilities.h"
 #include <pybind11/pybind11.h>
+
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
 namespace py = pybind11;
@@ -18,8 +20,23 @@ auto load_simul_classes(py::module_ &m) {
     /// Python interface to default property
     py::class_<Property>(m, "Prop")
         .def("name", &Property::name)
+        .def("change_str", [](Property * prop, std::string winds, Simul * sim) {
+            Glossary of_change = Glossary(winds);
+            prop->read(of_change);
+            prop->complete(*sim);
+        })
+        .def("read_str", [](Property * prop, std::string winds) {
+            Glossary of_change = Glossary(winds);
+            prop->read(of_change);
+        })
+        .def("change", [](Property * prop, Glossary & winds, Simul * sim) {
+            prop->read(winds);
+            prop->complete(*sim);
+        })
+        .def("read", [](Property * prop, Glossary & winds) {
+            prop->read(winds);
+        })
         .def("complete",  [](Property * prop, Simul * sim) {return prop->complete(*sim);});
-    
     
     py::class_<SpaceSet,ObjectSet>(m, "SpaceSet");
 	py::class_<FiberSet,ObjectSet>(m, "FiberSet");
@@ -30,6 +47,9 @@ auto load_simul_classes(py::module_ &m) {
 	py::class_<CoupleSet,ObjectSet>(m, "CoupleSet");
 	py::class_<SingleSet,ObjectSet>(m, "SingleSet");
 	py::class_<OrganizerSet,ObjectSet>(m, "OrganizerSet");
+    
+    py::class_<Glossary>(m, "Glossary")
+        .def("terms",  [](Glossary & glos) { Glossary::map_type terms = glos.terms() ; return map_to_dict(terms);});
 	
     
     auto pysim = py::class_<Simul>(m, "Simul")

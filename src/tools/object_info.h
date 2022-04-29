@@ -12,9 +12,8 @@
 
 
 
-typedef std::vector<int> int_vect;
-// contains adress, sizes, and strides
-typedef std::tuple<const real*, int_vect, int_vect> real_array;
+
+
 //typedef std::vector<ObjReport> obj_vec;
 typedef std::unordered_map<std::string,real> prop_reals;
 
