@@ -1,6 +1,7 @@
-# Pytosim 
+# Cythosim
+Cythosim is a C-Python build of cytosim.
 ## Compilation
-First install pybind and then compile "report_python". Pytosim requires python >= 3.7 and a compiler supporting C++17.
+First install pybind and then compile "report_python". Cythosim requires python >= 3.7 and a compiler supporting C++17.
 
 ```bash
 $ python3 -m pip install -U --user pybind11
@@ -9,7 +10,7 @@ $ make -j4 report_python
 This should yield a file cytosim.(...).so in your bin folder. E.g. : "cytosim.cpython-37m-x86_64-linux-gnu.so"
 
 ## Principle
-Pytosim in an interface to native cytosim objects. 
+Cythosim is an interface to native cytosim objects.
 
  ```python
     import cytosim
@@ -33,11 +34,11 @@ Here mts is a (python) list of (cytosim) Fiber objects. You can use native cytos
 
 ```python
     mt = mts[0]
-    mt.nbPoints() 
+    mt.nbPoints()
 ```
 Will yield the number of points.  
 Additionally, a points() function has been defined, yielding a numpy array :  
- 
+
 ```python
      mt.points()
 ```  
@@ -50,13 +51,22 @@ To know the methods available from an object, type dir():
     print(dir(frame["core"][0]))
 ```
 
+We can easily change property :
+```python
+    sim.prop.time_step = 0.1
+    sim.prop.complete(sim)
+    print(sim.prop.time_step)
+    mts.prop.change_str("rigidity = 0.1", sim)
+    print(mts.prop.rigidity)
+```
+
 ## To load existing sim:
-Assuming that the cmo files and cytosim.-.so are in the current folder : 
+Assuming that the cmo files and cytosim.-.so are in the current folder :
 
 ```python
     import cytosim
     sim = cytosim.open()
-    sim.prop.timestep 
+    sim.prop.timestep
     frame = cytosim.load(0)
     fibers = frame["microtubule"]
     fibers[0].points()
@@ -70,14 +80,14 @@ Assuming that the cmo files and cytosim.-.so are in the current folder :
 ## To run a simulation, from python
 ```python
     sim = cytosim.start('cym/aster.cym')
-    frame = sim.frame() 
-    fibers = frame['microtubule'] 
-    fibers[0].join(fibers[1])    # <- Yes, yes, yes. 
+    frame = sim.frame()
+    fibers = frame['microtubule']
+    fibers[0].join(fibers[1])    # <- Yes, yes, yes.
     sim.step()
-    sim.solve() 
+    sim.solve()
 ```
 
-# What changed 
+# What changed
 Basically no code change was performed in cytosim except :   
 - object.cc/h was changed to objecter.cc/h
     -> all files with "#include object.h" need to change to "#include objecter.h"  
@@ -86,5 +96,3 @@ Basically no code change was performed in cytosim except :
 - In "sim_thread.cc", line 440 was commented : "//glApp::flashText0(str);"  
 - makefile.inc and tools/makefile.inc were changed to allow compilation.  
 - Then a lot of files were added to /tools  
-
-
