@@ -1,6 +1,8 @@
 #include "fiber_prop.h"
 #include "simul_prop.h"
+#include "python_utilities.h"
 #include <pybind11/pybind11.h>
+
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
 namespace py = pybind11;
@@ -10,7 +12,7 @@ class Property;
 /**
  * @brief 
  * @TODO : manage to have objectSet ! Now missing operator = ?////
- * @param m
+
  */
 
 /// a utility to enrich the cytosim python module
@@ -18,23 +20,51 @@ auto load_simul_classes(py::module_ &m) {
     /// Python interface to default property
     py::class_<Property>(m, "Prop")
         .def("name", &Property::name)
+        .def("change_str", [](Property * prop, std::string winds, Simul * sim) {
+            Glossary of_change = Glossary(winds);
+            prop->read(of_change);
+            prop->complete(*sim);
+        })
+        .def("read_str", [](Property * prop, std::string winds) {
+            Glossary of_change = Glossary(winds);
+            prop->read(of_change);
+        })
+        .def("change", [](Property * prop, Glossary & winds, Simul * sim) {
+            prop->read(winds);
+            prop->complete(*sim);
+        })
+        .def("read", [](Property * prop, Glossary & winds) {
+            prop->read(winds);
+        })
         .def("complete",  [](Property * prop, Simul * sim) {return prop->complete(*sim);});
     
-    py::class_<ObjectSet>(m, "ObjectSet");
     py::class_<SpaceSet,ObjectSet>(m, "SpaceSet");
+	py::class_<FiberSet,ObjectSet>(m, "FiberSet");
+	py::class_<FieldSet,ObjectSet>(m, "FieldSet");
+	py::class_<SphereSet,ObjectSet>(m, "SphereSet");
+	py::class_<BeadSet,ObjectSet>(m, "BeadSet");
+	py::class_<SolidSet,ObjectSet>(m, "SolidSet");
+	py::class_<CoupleSet,ObjectSet>(m, "CoupleSet");
+	py::class_<SingleSet,ObjectSet>(m, "SingleSet");
+	py::class_<OrganizerSet,ObjectSet>(m, "OrganizerSet");
+    
+    py::class_<Glossary>(m, "Glossary")
+        .def("terms",  [](Glossary & glos) { Glossary::map_type terms = glos.terms() ; return map_to_dict(terms);});
+	
     
     auto pysim = py::class_<Simul>(m, "Simul")
         .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
         .def_readwrite("properties",   &Simul::properties , py::return_value_policy::reference)
-        //.def_readwrite("spaces",   &Simul::spaces)
-        //.def_readwrite("fields",   &Simul::fields , py::return_value_policy::reference)
-        //.def_readwrite("fibers",   &Simul::fibers , py::return_value_policy::reference)
-        //.def_readwrite("spheres",   &Simul::spheres , py::return_value_policy::reference)
-        //.def_readwrite("beads",   &Simul::beads , py::return_value_policy::reference)
-        //.def_readwrite("solids",   &Simul::solids , py::return_value_policy::reference)
-        //.def_readwrite("couples",   &Simul::couples , py::return_value_policy::reference)
-        //.def_readwrite("singles",   &Simul::singles , py::return_value_policy::reference)
-        //.def_readwrite("organizers",   &Simul::organizers , py::return_value_policy::reference)
+		//.def("spaces",  [](Simul * sim) {return &sim->spaces;})
+		.def_readonly("spaces",   &Simul::spaces , py::return_value_policy::reference)
+        .def_readonly("fields",   &Simul::fields , py::return_value_policy::reference)
+        .def_readonly("fibers",   &Simul::fibers , py::return_value_policy::reference)
+        .def_readonly("spheres",   &Simul::spheres , py::return_value_policy::reference)
+        .def_readonly("beads",   &Simul::beads , py::return_value_policy::reference)
+        .def_readonly("solids",   &Simul::solids , py::return_value_policy::reference)
+        .def_readonly("couples",   &Simul::couples , py::return_value_policy::reference)
+        .def_readonly("singles",   &Simul::singles , py::return_value_policy::reference)
+        .def_readonly("organizers",   &Simul::organizers , py::return_value_policy::reference)
         .def("remove",  [](Simul * sim, Object* obj) {return sim->remove(obj);})
         .def("erase",  [](Simul * sim, Object* obj) {return sim->erase(obj);})
         .def("nuke",  [](Simul * sim) {return sim->erase();})

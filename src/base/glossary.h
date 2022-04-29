@@ -222,7 +222,9 @@ public:
     explicit Glossary(const std::string&);
 
     //-------------------------------------------------------------------------------
-
+    /// all glossary terms
+    map_type      terms()  { return mTerms  ;} 
+    
     /// true if no key were set
     bool         empty()   const { return mTerms.empty(); }
 

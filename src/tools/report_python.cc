@@ -57,10 +57,10 @@ namespace py = pybind11;
 
 /// Using global vars, sorry not sorry.
 FrameReader reader;
-bool __is_loaded__ = 0;
+int __is_loaded__ = 0;
 SimThread * thread;
 extern FrameReader reader;
-extern bool __is_loaded__;
+extern int __is_loaded__;
 extern SimThread * thread;
 
 void gonna_callback(void) {};
@@ -144,6 +144,39 @@ Simul * start(std::string fname) {
     return simul;
 }
 
+/// Converts a string to a glossary
+Glossary & str_to_glos(std::string str) {
+    Glossary * glos = new Glossary(str);
+    return *glos;
+}
+
+/// Prepares a given frame by sorting objects into object groups
+int loader( Simul * sim, FrameReader * reader, int fr) 
+{   
+	int load = 1;
+
+    if (__is_loaded__ == 1) {
+        try 
+        {
+            load = reader->loadFrame(*sim, fr);
+            
+            if (load!=0) {
+                std::clog << "Unable to load frame " << fr << ". Maybe frame does not exist." << std::endl;
+            } 
+                
+        }
+        catch( Exception & e )
+        {
+            std::clog << "Aborted: " << e.what() << '\n';
+        }
+    }
+    else{
+        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
+    }
+    
+    return load;
+}
+
 /// A python module to run or play cytosim
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "sim = cytosim.open() \n"
@@ -190,7 +223,10 @@ PYBIND11_MODULE(cytosim, m) {
         .def_readwrite("time", &Frame::time)
         .def_readwrite("index", &Frame::index)
         .def_readwrite("loaded", &Frame::loaded)
-        .def("next", [](Frame &f) {return prepare_frame(f.simul, &reader, f.index+1);}) //py::return_value_policy::reference
+        .def("next", [](Frame &f)
+			  {	if (loader(f.simul, &reader, f.index+1)==0) 
+					{return make_frame_index(f.simul,f.index+1 );}
+				return new Frame;}) //py::return_value_policy::reference
         .def("__iter__", [](Frame &f) {
             return py::make_iterator(f.objects.begin(), f.objects.end());
         }, py::keep_alive<0, 1>())
@@ -202,14 +238,21 @@ PYBIND11_MODULE(cytosim, m) {
 
             
     /// Python interface to simul
-    pysim.def("load", [](Simul * sim, size_t i) 
-            {if (__is_loaded__) {return prepare_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
+    //pysim.def("load", [](Simul * sim, size_t i) 
+    //        {if (__is_loaded__) { load_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
+	pysim.def("load", [](Simul * sim, size_t i) 
+            {loader(sim, &reader, i);  }); //py::return_value_policy::reference
+	pysim.def("loadframe", [](Simul * sim, size_t i) 
+            {	if (loader(sim, &reader, i)==0) 
+					{return make_frame_index(sim,i);}
+				return new Frame;}); //py::return_value_policy::reference
     pysim.def("frame", [](Simul * sim) 
-            {if (__is_loaded__) {return make_frame(sim);} ; return new Frame; }); //py::return_value_policy::reference
+            {return make_frame(sim);} ); //py::return_value_policy::reference
+    //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
             
     /// Opens the simulation from *.cmo files
     m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
     m.def("start", &start, "loads simulation from config files", py::return_value_policy::reference);
-    
+    m.def("str_to_glos", &str_to_glos, "converts string to Glossary");
 }
 

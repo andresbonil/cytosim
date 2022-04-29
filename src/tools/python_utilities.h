@@ -2,9 +2,16 @@
 #define UTILITIES_H
 //#include "fiber.h"
 #include <pybind11/pybind11.h>
+#include "glossary.h"
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
-#include "object_info.h"
+//#include "object_info.h"
+class Glossary;
+
+/// A vector of ints
+typedef std::vector<int> int_vect;
+/// contains adress, sizes, and strides
+typedef std::tuple<const real*, int_vect, int_vect> real_array;
 
 namespace py = pybind11;
 typedef py::array_t<real> pyarray;
@@ -61,7 +68,25 @@ Vector to_vector(pyarray arr) {
     return Vector(0.0,0.0,0.0);
 }
 
+// converts a Glossary pair to a python dict
+py::dict & pair_to_dict(Glossary::pair_type const & pair) {
+    py::dict * dico = new py::dict;
+    (*dico)[ py::str(std::get<0>(pair)) ]  = py::cast(std::get<1>(pair)) ;
+    return *dico;
+}
+
+// converts a Glossary map to a python dict
+py::dict & map_to_dict(Glossary::map_type const & mappe) {
+    py::dict * dico = new py::dict;
+    for (const auto &[name, rec] : mappe) {
+            (*dico)[py::str(name)] = py::cast(rec);
+        }
+    return *dico;
+}
+
+
 /// Converts an ObjectInfo * to a python dict
+/*
 py::dict & to_dict(ObjectInfo * info) {
     py::dict * dico = new py::dict;
     dico->attr("update")(py::cast(info->reals));
@@ -71,6 +96,6 @@ py::dict & to_dict(ObjectInfo * info) {
     
     return *dico;
 }
-
+*/
 
 #endif
