@@ -30,10 +30,9 @@ void load_object_classes(py::module_ &m) {
 					 throw py::index_error();
 				}
 				Object * obj = set->first();
-				
 				while (i) {
-					--i;
-					obj = obj->next();
+					--i; // I know this is slow, but ...
+					obj = obj->next(); // Maybe objectSet should derive from std::vect ?
 				}
 				return obj;
              }, py::return_value_policy::reference);	
