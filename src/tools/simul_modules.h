@@ -20,20 +20,31 @@ auto load_simul_classes(py::module_ &m) {
         .def("name", &Property::name)
         .def("complete",  [](Property * prop, Simul * sim) {return prop->complete(*sim);});
     
-    py::class_<ObjectSet>(m, "ObjectSet");
+    
     py::class_<SpaceSet,ObjectSet>(m, "SpaceSet");
+	py::class_<FiberSet,ObjectSet>(m, "FiberSet");
+	py::class_<FieldSet,ObjectSet>(m, "FieldSet");
+	py::class_<SphereSet,ObjectSet>(m, "SphereSet");
+	py::class_<BeadSet,ObjectSet>(m, "BeadSet");
+	py::class_<SolidSet,ObjectSet>(m, "SolidSet");
+	py::class_<CoupleSet,ObjectSet>(m, "CoupleSet");
+	py::class_<SingleSet,ObjectSet>(m, "SingleSet");
+	py::class_<OrganizerSet,ObjectSet>(m, "OrganizerSet");
+	
     
     auto pysim = py::class_<Simul>(m, "Simul")
         .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
         .def_readwrite("properties",   &Simul::properties , py::return_value_policy::reference)
-        //.def_readwrite("fields",   &Simul::fields , py::return_value_policy::reference)
-        //.def_readwrite("fibers",   &Simul::fibers , py::return_value_policy::reference)
-        //.def_readwrite("spheres",   &Simul::spheres , py::return_value_policy::reference)
-        //.def_readwrite("beads",   &Simul::beads , py::return_value_policy::reference)
-        //.def_readwrite("solids",   &Simul::solids , py::return_value_policy::reference)
-        //.def_readwrite("couples",   &Simul::couples , py::return_value_policy::reference)
-        //.def_readwrite("singles",   &Simul::singles , py::return_value_policy::reference)
-        //.def_readwrite("organizers",   &Simul::organizers , py::return_value_policy::reference)
+		//.def("spaces",  [](Simul * sim) {return &sim->spaces;})
+		.def_readonly("spaces",   &Simul::spaces , py::return_value_policy::reference)
+        .def_readonly("fields",   &Simul::fields , py::return_value_policy::reference)
+        .def_readonly("fibers",   &Simul::fibers , py::return_value_policy::reference)
+        .def_readonly("spheres",   &Simul::spheres , py::return_value_policy::reference)
+        .def_readonly("beads",   &Simul::beads , py::return_value_policy::reference)
+        .def_readonly("solids",   &Simul::solids , py::return_value_policy::reference)
+        .def_readonly("couples",   &Simul::couples , py::return_value_policy::reference)
+        .def_readonly("singles",   &Simul::singles , py::return_value_policy::reference)
+        .def_readonly("organizers",   &Simul::organizers , py::return_value_policy::reference)
         .def("remove",  [](Simul * sim, Object* obj) {return sim->remove(obj);})
         .def("erase",  [](Simul * sim, Object* obj) {return sim->erase(obj);})
         .def("nuke",  [](Simul * sim) {return sim->erase();})
