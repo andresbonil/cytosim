@@ -182,38 +182,6 @@ Frame * make_frame( Simul * sim)
     
 }
 
-/// Prepares a given frame by sorting objects into object groups
-Frame * prepare_frame( Simul * sim, FrameReader * reader, int fr) 
-{   
-
-    if (1) {
-        try 
-        {
-            int load = reader->loadFrame(*sim, fr);
-            
-            if (load==0) {
-                Frame * current = make_frame(sim);
-                current->index = fr;
-                return current;
-            }
-            else {
-                std::clog << "Unable to load frame " << fr << ". Maybe frame does not exist." << std::endl;
-            } 
-                
-        }
-        catch( Exception & e )
-        {
-            std::clog << "Aborted: " << e.what() << '\n';
-        }
-    }
-    else{
-        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
-    }
-    
-    return new Frame;
-    
-}
-
 
 
 #endif

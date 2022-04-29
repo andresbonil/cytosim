@@ -144,6 +144,34 @@ Simul * start(std::string fname) {
     return simul;
 }
 
+
+/// Prepares a given frame by sorting objects into object groups
+int loader( Simul * sim, FrameReader * reader, int fr) 
+{   
+	int load = 1;
+
+    if (__is_loaded__ = 1) {
+        try 
+        {
+            load = reader->loadFrame(*sim, fr);
+            
+            if (load!=0) {
+                std::clog << "Unable to load frame " << fr << ". Maybe frame does not exist." << std::endl;
+            } 
+                
+        }
+        catch( Exception & e )
+        {
+            std::clog << "Aborted: " << e.what() << '\n';
+        }
+    }
+    else{
+        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
+    }
+    
+    return load;
+}
+
 /// A python module to run or play cytosim
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "sim = cytosim.open() \n"
@@ -202,8 +230,14 @@ PYBIND11_MODULE(cytosim, m) {
 
             
     /// Python interface to simul
-    pysim.def("load", [](Simul * sim, size_t i) 
-            {if (__is_loaded__) {return prepare_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
+    //pysim.def("load", [](Simul * sim, size_t i) 
+    //        {if (__is_loaded__) { load_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
+	pysim.def("load", [](Simul * sim, size_t i) 
+            {loader(sim, &reader, i);  }); //py::return_value_policy::reference
+	pysim.def("loadframe", [](Simul * sim, size_t i) 
+            {	if (loader(sim, &reader, i)==0) 
+					{return make_frame(sim);}
+				return new Frame;}); //py::return_value_policy::reference
     pysim.def("frame", [](Simul * sim) 
             {if (__is_loaded__) {return make_frame(sim);} ; return new Frame; }); //py::return_value_policy::reference
     //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
