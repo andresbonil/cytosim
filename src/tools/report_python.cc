@@ -150,7 +150,7 @@ int loader( Simul * sim, FrameReader * reader, int fr)
 {   
 	int load = 1;
 
-    if (__is_loaded__ = 1) {
+    if (__is_loaded__ == 1) {
         try 
         {
             load = reader->loadFrame(*sim, fr);
