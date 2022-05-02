@@ -4,7 +4,7 @@
 
 #include "dim.h"
 #include "array.h"
-#include "objecter.h"
+#include "object.h"
 #include "mecable.h"
 #include "matrix33.h"
 #include "solid_prop.h"

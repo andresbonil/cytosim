@@ -3,7 +3,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include "objecter.h"
+#include "object.h"
 
 class Meca;
 class Simul;

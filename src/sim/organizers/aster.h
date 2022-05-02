@@ -3,7 +3,7 @@
 #ifndef ASTER_H
 #define ASTER_H
 
-#include "objecter.h"
+#include "object.h"
 #include "organizer.h"
 #include "aster_prop.h"
 #include "solid.h"

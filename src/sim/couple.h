@@ -3,7 +3,7 @@
 #ifndef COUPLE_H
 #define COUPLE_H
 
-#include "objecter.h"
+#include "object.h"
 #include "hand_monitor.h"
 #include "couple_prop.h"
 #include "hand.h"
