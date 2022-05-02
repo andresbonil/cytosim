@@ -47,9 +47,6 @@ auto load_simul_classes(py::module_ &m) {
 	py::class_<CoupleSet,ObjectSet>(m, "CoupleSet");
 	py::class_<SingleSet,ObjectSet>(m, "SingleSet");
 	py::class_<OrganizerSet,ObjectSet>(m, "OrganizerSet");
-    
-    py::class_<Glossary>(m, "Glossary")
-        .def("terms",  [](Glossary & glos) { Glossary::map_type terms = glos.terms() ; return map_to_dict(terms);});
 	
     
     auto pysim = py::class_<Simul>(m, "Simul")

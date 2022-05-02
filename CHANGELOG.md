@@ -56,6 +56,7 @@ We can easily change property :
     sim.prop.time_step = 0.1
     sim.prop.complete(sim)
     print(sim.prop.time_step)
+    # alternatively
     mts.prop.change_str("rigidity = 0.1", sim)
     print(mts.prop.rigidity)
 ```
@@ -80,11 +81,11 @@ Assuming that the cmo files and cytosim.-.so are in the current folder :
 ## To run a simulation, from python
 ```python
     sim = cytosim.start('cym/aster.cym')
-    frame = sim.frame()
-    fibers = frame['microtubule']
-    fibers[0].join(fibers[1])    # <- Yes, yes, yes.
-    sim.step()
-    sim.solve()
+    while (sim.time()<0.1):
+      sim.step()
+      sim.solve()
+    # We can move stuff around
+    sim.fibers[0].join(sim.fibers[1])  
 ```
 
 # What changed
@@ -93,6 +94,5 @@ Basically no code change was performed in cytosim except :
      -> all files with "#include node.h" need to change to "#include noder.h"  
 - In "sim_thread.cc", line 440 was commented : "//glApp::flashText0(str);"  
 - makefile.inc and tools/makefile.inc were changed to allow compilation.  
-- Then a lot of files were added to /tools 
+- Then a lot of files were added to /tools
 - Glossary can now export mTerms
-

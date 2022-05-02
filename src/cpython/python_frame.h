@@ -16,15 +16,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
-#include "simul_modules.h"
-#include "fiber_modules.h"
-#include "solid_modules.h"
-#include "space_modules.h"
-#include "single_modules.h"
-#include "couple_modules.h"
-#include "organizer_modules.h"
-#include "object_modules.h"
-#include "hand_modules.h"
 #include "python_utilities.h"
 namespace py = pybind11;
 
