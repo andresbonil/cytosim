@@ -7,7 +7,7 @@
 #include "movable.h"
 #include "random.h"
 #include "array.h"
-#include "noder.h"
+#include "node.h"
 
 class Simul;
 class Property;

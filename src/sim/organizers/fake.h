@@ -3,7 +3,7 @@
 #ifndef FAKE_H
 #define FAKE_H
 
-#include "objecter.h"
+#include "object.h"
 #include "organizer.h"
 #include "fake_prop.h"
 #include "mecapoint.h"

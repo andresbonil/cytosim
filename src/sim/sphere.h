@@ -5,7 +5,7 @@
 
 #include "dim.h"
 #include "array.h"
-#include "objecter.h"
+#include "object.h"
 #include "mecable.h"
 #include "sphere_prop.h"
 

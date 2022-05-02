@@ -6,9 +6,9 @@
 
 #include "sim.h"
 #include "real.h"
-#include "noder.h"
+#include "node.h"
 #include "vector.h"
-#include "objecter.h"
+#include "object.h"
 #include "common.h"
 #include "modulo.h"
 #include "space_prop.h"
