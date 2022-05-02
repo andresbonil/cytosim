@@ -179,6 +179,7 @@ dep:
 	$(foreach file, $(wildcard src/play/*.cc),  $(MAKEDEP) $(file) >> dep/part5.dep; )
 	$(foreach file, $(wildcard src/tools/*.cc), $(MAKEDEP) $(file) >> dep/part6.dep; )
 	$(foreach file, $(wildcard src/test/*.cc),  $(MAKEDEP) $(file) >> dep/part7.dep; )
+	$(foreach file, $(wildcard src/cythosim/*.cc),  $(MAKEDEP) $(file) >> dep/part8.dep; )
 
 
 -include dep/part?.dep

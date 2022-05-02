@@ -1,7 +1,7 @@
 # Cytosim was created by Francois Nedelec. Copyright 2007-2017 EMBL.
 
 
-TOOLS:=frametool sieve reader report reportF report_python
+TOOLS:=frametool sieve reader report reportF cythosim
 
 .PHONY: tools
 tools: $(TOOLS)
@@ -12,11 +12,9 @@ vpath %.cc src/tools
 
 TOOL_OBJ := cytosim.a cytomath.a matsparsesymblk.o cytobase.a SFMT.o
 
-TOOL_INC  = $(addprefix -Isrc/, math base sim sim/spaces sim/fibers sim/singles sim/organizers disp play)
+TOOL_INC  = $(addprefix -Isrc/, math base sim sim/spaces sim/fibers sim/singles sim/organizers disp play cpython)
 
 TOOL_MAKE = $(COMPILE) $(TOOL_INC) $(OBJECTS) $(LINK) -o bin/$@
-
-#PYTHONI = -fPIC -shared  -I/home/dmitrief/conda3/include/python3.7m -I/home/dmitrief/.local/lib/python3.7/site-packages/pybind11/include
 
 TEST := $(shell python3 -m pybind11 --includes)
 PYTHONI := -fPIC -shared $(TEST) -Wl,-undefined,dynamic_lookup
@@ -46,10 +44,10 @@ report: report.cc frame_reader.o $(TOOL_OBJ) | bin
 	$(DONE)
 vpath report bin
 
-report_python: report_python.cc frame_reader.o sim_thread.o $(TOOL_OBJ) | bin
+cythosim: cythosim.cc frame_reader.o sim_thread.o $(TOOL_OBJ) | bin
 	$(COMPILE) $(PYTHONI) $(TOOL_INC) $(OBJECTS) $(LINK) -fPIC $(INCS) -o bin/cytosim$(SUFFIX)
 	$(DONE)
-vpath report_python bin
+vpath cythosim bin
 
 
 bin1/report: report.cc frame_reader.o cytosimD1.a cytomathD1.a cytobase.a SFMT.o | bin1

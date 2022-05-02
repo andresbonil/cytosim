@@ -7,7 +7,7 @@
 #include "real.h"
 #include "grid.h"
 #include "space.h"
-#include "objecter.h"
+#include "object.h"
 #include "iowrapper.h"
 #include "messages.h"
 #include "exceptions.h"
