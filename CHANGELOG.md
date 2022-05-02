@@ -1,11 +1,11 @@
 # Cythosim
 Cythosim is a C-Python build of cytosim.
 ## Compilation
-First install pybind and then compile "report_python". Cythosim requires python >= 3.7 and a compiler supporting C++17.
+First install pybind and then compile "cythosim". Cythosim requires python >= 3.7 and a compiler supporting C++17.
 
 ```bash
 $ python3 -m pip install -U --user pybind11
-$ make -j4 report_python
+$ make -j4 cythosim
 ```
 This should yield a file cytosim.(...).so in your bin folder. E.g. : "cytosim.cpython-37m-x86_64-linux-gnu.so"
 
@@ -89,10 +89,10 @@ Assuming that the cmo files and cytosim.-.so are in the current folder :
 
 # What changed
 Basically no code change was performed in cytosim except :   
-- object.cc/h was changed to objecter.cc/h
-    -> all files with "#include object.h" need to change to "#include objecter.h"  
 - node.cc/h was changed to noder.cc/h  
      -> all files with "#include node.h" need to change to "#include noder.h"  
 - In "sim_thread.cc", line 440 was commented : "//glApp::flashText0(str);"  
 - makefile.inc and tools/makefile.inc were changed to allow compilation.  
-- Then a lot of files were added to /tools  
+- Then a lot of files were added to /tools 
+- Glossary can now export mTerms
+
