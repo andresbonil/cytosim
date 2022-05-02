@@ -13,6 +13,16 @@
 #include <csignal>
 #include "unistd.h"
 #include "python_frame.h"
+#include "simul_modules.h"
+#include "fiber_modules.h"
+#include "solid_modules.h"
+#include "space_modules.h"
+#include "single_modules.h"
+#include "couple_modules.h"
+#include "organizer_modules.h"
+#include "object_modules.h"
+#include "hand_modules.h"
+#include "glossary_modules.h"
 #include <functional>
 namespace py = pybind11;
 

@@ -198,6 +198,7 @@ PYBIND11_MODULE(cytosim, m) {
     /// Loading properties into the module
     load_object_classes(m);
     auto pysim = load_simul_classes(m);
+    load_glossary_classes(m);
     load_fiber_classes(m);
     load_hand_classes(m);
     load_solid_classes(m);
