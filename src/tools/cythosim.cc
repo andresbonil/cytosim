@@ -150,12 +150,10 @@ Simul * start(std::string fname) {
 int loader( Simul * sim, FrameReader * reader, int fr) 
 {   
 	int load = 1;
-
     if (__is_loaded__ == 1) {
         try 
         {
             load = reader->loadFrame(*sim, fr);
-            
             if (load!=0) {
                 std::clog << "Unable to load frame " << fr << ". Maybe frame does not exist." << std::endl;
             } 
@@ -173,6 +171,29 @@ int loader( Simul * sim, FrameReader * reader, int fr)
     return load;
 }
 
+int loadNext( Simul * sim, FrameReader * reader) 
+{   
+	int load = 1;
+    if (__is_loaded__ == 1) {
+        try 
+        {
+            load = reader->loadNextFrame(*sim);
+            if (load!=0) {
+                std::clog << "Unable to load next frame. Maybe frame does not exist." << std::endl;
+            } 
+                
+        }
+        catch( Exception & e )
+        {
+            std::clog << "Aborted: " << e.what() << '\n';
+        }
+    }
+    else{
+        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
+    }
+    
+    return load;
+}
 /// A python module to run or play cytosim
 PYBIND11_MODULE(cytosim, m) {
     m.doc() = "sim = cytosim.open() \n"
@@ -220,6 +241,7 @@ PYBIND11_MODULE(cytosim, m) {
         .def_readwrite("time", &Frame::time)
         .def_readwrite("index", &Frame::index)
         .def_readwrite("loaded", &Frame::loaded)
+        .def("update", [](Frame &f) {  return make_frame(f.simul) ; })
         .def("next", [](Frame &f)
 			  {	if (loader(f.simul, &reader, f.index+1)==0) 
 					{return make_frame_index(f.simul,f.index+1 );}
@@ -238,7 +260,9 @@ PYBIND11_MODULE(cytosim, m) {
     //pysim.def("load", [](Simul * sim, size_t i) 
     //        {if (__is_loaded__) { load_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
 	pysim.def("load", [](Simul * sim, size_t i) 
-            {loader(sim, &reader, i);  }); //py::return_value_policy::reference
+            {return !loader(sim, &reader, i);  }); //py::return_value_policy::reference
+    pysim.def("next", [](Simul * sim) 
+            {return !loadNext(sim, &reader);  }); //py::return_value_policy::reference
 	pysim.def("loadframe", [](Simul * sim, size_t i) 
             {	if (loader(sim, &reader, i)==0) 
 					{return make_frame_index(sim,i);}
