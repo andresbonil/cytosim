@@ -68,6 +68,13 @@ auto load_simul_classes(py::module_ &m) {
         .def("time",  [](Simul * sim) {return sim->time();})
         .def("time_step",  [](Simul * sim) {return sim->time_step();})
         .def("step",  [](Simul * sim) {return sim->step();})
+        .def("run",  [](Simul * sim, int n) {
+            for (int i=0;i<n;++i) {
+                sim->step();
+                sim->solve();
+            }
+        })
+        .def("once",  [](Simul * sim) { sim->step(); sim->solve() ;})
         .def("solve",  [](Simul * sim) {return sim->solve();})
         .def("solve_auto",  [](Simul * sim) {return sim->solve_auto();})
         //.def("dump",  [](Simul * sim, std::string s) {return sim->dump( &s[0]);})
@@ -78,8 +85,10 @@ auto load_simul_classes(py::module_ &m) {
         .def("findSpace",  [](Simul * sim, std::string s) {return sim->findSpace(s);} , py::return_value_policy::reference)
         .def("rename",  [](Simul * sim, std::string s) {return sim->rename(s);} , py::return_value_policy::reference)
         .def("isCategory",  [](Simul * sim, std::string s) {return sim->isCategory(s);} , py::return_value_policy::reference)
-        .def("findProperty",  [](Simul * sim, std::string s) {return sim->findProperty(s);} , py::return_value_policy::reference);
-        
+        .def("findProperty",  [](Simul * sim, std::string s) {return sim->findProperty(s);} , py::return_value_policy::reference)
+        .def("writePropertiesTo",  [](Simul * sim, std::string s) {return sim->writeProperties(&s[0],1);} )
+        .def("writeProperties",  [](Simul * sim) {return sim->writeProperties(&sim->prop->property_file[0],1);} )
+        .def("writePropertiesToNoPrune",  [](Simul * sim, std::string  s) {return sim->writeProperties(&s[0],0);} );
         
         
     
@@ -91,17 +100,24 @@ auto load_simul_classes(py::module_ &m) {
         .def_readwrite("kT", &SimulProp::kT)
         .def_readwrite("tolerance", &SimulProp::tolerance)
         .def_readwrite("acceptable_prop", &SimulProp::acceptable_prob)
+        .def_readwrite("precondition", &SimulProp::precondition)
         .def_readwrite("steric", &SimulProp::steric)
         //.def_readwrite("steric_stiffness_push", &SimulProp::steric_stiffness_push) <- issue with real[]
         //.def_readwrite("steric_stiffness_pull", &SimulProp::steric_stiffness_pull)
         .def_readwrite("steric_max_range", &SimulProp::steric_max_range)
+        .def_readwrite("binding_grid_step", &SimulProp::binding_grid_step)
         .def_readwrite("verbose", &SimulProp::verbose)
         .def_readwrite("config_file", &SimulProp::config_file)
+        .def_readwrite("property_file", &SimulProp::property_file)
         .def_readwrite("trajectory_file", &SimulProp::trajectory_file)
         .def_readwrite("clear_trajectory", &SimulProp::clear_trajectory)
         .def_readwrite("skip_free_couple", &SimulProp::skip_free_couple)
         .def_readwrite("display_fresh", &SimulProp::display_fresh)
-        .def_readwrite("display", &SimulProp::display);
+        .def_readwrite("display", &SimulProp::display)
+        .def("read",  [](SimulProp * prop, Glossary & glos) {return prop->read(glos);})
+        .def("read_str",  [](SimulProp * prop, std::string const& str) {return prop->read(str_to_glos(str));})
+        .def("clone",  [](SimulProp * prop) {return prop->clone();});
+        
 
     return pysim;
 }

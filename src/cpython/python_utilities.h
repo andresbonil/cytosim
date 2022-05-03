@@ -85,6 +85,12 @@ py::dict & map_to_dict(Glossary::map_type const & mappe) {
 }
 
 
+/// Converts a string to a glossary
+Glossary & str_to_glos(std::string str) {
+    Glossary * glos = new Glossary(str);
+    return *glos;
+}
+
 /// Converts an ObjectInfo * to a python dict
 /*
 py::dict & to_dict(ObjectInfo * info) {

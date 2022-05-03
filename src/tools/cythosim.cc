@@ -59,9 +59,11 @@ namespace py = pybind11;
 FrameReader reader;
 int __is_loaded__ = 0;
 SimThread * thread;
+bool __saved__ = 0;
 extern FrameReader reader;
 extern int __is_loaded__;
 extern SimThread * thread;
+extern bool __saved__;
 
 void gonna_callback(void) {};
 
@@ -142,12 +144,6 @@ Simul * start(std::string fname) {
     thread->start();
     __is_loaded__ = 2;
     return simul;
-}
-
-/// Converts a string to a glossary
-Glossary & str_to_glos(std::string str) {
-    Glossary * glos = new Glossary(str);
-    return *glos;
 }
 
 /// Prepares a given frame by sorting objects into object groups
@@ -249,6 +245,18 @@ PYBIND11_MODULE(cytosim, m) {
 				return new Frame;}); //py::return_value_policy::reference
     pysim.def("frame", [](Simul * sim) 
             {return make_frame(sim);} ); //py::return_value_policy::reference
+    pysim.def("writeObjects",  [](Simul * sim) {
+        sim->writeObjects(sim->prop->trajectory_file,__saved__,1);
+        if (!__saved__) {__saved__ = 1;}  ;} );
+    pysim.def("writeObjects",  [](Simul * sim, std::string & str) {
+        sim->writeObjects(str,__saved__,1);
+        if (!__saved__) {__saved__ = 1;}  ;} );
+    pysim.def("save", [](Simul * sim) {
+            sim->writeObjects(sim->prop->trajectory_file,__saved__,1);
+            if (!__saved__) {__saved__ = 1;};
+            sim->writeProperties(&sim->prop->property_file[0],1);
+        });
+        
     //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
             
     /// Opens the simulation from *.cmo files
