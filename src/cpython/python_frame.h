@@ -130,12 +130,15 @@ template<typename Group>
 auto declare_group(py::module &mod, Group group, std::string name) {
         return py::class_<Group>(mod, name.c_str())
             .def("__len__", [](const Group &v) { return v.size(); })
+            .def("size", &Group::size)
             .def_readwrite("prop",   &Group::prop , py::return_value_policy::reference)
             .def("__iter__", [](Group &v) {
                 return py::make_iterator(v.begin(), v.end());
             }, py::keep_alive<0, 1>())
             .def("__getitem__",[](const Group &v, size_t i) {
-                     if (i >= v.size()) {
+                int s = v.size();
+                if (i<0) {i+=s;} // Python time negative indexing
+				if (i >= s or i<0) {
                          throw py::index_error();
                      }
                      return v[i];

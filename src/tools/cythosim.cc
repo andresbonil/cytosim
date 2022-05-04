@@ -60,10 +60,13 @@ FrameReader reader;
 int __is_loaded__ = 0;
 SimThread * thread;
 bool __saved__ = 0;
+Parser * parser;
+
 extern FrameReader reader;
 extern int __is_loaded__;
 extern SimThread * thread;
 extern bool __saved__;
+extern Parser * parser;
 
 void gonna_callback(void) {};
 
@@ -135,7 +138,8 @@ Simul * start(std::string fname) {
     std::string file = simul->prop->config_file;
     std::string setup = file;
     
-    Parser(*simul, 0, 1, 0, 0, 0).readConfig();
+    parser = new Parser(*simul, 0, 1, 0, 0, 0);
+    parser->readConfig();
     //void foo(void) {};
     //void (*foofoo)(void) = &bar;
     //SimThread * thread = new SimThread(*simul, &bar);
@@ -280,7 +284,57 @@ PYBIND11_MODULE(cytosim, m) {
             if (!__saved__) {__saved__ = 1;};
             sim->writeProperties(&sim->prop->property_file[0],1);
         });
-        
+    pysim.def("add",  [](Simul * sim, py::args args) {
+            std::string name = "";
+            std::string how = "";
+            int many = 1;
+            int nargs = args.size();
+            if (nargs>0) {
+                name = py::cast<std::string>(args[0]);
+            }
+            if (nargs>1) {
+                how = py::cast<std::string>(args[1]);
+            }
+            if (nargs>2) {
+                many = py::cast<int>(args[2]);
+            }
+            Glossary glos = Glossary(how);
+            ObjectList objects;
+            for (int i=0;i<many;++i) {
+                auto objs = parser->execute_new(name, glos);
+                objects.push_back(objs[0]);
+            }
+            return objects;
+            }, py::return_value_policy::reference);
+    pysim.def("cut",  [](Simul * sim, std::string & name, std::string & where) {
+            Glossary glos = Glossary(where);
+            parser->execute_cut(name, glos);
+            });
+    pysim.def("delete",  [](Simul * sim, std::string & name, std::string & how, int number) {
+            Glossary glos = Glossary(how);
+            parser->execute_delete(name, glos, number);
+            });
+    pysim.def("import",  [](Simul * sim, std::string & file, std::string & what, std::string & how) {
+            Glossary glos = Glossary(how);
+            parser->execute_import(file, what, glos);
+            });
+    pysim.def("export",  [](Simul * sim, std::string & file, std::string & what, std::string & how) {
+            Glossary glos = Glossary(how);
+            parser->execute_export(file, what, glos);
+            });
+     pysim.def("run",  [](Simul * sim, py::args args) {
+            std::string how = "";
+            int many = 1;
+            int nargs = args.size();
+            if (nargs>0) {
+                many = py::cast<int>(args[0]);
+            }
+            if (nargs>1) {
+                how = py::cast<std::string>(args[1]);
+            }
+            Glossary glos = Glossary(how);
+            parser->execute_run(many, glos,0);
+            });
     //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
             
     /// Opens the simulation from *.cmo files
