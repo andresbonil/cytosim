@@ -103,12 +103,12 @@ auto load_simul_classes(py::module_ &m) {
         .def("time",  [](Simul * sim) {return sim->time();})
         .def("time_step",  [](Simul * sim) {return sim->time_step();})
         .def("step",  [](Simul * sim) {return sim->step();})
-        .def("run",  [](Simul * sim, int n) {
-            for (int i=0;i<n;++i) {
-                sim->step();
-                sim->solve();
-            }
-        })
+        //.def("run",  [](Simul * sim, int n) {
+        //    for (int i=0;i<n;++i) {
+        //        sim->step();
+        //        sim->solve();
+        //    }
+        //})
         .def("change",  [](Simul & sim, std::string who, std::string what) {
             Glossary glos = Glossary(what);
             simul_change(sim, who, glos);

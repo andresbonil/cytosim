@@ -36,8 +36,10 @@ void load_object_classes(py::module_ &m) {
 					obj = obj->next(); // Maybe objectSet should derive from std::vect ?
 				}
 				return obj;
-             }, py::return_value_policy::reference)
+             }, py::return_value_policy::reference);
+        /*
         .def("addObject",  [](ObjectSet * set, py::args args) {
+            std::clog << "Warning : better use simul.add(...)" << std::endl;
             std::string name = "";
             std::string how = "";
             int many = 1;
@@ -61,7 +63,7 @@ void load_object_classes(py::module_ &m) {
             }
             return objects;
             }, py::return_value_policy::reference);
-        
+     */   
      /// Python interface to Organizer
     py::class_<Object>(m, "Object")
         .def("reference",  [](Object * obj) {return obj->reference() ;})
@@ -73,7 +75,7 @@ void load_object_classes(py::module_ &m) {
         .def("id",  [](const Object * obj) {return obj->identity();})
         .def("points", [](const Object * obj) {return pyarray();});
     
-    
+    /// Python interface to ObjectList
     py::class_<ObjectList>(m, "ObjectList")
         .def("__getitem__",[](ObjectList & lis, int i) {
 				int s = lis.size();
@@ -84,7 +86,7 @@ void load_object_classes(py::module_ &m) {
 				Object * obj = lis[i];
 				return obj;
              }, py::return_value_policy::reference)
-        .def("__len__", [](const ObjectList &v) { return v.size(); })
+        .def("__len__", [](const ObjectList &v) { return v.size(); });
         /*.def("__getitem__",[](ObjectList & lis, int i) {
 				int s = lis.size();
 				if (i >= s) {
