@@ -6,8 +6,35 @@
 //#include <pybind11/numpy.h>
 //#include <pybind11/stl.h>
 namespace py = pybind11;
-
 class Property;
+
+// Copied from Interface::execute_change
+void simul_change(Simul & sim, std::string & who, Glossary & glos) {
+    Property * pp = sim.findProperty(who);
+    if (pp) {
+        pp->read(glos);
+        pp->complete(sim);
+        /*
+         Specific code to make 'change space:dimension' work.
+         This is needed as dimensions are specified in Space hold, and not SpaceProp
+         */
+        if ( pp->category() == "space" )
+        {
+            // update any Space with this property:
+            for ( Space * s = sim.spaces.first(); s; s=s->next() )
+            {
+                if ( s->prop == pp )
+                {
+                    s->resize(glos);
+                    // allow Simul to update periodic:
+                    if ( s == sim.spaces.master() )
+                        sim.spaces.setMaster(s);
+                }
+            }
+        }
+    }
+    else {throw py::index_error();} 
+}
 
 /**
  * @brief 
@@ -20,23 +47,31 @@ auto load_simul_classes(py::module_ &m) {
     /// Python interface to default property
     py::class_<Property>(m, "Prop")
         .def("name", &Property::name)
-        .def("change_str", [](Property * prop, std::string winds, Simul * sim) {
+        .def("change", [](Property * prop, std::string winds, Simul * sim) {
             Glossary of_change = Glossary(winds);
             prop->read(of_change);
             prop->complete(*sim);
         })
-        .def("read_str", [](Property * prop, std::string winds) {
+        .def("read", [](Property * prop, std::string winds) {
             Glossary of_change = Glossary(winds);
             prop->read(of_change);
         })
-        .def("change", [](Property * prop, Glossary & winds, Simul * sim) {
+        .def("change_glos", [](Property * prop, Glossary & winds, Simul * sim) {
             prop->read(winds);
             prop->complete(*sim);
         })
-        .def("read", [](Property * prop, Glossary & winds) {
+        .def("read_glos", [](Property * prop, Glossary & winds) {
             prop->read(winds);
         })
-        .def("complete",  [](Property * prop, Simul * sim) {return prop->complete(*sim);});
+        .def("complete",  [](Property * prop, Simul * sim) {return prop->complete(*sim);})
+        .def("rename", &Property::rename)
+        .def("is_named", &Property::is_named)
+        .def("number", &Property::number)
+        .def("renumber", &Property::renumber)
+        .def("clear", &Property::clear)
+        .def("clone", &Property::clone, py::return_value_policy::reference);
+        
+        
     
     py::class_<SpaceSet,ObjectSet>(m, "SpaceSet");
 	py::class_<FiberSet,ObjectSet>(m, "FiberSet");
@@ -74,6 +109,13 @@ auto load_simul_classes(py::module_ &m) {
                 sim->solve();
             }
         })
+        .def("change",  [](Simul & sim, std::string who, std::string what) {
+            Glossary glos = Glossary(what);
+            simul_change(sim, who, glos);
+            } )
+        .def("change_glos",  [](Simul & sim, std::string who, Glossary & glos) {
+        simul_change(sim, who, glos);
+        } )
         .def("once",  [](Simul * sim) { sim->step(); sim->solve() ;})
         .def("solve",  [](Simul * sim) {return sim->solve();})
         .def("solve_auto",  [](Simul * sim) {return sim->solve_auto();})
