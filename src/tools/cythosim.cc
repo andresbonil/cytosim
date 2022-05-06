@@ -37,12 +37,9 @@
     OR, IN LIVE MODE !
 
     sim = cytosim.start('cym/aster.cym')
-    frame = sim.frame() 
-    fibers = frame['microtubule'] 
+    fibers = sim.fibers
     fibers[0].join(fibers[1])    # <- Yes, yes, yes. 
-    sim.step()
-    sim.solve() 
-        
+    sim.run(10)
      
     # etc...
 */
@@ -211,18 +208,19 @@ PYBIND11_MODULE(cytosim, m) {
                 "# --- OR --- \n"
                 "sim = cytosim.start('cym/aster.cym') \n"
                 "frame = sim.frame() \n"
-                "fibers = frame['microtubule'] \n"
+                "sim.fibers \n"
                 "fibers[0].join(fibers[1])    # <- Yes, yes, yes. \n"
-                "sim.step() \n"
-                "sim.solve() \n"; // optional module docstring
+                "sim.run(10) \n"; // optional module docstring
         
     /// Loading properties into the module
     load_object_classes(m);
+    load_meca_classes(m);
+    load_point_classes(m);
     auto pysim = load_simul_classes(m);
     load_glossary_classes(m);
+    load_solid_classes(m);
     load_fiber_classes(m);
     load_hand_classes(m);
-    load_solid_classes(m);
     load_space_classes(m);
     load_single_classes(m);
     load_couple_classes(m);
@@ -259,11 +257,14 @@ PYBIND11_MODULE(cytosim, m) {
                  return f.objects[py::cast(s)];
              }, py::return_value_policy::reference);
 
-            
-    /// Python interface to simul
-    //pysim.def("load", [](Simul * sim, size_t i) 
-    //        {if (__is_loaded__) { load_frame(sim, &reader, i);} ; return new Frame; }); //py::return_value_policy::reference
-	pysim.def("load", [](Simul * sim, size_t i) 
+    
+    /// Opens the simulation from *.cmo files
+    m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
+    m.def("start", &start, "loads simulation from config files", py::return_value_policy::reference);
+    m.def("str_to_glos", &str_to_glos, "converts string to Glossary");
+
+    /// Expading Python interface to simul
+    pysim.def("load", [](Simul * sim, size_t i) 
             {return !loader(sim, &reader, i);  }); //py::return_value_policy::reference
     pysim.def("next", [](Simul * sim) 
             {return !loadNext(sim, &reader);  }); //py::return_value_policy::reference
@@ -337,9 +338,5 @@ PYBIND11_MODULE(cytosim, m) {
             });
     //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
             
-    /// Opens the simulation from *.cmo files
-    m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
-    m.def("start", &start, "loads simulation from config files", py::return_value_policy::reference);
-    m.def("str_to_glos", &str_to_glos, "converts string to Glossary");
 }
 

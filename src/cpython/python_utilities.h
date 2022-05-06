@@ -68,14 +68,36 @@ Vector to_vector(pyarray arr) {
     return Vector(0.0,0.0,0.0);
 }
 
-// converts a Glossary pair to a python dict
+/// Converts numpy array to cytosim torque (1,2D : real, 3D: vector)
+Torque to_torque(pyarray arr) {
+    try {
+        py::buffer_info buf1 = arr.request();
+        real *ptr1 = (real *) buf1.ptr;
+#if DIM==3
+        return Torque(ptr1);
+#else
+        return Torque(*ptr1);
+#endif
+    }
+    catch ( Exception & e ) {
+            e << "Unable to convert numpy array to Vector" ;
+    }
+#if DIM==3
+    return Torque(0.0,0.0,0.0);
+#else
+    return Torque(0.0);
+#endif
+}
+
+
+/// converts a Glossary pair to a python dict
 py::dict & pair_to_dict(Glossary::pair_type const & pair) {
     py::dict * dico = new py::dict;
     (*dico)[ py::str(std::get<0>(pair)) ]  = py::cast(std::get<1>(pair)) ;
     return *dico;
 }
 
-// converts a Glossary map to a python dict
+/// converts a Glossary map to a python dict
 py::dict & map_to_dict(Glossary::map_type const & mappe) {
     py::dict * dico = new py::dict;
     for (const auto &[name, rec] : mappe) {

@@ -167,7 +167,6 @@ public:
     /// true if engine is ready to go (between `prepare()` and `relax()`)
     bool            ready() const { return sReady; }
 
-    
     /// call setInteractions(Meca) for all objects (this is called before `solve()`
     void            setAllInteractions(Meca&) const;
 
@@ -177,8 +176,14 @@ public:
     /// bring all objects to centered image using periodic boundary conditions
     void            foldPositions() const;
 
+    /// simulate the mechanics of the system and move Mecables accordingly, corresponding to `time_step` ; does not prepare
+    void            prepared_solve();
+
     /// simulate the mechanics of the system and move Mecables accordingly, corresponding to `time_step`
     void            solve();
+    
+    /// prepares system for solving
+    void            prepare_meca() {sMeca.prepare(this);};
     
     /// like 'solve' but automatically select the fastest preconditionning method
     void            solve_auto();

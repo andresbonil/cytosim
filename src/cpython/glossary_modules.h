@@ -19,7 +19,6 @@ void load_glossary_classes(py::module_ &m) {
     .def("terms",  [](Glossary & glos) { Glossary::map_type terms = glos.terms() ; return terms ;}, py::return_value_policy::reference)
     .def("__repr__",  [](Glossary & glos) {
         auto t = py::cast(glos.terms());
-        //obj.attr("__repr__")();)
         return t.attr("__repr__")();})
     //.def("__iter__", [](Glossary & glos) {
     //    auto terms = glos.terms();

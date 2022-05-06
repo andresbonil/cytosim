@@ -11,9 +11,8 @@ class Object;
 
 /// a utility to enrich the cytosim python module
 void load_fiber_classes(py::module_ &m) {
-    /// Python interface to Fiber
-    // @TODO : add the methods from mecafil, chain, mecable... ?
-    py::class_<Chain>(m, "Chain")
+    /// Python interface to Mecable
+    py::class_<Chain,Mecable>(m, "Chain")
         .def("nbSegments",  [](Chain * chn) {return chn->nbSegments();})
         .def("lastSegment",  [](Chain * chn) {return chn->lastSegment();})
         .def("setStraight",  [](Chain * chn, pyarray pos, pyarray dir) 
@@ -28,8 +27,23 @@ void load_fiber_classes(py::module_ &m) {
         .def("setEquilibrated",  [](Chain * chn, real len, real persil) {return chn->setEquilibrated(len, persil);})
         .def("birthTime",  [](Chain * chn) {return chn->birthTime();})
         .def("age",  [](Chain * chn) {return chn->age();})
+        .def("exactEnd",  [](Chain * chn, int a) {
+            return new Mecapoint(chn->exactEnd((FiberEnd)a)); })
+        .def("interpolateEndM", [](Chain * chn) {
+            return new Interpolation(chn->interpolateEndM());})
+        .def("interpolateEndP",  [](Chain * chn) {
+            return new Interpolation(chn->interpolateEndP()); })
+        .def("interpolateCenter", [](Chain * chn) {
+            return new Interpolation(chn->interpolateCenter()); })
+        .def("interpolateEnd",  [](Chain * chn, int a)   {
+            return new Interpolation(chn->interpolateEnd((FiberEnd)a)); })
+        .def("interpolateFromEnd",  [](Chain * chn, real ab, int a) {
+            return new Interpolation(chn->interpolate(ab,(FiberEnd)a)); })
+        .def("interpolate",  [](Chain * chn, real ab) {
+            return new Interpolation(chn->interpolate(ab)); })
         .def("length",  [](Chain * chn) {return chn->length();})
         .def("length1",  [](Chain * chn) {return chn->length1();})
+        .def("trueLength", &Chain::trueLength)
         .def("betweenMP",  [](Chain * chn, real a) {return chn->betweenMP(a);})
         .def("outsideMP",  [](Chain * chn, real a) {return chn->outsideMP(a);})
         .def("belowP",  [](Chain * chn, real a) {return chn->belowP(a);})
@@ -78,7 +92,7 @@ void load_fiber_classes(py::module_ &m) {
         .def("dragCoefficient",  [](Mecafil * mec) {return mec->dragCoefficient();})
         .def("leftoverMobility",  [](Mecafil * mec) {return mec->leftoverMobility();});
     
-    py::class_<Fiber,Object,Mecafil>(m, "Fiber")
+    py::class_<Fiber,Mecafil>(m, "Fiber")
         .def("points",  [](Fiber * fib) {return get_obj_points(fib);})
         .def("nbPoints",  [](Fiber * fib) {return fib->nbPoints();})
         .def("cutM",  [](Fiber * fib, real len) {return fib->cutM(len);})

@@ -86,6 +86,7 @@ auto load_simul_classes(py::module_ &m) {
     
     auto pysim = py::class_<Simul>(m, "Simul")
         .def_readwrite("prop",   &Simul::prop , py::return_value_policy::reference)
+        .def_readwrite("sMeca",   &Simul::sMeca , py::return_value_policy::reference)
         .def_readwrite("properties",   &Simul::properties , py::return_value_policy::reference)
 		//.def("spaces",  [](Simul * sim) {return &sim->spaces;})
 		.def_readonly("spaces",   &Simul::spaces , py::return_value_policy::reference)
@@ -117,6 +118,9 @@ auto load_simul_classes(py::module_ &m) {
         simul_change(sim, who, glos);
         } )
         .def("once",  [](Simul * sim) { sim->step(); sim->solve() ;})
+        .def("prepared_solve",  &Simul::prepared_solve)
+        .def("prepare_meca",  &Simul::prepare_meca)
+        .def("prepare",  &Simul::prepare)
         .def("solve",  [](Simul * sim) {return sim->solve();})
         .def("solve_auto",  [](Simul * sim) {return sim->solve_auto();})
         //.def("dump",  [](Simul * sim, std::string s) {return sim->dump( &s[0]);})
