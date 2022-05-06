@@ -42,10 +42,35 @@ void load_solid_classes(py::module_ &m) {
                 return mec->translate(p);})
         .def("allInside", &Mecable::allInside);
         
+    py::class_<Sphere,Mecable>(m, "Sphere")
+        .def("position",  [](Sphere * bed) {return to_numpy(bed->position());})
+        .def("pos",  [](Sphere * bed) {return to_numpy(bed->position());})
+        .def("radius", &Sphere::radius)
+        .def("resize", &Sphere::resize)
+        .def("reshape", &Sphere::reshape)
+        .def("orthogonalize", &Sphere::orthogonalize)
+        .def("addSurfacePoint", [](Sphere & bed, pyarray pos) {bed.addSurfacePoint(to_vector(pos));})
+        .def("nbbSurfacePoints", &Sphere::nbSurfacePoints)
+        .def("dragCoefficient", &Sphere::dragCoefficient)
+        .def("next", &Sphere::next, py::return_value_policy::reference)
+        .def("prev", &Sphere::prev, py::return_value_policy::reference);
         
-    py::class_<Sphere,Mecable>(m, "Sphere");
     
-    py::class_<Bead,Mecable>(m, "Bead");
+    py::class_<Bead,Mecable>(m, "Bead")
+        .def("position",  [](Bead * bed) {return to_numpy(bed->position());})
+        .def("pos",  [](Bead * bed) {return to_numpy(bed->position());})
+        .def("setPosition",  [](Bead * bed, pyarray pos) {bed->setPosition(to_vector(pos));})
+        .def("radius", &Bead::radius)
+        .def("radiusSqr", &Bead::radiusSqr)
+        .def("resize", &Bead::resize)
+        .def("volume", &Bead::volume)
+        .def("dragCoefficient", &Bead::dragCoefficient)
+        .def("next", &Bead::next, py::return_value_policy::reference)
+        .def("prev", &Bead::prev, py::return_value_policy::reference);
+        
+        
+        
+        
     
     py::class_<Solid,Object>(m, "Solid")
         .def("position", [](const Solid * sol) {return to_numpy(sol->position());})

@@ -37,12 +37,9 @@
     OR, IN LIVE MODE !
 
     sim = cytosim.start('cym/aster.cym')
-    frame = sim.frame() 
-    fibers = frame['microtubule'] 
+    fibers = sim.fibers
     fibers[0].join(fibers[1])    # <- Yes, yes, yes. 
-    sim.step()
-    sim.solve() 
-        
+    sim.run(10)
      
     # etc...
 */
@@ -211,10 +208,9 @@ PYBIND11_MODULE(cytosim, m) {
                 "# --- OR --- \n"
                 "sim = cytosim.start('cym/aster.cym') \n"
                 "frame = sim.frame() \n"
-                "fibers = frame['microtubule'] \n"
+                "sim.fibers \n"
                 "fibers[0].join(fibers[1])    # <- Yes, yes, yes. \n"
-                "sim.step() \n"
-                "sim.solve() \n"; // optional module docstring
+                "sim.run(10) \n"; // optional module docstring
         
     /// Loading properties into the module
     load_object_classes(m);

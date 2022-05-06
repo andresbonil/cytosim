@@ -47,6 +47,7 @@ void load_object_classes(py::module_ &m) {
 		.def("__next__",  [](Object * obj) {return obj->next() ;}, py::return_value_policy::reference)
         .def("prev",  [](Object * obj) {return obj->prev() ;}, py::return_value_policy::reference)
         .def("id",  [](const Object * obj) {return obj->identity();})
+        .def("tag",  &Object::tag)
         .def("points", [](const Object * obj) {return pyarray();});
     
     /// Python interface to ObjectList
