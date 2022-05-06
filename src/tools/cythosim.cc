@@ -286,27 +286,27 @@ PYBIND11_MODULE(cytosim, m) {
             sim->writeProperties(&sim->prop->property_file[0],1);
         });
     pysim.def("add",  [](Simul * sim, py::args args) {
-            std::string name = "";
-            std::string how = "";
-            int many = 1;
-            int nargs = args.size();
-            if (nargs>0) {
-                name = py::cast<std::string>(args[0]);
-            }
-            if (nargs>1) {
-                how = py::cast<std::string>(args[1]);
-            }
-            if (nargs>2) {
-                many = py::cast<int>(args[2]);
-            }
-            Glossary glos = Glossary(how);
-            ObjectList objects;
-            for (int i=0;i<many;++i) {
-                auto objs = parser->execute_new(name, glos);
-                objects.push_back(objs[0]);
-            }
-            return objects;
-            }, py::return_value_policy::reference);
+        std::string name = "";
+        std::string how = "";
+        int many = 1;
+        int nargs = args.size();
+        if (nargs>0) {
+            name = py::cast<std::string>(args[0]);
+        }
+        if (nargs>1) {
+            how = py::cast<std::string>(args[1]);
+        }
+        if (nargs>2) {
+            many = py::cast<int>(args[2]);
+        }
+        Glossary glos = Glossary(how);
+        ObjectList objects;
+        for (int i=0;i<many;++i) {
+            auto objs = parser->execute_new(name, glos);
+            objects.push_back(objs[0]);
+        }
+        return objects;
+        }, py::return_value_policy::reference);
     pysim.def("cut",  [](Simul * sim, std::string & name, std::string & where) {
             Glossary glos = Glossary(where);
             parser->execute_cut(name, glos);
@@ -323,7 +323,7 @@ PYBIND11_MODULE(cytosim, m) {
             Glossary glos = Glossary(how);
             parser->execute_export(file, what, glos);
             });
-     pysim.def("run",  [](Simul * sim, py::args args) {
+    pysim.def("run",  [](Simul * sim, py::args args) {
             std::string how = "";
             int many = 1;
             int nargs = args.size();
@@ -336,6 +336,12 @@ PYBIND11_MODULE(cytosim, m) {
             Glossary glos = Glossary(how);
             parser->execute_run(many, glos,0);
             });
+    pysim.def("set",  [](Simul * sim, std::string & cat, std::string & name, std::string & how) {
+            Glossary glos = Glossary(how);
+            parser->execute_set(cat, name, glos);
+            return glos;
+            });        
+
     //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
             
 }

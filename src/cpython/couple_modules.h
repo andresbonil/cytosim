@@ -63,6 +63,19 @@ void load_couple_classes(py::module_ &m) {
             .def_readwrite("hand1_prop", &CoupleProp::hand1_prop)
             .def_readwrite("hand2_prop", &CoupleProp::hand2_prop);
             
-            
+    py::class_<CoupleSet,ObjectSet>(m, "CoupletSet")
+		.def("__getitem__",[](CoupleSet * set, int i) {
+				int s = set->size();
+                if (i<0) {i+=s;} // Python time negative indexing
+				if (i >= s or i<0) {
+					 throw py::index_error();
+				}
+				Couple * obj = set->firstID();
+				while (i) {
+					--i; // I know this is slow, but ...
+					obj = set->nextID(obj); // Maybe objectSet should derive from std::vect ?
+				}
+				return obj;
+             }, py::return_value_policy::reference);
 }
 
