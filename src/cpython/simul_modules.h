@@ -118,7 +118,7 @@ auto load_simul_classes(py::module_ &m) {
         .def("once",  [](Simul * sim) { sim->solve() ; sim->step(); })
         .def("prepared_solve",  &Simul::prepared_solve)
         .def("prepare_meca",  &Simul::prepare_meca)
-        .def("prepare",  [](Simul * sim) { sim->prepare();} )
+        .def("prepare",  [](Simul * sim) { sim->prepare();} )   
         .def("solve",  [](Simul * sim) {return sim->solve();})
         .def("solve_auto",  [](Simul * sim) {return sim->solve_auto();})
         //.def("dump",  [](Simul * sim, std::string s) {return sim->dump( &s[0]);})
