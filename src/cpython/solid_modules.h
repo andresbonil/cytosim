@@ -12,29 +12,36 @@ class Object;
 void load_solid_classes(py::module_ &m) {
      /// Python interface to Solid
     py::class_<Mecable,Object>(m, "Mecable")
-        .def("nbPoints", [](const Mecable * mec) {return mec->nbPoints();})
-        .def("allocated", [](const Mecable * mec) {return mec->allocated();})
-        .def("posPoint", [](const Mecable * mec, unsigned p) {return to_numpy(mec->posPoint(p));})
-        .def("points",  [](const Mecable * mec) {return get_obj_points(mec);})
-        .def("setPoint", []( Mecable * mec, unsigned p, pyarray x) {return mec->setPoint(p,to_vector(x));})
-        .def("movePoint", []( Mecable * mec, unsigned p, pyarray x) {return mec->movePoint(p,to_vector(x));})
-        .def("addPoint", []( Mecable * mec, pyarray x) {return mec->addPoint(to_vector(x));})
-        .def("removePoints", []( Mecable * mec, unsigned p, unsigned q) {return mec->removePoints(p,q);})
-        .def("clearPoints", []( Mecable * mec) {return mec->clearPoints();})
-        .def("shiftPoints", []( Mecable * mec, unsigned p, unsigned q) {return mec->shiftPoints(p,q);})
-        .def("truncateM", []( Mecable * mec, unsigned p) {return mec->truncateM(p);})
-        .def("truncateP", []( Mecable * mec, unsigned p) {return mec->truncateP(p);})
-        .def("calculateMomentum1", [](Mecable * mec, bool sub) 
+        .def("nbPoints", &Mecable::nbPoints)
+        .def("allocated", &Mecable::allocated)
+        .def("points",  [](Mecable * mec) {return get_obj_points(mec);})
+        .def("posPoint",  [](Mecable * mec,int p) {return to_numpy(mec->posPoint(p));})
+        .def("setPoint",  [](Mecable * mec, int i, pyarray vec) 
+            {   Vector p = to_vector(vec);
+                return mec->setPoint(i,p);})
+        .def("setPoint",  [](Mecable * mec, int i, pyarray vec) 
+            {   Vector p = to_vector(vec);
+                return mec->movePoint(i,p);})
+        .def("addPoint",  [](Mecable * mec, pyarray vec) 
+            {   Vector p = to_vector(vec);
+                return mec->addPoint(p);})
+        .def("removePoints", &Mecable::removePoints)
+        .def("clearPoints", &Mecable::clearPoints)
+        .def("shiftPoints", &Mecable::shiftPoints)
+        .def("truncateM", &Mecable::truncateM)
+        .def("truncateP", &Mecable::truncateP)
+        .def("calculateMomentum",  [](Mecable * mec, bool sub)
             {Vector V,W; 
             mec->calculateMomentum(V,W,sub);
-            return std::vector<pyarray>{to_numpy(V),to_numpy(W)};
-            })
-        .def("dragCoefficient", [](const Mecable * mec) {return mec->dragCoefficient();})
-        .def("netForce", [](const Mecable * mec, unsigned p) {return to_numpy(mec->netForce(p));})
-        .def("position", [](const Mecable * mec) {return to_numpy(mec->position());})
-        .def("mobile", [](const Mecable * mec) {return mec->mobile();})
-        .def("translate", []( Mecable * mec, pyarray x) {return mec->translate(to_vector(x));})
-        .def("allInside", []( Mecable * mec, Space * x) {return mec->allInside(x);});
+                return std::vector<pyarray>{to_numpy(V),to_numpy(W)};
+                })
+        .def("netForce",  [](Mecable * mec,int p) {return to_numpy(mec->netForce(p));})
+        .def("position",  [](Mecable * mec) {return to_numpy(mec->position());})
+        .def("translate",  [](Mecable * mec, pyarray vec) 
+            {   Vector p = to_vector(vec);
+                return mec->translate(p);})
+        .def("allInside", &Mecable::allInside);
+        
         
     py::class_<Sphere,Mecable>(m, "Sphere");
     

@@ -37,33 +37,7 @@ void load_object_classes(py::module_ &m) {
 				}
 				return obj;
              }, py::return_value_policy::reference);
-        /*
-        .def("addObject",  [](ObjectSet * set, py::args args) {
-            std::clog << "Warning : better use simul.add(...)" << std::endl;
-            std::string name = "";
-            std::string how = "";
-            int many = 1;
-            //int nargs = py::cast<int>args.attr("__len__")();
-            int nargs = args.size();
-            if (nargs>0) {
-                name = py::cast<std::string>(args[0]);
-            }
-            if (nargs>1) {
-                how = py::cast<std::string>(args[1]);
-            }
-            if (nargs>2) {
-                many = py::cast<int>(args[2]);
-            }
-            Glossary glos = Glossary(how);
-            ObjectList objects;
-            for (int i=0;i<many;++i) {
-                auto objs = set->newObjects(name, glos);
-                set->simul.add(objs);
-                objects.push_back(objs[0]);
-            }
-            return objects;
-            }, py::return_value_policy::reference);
-     */   
+     
      /// Python interface to Organizer
     py::class_<Object>(m, "Object")
         .def("reference",  [](Object * obj) {return obj->reference() ;})
@@ -87,19 +61,4 @@ void load_object_classes(py::module_ &m) {
 				return obj;
              }, py::return_value_policy::reference)
         .def("__len__", [](const ObjectList &v) { return v.size(); });
-        /*.def("__getitem__",[](ObjectList & lis, int i) {
-				int s = lis.size();
-				if (i >= s) {
-					 throw py::index_error();
-				}
-				Object * obj = lis[i];
-				return obj;
-             }, py::return_value_policy::reference)
-         .def("__iter__", [](ObjectList & lis) {
-            return py::make_iterator(lis.begin(), lis.end());
-        }, py::keep_alive<0, 1>())
-        .def("size", &ObjectList::size)
-        .def("capacity", &ObjectList::capacity)
-        .def("empty", &ObjectList::empty);*/
-        
 }
