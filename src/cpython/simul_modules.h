@@ -79,8 +79,6 @@ auto load_simul_classes(py::module_ &m) {
 	py::class_<SphereSet,ObjectSet>(m, "SphereSet");
 	py::class_<BeadSet,ObjectSet>(m, "BeadSet");
 	py::class_<SolidSet,ObjectSet>(m, "SolidSet");
-	py::class_<CoupleSet,ObjectSet>(m, "CoupleSet");
-	py::class_<SingleSet,ObjectSet>(m, "SingleSet");
 	py::class_<OrganizerSet,ObjectSet>(m, "OrganizerSet");
 	
     
@@ -106,8 +104,8 @@ auto load_simul_classes(py::module_ &m) {
         .def("step",  [](Simul * sim) {return sim->step();})
         //.def("run",  [](Simul * sim, int n) {
         //    for (int i=0;i<n;++i) {
-        //        sim->step();
         //        sim->solve();
+        //        sim->step();
         //    }
         //})
         .def("change",  [](Simul & sim, std::string who, std::string what) {
@@ -117,10 +115,10 @@ auto load_simul_classes(py::module_ &m) {
         .def("change_glos",  [](Simul & sim, std::string who, Glossary & glos) {
         simul_change(sim, who, glos);
         } )
-        .def("once",  [](Simul * sim) { sim->step(); sim->solve() ;})
+        .def("once",  [](Simul * sim) { sim->solve() ; sim->step(); })
         .def("prepared_solve",  &Simul::prepared_solve)
         .def("prepare_meca",  &Simul::prepare_meca)
-        .def("prepare",  &Simul::prepare)
+        .def("prepare",  [](Simul * sim) { sim->prepare();} )   
         .def("solve",  [](Simul * sim) {return sim->solve();})
         .def("solve_auto",  [](Simul * sim) {return sim->solve_auto();})
         //.def("dump",  [](Simul * sim, std::string s) {return sim->dump( &s[0]);})
