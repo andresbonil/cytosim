@@ -12,7 +12,6 @@ $ python3 -m pip install -U --user pybind11
 $ make -j4 cythosim
 ```
 
-
 ## Principle
 Cythosim is an interface to native cytosim objects.
 ### Running simulations
@@ -51,13 +50,15 @@ While it takes extra time to create a frame, it may be worth it.
 
 
 ## What changed
-Basically no code change was performed in cytosim except :   
+Very little code change was performed in cytosim except :   
 - node.cc/h was changed to noder.cc/h  
      -> all files with "#include node.h" need to change to "#include noder.h"  
 - In "sim_thread.cc", line 440 was commented : "//glApp::flashText0(str);"  
 - makefile.inc and tools/makefile.inc were changed to allow compilation.  
 - Then a lot of files were added to /tools  
 - Glossary can now export mTerms through the public function Glossary::terms() 
+- In simul.h : added Simul::prepare_meca : a wrapper for sMeca.prepare
+- In simul.h and simul_solve.cc : addition of Simul::prepared_solve() : basically Simul::solve without sMeca.prepare.
 
 ## How to use Cythosim on other branches of cytosim ?
 If you want to use cythosim on other branches of cytosim, you can "easily" do so with a few operations :  
@@ -67,5 +68,6 @@ If you want to use cythosim on other branches of cytosim, you can "easily" do so
 - (possibly) Copy makefile.inc into your own folder.  
 - Rename "src/base/node.cc/h" to "src/base/noder.cc/h" and change all occurences of "#include 'node.h'" to "#include 'noder.h'" in your code.  
 - Copy "src/base/glossary.h" to your own "src/base". What is important is line 226 of cythosim's glossary.h.  
+- Copy "src/sim/simul.h" and "src/sim/simul_solve.cc" to your own src/sim. What is important is the declaration of Simul::prepare_meca and Simul::prepared_solve
 
 
