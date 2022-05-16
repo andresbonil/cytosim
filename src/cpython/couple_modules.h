@@ -9,6 +9,12 @@ namespace py = pybind11;
 class Couple;
 class Object;
 //class Property;
+static Couple* toCouple(Object * obj)
+{
+    if ( obj  &&  obj->tag() == 'c' )
+        return static_cast<Couple*>(obj);
+    return nullptr;
+}
 
 /// a utility to enrich the cytosim python module
 void load_couple_classes(py::module_ &m) {
@@ -29,6 +35,7 @@ void load_couple_classes(py::module_ &m) {
         //.def("fiber1",  [](Couple * s) {return s->fiber1();})
         //.def("fiber2",  [](Couple * s) {return s->fiber2();})
         //.def("abcissa",  [](Couple * s) {return to_numpy(s->posFree());})
+        .def("toCouple",  [](Object * s) {return toCouple(s);}, py::return_value_policy::reference)
         .def("hand1",  [](Couple * s) {return s->hand1();}, py::return_value_policy::reference)
         .def("hand2",  [](Couple * s) {return s->hand2();}, py::return_value_policy::reference)
         .def("hand",  [](Couple * s, int i) {
