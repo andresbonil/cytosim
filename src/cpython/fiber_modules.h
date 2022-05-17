@@ -94,6 +94,7 @@ void load_fiber_classes(py::module_ &m) {
     
     py::class_<Fiber,Mecafil>(m, "Fiber")
         .def("points",  [](Fiber * fib) {return get_obj_points(fib);})
+        .def("toFiber",  [](Object * obj) {return Fiber::toFiber(obj);},  py::return_value_policy::reference)
         .def("nbPoints",  [](Fiber * fib) {return fib->nbPoints();})
         .def("cutM",  [](Fiber * fib, real len) {return fib->cutM(len);})
         .def("cutP",  [](Fiber * fib, real len) {return fib->cutP(len);})
