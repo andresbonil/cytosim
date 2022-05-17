@@ -7,22 +7,55 @@ namespace py = pybind11;
 
 class Single;
 class Object;
-//class Property;
+/// Converts an object to a single if possible
+static Single* toSingle(Object * obj)
+{
+    if ( obj  &&  obj->tag() == 'c' )
+        return static_cast<Single*>(obj);
+    return nullptr;
+}
 
 /// a utility to enrich the cytosim python module
 void load_single_classes(py::module_ &m) {
      /// Python interface to single
     py::class_<Single,Object>(m, "Single")
-        .def("state",  [](Single * s) {return s->state();});
-        /**
-         * 
-            @TODO : complete with fiber base functions
-         * 
-        */
-         
-         /**
-            @TODO : ADD SPECIALIZED FIBER CLASSES
-         */
+        .def("toSingle",  [](Object * s) {return toSingle(s);}, py::return_value_policy::reference)
+        .def("state", &Single::state)
+        .def("__getitem__",[](Single *s, int i) { // We can call Single[0]  to get the first hand ! thus couple[0].attachEnd(...) is available
+            if (i==0) {return s->hand();} else {throw py::index_error(); }
+            return (Hand*)nullptr;} 
+            , py::return_value_policy::reference)
+        .def("__len__",  [](Single * s) {return (int)1;})
+        .def("hand", &Single::hand, py::return_value_policy::reference)
+        .def("attached", &Single::attached)
+        .def("fiber", &Single::fiber, py::return_value_policy::reference)
+        .def("abscissa", &Single::abscissa)
+        .def("posHand",  [](Single * s) {return to_numpy(s->posHand());})
+        .def("dirFiber",  [](Single * s) {return to_numpy(s->dirFiber());})
+        .def("attach", &Single::attach)
+        .def("attachEnd",  [](Single * s, Fiber *f, int end) {return s->attachEnd(f,static_cast<FiberEnd>(end));})
+        .def("moveToEnd",  [](Single * s, int end) {return s->moveToEnd(static_cast<FiberEnd>(end));})
+        .def("detach", &Single::detach)
+        .def("position",  [](Single * s) {return to_numpy(s->position());})
+        .def("mobile", &Single::mobile)
+        .def("translate",  [](Single * s, pyarray vec) 
+            {   Vector p = to_vector(vec);
+                return s->translate(p);})
+        .def("setPosition",  [](Single * s, pyarray vec) 
+            {   Vector p = to_vector(vec);
+                return s->setPosition(p);})
+        .def("randomizePosition", &Single::randomizePosition)
+        .def("posFoot",  [](Single * s) {return to_numpy(s->posFoot());})
+        .def("sidePos",  [](Single * s) {return to_numpy(s->sidePos());})
+        .def("base", &Single::base)
+        .def("mobile", &Single::mobile)
+        .def("force",  [](Single * s) {return to_numpy(s->force());})
+        .def("next", &Single::next)
+        .def("prev", &Single::prev)
+        .def("confineSpace", &Single::confineSpace);
+        
+        
+
     py::class_<SingleProp,Property>(m, "SingleProp")
         .def_readwrite("hand", &SingleProp::hand)
         .def_readwrite("stiffness", &SingleProp::stiffness)

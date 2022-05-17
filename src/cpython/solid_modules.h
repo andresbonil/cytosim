@@ -53,7 +53,8 @@ void load_solid_classes(py::module_ &m) {
         .def("nbbSurfacePoints", &Sphere::nbSurfacePoints)
         .def("dragCoefficient", &Sphere::dragCoefficient)
         .def("next", &Sphere::next, py::return_value_policy::reference)
-        .def("prev", &Sphere::prev, py::return_value_policy::reference);
+        .def("prev", &Sphere::prev, py::return_value_policy::reference)
+        .def("toSphere",  [](Object * obj) {return Sphere::toSphere(obj);},  py::return_value_policy::reference);
         
     
     py::class_<Bead,Mecable>(m, "Bead")
@@ -66,7 +67,8 @@ void load_solid_classes(py::module_ &m) {
         .def("volume", &Bead::volume)
         .def("dragCoefficient", &Bead::dragCoefficient)
         .def("next", &Bead::next, py::return_value_policy::reference)
-        .def("prev", &Bead::prev, py::return_value_policy::reference);
+        .def("prev", &Bead::prev, py::return_value_policy::reference)
+        .def("toBead",  [](Object * obj) {return Bead::toBead(obj);},  py::return_value_policy::reference);
         
         
         
@@ -84,7 +86,8 @@ void load_solid_classes(py::module_ &m) {
         .def("prev",  [](Solid * sol) {return sol->prev() ;})
         .def("tag",  [](Solid * sol) {return sol->tag() ;})
         .def("property",  [](Solid * sol) {return sol->property() ;})
-        .def("nbPoints", [](const Solid * sol) {return sol->nbPoints();});
+        .def("nbPoints", [](const Solid * sol) {return sol->nbPoints();})
+        .def("toSolid",  [](Object * obj) {return Solid::toSolid(obj);},  py::return_value_policy::reference);
          
          /**
             @TODO : ADD SPECIALIZED SOLID CLASSES
