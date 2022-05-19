@@ -10,8 +10,24 @@ class Object;
 
 /// a utility to enrich the cytosim python module
 void load_solid_classes(py::module_ &m) {
+    py::class_<realArray>(m, "realArray", py::buffer_protocol())
+   .def_buffer([](realArray &mat) -> py::buffer_info {
+        void * data = mat.ptr;
+        auto sizes = mat.sizes;
+        auto strides = mat.strides;
+        return py::buffer_info(
+            data,                               /* Pointer to buffer */
+            sizeof(real),                          /* Size of one scalar */
+            py::format_descriptor<real>::format(), /* Python struct-style format descriptor */
+            2,                                      /* Number of dimensions */
+            {sizes[0],sizes[1]},                 /* Buffer dimensions */
+            {strides[0],strides[1]}             /* Strides (in bytes) for each index */
+        );
+    });
+    
      /// Python interface to Solid
     py::class_<Mecable,Object>(m, "Mecable")
+        //.def("data",   [](Fiber * fib) {return get_obj_pointsarray(fib);})
         .def("nbPoints", &Mecable::nbPoints)
         .def("allocated", &Mecable::allocated)
         .def("points",  [](Mecable * mec) {return get_obj_points(mec);})
