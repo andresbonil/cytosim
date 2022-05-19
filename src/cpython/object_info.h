@@ -24,7 +24,7 @@ typedef std::unordered_map<std::string,std::string> string_dict;
 typedef std::unordered_map<std::string,real> real_dict;
 typedef std::unordered_map<std::string,int> int_dict;
 typedef std::unordered_map<std::string,Vector> vector_dict;
-typedef std::unordered_map<std::string,real_array> array_dict;
+//typedef std::unordered_map<std::string,real_array> array_dict;
 
 /// Basically a dictionnary
 struct ObjectInfo {
