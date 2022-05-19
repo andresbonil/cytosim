@@ -95,24 +95,6 @@ std::string Object::reference() const
 }
 
 
-/** Returns a python object
-  ObjReport* Object::report() const {
-    ObjReport * rep =  new ObjReport ;
-    rep->id = this->identity();
-    
-    //rep->ints.insert({"id",this->identity()});
-    
-    const real * data = nullptr;
-    int size = 0;
-    
-    std::vector<int> sizes = {size, (int)DIM};
-    std::vector<int> strides = {DIM*sizeof(real), sizeof(real)};
-    rep->points = real_array{data, sizes, strides};
-    return rep;
-};
-
-
-*/
 
 /**
  Two binary formats are used:
