@@ -113,6 +113,9 @@ public:
     /// Address of coordinate array
     const real*     data()                const { return pPos; }
     
+    /// Address of coordinate array
+    real*           nonConstData()        const { return pPos; }
+    
     /// Address of point `p`
     const real*     addrPoint(unsigned p) const { return pPos + DIM*p; }
     
