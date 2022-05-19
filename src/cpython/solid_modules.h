@@ -27,7 +27,7 @@ void load_solid_classes(py::module_ &m) {
     
      /// Python interface to Solid
     py::class_<Mecable,Object>(m, "Mecable")
-        //.def("data",   [](Fiber * fib) {return get_obj_pointsarray(fib);})
+        .def("data",   [](Mecable * mec) {return get_pointsarray(mec);})
         .def("nbPoints", &Mecable::nbPoints)
         .def("allocated", &Mecable::allocated)
         .def("points",  [](Mecable * mec) {return get_obj_points(mec);})
