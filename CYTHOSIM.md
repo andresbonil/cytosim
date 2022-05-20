@@ -53,13 +53,13 @@ While it takes extra time to create a frame, it may be worth it.
 Very little code change was performed in cytosim except :   
 - node.cc/h was changed to noder.cc/h  
      -> all files with "#include node.h" need to change to "#include noder.h"  
-- In "sim_thread.cc", line 440 was commented : "//glApp::flashText0(str);"  
-- makefile.inc and tools/makefile.inc were changed to allow compilation.  
-- Then a lot of files were added to /tools  
-- Glossary can now export mTerms through the public function Glossary::terms()
-- In simul.h : added Simul::prepare_meca : a wrapper for sMeca.prepare
-- In simul.h and simul_solve.cc : addition of Simul::prepared_solve() : basically Simul::solve without sMeca.prepare.
-- In mecable.h : addition of mecable::nonConstData() : like data() but not const.
+- In "sim_thread.cc", line 440 was commented : "//glApp::flashText0(str);"   
+- makefile.inc and tools/makefile.inc were changed to allow compilation.   
+- Then a lot of files were added to /tools  and cpython/  
+- Glossary can now export mTerms through the public function Glossary::terms()  
+- In simul.h : added Simul::prepare_meca : a wrapper for sMeca.prepare  
+- In simul.h and simul_solve.cc : addition of Simul::prepared_solve() : basically Simul::solve without sMeca.prepare.  
+- In mecable.h : addition of mecable::nonConstData() : like data() but not const.  
 
 ## How to use Cythosim on other branches of cytosim ?
 If you want to use cythosim on other branches of cytosim, you can "easily" do so with a few operations :  
