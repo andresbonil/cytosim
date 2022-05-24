@@ -211,7 +211,7 @@ PYBIND11_MODULE(cytosim, m) {
                 "sim.fibers \n"
                 "fibers[0].join(fibers[1])    # <- Yes, yes, yes. \n"
                 "sim.run(10) \n"; // optional module docstring
-        
+    
     /// Loading properties into the module
     load_object_classes(m);
     load_meca_classes(m);

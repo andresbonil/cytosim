@@ -8,7 +8,7 @@
 namespace py = pybind11;
 class Property;
 
-// Copied from Interface::execute_change
+/// Copied from Interface::execute_change
 void simul_change(Simul & sim, std::string & who, Glossary & glos) {
     Property * pp = sim.findProperty(who);
     if (pp) {
@@ -35,12 +35,6 @@ void simul_change(Simul & sim, std::string & who, Glossary & glos) {
     }
     else {throw py::index_error();} 
 }
-
-/**
- * @brief 
- * @TODO : manage to have objectSet ! Now missing operator = ?////
-
- */
 
 /// a utility to enrich the cytosim python module
 auto load_simul_classes(py::module_ &m) {

@@ -11,10 +11,14 @@ class Glossary;
 /// A vector of ints
 typedef std::vector<int> int_vect;
 /// contains adress, sizes, and strides
-typedef std::tuple<const real*, int_vect, int_vect> real_array;
-
 namespace py = pybind11;
 typedef py::array_t<real> pyarray;
+
+struct realArray {
+    void * ptr;
+    int_vect sizes;
+    int_vect strides;
+};
 
 /// Get points for cytosim objects such as fibers or solids
 template<typename Obj>
@@ -25,7 +29,17 @@ pyarray & get_obj_points(Obj * obj) {
     return *arr;
 };
 
+/// Get real points for cytosim mecables
+realArray * get_pointsarray(Mecable * obj) {
+    int_vect sizes = {(int)obj->nbPoints(), (int)DIM};
+    int_vect strides = {DIM*sizeof(real), sizeof(real)};
+    realArray * arr =new realArray{obj->nonConstData(), sizes, strides};
+    return arr;
+};
+
+
 /// Converts a real array * to numpy array
+/*
 pyarray & to_numpy(real_array * rar) {
     if (rar) {
         pyarray * arr =new pyarray(std::get<1>(*rar),std::get<2>(*rar), std::get<0>(*rar));
@@ -41,6 +55,7 @@ pyarray & to_numpy(real_array  rar) {
     pyarray * arr =new pyarray(std::get<1>(rar),std::get<2>(rar), std::get<0>(rar));
     return *arr;
 }
+*/
 
 /// Converts a Vector to numpy array
 pyarray & to_numpy(Vector vec) {    
