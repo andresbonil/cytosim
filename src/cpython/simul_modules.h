@@ -38,6 +38,54 @@ void simul_change(Simul & sim, std::string & who, Glossary & glos) {
 
 /// a utility to enrich the cytosim python module
 auto load_simul_classes(py::module_ &m) {
+    /// Python interface to Vector
+    py::class_<Vector>(m, "Vector", py::buffer_protocol())
+    .def_buffer([](Vector &vec) -> py::buffer_info {
+        void * data = vec.data();
+        int_vect sizes =  {1, DIM};
+        int_vect strides =  {DIM*sizeof(real), sizeof(real)};
+        return py::buffer_info(
+               data,                               /* Pointer to buffer */
+               sizeof(real),                          /* Size of one scalar */
+               py::format_descriptor<real>::format(), /* Python struct-style format descriptor */
+               2,                                      /* Number of dimensions */
+               sizes,                 /* Buffer dimensions */
+               strides             /* Strides (in bytes) for each index */
+               );
+    });
+    
+    /// Python interface to Vector
+    py::class_<Vector3>(m, "Vector3", py::buffer_protocol())
+    .def_buffer([](Vector3 &vec) -> py::buffer_info {
+        void * data = vec.data();
+        int_vect sizes =  {1, 3};
+        int_vect strides =  {3*sizeof(real), sizeof(real)};
+        return py::buffer_info(
+               data,                               /* Pointer to buffer */
+               sizeof(real),                          /* Size of one scalar */
+               py::format_descriptor<real>::format(), /* Python struct-style format descriptor */
+               2,                                      /* Number of dimensions */
+               sizes,                 /* Buffer dimensions */
+               strides             /* Strides (in bytes) for each index */
+               );
+    });
+    
+    /// Python interface to realArray (basically a wrapper a round real*)
+    py::class_<realArray>(m, "realArray", py::buffer_protocol())
+    .def_buffer([](realArray &mat) -> py::buffer_info {
+        void * data = mat.ptr;
+        auto sizes = mat.sizes;
+        auto strides = mat.strides;
+        return py::buffer_info(
+               data,                               /* Pointer to buffer */
+               sizeof(real),                          /* Size of one scalar */
+               py::format_descriptor<real>::format(), /* Python struct-style format descriptor */
+               2,                                      /* Number of dimensions */
+               {sizes[0],sizes[1]},                 /* Buffer dimensions */
+               {strides[0],strides[1]}             /* Strides (in bytes) for each index */
+               );
+    });
+    
     /// Python interface to default property
     py::class_<Property>(m, "Prop")
         .def("name", &Property::name)

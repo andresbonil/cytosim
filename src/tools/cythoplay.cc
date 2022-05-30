@@ -76,7 +76,6 @@ extern Player player;
 extern PlayerProp& prop;
 extern DisplayProp& disp;
 
-
 /// A holder for normalKey callback
 inline std::function<unsigned char(unsigned char, int, int)>& normalKey()
 {
@@ -87,12 +86,22 @@ inline std::function<unsigned char(unsigned char, int, int)>& normalKey()
 /// A proxy for the normalKeyy callback
 inline void proxyNormalKey(unsigned char c, int i, int j){ c = normalKey()(c, i ,j ); processNormalKey(c,i,j); };
 
+inline std::function<int(int, int, const Vector3&, int)>& mouseClick()
+{
+    // returns a different object for each thread that calls it
+    static thread_local std::function<int(int, int, const Vector3&, int)> mc;
+    return mc;
+}
+/// A proxy for the normalKeyy callback
+inline void proxyMouseClick(int i, int j, const Vector3& v, int k){int c = mouseClick()(i ,j, v, k );
+    processMouseClick(i,j,v,c); };
+
 /// A holder for runtime callback
 inline std::function<void(Simul&)>& runtimeCheck()
 {
     // returns a different object for each thread that calls it
-    static thread_local std::function<void(Simul&)> fn;
-    return fn;
+    static thread_local std::function<void(Simul&)> rt;
+    return rt;
 }
 
 /// Displays the simulation live
@@ -166,6 +175,7 @@ Simul * start(std::string fname ) {
 
     // Default null callbacks
     normalKey() = [](unsigned char c, int i, int j) {return c;} ;
+    mouseClick() = [](int i, int j, const Vector3 v, int k) {return k;} ;
     runtimeCheck() = [](Simul& sim) {};
     
     return &simul;
@@ -193,7 +203,7 @@ void play_default(std::string opt){
     view.setDisplayFunc(displayLive);
     
     // Definining the callbacks
-    glApp::actionFunc(processMouseClick);
+    glApp::actionFunc(proxyMouseClick);
     glApp::actionFunc(processMouseDrag);
     glApp::normalKeyFunc(proxyNormalKey);
     glApp::createWindow(displayLive);
@@ -276,6 +286,7 @@ PYBIND11_MODULE(cytoplay, m) {
              }, py::return_value_policy::reference);
 
     /// Python interface to play/start a simulation
+    m.def("simul",[](){return &simul ;}, py::return_value_policy::reference);
     m.def("start",[](std::string fname ){return start(fname) ;}, py::return_value_policy::reference);
     m.def("play", [](py::args args) {
         int nargs = args.size();
@@ -294,6 +305,9 @@ PYBIND11_MODULE(cytoplay, m) {
         });
     m.def("setRuntimeCheck",[](py::function f) {
         runtimeCheck() = py::cast<std::function<void(Simul&)>>(f);
+    });
+    m.def("setMouseClick",[](py::function f) {
+        mouseClick() = py::cast<std::function<int(int, int, Vector3, int)>>(f);
     });
  
     m.def("str_to_glos", &str_to_glos, "converts string to Glossary");
