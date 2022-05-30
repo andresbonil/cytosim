@@ -182,14 +182,13 @@ Simul * start(std::string fname ) {
 }
 
 void play_default(std::string opt){
-#ifdef __APPLE__
-    if (1) {
-        int argc = 1;
-        std::string st = "";
-        char * inp[1];
-        std::strcpy(*inp, st.c_str());
-        glutInit(&argc, inp);
-    }
+//#ifdef __APPLE__
+#if (1)
+    int argc = 1;
+    std::string st = "";
+    char * inp[1];
+    std::strcpy(*inp, st.c_str());
+    glutInit(&argc, inp);
 #endif
     Glossary arg = Glossary(opt);
     
