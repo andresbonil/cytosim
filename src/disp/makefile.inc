@@ -40,10 +40,10 @@ fg_stroke_mono_roman.o: fg_stroke_mono_roman.c fg_font.h
 
 
 miniz.o: miniz.c miniz.h
-	$(CXX) $(FAST) -x c -c $< -o build/$@
+	$(CXX) $(FAST) -fPIC -x c -c $< -o build/$@
 
 libspng.o: spng.c spng.h
-	$(CXX) -DSPNG_USE_MINIZ -DSPNG_STATIC -DSPNG_USE_MINIZ $(FAST) -x c -c $< -o build/$@
+	$(CXX) -fPIC -DSPNG_USE_MINIZ -DSPNG_STATIC -DSPNG_USE_MINIZ $(FAST) -x c -c $< -o build/$@
 
 save_image.o: save_image.cc save_image.h
 	$(COMPILE) -DDISPLAY $(IMAGES_DEF) -c $< -o build/$@
@@ -54,4 +54,4 @@ offscreen.o: offscreen.cc offscreen.h offscreen_fbo.cc offscreen_glx.cc
 
 
 $(OBJ_DISP): %.o: %.cc %.h | build
-	$(COMPILE) -Isrc/math -Isrc/base -Isrc/sim -c $< -o build/$@
+	$(COMPILE) -fPIC -Isrc/math -Isrc/base -Isrc/sim -c $< -o build/$@
