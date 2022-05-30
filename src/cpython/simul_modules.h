@@ -42,13 +42,15 @@ auto load_simul_classes(py::module_ &m) {
     py::class_<Vector>(m, "Vector", py::buffer_protocol())
     .def_buffer([](Vector &vec) -> py::buffer_info {
         void * data = vec.data();
-        int_vect sizes =  {1, DIM};
-        int_vect strides =  {DIM*sizeof(real), sizeof(real)};
+        //int_vect sizes =  {1, DIM};
+        int_vect sizes =  {DIM};
+        //int_vect strides =  {DIM*sizeof(real), sizeof(real)};
+        int_vect strides =  {sizeof(real)};
         return py::buffer_info(
                data,                               /* Pointer to buffer */
                sizeof(real),                          /* Size of one scalar */
                py::format_descriptor<real>::format(), /* Python struct-style format descriptor */
-               2,                                      /* Number of dimensions */
+               1,                                      /* Number of dimensions */
                sizes,                 /* Buffer dimensions */
                strides             /* Strides (in bytes) for each index */
                );
@@ -58,13 +60,13 @@ auto load_simul_classes(py::module_ &m) {
     py::class_<Vector3>(m, "Vector3", py::buffer_protocol())
     .def_buffer([](Vector3 &vec) -> py::buffer_info {
         void * data = vec.data();
-        int_vect sizes =  {1, 3};
-        int_vect strides =  {3*sizeof(real), sizeof(real)};
+        int_vect sizes =  {3};
+        int_vect strides =  {sizeof(real)};
         return py::buffer_info(
                data,                               /* Pointer to buffer */
                sizeof(real),                          /* Size of one scalar */
                py::format_descriptor<real>::format(), /* Python struct-style format descriptor */
-               2,                                      /* Number of dimensions */
+               1,                                      /* Number of dimensions */
                sizes,                 /* Buffer dimensions */
                strides             /* Strides (in bytes) for each index */
                );
