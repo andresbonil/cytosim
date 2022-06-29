@@ -178,6 +178,8 @@ Simul * start(std::string fname ) {
     mouseClick() = [](int i, int j, const Vector3 v, int k) {return k;} ;
     runtimeCheck() = [](Simul& sim) {};
     
+    std::cout << "WARNING : live usage of PyCytosim is still experimental."
+    
     return &simul;
 }
 
