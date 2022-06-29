@@ -59,13 +59,13 @@ report: report.cc frame_reader.o $(TOOL_OBJ) | bin
 vpath report bin
 
 
-cythosim: cythosim.cc frame_reader.o sim_thread.o $(TOOL_OBJ) | bin
+pycytosim: pycytosim.cc frame_reader.o sim_thread.o $(TOOL_OBJ) | bin
 	$(COMPILE) $(PYTHONI) $(TOOL_INC) $(OBJECTS) $(LINK) -fPIC $(INCS) -o bin/cytosim$(SUFFIX)
 	$(DONE)
 vpath cythosim bin
 
 
-cythoplay: cythoplay.cc player.o $(OBJ_PLAYER) frame_reader.o sim_thread.o cytosimG.a cytodisp.a $(TOOL_OBJ) | bin
+pycytoplay: pycytoplay.cc player.o $(OBJ_PLAYER) frame_reader.o sim_thread.o cytosimG.a cytodisp.a $(TOOL_OBJ) | bin
 	$(COMPILE) $(PYTHONI) $(TOOL_INC) $(OBJECTS) $(LINK) -fPIC $(INCS) $(PLAY_DEPER) -o bin/cytoplay$(SUFFIX)
 	$(DONE)
 vpath cythosim bin

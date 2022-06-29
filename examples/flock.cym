@@ -1,0 +1,47 @@
+% A fish school, first without interactions
+% F. Nedelec, 23 Jan 2010
+
+
+set simul system
+{
+    steric = 1, 100, 0  % enable, stiffness push, stiffness pull
+    precondition = 0
+    time_step = 0.01
+    kT = 0.0042
+    steric_max_range = 5
+    
+    display = ( point_value=0.01; delay=10; period=4; )
+}
+
+set space cell
+{
+    shape = circle
+}
+
+new cell
+{
+    radius = 3
+}
+
+set fiber fish
+{
+    rigidity = 1
+    confine = inside, 100
+    segmentation = 0.5
+    steric = 1, 0.1  % enable, radius
+    
+    display = ( line_width=6; color=red; )
+}
+
+
+new 10 fish
+{
+    length = 0.5
+}
+
+
+run 100000 system
+{
+    nb_frames = 100
+}
+

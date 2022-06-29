@@ -16,126 +16,94 @@
   To use in python : move the cytosim...._.so file to a folder with *.cmo files
     We recommend using cym/aster.cym for a demo.
    
- 
-    import cytoplay
-    sim = cytoplay.start('cym/aster.cym')
-    def runtimeCheck(simul):
-        return simul.time()
-    cytoplay.setRuntimeCheck(runtimeCheck)
-    cytoplay.play()
+    Then run : 
+        
+    import cytosim
+    sim = cytosim.open()
+    sim.prop.timestep 
+    frame = cytosim.load(0)
+    fibers = frame["microtubule"]
+    fibers.prop.segmentation = 1.337    # <- Yes, yes, yes.
+    fibers[0].points()
+    fibers[0].id()
+    fibers[0].join(fibers[1]) # <- yes, indeed
+    core = frame["core"][0]
+    core.points()
+    while frame.loaded:
+        print(frame.time)
+        frame = frame.next()
+         
 
+    OR, IN LIVE MODE !
+
+    sim = cytosim.start('cym/aster.cym')
+    fibers = sim.fibers
+    fibers[0].join(fibers[1])    # <- Yes, yes, yes. 
+    sim.run(10)
+     
+    # etc...
 */
 
 /*
 @TODO : an interface for FiberSet (problem : cannot iterate because of FiberSet interface)
 @TODO : support input arguments
  */
-#include "cythosim.h"
+#include "pycytosim.h"
 
-#include "opengl.h"
-#include "player.h"
-#include "view.h"
-#include "gle.h"
-#include <pybind11/functional.h>
-#include <thread>
 namespace py = pybind11;
 
-Player player;
-
-
-
-
 /// Using global vars, sorry not sorry.
-FrameReader reader ;
-Simul&      simul = player.simul;
+FrameReader reader;
 int __is_loaded__ = 0;
-SimThread & thread = player.thread;
+SimThread * thread;
 bool __saved__ = 0;
 Parser * parser;
-PlayerProp&  prop = player.prop;
-DisplayProp& disp = player.disp;
-
-
-#  include "glut.h"
-#  include "glapp.h"
-#  include "fiber_prop.h"
-#  include "fiber_disp.h"
-#  include "point_disp.h"
-using glApp::flashText;
-#  include "play_keys.cc"
-#  include "play_menus.cc"
-#  include "play_mouse.cc"
-
 
 extern FrameReader reader;
 extern int __is_loaded__;
-extern SimThread & thread;
+extern SimThread * thread;
 extern bool __saved__;
 extern Parser * parser;
-extern Player player;
-extern PlayerProp& prop;
-extern DisplayProp& disp;
 
-/// A holder for normalKey callback
-inline std::function<unsigned char(unsigned char, int, int)>& normalKey()
-{
-    // returns a different object for each thread that calls it
-    static thread_local std::function<unsigned char(unsigned char, int, int)> fn;
-    return fn;
-}
-/// A proxy for the normalKeyy callback
-inline void proxyNormalKey(unsigned char c, int i, int j){ c = normalKey()(c, i ,j ); processNormalKey(c,i,j); };
+void gonna_callback(void) {};
 
-inline std::function<int(int, int, const Vector3&, int)>& mouseClick()
-{
-    // returns a different object for each thread that calls it
-    static thread_local std::function<int(int, int, const Vector3&, int)> mc;
-    return mc;
-}
-/// A proxy for the normalKeyy callback
-inline void proxyMouseClick(int i, int j, const Vector3& v, int k){int c = mouseClick()(i ,j, v, k );
-    processMouseClick(i,j,v,c); };
+/// Open the simulation from the .cmo files
+Simul * open()
+{   
+    
+    int verbose = 1;
+    int prefix = 0;
+    
+    Glossary arg;
 
-/// A holder for runtime callback
-inline std::function<void(Simul&)>& runtimeCheck()
-{
-    // returns a different object for each thread that calls it
-    static thread_local std::function<void(Simul&)> rt;
-    return rt;
-}
+    std::string input = TRAJECTORY;
+    std::string str;
 
-/// Displays the simulation live
-void displayLive(View& view)
-{
-    // Also adds a callback to an external function through caller->runtimeCheck
-    if ( 0 == thread.trylock() )
+    Simul * sim = new Simul;
+    
+    unsigned period = 1;
+
+    arg.set(input, ".cmo") || arg.set(input, "input");    
+    if ( arg.use_key("-") ) verbose = 0;
+
+    try
     {
-        // read and execute commands from incoming pipe:
-        thread.readInput(32);
-        //thread.debug("display locked");
-        if ( simul.prop->display_fresh )
-        {
-            player.readDisplayString(view, simul.prop->display);
-            simul.prop->display_fresh = false;
-        }
-        
-        player.prepareDisplay(view, 1);
-        player.displayCytosim();
-        
-        // external callback
-        runtimeCheck()(simul);
-        thread.unlock();
-        
+        RNG.seed();
+        sim->loadProperties();
+        reader.openFile(input);
+        Cytosim::all_silent();
+        __is_loaded__ = 1;
     }
-    else
+    catch( Exception & e )
     {
-        thread.debug("display: trylock failed");
-        glutPostRedisplay();
+        std::clog << "Aborted: " << e.what() << '\n';
+        return nullptr;
     }
+
+    return sim;
 }
 
-/// Initiates a simulation
-Simul * start(std::string fname ) {
+Simul * start(std::string fname) {
     int n = fname.length();
     char inp[n] ;
     std::strcpy(inp, fname.c_str());
@@ -149,8 +117,9 @@ Simul * start(std::string fname ) {
         Cytosim::warn.redirect(Cytosim::out);
     }
     
+    Simul * simul = new Simul;
     try {
-        simul.initialize(arg);
+        simul->initialize(arg);
     }
     catch( Exception & e ) {
         print_magenta(std::cerr, e.brief());
@@ -163,88 +132,85 @@ Simul * start(std::string fname ) {
     //arg.print_warning(std::cerr, 1, " on command line\n");
     time_t sec = TicToc::seconds_since_1970();
     
-    std::string file = simul.prop->config_file;
+    std::string file = simul->prop->config_file;
     std::string setup = file;
     
-    parser = new Parser(simul, 0, 1, 0, 0, 0);
+    parser = new Parser(*simul, 0, 1, 0, 0, 0);
     parser->readConfig();
-    
-    thread.period(prop.period);
-    thread.start();
+    //void foo(void) {};
+    //void (*foofoo)(void) = &bar;
+    //SimThread * thread = new SimThread(*simul, &bar);
+    thread = new SimThread(*simul, &gonna_callback);
+    //thread->period(1);
+    thread->start();
     __is_loaded__ = 2;
-
-    // Default null callbacks
-    normalKey() = [](unsigned char c, int i, int j) {return c;} ;
-    mouseClick() = [](int i, int j, const Vector3 v, int k) {return k;} ;
-    runtimeCheck() = [](Simul& sim) {};
-    
-    return &simul;
+    return simul;
 }
 
-void play_default(std::string opt){
-//#ifdef __APPLE__
-#if (1)
-    int argc = 1;
-    std::string st = "";
-    char * inp[1];
-    std::strcpy(*inp, st.c_str());
-    glutInit(&argc, inp);
-#endif
-    Glossary arg = Glossary(opt);
-    
-    glApp::setDimensionality(DIM);
-    if ( arg.use_key("fullscreen") )
-        glApp::setFullScreen(1);
-    View& view = glApp::views[0];
-    view.read(arg);
-    disp.read(arg);
-    simul.prop->read(arg);
-    view.setDisplayFunc(displayLive);
-    
-    // Definining the callbacks
-    glApp::actionFunc(proxyMouseClick);
-    glApp::actionFunc(processMouseDrag);
-    glApp::normalKeyFunc(proxyNormalKey);
-    glApp::createWindow(displayLive);
-    
-    try
-    {
-        gle::initialize();
-        player.setStyle(disp.style);
-        rebuildMenus();
-        glutAttachMenu(GLUT_RIGHT_BUTTON);
-        glutMenuStatusFunc(menuCallback);
-        if ( glApp::isFullScreen() )
-            glutFullScreen();
-        glutTimerFunc(200, timerCallback, 0);
+/// Prepares a given frame by sorting objects into object groups
+int loader( Simul * sim, FrameReader * reader, int fr) 
+{   
+	int load = 1;
+    if (__is_loaded__ == 1) {
+        try 
+        {
+            load = reader->loadFrame(*sim, fr);
+            if (load!=0) {
+                std::clog << "Unable to load frame " << fr << ". Maybe frame does not exist." << std::endl;
+            } 
+                
+        }
+        catch( Exception & e )
+        {
+            std::clog << "Aborted: " << e.what() << '\n';
+        }
     }
-    catch ( Exception & e )
-    {
-        print_magenta(std::cerr, e.brief());
-        std::cerr << '\n' << e.info() << '\n';
+    else{
+        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
     }
     
-    try
-    {
-        glutMainLoop();
-    }
-    catch ( Exception & e )
-    {
-        print_magenta(std::cerr, e.brief());
-        std::cerr << '\n' << e.info() << '\n';
-    }
+    return load;
 }
 
-
+int loadNext( Simul * sim, FrameReader * reader) 
+{   
+	int load = 1;
+    if (__is_loaded__ == 1) {
+        try 
+        {
+            load = reader->loadNextFrame(*sim);
+            if (load!=0) {
+                std::clog << "Unable to load next frame. Maybe frame does not exist." << std::endl;
+            } 
+                
+        }
+        catch( Exception & e )
+        {
+            std::clog << "Aborted: " << e.what() << '\n';
+        }
+    }
+    else{
+        std::clog << "Simulation not loaded : use cytosim.open() first" << std::endl;
+    }
+    
+    return load;
+}
 /// A python module to run or play cytosim
-PYBIND11_MODULE(cytoplay, m) {
-    m.doc() = "# live mode only \n"
-                "sim = cytoplay.start('cym/aster.cym') \n"
-                "def runtimeCheck(simul): \n"
-                "   print(simul.time()) \n"
-                "cytoplay.setRuntimeCheck(runtimeCheck) \n"
-                "cytoplay.play() \n";
-                 // optional module docstring
+PYBIND11_MODULE(cytosim, m) {
+    m.doc() = "sim = cytosim.open() \n"
+                "sim.prop.timestep \n"
+                "frame = cytosim.load(0) \n"
+                "fibers = frame['microtubule'] \n"
+                "print(len(fibers)) \n"
+                "while frame.loaded: \n"
+                "    print(frame.time) \n"
+                "    frame = frame.next()"
+                "# --- OR --- \n"
+                "sim = cytosim.start('cym/aster.cym') \n"
+                "frame = sim.frame() \n"
+                "sim.fibers \n"
+                "fibers[0].join(fibers[1])    # <- Yes, yes, yes. \n"
+                "sim.run(10) \n"; // optional module docstring
     
     /// Loading properties into the module
     load_object_classes(m);
@@ -278,41 +244,34 @@ PYBIND11_MODULE(cytoplay, m) {
         .def_readwrite("index", &Frame::index)
         .def_readwrite("loaded", &Frame::loaded)
         .def("update", [](Frame &f) {  return make_frame(f.simul) ; })
+        .def("next", [](Frame &f)
+			  {	if (loader(f.simul, &reader, f.index+1)==0) 
+					{return make_frame_index(f.simul,f.index+1 );}
+				return new Frame;}) //py::return_value_policy::reference
+        .def("__iter__", [](Frame &f) {
+            return py::make_iterator(f.objects.begin(), f.objects.end());
+        }, py::keep_alive<0, 1>())
         .def("keys", [](Frame &f) {  return f.objects.attr("keys")() ; })
         .def("items", [](Frame &f) { return f.objects.attr("items")() ; })
         .def("__getitem__",[](const Frame &f, std::string s) {
                  return f.objects[py::cast(s)];
              }, py::return_value_policy::reference);
 
-    /// Python interface to play/start a simulation
-    m.def("simul",[](){return &simul ;}, py::return_value_policy::reference);
-    m.def("start",[](std::string fname ){return start(fname) ;}, py::return_value_policy::reference);
-    m.def("play", [](py::args args) {
-        int nargs = args.size();
-        if (nargs == 0) { play_default("")  ; }
-        else {
-            std::string opt;
-            for (auto arg : args) {
-                opt += py::cast<std::string>(arg);
-                }
-            std::cout << opt << std::endl;
-            play_default(opt);
-            }
-        }, py::call_guard<py::gil_scoped_release>());
-    m.def("setNormalKey",[](py::function f) {
-        normalKey() = py::cast<std::function<unsigned char(unsigned char, int, int)>>(f);
-        });
-    m.def("setRuntimeCheck",[](py::function f) {
-        runtimeCheck() = py::cast<std::function<void(Simul&)>>(f);
-    });
-    m.def("setMouseClick",[](py::function f) {
-        mouseClick() = py::cast<std::function<int(int, int, Vector3, int)>>(f);
-    });
- 
-    m.def("str_to_glos", &str_to_glos, "converts string to Glossary");
     
+    /// Opens the simulation from *.cmo files
+    m.def("open", &open, "loads simulation from object files", py::return_value_policy::reference);
+    m.def("start", &start, "loads simulation from config files", py::return_value_policy::reference);
+    m.def("str_to_glos", &str_to_glos, "converts string to Glossary");
 
     /// Expading Python interface to simul
+    pysim.def("load", [](Simul * sim, size_t i) 
+            {return !loader(sim, &reader, i);  }); //py::return_value_policy::reference
+    pysim.def("next", [](Simul * sim) 
+            {return !loadNext(sim, &reader);  }); //py::return_value_policy::reference
+	pysim.def("loadframe", [](Simul * sim, size_t i) 
+            {	if (loader(sim, &reader, i)==0) 
+					{return make_frame_index(sim,i);}
+				return new Frame;}); //py::return_value_policy::reference
     pysim.def("frame", [](Simul * sim) 
             {return make_frame(sim);} ); //py::return_value_policy::reference
     pysim.def("writeObjects",  [](Simul * sim) {
@@ -381,6 +340,9 @@ PYBIND11_MODULE(cytoplay, m) {
             Glossary glos = Glossary(how);
             parser->execute_set(cat, name, glos);
             return glos;
-            });
+            });        
+
+    //pysim.def("spaces", [](Simul * sim) {return sim->spaces;}, py::return_value_policy::reference);
+            
 }
 
