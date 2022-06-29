@@ -275,12 +275,12 @@ The Fiber is cut at distance `abs` from its MINUS_END:
  pointer may be zero, if `abs` was not within the valid range of abscissa.
  If a new Fiber was created, it should be added to the FiberSet.
  */
-Fiber* Fiber::severP(real abs)
+Fiber* Fiber::severM(real abs)
 {
     if ( abs <= REAL_EPSILON || abs + REAL_EPSILON >= length() )
         return nullptr;
     
-    //std::clog << "severP " << reference() << " at " << abscissaM()+abs << "\n";
+    //std::clog << "severM " << reference() << " at " << abscissaM()+abs << "\n";
 
     // create a new Fiber of the same class:
     Fiber* fib = prop->newFiber();
@@ -343,7 +343,10 @@ void Fiber::severNow()
         {
             // we check the range again, since the fiber tip may have changed:
             if ( cut.abs > abscissaM() )
+            {
                 cutM(cut.abs-abscissaM());
+                setDynamicStateM(cut.stateM);
+            }
             /*
              since we have deleted the MINUS_END section,
              the following cuts in the list, which will be of lower abscissa,
@@ -355,11 +358,14 @@ void Fiber::severNow()
         {
             // we check the range again, since the fiber tip may have changed:
             if ( cut.abs < abscissaP() )
+            {
                 cutP(abscissaP()-cut.abs);
+                setDynamicStateP(cut.stateP);
+            }
         }
         else
         {
-            Fiber * frag = severP(cut.abs-abscissaM());
+            Fiber * frag = severM(cut.abs-abscissaM());
             
             // special case where the PLUS_END section is simply deleted
             if ( cut.stateM == STATE_BLACK )
@@ -439,9 +445,9 @@ void Fiber::planarCut(Vector const& n, const real a, state_t stateP, state_t sta
             cuts.push_back(abscissaPoint(s+abs));
     }
     
-    for ( real s : cuts )
+    for ( real abs : cuts )
     {
-        Fiber * fib = severNow(s);
+        Fiber * fib = severM(abs-abscissaM());
         if ( fib )
         {
             // old PLUS_END converves its state:
