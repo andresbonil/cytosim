@@ -30,7 +30,7 @@
 @TODO : an interface for FiberSet (problem : cannot iterate because of FiberSet interface)
 @TODO : support input arguments
  */
-#include "cythosim.h"
+#include "pycytosim.h"
 
 #include "opengl.h"
 #include "player.h"

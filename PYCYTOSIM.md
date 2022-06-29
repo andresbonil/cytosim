@@ -1,19 +1,19 @@
-# Cythosim
-Cythosim is an *experimental* C-Python interface for cytosim.
+# PyCytosim
+PyCytosim is an *experimental* C-Python interface for cytosim.
 
 It allows to run, save, load simulations, as well as interact with native cytosim objects.   
 Please refer to iPython notebooks for examples. The functions available for cytosim objects mirror the C++ functions and thus are detailed in cytosim documentation. Currently all functions are not yet implemented thou.
 ## Compilation
-First install pybind and then compile "cythosim". Cythosim requires python >= 3.7 and a compiler supporting C++17. Code below should yield a file  
+First install pybind and then compile "pycytosim". PyCytosim requires python >= 3.7 and a compiler supporting C++17. Code below should yield a file  
  cytosim.(...).so in your bin folder. E.g. : "cytosim.cpython-37m-x86_64-linux-gnu.so"
 
 ```bash
 $ python3 -m pip install -U --user pybind11
-$ make -j4 cythosim
+$ make -j4 pycytosim
 ```
 
 ## Principle
-Cythosim is an interface to native cytosim objects.
+PyCytosim is an interface to native cytosim objects.
 ### Running simulations
 
  ```python
@@ -61,13 +61,13 @@ Very little code change was performed in cytosim except :
 - In simul.h and simul_solve.cc : addition of Simul::prepared_solve() : basically Simul::solve without sMeca.prepare.  
 - In mecable.h : addition of mecable::nonConstData() : like data() but not const.  
 
-## How to use Cythosim on other branches of cytosim ?
-If you want to use cythosim on other branches of cytosim, you can "easily" do so with a few operations :  
-- Download cythosim in an other folder.  
-- Copy paste files src/tools/cythosim.* and src/tools/makefile.inc into your own src/tools.  
+## How to use PyCytosim on other branches of cytosim ?
+If you want to use PyCytosim on other branches of cytosim, you can "easily" do so with a few operations :  
+- Download PyCytosim in an other folder.  
+- Copy paste files src/tools/pycytosim.* and src/tools/makefile.inc into your own src/tools.  
 - Copy folder src/cpython into your own src/  
 - (possibly) Copy makefile.inc into your own folder.  
 - Rename "src/base/node.cc/h" to "src/base/noder.cc/h" and change all occurences of "#include 'node.h'" to "#include 'noder.h'" in your code.  
-- Copy "src/base/glossary.h" to your own "src/base". What is important is line 226 of cythosim's glossary.h.  
+- Copy "src/base/glossary.h" to your own "src/base". What is important is line 226 of PyCytosim's glossary.h.  
 - Copy "src/sim/simul.h" and "src/sim/simul_solve.cc" to your own src/sim. What is important is the declaration of Simul::prepare_meca and Simul::prepared_solve  
 - Copy "src/sim/mecable.h" to your own "src/sim/" folder. What is important is the declaration of nonConstData().  
