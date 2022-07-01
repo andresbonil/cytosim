@@ -55,7 +55,7 @@ auto load_simul_classes(py::module_ &m) {
                strides             /* Strides (in bytes) for each index */
                );
     });
-    
+#if (DIM !=3)    
     /// Python interface to Vector
     py::class_<Vector3>(m, "Vector3", py::buffer_protocol())
     .def_buffer([](Vector3 &vec) -> py::buffer_info {
@@ -71,7 +71,7 @@ auto load_simul_classes(py::module_ &m) {
                strides             /* Strides (in bytes) for each index */
                );
     });
-    
+#endif    
     /// Python interface to realArray (basically a wrapper a round real*)
     py::class_<realArray>(m, "realArray", py::buffer_protocol())
     .def_buffer([](realArray &mat) -> py::buffer_info {
