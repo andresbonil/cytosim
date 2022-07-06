@@ -9,6 +9,9 @@ class Object;
 
 /// a utility to enrich the cytosim python module
 void load_object_classes(py::module_ &m) {
+    m.def("toVector", &to_vector, "converts numpy array to vector");
+    m.def("toTorque", &to_torque, "converts numpy array to torque");
+    
 	py::class_<ObjectSet>(m, "ObjectSet")
 		.def("add",  [](ObjectSet * set, Object * obj) {return set->add(obj) ;})
 		.def("remove",  [](ObjectSet * set, Object * obj) {return set->remove(obj) ;})
