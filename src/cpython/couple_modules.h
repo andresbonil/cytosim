@@ -32,7 +32,6 @@ void load_couple_classes(py::module_ &m) {
         .def("attachEnd2",  [](Couple * s, Fiber * fib, int end) {return s->attachEnd2(fib, static_cast<FiberEnd>(end));})
         .def("moveToEnd1",  [](Couple * s,int end) {return s->moveToEnd1(static_cast<FiberEnd>(end));})
         .def("moveToEnd2",  [](Couple * s,int end) {return s->moveToEnd2(static_cast<FiberEnd>(end));})
-        .def("fiber1",  [](Couple * s) {return s->fiber1();}, py::return_value_policy::reference)
         .def("fiber2",  [](Couple * s) {return s->fiber2();}, py::return_value_policy::reference)
         .def("abcissa",  [](Couple * s) {return to_numpy(s->posFree());})
         .def("toCouple",  [](Object * s) {return toCouple(s);}, py::return_value_policy::reference)
