@@ -39,7 +39,7 @@ void simul_change(Simul & sim, std::string & who, Glossary & glos) {
 /// a utility to enrich the cytosim python module
 auto load_simul_classes(py::module_ &m) {
     /// Python interface to Vector
-    py::class_<Vector>(m, "Vector", py::buffer_protocol())
+    auto pyVector = py::class_<Vector>(m, "Vector", py::buffer_protocol())
     .def_buffer([](Vector &vec) -> py::buffer_info {
         void * data = vec.data();
         //int_vect sizes =  {1, DIM};
@@ -71,7 +71,10 @@ auto load_simul_classes(py::module_ &m) {
                strides             /* Strides (in bytes) for each index */
                );
     });
-#endif    
+#else
+    m.attr("Vector3") = pyVector;
+#endif
+   
     /// Python interface to realArray (basically a wrapper a round real*)
     py::class_<realArray>(m, "realArray", py::buffer_protocol())
     .def_buffer([](realArray &mat) -> py::buffer_info {
@@ -146,6 +149,7 @@ auto load_simul_classes(py::module_ &m) {
         .def("time",  [](Simul * sim) {return sim->time();})
         .def("time_step",  [](Simul * sim) {return sim->time_step();})
         .def("step",  [](Simul * sim) {return sim->step();})
+        .def("computeForces",  &Simul::computeForces)
         //.def("run",  [](Simul * sim, int n) {
         //    for (int i=0;i<n;++i) {
         //        sim->solve();

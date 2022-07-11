@@ -10,7 +10,7 @@ class Object;
 /// Converts an object to a single if possible
 static Single* toSingle(Object * obj)
 {
-    if ( obj  &&  obj->tag() == 'c' )
+    if ( obj  &&  obj->tag() == 's' )
         return static_cast<Single*>(obj);
     return nullptr;
 }

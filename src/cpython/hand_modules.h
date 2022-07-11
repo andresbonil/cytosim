@@ -13,14 +13,19 @@ class Object;
 
 /// a utility to enrich the cytosim python module
 void load_hand_classes(py::module_ &m) {
-     /// Python interface to couple
+     /// Python interface to Fibersite
+     /*
+      Now unused because of a memory bug
+    */
     py::class_<FiberSite>(m,"FiberSite")
         .def("moveTo",  [](FiberSite * h, real a) {return h->moveTo(a);})
         .def("relocateM",  [](FiberSite * h) {return h->relocateM();})
         .def("relocateP",  [](FiberSite * h) {return h->relocateP();})
         .def("unattached",  [](FiberSite * h) {return h->unattached();})
         .def("attached",  [](FiberSite * h) {return h->attached();})
-        .def("fiber",  [](FiberSite * h) {return h->fiber();})
+        .def("update",  &FiberSite::update)
+        .def("interpolation",  &FiberSite::interpolation, py::return_value_policy::reference)
+        .def("fiber",  [](FiberSite * h) {return h->fiber();}, py::return_value_policy::reference)
         .def("position",  [](FiberSite * h) {return to_numpy(h->pos());})
         .def("posHand",  [](FiberSite * h) {return to_numpy(h->posHand());})
         .def("direction",  [](FiberSite * h) {return to_numpy(h->dir());}) // direction because dir has a python meaning
@@ -31,6 +36,7 @@ void load_hand_classes(py::module_ &m) {
         .def("abscissaFrom",  [](FiberSite * h, int end) {return h->abscissaFrom(static_cast<FiberEnd>(end));})
         .def("nearestEnd",  [](FiberSite * h) {return static_cast<int>(h->nearestEnd());})
         .def("distanceToEnd",  [](FiberSite * h, int end) {return h->distanceToEnd(static_cast<FiberEnd>(end));});
+    
         
     py::class_<Hand,FiberSite>(m, "Hand")
         .def("property",  [](Hand * h) {return h->property();})
@@ -45,7 +51,29 @@ void load_hand_classes(py::module_ &m) {
         .def("attachTo",  [](Hand * h, Fiber * fib, real a,  int end) {return h->attachTo(fib, a, static_cast<FiberEnd>(end));})
         .def("otherHand",  [](Hand * h) {return h->otherHand();})
         .def("otherPosition",  [](Hand * h) {return to_numpy(h->otherPosition());})
-        .def("linkStiffness",  [](Hand * h) {return h->linkStiffness();});
+        .def("linkStiffness",  [](Hand * h) {return h->linkStiffness();})
+        /* 
+         These should be in FiberSite, but there is a memory bug 
+        */
+        .def("moveTo",  [](Hand * h, real a) {return h->moveTo(a);})
+        .def("relocateM",  [](Hand * h) {return h->relocateM();})
+        .def("relocateP",  [](Hand * h) {return h->relocateP();})
+        .def("unattached",  [](Hand * h) {return h->unattached();})
+        .def("attached",  [](Hand * h) {return h->attached();})
+        .def("update",  &Hand::update)
+        .def("interpolation",  &Hand::interpolation, py::return_value_policy::reference)
+        .def("fiber",  [](Hand * h) {return h->fiber();}, py::return_value_policy::reference)
+        .def("position",  [](Hand * h) {return to_numpy(h->pos());})
+        .def("posHand",  [](Hand * h) {return to_numpy(h->posHand());})
+        .def("direction",  [](Hand * h) {return to_numpy(h->dir());}) // direction because dir has a python meaning
+        .def("dirFiber",  [](Hand * h) {return to_numpy(h->dirFiber());})
+        .def("abscissa",  [](Hand * h) {return h->abscissa();})
+        .def("abscissaFromM",  [](Hand * h) {return h->abscissaFromM();})
+        .def("abscissaFromP",  [](Hand * h) {return h->abscissaFromP();})
+        .def("abscissaFrom",  [](Hand * h, int end) {return h->abscissaFrom(static_cast<FiberEnd>(end));})
+        .def("nearestEnd",  [](Hand * h) {return static_cast<int>(h->nearestEnd());})
+        .def("distanceToEnd",  [](Hand * h, int end) {return h->distanceToEnd(static_cast<FiberEnd>(end));});
+         
         
          /**
             @TODO : ADD SPECIALIZED HAND CLASSES

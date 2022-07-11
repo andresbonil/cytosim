@@ -7,6 +7,10 @@ namespace py = pybind11;
 
 class Meca;
 
+/*
+ @ToDo : an overload cast for functions either for Mecapoint or Interpolation
+*/ 
+
 /// a utility to enrich the cytosim python module
 void load_meca_classes(py::module_ &m) {
     py::class_<Meca>(m, "Meca")
