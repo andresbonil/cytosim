@@ -17,7 +17,7 @@ void load_hand_classes(py::module_ &m) {
      /*
       Now unused because of a memory bug
     */
-    py::class_<FiberSite>(m,"FiberSite");
+    py::class_<FiberSite>(m,"FiberSite")
         .def("moveTo",  [](FiberSite * h, real a) {return h->moveTo(a);})
         .def("relocateM",  [](FiberSite * h) {return h->relocateM();})
         .def("relocateP",  [](FiberSite * h) {return h->relocateP();})
