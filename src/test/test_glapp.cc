@@ -14,7 +14,7 @@
 Vector3 origin(0,0,0), position(0,0,0);
 
 
-void display(View&, int)
+void display(View&)
 {
     glEnable(GL_LIGHTING);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);

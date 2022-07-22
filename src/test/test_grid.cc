@@ -149,7 +149,7 @@ static bool field_color(void*, const real& val, Vector2 const&)
 }
 #endif
 
-void display(View&, int)
+void display(View&)
 {
     char str[16];
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
