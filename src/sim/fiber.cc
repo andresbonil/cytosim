@@ -268,7 +268,7 @@ Fiber *Fiber::severPoint(unsigned int pti)
         if (ha->abscissa() > abs)
             ha->relocate(fib);
         else
-            ha->update();
+            ha->reinterpolate();
         ha = nx;
     }
 
@@ -329,7 +329,7 @@ Fiber *Fiber::severM(real abs)
         if (ha->abscissa() >= abs)
             ha->relocate(fib);
         else
-            ha->update();
+            ha->reinterpolate();
         ha = nx;
     }
 
@@ -886,7 +886,7 @@ void Fiber::removeHand(Hand *n) const
 void Fiber::updateHands() const
 {
     for (Hand *ha = handListFront; ha; ha = ha->next())
-        ha->update();
+        ha->reinterpolate();
 }
 
 void Fiber::detachHands() const
@@ -1066,7 +1066,7 @@ void Fiber::updateFiber()
     {
         Hand *nx = ha->next();
         assert_true(ha->fiber() == this);
-        ha->update();
+        ha->reinterpolate();
         ha->checkFiberRange();
         ha = nx;
     }
