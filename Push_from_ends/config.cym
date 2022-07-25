@@ -15,12 +15,12 @@ set space cell
 
 new cell
 {
-    radius = 5
+    radius = 8
 }
 
 set fiber filament
 {
-    rigidity = 5
+    rigidity = 20
     segmentation = 0.5
     binding_key = 2
     %display = ( point=6,1; line=10,2; )
@@ -94,20 +94,20 @@ set couple carrier
 
 new fiber1
 {
-    length = 3
-    orientation = 1 0 0
+    length = 5
+    orientation = 1 1 0
     position = -3 0 0
-    attach1 = link, 0,,, -1.5 0 0
-    attach2 = link, 3,,, 1.5 0 0
+    attach1 = link, 0,,, -2.5 0 0
+    attach2 = link, 5,,, 2.5 0 0
 }
 
 new fiber2
 {
     length = 3
-    orientation = -1 0 0
+    orientation = -1 1 0
     position = 3 0 0
-    attach1 = link, 0,,, -1.5 0 0
-    attach2 = link, 3,,, 1.5 0 0
+    attach1 = link, 0,,, -2.5 0 0
+    attach2 = link, 5,,, 2.5 0 0
 }
 
 new filament

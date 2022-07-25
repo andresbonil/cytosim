@@ -15,7 +15,7 @@ set space cell
 
 new cell
 {
-    radius = 10
+    radius = 8
 }
 
 set fiber filament
@@ -71,7 +71,7 @@ set hand motor
 {
     binding_key = 1
     binding_rate = 100
-    binding_range = 0.5
+    binding_range = 5
     unbinding_rate = 0
     unbinding_force = inf
     
@@ -94,29 +94,29 @@ set couple carrier
 
 new fiber1
 {
-    length = 3
-    orientation = -1 0 0
+    length = 5
+    orientation = -1 1 0
     position = -3 0 0
-    attach1 = link, 0,,, -1.5 0 0
-    attach2 = link, 3,,, 1.5 0 0
+    attach1 = link, 0,,, -2.5 0 0
+    attach2 = link, 5,,, 2.5 0 0
 }
 
 new fiber2
 {
-    length = 3
-    orientation = 1 0 0
+    length = 5
+    orientation = 1 1 0
     position = 3 0 0
-    attach1 = link, 0,,, -1.5 0 0
-    attach2 = link, 3,,, 1.5 0 0
+    attach1 = link, 0,,, -2.5 0 0
+    attach2 = link, 5,,, 2.5 0 0
 }
 
 new filament
 {
-    length = 7
+    length = 6
     position = 0 0 0
     orientation = 1 0 0
     attach1 = carrier, 0,,, -3 0 0
-    attach2 = carrier, 7,,, 3 0 0
+    attach2 = carrier, 6,,, 3 0 0
 }
 
 
