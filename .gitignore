@@ -1,7 +1,5 @@
-
-# Cytosim's specific stuff 
+# Cytosim's specific stuff
 build
-bin
 lib
 dep
 bin1
@@ -17,7 +15,6 @@ bin3
 *.mode1
 *.mode1v3
 DerivedData
-
 
 # Created by https://www.gitignore.io/api/c++,cmake
 

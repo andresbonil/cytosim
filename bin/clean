@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Cleans folders after each make
+
+set -Eeuo pipefail
+set -x
+
+cd ..
+
+cd test
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+
+echo "Folders cleaned!"
+
+cd ..
+cp bin/play/ /test/
+cp bin/report/ /test/
+cp bin/sim/ /test/
+
+echo "New make files copied"

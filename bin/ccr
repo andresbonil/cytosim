@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# Cleans folders, copies new make info, runs specified command if supplied
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+cd test
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+
+echo "Folders cleaned!"
+
+cd ..
+cp bin/play test/
+cp bin/report test/
+cp bin/sim test/
+
+echo "New make files copied"
+ARG=${1:-"default"}
+
+if [ $ARG != "default" ]; then
+    case $1 in
+    "sim")
+        cd test
+        ./sim
+        echo "Ran sim"
+        ;;
+    "play")
+        cd test
+        ./play live
+        echo "Play live"
+        ;;
+    esac
+fi
