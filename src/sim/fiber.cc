@@ -15,11 +15,16 @@
 #include "meca.h"
 #include "hand.h"
 #include "sim.h"
+#include <fstream>
 
 #pragma mark - Step
 
+std::ofstream fout;
+
 void Fiber::step()
 {
+    fout.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+    fout << "IN STEP" << std::endl;
     assert_small(length1() - length());
 
     // add single that act like glue
@@ -51,19 +56,19 @@ void Fiber::step()
     {
         // pseudocode had initialized fiber object, make sure nbSegments() works without having a fiber object call member function
         real ten = tension(segment);
-        Cytosim::log << "[TENSION] Segment: " << segment << " has tension: " << ten << std::endl;
+        fout << "[TENSION] Segment: " << segment << " has tension: " << ten << std::endl;
         if (ten > 0)
         {
             // FIXME parameter_rate and parameter_force supplied by config
             // real rate = prop->parameter_rate * std::exp(prop->parameter_force * ten)
             real rate = 1.0 * std::exp(1.0 * ten);
-            Cytosim::log << "[RATE] Rate is: " << rate << std::endl;
-            Cytosim::log << "[TIMESTEP] " << simul().time_step() << std::endl;
+            fout << "[RATE] Rate is: " << rate << std::endl;
+            fout << "[TIMESTEP] " << simul().time_step() << std::endl;
             real prob = -std::expm1(rate * simul().time_step());
-            Cytosim::log << "[PROBABILITY] Probability is: " << prob << std::endl;
+            fout << "[PROBABILITY] Probability is: " << prob << std::endl;
             if (RNG.test(prob))
             {
-                Cytosim::log << "[BREAK] Segment " << segment << " breaks." << std::endl;
+                fout << "[BREAK] Segment " << segment << " breaks." << std::endl;
                 real abs = abscissaPoint(segment) + RNG.preal() * segmentation();
                 sever(abs, STATE_RED, STATE_GREEN);
             }

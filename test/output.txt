@@ -1,0 +1,21 @@
+IN STEP
+[TENSION] Segment: 0 has tension: -2000.3
+[TENSION] Segment: 1 has tension: -2000.29
+[TENSION] Segment: 2 has tension: -2000.24
+[TENSION] Segment: 3 has tension: -2000.28
+[TENSION] Segment: 4 has tension: -2000.17
+[TENSION] Segment: 5 has tension: -2000.12
+[TENSION] Segment: 6 has tension: -2000.01
+[TENSION] Segment: 7 has tension: -1999.94
+[TENSION] Segment: 8 has tension: -1999.87
+[TENSION] Segment: 9 has tension: -1999.87
+[TENSION] Segment: 10 has tension: -1999.78
+[TENSION] Segment: 11 has tension: -1999.88
+[TENSION] Segment: 12 has tension: -2000.11
+[TENSION] Segment: 13 has tension: -2000.05
+[TENSION] Segment: 14 has tension: -2000.02
+[TENSION] Segment: 15 has tension: -1999.95
+[TENSION] Segment: 16 has tension: -2000.08
+[TENSION] Segment: 17 has tension: -1999.78
+[TENSION] Segment: 18 has tension: -1999.79
+[TENSION] Segment: 19 has tension: -1999.79
