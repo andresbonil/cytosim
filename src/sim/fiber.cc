@@ -57,7 +57,7 @@ void Fiber::step()
         // pseudocode had initialized fiber object, make sure nbSegments() works without having a fiber object call member function
         real ten = tension(segment);
         fout << "[TENSION] Segment: " << segment << " has tension: " << ten << std::endl;
-        if (ten > 0)
+        if (std::abs(ten) > 0)
         {
             // FIXME parameter_rate and parameter_force supplied by config
             // real rate = prop->parameter_rate * std::exp(prop->parameter_force * ten)

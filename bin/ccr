@@ -9,10 +9,12 @@ set -o nounset
 
 cd test
 rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+cd ..
+
+make
 
 echo "Folders cleaned!"
 
-cd ..
 cp bin/play test/
 cp bin/report test/
 cp bin/sim test/
