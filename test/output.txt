@@ -1,21 +1,81 @@
-IN STEP
-[TENSION] Segment: 0 has tension: -2000.3
-[TENSION] Segment: 1 has tension: -2000.29
-[TENSION] Segment: 2 has tension: -2000.24
-[TENSION] Segment: 3 has tension: -2000.28
-[TENSION] Segment: 4 has tension: -2000.17
-[TENSION] Segment: 5 has tension: -2000.12
-[TENSION] Segment: 6 has tension: -2000.01
-[TENSION] Segment: 7 has tension: -1999.94
-[TENSION] Segment: 8 has tension: -1999.87
-[TENSION] Segment: 9 has tension: -1999.87
-[TENSION] Segment: 10 has tension: -1999.78
-[TENSION] Segment: 11 has tension: -1999.88
-[TENSION] Segment: 12 has tension: -2000.11
-[TENSION] Segment: 13 has tension: -2000.05
-[TENSION] Segment: 14 has tension: -2000.02
+IN STEP FUNCTION
+[TENSION] Segment: 0 has tension: -1999.95
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 1 has tension: -2000.06
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 2 has tension: -2000.11
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 3 has tension: -2000.01
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 4 has tension: -1999.94
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 5 has tension: -2000.22
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 6 has tension: -2000.26
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 7 has tension: -2000.07
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 8 has tension: -1999.89
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 9 has tension: -1999.95
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 10 has tension: -2000.04
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 11 has tension: -1999.94
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 12 has tension: -1999.71
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 13 has tension: -1999.79
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 14 has tension: -1999.84
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
 [TENSION] Segment: 15 has tension: -1999.95
-[TENSION] Segment: 16 has tension: -2000.08
-[TENSION] Segment: 17 has tension: -1999.78
-[TENSION] Segment: 18 has tension: -1999.79
-[TENSION] Segment: 19 has tension: -1999.79
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 16 has tension: -2000.09
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 17 has tension: -2000.23
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 18 has tension: -2000.13
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0
+[TENSION] Segment: 19 has tension: -2000.02
+[RATE] Rate is: 0
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0

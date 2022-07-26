@@ -13,8 +13,8 @@ rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report 
 echo "Folders cleaned!"
 
 cd ..
-cp bin/play/ /test/
-cp bin/report/ /test/
-cp bin/sim/ /test/
+cp bin/play test/
+cp bin/report test/
+cp bin/sim test/
 
 echo "New make files copied"
