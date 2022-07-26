@@ -24,7 +24,7 @@ std::ofstream fout;
 void Fiber::step()
 {
     fout.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-    fout << "IN STEP FUNCTION" << std::endl;
+    fout << "STEP FUNCTION" << std::endl;
     assert_small(length1() - length());
 
     // add single that act like glue
