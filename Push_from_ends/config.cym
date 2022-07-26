@@ -20,11 +20,11 @@ new cell
 
 set fiber filament
 {
-    rigidity = 20
-    segmentation = 0.5
+    rigidity = 18
+    segmentation = 0.2
     binding_key = 2
     %display = ( point=6,1; line=10,2; )
-    display = { color=white; line=1, 1; point=2, 2; forces = 1 }
+    display = { color=white; line=1, 1; point=2, 2; forces = 0 }
 }
 
 
@@ -71,13 +71,13 @@ set hand motor
 {
     binding_key = 1
     binding_rate = 100
-    binding_range = 0.5
-    unbinding_rate = 0.1
+    binding_range = 5
+    unbinding_rate = 0
     unbinding_force = inf
     
     activity = move
     unloaded_speed = 10
-    stall_force = 5
+    stall_force = 50
     
     hold_growing_end = 1
     display = ( width=3; size=12; color=orange )
@@ -103,7 +103,7 @@ new fiber1
 
 new fiber2
 {
-    length = 3
+    length = 5
     orientation = -1 1 0
     position = 3 0 0
     attach1 = link, 0,,, -2.5 0 0
@@ -112,17 +112,17 @@ new fiber2
 
 new filament
 {
-    length = 7
+    length = 6
     position = 0 0 0
     orientation = 1 0 0
     attach1 = carrier, 0,,, -3 0 0
-    attach2 = carrier, 7,,, 3 0 0
+    attach2 = carrier, 6,,, 3 0 0
 }
 
 
 run 10000 system
 {
-    nb_frames = 10
+    nb_frames = 100
 }
 
 report single:force force.txt { verbose=0; }

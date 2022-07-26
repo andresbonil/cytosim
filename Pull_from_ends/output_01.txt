@@ -1,0 +1,42 @@
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -0.236004
+[RATE] Rate is: 0.944162
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.000944608
+[TENSION] Segment: 1 has tension: -0.100656
+[RATE] Rate is: 3.65474
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.00366143
+[TENSION] Segment: 2 has tension: -0.0763905
+[RATE] Rate is: 4.65844
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.0046693
+[TENSION] Segment: 3 has tension: -0.179663
+[RATE] Rate is: 1.65856
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.00165994
+[TENSION] Segment: 4 has tension: 0.0321445
+[RATE] Rate is: 13.7912
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.0138867
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -0.0800864
+[RATE] Rate is: 4.48941
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.0044995
+[TENSION] Segment: 1 has tension: 0.0195536
+[RATE] Rate is: 12.1596
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.0122339
+[TENSION] Segment: 2 has tension: -0.0456287
+[RATE] Rate is: 6.33632
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.00635644
+[TENSION] Segment: 3 has tension: -0.0401639
+[RATE] Rate is: 6.69222
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.00671467
+[TENSION] Segment: 4 has tension: -0.0843065
+[RATE] Rate is: 4.30389
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: -0.00431317

@@ -61,10 +61,11 @@ void Fiber::step()
         {
             // FIXME parameter_rate and parameter_force supplied by config
             // real rate = prop->parameter_rate * std::exp(prop->parameter_force * ten)
-            real rate = 1.0 * std::exp(1.0 * ten);
+            real rate = 0.01 * std::exp(1.0 * std::abs(ten));
             fout << "[RATE] Rate is: " << rate << std::endl;
             fout << "[TIMESTEP] " << simul().time_step() << std::endl;
-            real prob = -std::expm1(rate * simul().time_step());
+            real prob = -std::expm1(-rate * simul().time_step());
+            // real prob = 0.1;
             fout << "[PROBABILITY] Probability is: " << prob << std::endl;
             if (RNG.test(prob))
             {
