@@ -112,7 +112,7 @@ new fiber2
 
 new filament
 {
-    length = 6
+    length = 6;
     position = 0 0 0
     orientation = 1 0 0
     attach1 = carrier, 0,,, -3 0 0

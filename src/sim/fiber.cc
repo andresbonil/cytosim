@@ -23,8 +23,8 @@ std::ofstream fout;
 
 void Fiber::step()
 {
-    fout.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-    fout << "STEP FUNCTION" << std::endl;
+    fout.open("output.txt", std::ios_base::app);
+    // fout << "STEP FUNCTION" << std::endl;
     assert_small(length1() - length());
 
     // add single that act like glue
@@ -51,26 +51,32 @@ void Fiber::step()
         return;
     }
 #endif
-    // Force breaking prototype
+    /*
+     Force breaking prototype
+     Any way to specify which microtubule is being acted upon?
+     */
     for (unsigned int segment = 0; segment < nbSegments(); ++segment)
     {
         // pseudocode had initialized fiber object, make sure nbSegments() works without having a fiber object call member function
         real ten = tension(segment);
-        fout << "[TENSION] Segment: " << segment << " has tension: " << ten << std::endl;
         if (std::abs(ten) > 0)
         {
-            // FIXME parameter_rate and parameter_force supplied by config
-            // real rate = prop->parameter_rate * std::exp(prop->parameter_force * ten)
-            real rate = 0.01 * std::exp(1.0 * std::abs(ten));
-            fout << "[RATE] Rate is: " << rate << std::endl;
-            fout << "[TIMESTEP] " << simul().time_step() << std::endl;
+            /*
+             FIXME parameter_rate and parameter_force supplied by config
+             real rate = prop->parameter_rate * std::exp(prop->parameter_force * ten)
+             parameter_rate = 0.01 and parameter_force = 1.0 for testing purposes
+             Temporarily defined locally before using in fiber_prop abstraction
+             */
+
+            real rate = prop->parameter_rate * std::exp(prop->parameter_force * std::abs(ten));
             real prob = -std::expm1(-rate * simul().time_step());
-            // real prob = 0.1;
-            fout << "[PROBABILITY] Probability is: " << prob << std::endl;
             if (RNG.test(prob))
             {
-                fout << "[BREAK] Segment " << segment << " breaks." << std::endl;
-                real abs = abscissaPoint(segment) + RNG.preal() * segmentation();
+                /* FIXME: segmentation should be 0.5. currently uses function that returns 5
+                 How to obtain semengation from config.cym file */
+                real abs = abscissaPoint(segment) + RNG.preal() * prop->segmentation;
+
+                // sever not changing the color of microtubules as they are cut
                 sever(abs, STATE_RED, STATE_GREEN);
             }
         }
