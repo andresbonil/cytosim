@@ -16,14 +16,19 @@
 #include "hand.h"
 #include "sim.h"
 #include <fstream>
+#include <list>
+#include <map>
+#include <functional>
+#include <vector>
 
 #pragma mark - Step
 
-std::ofstream fout;
+std::ofstream fout("output.txt", std::ios_base::trunc);
 
 void Fiber::step()
 {
-    fout.open("output.txt", std::ios_base::app);
+    auto foutbuf = fout.rdbuf();
+    std::clog.rdbuf(foutbuf);
     // fout << "STEP FUNCTION" << std::endl;
     assert_small(length1() - length());
 
@@ -55,32 +60,108 @@ void Fiber::step()
      Force breaking prototype
      Any way to specify which microtubule is being acted upon?
      */
+
+    // std::list<unsigned int> segments;
+    std::map<real, unsigned int> segmentmap;
+    std::vector<unsigned int> segments;
+
+    bool severed = false;
+
     for (unsigned int segment = 0; segment < nbSegments(); ++segment)
     {
-        // pseudocode had initialized fiber object, make sure nbSegments() works without having a fiber object call member function
-        real ten = tension(segment);
-        if (std::abs(ten) > 0)
-        {
-            /*
-             FIXME parameter_rate and parameter_force supplied by config
-             real rate = prop->parameter_rate * std::exp(prop->parameter_force * ten)
-             parameter_rate = 0.01 and parameter_force = 1.0 for testing purposes
-             Temporarily defined locally before using in fiber_prop abstraction
-             */
+        segments.push_back(tension(segment));
+        segmentmap.insert(std::make_pair(abs(tension(segment)), segment));
+    }
 
-            real rate = prop->parameter_rate * std::exp(prop->parameter_force * std::abs(ten));
+    std::sort(segments.begin(), segments.end(), std::greater<unsigned int>());
+    // std::clog << *segments.begin() << '\n';
+
+    // CLAUSE ONLY FOR TESTING AND ISOLATING SINGLE FIBER, REMOVE WHEN ASSESSING A MULTI-FIBER SYSTEM
+    if (Fiber::prop->segmentation == 0.5)
+    {
+        while (!severed && !segments.empty())
+        {
+            real ten = *segments.begin();
+            real rate = 0.01 * std::exp(1.0 * std::abs(ten));
             real prob = -std::expm1(-rate * simul().time_step());
             if (RNG.test(prob))
             {
-                /* FIXME: segmentation should be 0.5. currently uses function that returns 5
-                 How to obtain semengation from config.cym file */
-                real abs = abscissaPoint(segment) + RNG.preal() * prop->segmentation;
-
-                // sever not changing the color of microtubules as they are cut
-                sever(abs, STATE_RED, STATE_GREEN);
+                // std::clog << "prop->segmentation: " << prop->segmentation << "\n"
+                //           << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
+                //                                                                            "Fiber::targetsegmentaiton() "
+                //           << Fiber::targetSegmentation() << "\n";
+                real abscissa = abscissaPoint(segmentmap[abs(ten)]) + RNG.preal() * Fiber::prop->segmentation;
+                sever(abscissa, STATE_RED, STATE_GREEN);
+                severed = true;
+            }
+            else
+            {
+                segments.erase(segments.begin());
             }
         }
     }
+
+    //RANDOM BREAKING TIE PROTOTYPE
+    // if (Fiber::prop->segmentation == 0.5)
+    // {
+    //     while (!severed && !segments.empty())
+    //     {
+    //         int index = 0;
+    //         real ten = *segments.begin();
+    //         real rate = 0.01 * std::exp(1.0 * std::abs(ten));
+    //         real prob = -std::expm1(-rate * simul().time_step());
+    //         if (RNG.test(prob))
+    //         {
+    //             // std::clog << "prop->segmentation: " << prop->segmentation << "\n"
+    //             //           << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
+    //             //                                                                            "Fiber::targetsegmentaiton() "
+    //             //           << Fiber::targetSegmentation() << "\n";
+    //             if (segmentmap[abs(ten)].size() > 1)
+    //             {
+    //                 index = rand() % segmentmap[abs(ten)].size();
+    //             }
+    //             real abscissa = abscissaPoint(segmentmap[abs(ten)][index]) + RNG.preal() * Fiber::prop->segmentation;
+    //             sever(abscissa, STATE_RED, STATE_GREEN);
+    //             severed = true;
+    //         }
+    //         else
+    //         {
+    //             segments.erase(segments.begin());
+    //         }
+    //     }
+    // }
+
+    // for (unsigned int segment = 0; segment < nbSegments(); ++segment)
+    // {
+    //     // pseudocode had initialized fiber object, make sure nbSegments() works without having a fiber object call member function
+    //     real ten = tension(segment);
+    //     if (std::abs(ten) > 0)
+    //     {
+    //         /*
+    //          FIXME parameter_rate and parameter_force supplied by config
+    //          real rate = prop->parameter_rate * std::exp(prop->parameter_force * ten)
+    //          parameter_rate = 0.01 and parameter_force = 1.0 for testing purposes
+    //          Temporarily defined locally before using in fiber_prop abstraction
+    //          */
+
+    //         real rate = 0.01 * std::exp(1.0 * std::abs(ten));
+    //         real prob = -std::expm1(-rate * simul().time_step());
+    //         if (RNG.test(prob))
+    //         {
+    //             /* FIXME: segmentation should be 0.5. currently uses function that returns 5
+    //              How to obtain semengation from config.cym file */
+    //             // Print Fiber::prop->segmentation and prop->segmentation separately and compare
+    //             std::clog << "prop->segmentation: " << prop->segmentation << "\n"
+    //                       << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
+    //                                                                                        "Fiber::targetsegmentaiton() "
+    //                       << Fiber::targetSegmentation() << "\n";
+    //             real abs = abscissaPoint(segment) + RNG.preal() * Fiber::prop->segmentation;
+
+    //             // sever not changing the color of microtubules as they are cut
+    //             sever(abs, STATE_RED, STATE_GREEN);
+    //         }
+    //     }
+    // }
 
     // perform the cuts that were registered by sever()
     if (pendingCuts.size())
@@ -306,7 +387,9 @@ Fiber *Fiber::severM(real abs)
     if (abs <= REAL_EPSILON || abs + REAL_EPSILON >= length())
         return nullptr;
 
-    // std::clog << "severM " << reference() << " at " << abscissaM()+abs << "\n";
+    std::clog << "time: " << __TIME__ << "\n";
+    std::clog << "severM " << reference() << " at " << abscissaM() + abs << "\n";
+    std::clog << "position " << posM(abs) << "\n";
 
     // create a new Fiber of the same class:
     Fiber *fib = prop->newFiber();

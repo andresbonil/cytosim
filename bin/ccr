@@ -7,7 +7,11 @@ set -x
 set -u
 set -o nounset
 
-cd test
+cd Pull_from_ends
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+cd ..
+
+cd Push_from_ends
 rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
 cd ..
 
@@ -15,11 +19,14 @@ make
 
 echo "Folders cleaned!"
 
-cp bin/play test/
-cp bin/report test/
-cp bin/sim test/
+cp bin/play Pull_from_ends/
+cp bin/play Push_from_ends/
+cp bin/report Pull_from_ends/
+cp bin/report Push_from_ends/
+cp bin/sim Pull_from_ends/
+cp bin/sim Push_from_ends/
 
-echo "New make files copied"
+echo "New make files copied to both test folders"
 ARG=${1:-"default"}
 
 if [ $ARG != "default" ]; then

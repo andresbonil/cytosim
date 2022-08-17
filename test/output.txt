@@ -1,0 +1,505 @@
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -1999.81
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 0 breaks.
+[TENSION] Segment: 1 has tension: -1999.88
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 1 breaks.
+[TENSION] Segment: 2 has tension: -2000.09
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 2 breaks.
+[TENSION] Segment: 3 has tension: -2000
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 3 breaks.
+[TENSION] Segment: 4 has tension: -2000.35
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 4 breaks.
+[TENSION] Segment: 5 has tension: -2000.29
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 5 breaks.
+[TENSION] Segment: 6 has tension: -2000.29
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 6 breaks.
+[TENSION] Segment: 7 has tension: -2000.35
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 7 breaks.
+[TENSION] Segment: 8 has tension: -2000.28
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 8 breaks.
+[TENSION] Segment: 9 has tension: -2000.4
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 9 breaks.
+[TENSION] Segment: 10 has tension: -2000.46
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 10 breaks.
+[TENSION] Segment: 11 has tension: -2000.27
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 11 breaks.
+[TENSION] Segment: 12 has tension: -2000.41
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 12 breaks.
+[TENSION] Segment: 13 has tension: -2000.38
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 13 breaks.
+[TENSION] Segment: 14 has tension: -2000.46
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 14 breaks.
+[TENSION] Segment: 15 has tension: -2000.33
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 15 breaks.
+[TENSION] Segment: 16 has tension: -2000.31
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 16 breaks.
+[TENSION] Segment: 17 has tension: -2000.33
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 17 breaks.
+[TENSION] Segment: 18 has tension: -2000.28
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 18 breaks.
+[TENSION] Segment: 19 has tension: -2000.16
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 19 breaks.
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -1999.76
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 0 breaks.
+[TENSION] Segment: 1 has tension: -1999.79
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 1 breaks.
+[TENSION] Segment: 2 has tension: -1999.8
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 2 breaks.
+[TENSION] Segment: 3 has tension: -2000.05
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 3 breaks.
+[TENSION] Segment: 4 has tension: -1999.99
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 4 breaks.
+[TENSION] Segment: 5 has tension: -2000.04
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 5 breaks.
+[TENSION] Segment: 6 has tension: -2000.09
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 6 breaks.
+[TENSION] Segment: 7 has tension: -2000.29
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 7 breaks.
+[TENSION] Segment: 8 has tension: -2000.41
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 8 breaks.
+[TENSION] Segment: 9 has tension: -2000.37
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 9 breaks.
+[TENSION] Segment: 10 has tension: -2000.51
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 10 breaks.
+[TENSION] Segment: 11 has tension: -2000.34
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 11 breaks.
+[TENSION] Segment: 12 has tension: -2000.51
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 12 breaks.
+[TENSION] Segment: 13 has tension: -2000.5
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 13 breaks.
+[TENSION] Segment: 14 has tension: -2000.52
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 14 breaks.
+[TENSION] Segment: 15 has tension: -2000.54
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 15 breaks.
+[TENSION] Segment: 16 has tension: -2000.46
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 16 breaks.
+[TENSION] Segment: 17 has tension: -2000.4
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 17 breaks.
+[TENSION] Segment: 18 has tension: -2000.28
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 18 breaks.
+[TENSION] Segment: 19 has tension: -2000.36
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 19 breaks.
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -2000.02
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 0 breaks.
+[TENSION] Segment: 1 has tension: -2000.14
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 1 breaks.
+[TENSION] Segment: 2 has tension: -2000.15
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 2 breaks.
+[TENSION] Segment: 3 has tension: -2000.31
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 3 breaks.
+[TENSION] Segment: 4 has tension: -2000.19
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 4 breaks.
+[TENSION] Segment: 5 has tension: -2000.1
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 5 breaks.
+[TENSION] Segment: 6 has tension: -2000.11
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 6 breaks.
+[TENSION] Segment: 7 has tension: -2000.11
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 7 breaks.
+[TENSION] Segment: 8 has tension: -2000.11
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 8 breaks.
+[TENSION] Segment: 9 has tension: -2000.28
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 9 breaks.
+[TENSION] Segment: 10 has tension: -2000.39
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 10 breaks.
+[TENSION] Segment: 11 has tension: -2000.26
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 11 breaks.
+[TENSION] Segment: 12 has tension: -2000.38
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 12 breaks.
+[TENSION] Segment: 13 has tension: -2000.4
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 13 breaks.
+[TENSION] Segment: 14 has tension: -2000.29
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 14 breaks.
+[TENSION] Segment: 15 has tension: -2000.29
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 15 breaks.
+[TENSION] Segment: 16 has tension: -2000.17
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 16 breaks.
+[TENSION] Segment: 17 has tension: -2000.25
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 17 breaks.
+[TENSION] Segment: 18 has tension: -1999.95
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 18 breaks.
+[TENSION] Segment: 19 has tension: -1999.89
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 19 breaks.
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -2000.25
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 0 breaks.
+[TENSION] Segment: 1 has tension: -2000.15
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 1 breaks.
+[TENSION] Segment: 2 has tension: -2000.13
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 2 breaks.
+[TENSION] Segment: 3 has tension: -1999.96
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 3 breaks.
+[TENSION] Segment: 4 has tension: -1999.9
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 4 breaks.
+[TENSION] Segment: 5 has tension: -1999.97
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 5 breaks.
+[TENSION] Segment: 6 has tension: -1999.87
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 6 breaks.
+[TENSION] Segment: 7 has tension: -2000.07
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 7 breaks.
+[TENSION] Segment: 8 has tension: -2000.04
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 8 breaks.
+[TENSION] Segment: 9 has tension: -2000.09
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 9 breaks.
+[TENSION] Segment: 10 has tension: -2000.04
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 10 breaks.
+[TENSION] Segment: 11 has tension: -1999.75
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 11 breaks.
+[TENSION] Segment: 12 has tension: -1999.89
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 12 breaks.
+[TENSION] Segment: 13 has tension: -1999.84
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 13 breaks.
+[TENSION] Segment: 14 has tension: -1999.73
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 14 breaks.
+[TENSION] Segment: 15 has tension: -1999.82
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 15 breaks.
+[TENSION] Segment: 16 has tension: -1999.73
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 16 breaks.
+[TENSION] Segment: 17 has tension: -1999.78
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 17 breaks.
+[TENSION] Segment: 18 has tension: -1999.87
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 18 breaks.
+[TENSION] Segment: 19 has tension: -1999.98
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 19 breaks.
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -2000.46
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 0 breaks.
+[TENSION] Segment: 1 has tension: -2000.36
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 1 breaks.
+[TENSION] Segment: 2 has tension: -2000.35
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 2 breaks.
+[TENSION] Segment: 3 has tension: -2000.43
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 3 breaks.
+[TENSION] Segment: 4 has tension: -2000.37
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 4 breaks.
+[TENSION] Segment: 5 has tension: -2000.23
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 5 breaks.
+[TENSION] Segment: 6 has tension: -2000.08
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 6 breaks.
+[TENSION] Segment: 7 has tension: -2000.12
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 7 breaks.
+[TENSION] Segment: 8 has tension: -1999.83
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 8 breaks.
+[TENSION] Segment: 9 has tension: -1999.84
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 9 breaks.
+[TENSION] Segment: 10 has tension: -1999.83
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 10 breaks.
+[TENSION] Segment: 11 has tension: -1999.76
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 11 breaks.
+[TENSION] Segment: 12 has tension: -1999.73
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 12 breaks.
+[TENSION] Segment: 13 has tension: -1999.7
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 13 breaks.
+[TENSION] Segment: 14 has tension: -1999.63
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 14 breaks.
+[TENSION] Segment: 15 has tension: -1999.6
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 15 breaks.
+[TENSION] Segment: 16 has tension: -1999.53
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 16 breaks.
+[TENSION] Segment: 17 has tension: -1999.45
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 17 breaks.
+[TENSION] Segment: 18 has tension: -1999.55
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 18 breaks.
+[TENSION] Segment: 19 has tension: -1999.37
+[RATE] Rate is: inf
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1
+[BREAK] Segment 19 breaks.
