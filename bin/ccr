@@ -37,6 +37,18 @@ if [ $ARG != "default" ]; then
         echo "Ran sim"
         cd ..
         ;;
+    "sim_push")
+        cd Push_from_ends
+        ./sim
+        echo "Ran push from ends sim"
+        cd ..
+        ;;
+    "sim_pull")
+        cd Pull_from_ends
+        ./sim
+        echo "Ran pull from ends sim"
+        cd ..
+        ;;
     "play")
         cd test
         ./play live
