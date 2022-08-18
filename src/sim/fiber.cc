@@ -20,6 +20,7 @@
 #include <map>
 #include <functional>
 #include <vector>
+#include <deque>
 
 #pragma mark - Step
 
@@ -62,51 +63,25 @@ void Fiber::step()
      */
 
     // std::list<unsigned int> segments;
-    std::map<real, unsigned int> segmentmap;
-    std::vector<unsigned int> segments;
+    // std::map<real, unsigned int> segmentmap;
+    // std::vector<unsigned int> segments;
 
     bool severed = false;
 
-    for (unsigned int segment = 0; segment < nbSegments(); ++segment)
-    {
-        segments.push_back(tension(segment));
-        segmentmap.insert(std::make_pair(abs(tension(segment)), segment));
-    }
+    // for (unsigned int segment = 0; segment < nbSegments(); ++segment)
+    // {
+    //     segments.push_back(tension(segment));
+    //     segmentmap.insert(std::make_pair(abs(tension(segment)), segment));
+    // }
 
-    std::sort(segments.begin(), segments.end(), std::greater<unsigned int>());
+    // std::sort(segments.begin(), segments.end(), std::greater<unsigned int>());
     // std::clog << *segments.begin() << '\n';
 
     // CLAUSE ONLY FOR TESTING AND ISOLATING SINGLE FIBER, REMOVE WHEN ASSESSING A MULTI-FIBER SYSTEM
-    if (Fiber::prop->segmentation == 0.5)
-    {
-        while (!severed && !segments.empty())
-        {
-            real ten = *segments.begin();
-            real rate = 0.01 * std::exp(1.0 * std::abs(ten));
-            real prob = -std::expm1(-rate * simul().time_step());
-            if (RNG.test(prob))
-            {
-                // std::clog << "prop->segmentation: " << prop->segmentation << "\n"
-                //           << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
-                //                                                                            "Fiber::targetsegmentaiton() "
-                //           << Fiber::targetSegmentation() << "\n";
-                real abscissa = abscissaPoint(segmentmap[abs(ten)]) + RNG.preal() * Fiber::prop->segmentation;
-                sever(abscissa, STATE_RED, STATE_GREEN);
-                severed = true;
-            }
-            else
-            {
-                segments.erase(segments.begin());
-            }
-        }
-    }
-
-    //RANDOM BREAKING TIE PROTOTYPE
     // if (Fiber::prop->segmentation == 0.5)
     // {
     //     while (!severed && !segments.empty())
     //     {
-    //         int index = 0;
     //         real ten = *segments.begin();
     //         real rate = 0.01 * std::exp(1.0 * std::abs(ten));
     //         real prob = -std::expm1(-rate * simul().time_step());
@@ -116,11 +91,7 @@ void Fiber::step()
     //             //           << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
     //             //                                                                            "Fiber::targetsegmentaiton() "
     //             //           << Fiber::targetSegmentation() << "\n";
-    //             if (segmentmap[abs(ten)].size() > 1)
-    //             {
-    //                 index = rand() % segmentmap[abs(ten)].size();
-    //             }
-    //             real abscissa = abscissaPoint(segmentmap[abs(ten)][index]) + RNG.preal() * Fiber::prop->segmentation;
+    //             real abscissa = abscissaPoint(segmentmap[abs(ten)]) + RNG.preal() * Fiber::prop->segmentation;
     //             sever(abscissa, STATE_RED, STATE_GREEN);
     //             severed = true;
     //         }
@@ -130,6 +101,83 @@ void Fiber::step()
     //         }
     //     }
     // }
+
+    // RANDOM BREAKING TIE PROTOTYPE
+
+    std::map<real, std::deque<int>> segmentmap;
+    std::vector<real> tensionkeys;
+    for (int segment = 0; segment < nbSegments(); ++segment)
+    {
+        tensionkeys.push_back(abs(tension(segment)));
+        if (segmentmap[abs(tension(segment))].size() > 0)
+        {
+            std::clog << "size greater than 0, pushing back: " << segment << "\n";
+            segmentmap[abs(tension(segment))].push_back(segment);
+        }
+        else
+        {
+            std::deque<int> seg = {segment};
+            std::clog << "size less than 0, making new deque with size: " << seg.size() << "\n";
+            segmentmap[abs(tension(segment))] = seg;
+            // segmentmap.insert({abs(tension(segment)), seg});
+            std::clog << "insertion complete, size at key " << abs(tension(segment)) << " is " << segmentmap[abs(tension(segment))].size() << "\n";
+        }
+    }
+    std::sort(tensionkeys.begin(), tensionkeys.end(), std::greater<real>());
+
+    std::clog << "tension keys: "
+              << "\n";
+    for (auto it = tensionkeys.begin(); it != tensionkeys.end(); ++it)
+    {
+        std::clog << *it << " "
+                  << "\n";
+    }
+    // for (auto it = segmentmap.begin(); it != segmentmap.end(); ++it)
+    // {
+    //     std::clog << "key: " << it->first << " size " << it->second.size() << " values: ";
+    //     for (int i = 0; i < it->second.size(); i++)
+    //     {
+    //         std::clog << it->second[i] << " ";
+    //     }
+    //     std::clog << "\n";
+    // }
+    if (Fiber::prop->segmentation == 0.5)
+    {
+        while (!severed && !tensionkeys.empty())
+        {
+            int index = 0;
+            real ten = *tensionkeys.begin();
+            std::clog << "tension is: " << ten << "\n";
+            real rate = 0.01 * std::exp(1.0 * ten);
+            real prob = -std::expm1(-rate * simul().time_step());
+            // std::clog << "Up to line 130 good" << "\n";
+            // std::clog << "testing probability with prob " << prob << "\n";
+            // std::clog << "key: " << ten << " size at key: " << segmentmap[ten].size() << "\n";
+            if (RNG.test(prob))
+            {
+                // std::clog << "prop->segmentation: " << prop->segmentation << "\n"
+                //           << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
+                //                                                                            "Fiber::targetsegmentaiton() "
+                //           << Fiber::targetSegmentation() << "\n";
+                // std::clog << "Passed RNG test with prob : " << prob << "\n";
+
+                if (segmentmap[ten].size() > 1)
+                {
+                    index = rand() % segmentmap[ten].size();
+                }
+                // std::clog << "Index before access is " << index << "\n";
+                real abscissa = abscissaPoint(segmentmap[ten][index]) + RNG.preal() * Fiber::prop->segmentation;
+                sever(abscissa, STATE_RED, STATE_GREEN);
+                severed = true;
+            }
+            else
+            {
+                // std::clog << "In main else clause" << "\n";
+                tensionkeys.erase(tensionkeys.begin());
+                // std::clog << "tensionkeys length = " << tensionkeys.size() << "\n";
+            }
+        }
+    }
 
     // for (unsigned int segment = 0; segment < nbSegments(); ++segment)
     // {
