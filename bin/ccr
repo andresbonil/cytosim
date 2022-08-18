@@ -35,11 +35,26 @@ if [ $ARG != "default" ]; then
         cd test
         ./sim
         echo "Ran sim"
+        cd ..
         ;;
     "play")
         cd test
         ./play live
-        echo "Play live"
+        echo "Play test live"
+        cd ..
         ;;
+    "play_push")
+        cd Push_from_ends
+        ./play live
+        echo "Play push from ends live"
+        cd ..
+        ;;
+    "play_pull")
+        cd Pull_from_ends
+        ./play live 
+        echo "Play pull from ends live"
+        cd ..
+        ;;
+        
     esac
 fi
