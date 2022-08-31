@@ -111,43 +111,41 @@ void Fiber::step()
         tensionkeys.push_back(abs(tension(segment)));
         if (segmentmap[abs(tension(segment))].size() > 0)
         {
-            std::clog << "size greater than 0, pushing back: " << segment << "\n";
+            // std::clog << "size greater than 0, pushing back: " << segment << "\n";
             segmentmap[abs(tension(segment))].push_back(segment);
         }
         else
         {
             std::deque<int> seg = {segment};
-            std::clog << "size less than 0, making new deque with size: " << seg.size() << "\n";
+            // std::clog << "size less than 0, making new deque with size: " << seg.size() << "\n";
             segmentmap[abs(tension(segment))] = seg;
             // segmentmap.insert({abs(tension(segment)), seg});
-            std::clog << "insertion complete, size at key " << abs(tension(segment)) << " is " << segmentmap[abs(tension(segment))].size() << "\n";
+            // std::clog << "insertion complete, size at key " << abs(tension(segment)) << " is " << segmentmap[abs(tension(segment))].size() << "\n";
         }
     }
     std::sort(tensionkeys.begin(), tensionkeys.end(), std::greater<real>());
 
-    std::clog << "tension keys: "
-              << "\n";
-    for (auto it = tensionkeys.begin(); it != tensionkeys.end(); ++it)
-    {
-        std::clog << *it << " "
-                  << "\n";
-    }
-    // for (auto it = segmentmap.begin(); it != segmentmap.end(); ++it)
-    // {
-    //     std::clog << "key: " << it->first << " size " << it->second.size() << " values: ";
-    //     for (int i = 0; i < it->second.size(); i++)
-    //     {
-    //         std::clog << it->second[i] << " ";
-    //     }
-    //     std::clog << "\n";
-    // }
-    if (Fiber::prop->segmentation == 0.5)
+    // std::clog << "tension keys: " << "\n";
+    //  for (auto it = tensionkeys.begin(); it != tensionkeys.end(); ++it)
+    //  {
+    //      std::clog << *it << " " << "\n";
+    //  }
+    //  for (auto it = segmentmap.begin(); it != segmentmap.end(); ++it)
+    //  {
+    //      std::clog << "key: " << it->first << " size " << it->second.size() << " values: ";
+    //      for (int i = 0; i < it->second.size(); i++)
+    //      {
+    //          std::clog << it->second[i] << " ";
+    //      }
+    //      std::clog << "\n";
+    //  }
+    if (Fiber::prop->segmentation == 0.01)
     {
         while (!severed && !tensionkeys.empty())
         {
             int index = 0;
             real ten = *tensionkeys.begin();
-            std::clog << "tension is: " << ten << "\n";
+            // std::clog << "tension is: " << ten << "\n";
             real rate = 0.01 * std::exp(1.0 * ten);
             real prob = -std::expm1(-rate * simul().time_step());
             // std::clog << "Up to line 130 good" << "\n";

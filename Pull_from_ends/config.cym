@@ -24,7 +24,7 @@ set fiber filament
     segmentation = 0.5
     binding_key = 2
     %display = ( point=6,1; line=10,2; )
-    display = { color=white; line=1, 1; point=2, 2; forces = 1 }
+    display = { color=white; line=1, 1; point=2, 2; forces = 0 }
 }
 
 

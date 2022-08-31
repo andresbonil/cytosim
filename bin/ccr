@@ -49,6 +49,12 @@ if [ $ARG != "default" ]; then
         echo "Ran pull from ends sim"
         cd ..
         ;;
+    "sim_solid")
+        cd Solid
+        ./sim
+        echo "Ran solid"
+        cd ..
+        ;;
     "play")
         cd test
         ./play live
@@ -63,10 +69,16 @@ if [ $ARG != "default" ]; then
         ;;
     "play_pull")
         cd Pull_from_ends
-        ./play live 
+        ./play live
         echo "Play pull from ends live"
         cd ..
         ;;
-        
+    "play_solid")
+        cd Solid
+        ./play live
+        echo "Play solid live"
+        cd ..
+        ;;
+
     esac
 fi
