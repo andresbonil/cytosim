@@ -1,48 +1,50 @@
-time: 15:30:57
-severM f1:0003 at 0.221323
-position -2.76987 -0.00369574
-time: 15:30:57
-severM f1:0004 at 4.89226
-position 1.88051 0.0850455
-time: 15:30:57
-severM f1:0003 at 3.65021
-position 0.620361 0.012025
-time: 15:30:57
-severM f1:0003 at 3.91371
-position 0.926313 -0.0316029
-time: 15:30:57
-severM f1:0003 at 0.947565
-position -1.94172 0.0326525
-time: 15:30:57
-severM f1:0005 at 3.2733
-position 0.382079 -0.11299
-time: 15:30:57
-severM f1:0003 at 2.54362
-position -0.588314 0.0633952
-time: 15:30:57
-severM f1:0003 at 3.87878
-position 0.936653 0.0360111
-time: 15:30:57
-severM f1:0003 at 0.055555
-position -2.95637 0.051488
-time: 15:30:57
-severM f1:0003 at 0.178764
-position -2.74999 0.231652
-time: 15:30:57
-severM f1:0003 at 2.03342
-position -0.961896 0.0398694
-time: 15:30:57
-severM f1:0003 at 5.70035
-position 2.63619 0.0285734
-time: 15:30:57
-severM f1:0003 at 1.03342
-position -1.98059 0.020098
-time: 15:30:57
-severM f1:0003 at 0.336838
-position -2.58146 0.0688074
-time: 15:30:57
-severM f1:0003 at 2.27127
-position -0.71734 0.00795736
-time: 15:30:57
-severM f1:0004 at 5.07215
-position 1.45514 0.354907
+STEP FUNCTION
+[TENSION] Segment: 0 has tension: -0.0544137
+[RATE] Rate is: 0.0105592
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.05592e-05
+[TENSION] Segment: 1 has tension: -0.256763
+[RATE] Rate is: 0.0129274
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.29273e-05
+[TENSION] Segment: 2 has tension: -0.171848
+[RATE] Rate is: 0.011875
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.18749e-05
+[TENSION] Segment: 3 has tension: -0.220612
+[RATE] Rate is: 0.0124684
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.24683e-05
+[TENSION] Segment: 4 has tension: -0.328668
+[RATE] Rate is: 0.0138912
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.38911e-05
+[TENSION] Segment: 5 has tension: -0.291073
+[RATE] Rate is: 0.0133786
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.33785e-05
+[TENSION] Segment: 6 has tension: -0.173467
+[RATE] Rate is: 0.0118942
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.18941e-05
+[TENSION] Segment: 7 has tension: -0.129173
+[RATE] Rate is: 0.0113789
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.13788e-05
+[TENSION] Segment: 8 has tension: -0.208229
+[RATE] Rate is: 0.0123149
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.23149e-05
+[TENSION] Segment: 9 has tension: -0.201259
+[RATE] Rate is: 0.0122294
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.22293e-05
+[TENSION] Segment: 10 has tension: -0.0974149
+[RATE] Rate is: 0.0110232
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.10231e-05
+[TENSION] Segment: 11 has tension: 0.204983
+[RATE] Rate is: 0.012275
+[TIMESTEP] 0.001
+[PROBABILITY] Probability is: 1.2275e-05
+STEP FUNCTION
