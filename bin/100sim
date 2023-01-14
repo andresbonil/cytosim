@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+cd Pull_from_ends
+
+for run in {1..100}; do
+    ./sim
+done
+
+cd ..
+
+cd Push_from_ends
+
+for run in {1..100}; do
+    ./sim
+done
+
+cd ..
+
+cd tension_pull
+
+for run in {1..100}; do
+    ./sim
+done
+cd ..
+
+echo "Finished 100 sims for each model"

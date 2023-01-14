@@ -24,7 +24,8 @@
 
 #pragma mark - Step
 
-std::ofstream fout("output.txt", std::ios_base::trunc);
+std::ofstream fout("output.txt", std::ios_base::app);
+int cuts = 0;
 
 void Fiber::step()
 {
@@ -67,6 +68,7 @@ void Fiber::step()
     // std::vector<unsigned int> segments;
 
     bool severed = false;
+    bool printed = false;
 
     // for (unsigned int segment = 0; segment < nbSegments(); ++segment)
     // {
@@ -106,9 +108,11 @@ void Fiber::step()
 
     std::map<real, std::deque<int>> segmentmap;
     std::vector<real> tensionkeys;
+    std::vector<real> unsortedtensionkeys;
     for (int segment = 0; segment < nbSegments(); ++segment)
     {
         tensionkeys.push_back(abs(tension(segment)));
+        unsortedtensionkeys.push_back(abs(tension(segment)));
         if (segmentmap[abs(tension(segment))].size() > 0)
         {
             // std::clog << "size greater than 0, pushing back: " << segment << "\n";
@@ -139,10 +143,27 @@ void Fiber::step()
     //      }
     //      std::clog << "\n";
     //  }
-    if (Fiber::prop->segmentation == 0.01)
+    if (Fiber::prop->segmentation == 0.5)
+    // TESTING CLAUSE, SHOULD ALWAYS EVALUATE TO TRUE
     {
         while (!severed && !tensionkeys.empty())
         {
+            if (!printed && unsortedtensionkeys.size() == 12)
+            // TESTING CLAUSE, asserting size so only unbroken microtubules are measured
+            {
+                for (int i = 0; i < unsortedtensionkeys.size(); i++)
+                {
+                    if (i != unsortedtensionkeys.size() - 1)
+                    {
+                        // std::clog << unsortedtensionkeys[i] << ", ";
+                    }
+                    else
+                    {
+                        // std::clog << unsortedtensionkeys[i] << "\n";
+                    }
+                }
+                printed = true;
+            }
             int index = 0;
             real ten = *tensionkeys.begin();
             // std::clog << "tension is: " << ten << "\n";
@@ -153,20 +174,27 @@ void Fiber::step()
             // std::clog << "key: " << ten << " size at key: " << segmentmap[ten].size() << "\n";
             if (RNG.test(prob))
             {
-                // std::clog << "prop->segmentation: " << prop->segmentation << "\n"
-                //           << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
-                //                                                                            "Fiber::targetsegmentaiton() "
-                //           << Fiber::targetSegmentation() << "\n";
-                // std::clog << "Passed RNG test with prob : " << prob << "\n";
+                // std::clog << ten << ", ";
+                //  std::clog << "prop->segmentation: " << prop->segmentation << "\n"
+                //            << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
+                //                                                                             "Fiber::targetsegmentaiton() "
+                //            << Fiber::targetSegmentation() << "\n";
+                //  std::clog << "Passed RNG test with prob : " << prob << "\n";
 
                 if (segmentmap[ten].size() > 1)
                 {
                     index = rand() % segmentmap[ten].size();
                 }
-                // std::clog << "Index before access is " << index << "\n";
+                // std::clog << segmentmap[ten][index] << ", ";
+                //  std::clog << "Index before access is " << index << "\n";
                 real abscissa = abscissaPoint(segmentmap[ten][index]) + RNG.preal() * Fiber::prop->segmentation;
                 sever(abscissa, STATE_RED, STATE_GREEN);
                 severed = true;
+                cuts += 1;
+                // std::clog << cuts << std::endl;
+
+                std::clog << segmentmap[ten][index] << "\n";
+                // segment at which break happened
             }
             else
             {
@@ -433,9 +461,9 @@ Fiber *Fiber::severM(real abs)
     if (abs <= REAL_EPSILON || abs + REAL_EPSILON >= length())
         return nullptr;
 
-    std::clog << "time: " << __TIME__ << "\n";
-    std::clog << "severM " << reference() << " at " << abscissaM() + abs << "\n";
-    std::clog << "position " << posM(abs) << "\n";
+    // std::clog << "time: " << __TIME__ << "\n";
+    // std::clog << "severM " << reference() << " at " << abscissaM() + abs << "\n";
+    // std::clog << "position " << posM(abs) << "\n";
 
     // create a new Fiber of the same class:
     Fiber *fib = prop->newFiber();
@@ -1456,9 +1484,8 @@ void Fiber::write(Outputter &out) const
 
 void Fiber::read(Inputter &in, Simul &sim, ObjectTag tag)
 {
-    // std::clog << this << " Fiber::read(" << tag << ")\n";
+// std::clog << this << " Fiber::read(" << tag << ")\n";
 #ifdef BACKWARD_COMPATIBILITY
-
     if (in.formatID() == 33)
         mark(in.readUInt32());
 
