@@ -1,0 +1,86 @@
+% Fiber under compression and extension
+% F. Nedelec, August 2013
+
+set simul system
+{
+    time_step = 0.001
+    viscosity = 0.01
+    precondition = 0
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 4.5
+}
+
+set fiber microtubule
+{
+    rigidity = 10
+    segmentation = 0.1
+    confine = inside, 100
+    display = ( color=blue; point=3,1; line=5,2; tension=10; )
+}
+
+set hand binder
+{
+    binding = 10, 0.05
+    unbinding = 0, inf
+    display = ( width=5; size=12; color=green; )
+}
+
+% with a length of 10 um, and a elasticity of 10, the buckling force is
+% PI^2 * 100 / 10^2 ~= 9.98 pN
+%new 1 microtubule
+%{
+%    length = 10
+%    position = 0 0 0
+%    direction = X
+%}
+
+new 1 microtubule
+{
+    length = 6.5
+    position = 0 0 0
+    orientation = 1 0 0
+}
+
+% with an extension of 1um and a stiffness of 10, the tension is ~10 pN
+set single link
+{
+    hand = binder
+    activity = fixed
+    stiffness = 10
+}
+
+new link
+{
+    position = -3.5 0 0
+    attach = last, 0, minus_end
+}
+
+new link
+{
+    position = +3.5 0 0
+    attach = last, 0, plus_end
+}
+
+
+run 10000 system
+{
+    nb_frames = 10
+}
+
+% report forces in the `link`:
+report single:force *
+
+% report internal tensions in the fiber accross a virtual plane:
+report fiber:tension * { plane = 1 0 0, 0; }
+
+% report forces in the points
+report fiber:forces *
+
