@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Cleans folders, copies new make info, to be run in cygwin 
+# Cleans folders, copies new sim function, no need to worry about play/report in cygwin env
 
 set -Eeuo pipefail
 set -x
@@ -19,14 +19,12 @@ cd tension_pull
 rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
 cd ..
 
-make
-
 echo "Folders cleaned!"
 
-cp bin/report tension_pull/
+make sim
+
 cp bin/sim Pull_from_ends/
 cp bin/sim Push_from_ends/
 cp bin/sim tension_pull/
 
-echo "New make files copied to each test folder"
-
+echo "New sim files copied to each test folder"
