@@ -26,6 +26,9 @@
 
 std::ofstream fout("output.txt", std::ios_base::app);
 int cuts = 0;
+bool tensionoutput = true;
+bool breaklocoutput = false;
+bool breakfunctionality = true;
 
 void Fiber::step()
 {
@@ -109,6 +112,7 @@ void Fiber::step()
     std::map<real, std::deque<int>> segmentmap;
     std::vector<real> tensionkeys;
     std::vector<real> unsortedtensionkeys;
+    // std::clog << nbSegments() << "\n";
     for (int segment = 0; segment < nbSegments(); ++segment)
     {
         tensionkeys.push_back(abs(tension(segment)));
@@ -143,23 +147,30 @@ void Fiber::step()
     //      }
     //      std::clog << "\n";
     //  }
-    if (Fiber::prop->segmentation == 0.5)
+    if (Fiber::prop->segmentation == 0.1)
+    // std::clog << "PASSED SEGMENTATION TEST" << "\n";
     // TESTING CLAUSE, SHOULD ALWAYS EVALUATE TO TRUE
     {
         while (!severed && !tensionkeys.empty())
         {
-            if (!printed && unsortedtensionkeys.size() == 12)
+            if (!printed && unsortedtensionkeys.size() == 60)
+            // std::clog << "PASSED NOT PRINTED AND SIZE" << "\n";
             // TESTING CLAUSE, asserting size so only unbroken microtubules are measured
+
+            // *****TENSION PULL = 65 seg, PULL/PUSH = 60******
             {
                 for (int i = 0; i < unsortedtensionkeys.size(); i++)
                 {
-                    if (i != unsortedtensionkeys.size() - 1)
+                    if (tensionoutput)
                     {
-                        // std::clog << unsortedtensionkeys[i] << ", ";
-                    }
-                    else
-                    {
-                        // std::clog << unsortedtensionkeys[i] << "\n";
+                        if (i != unsortedtensionkeys.size() - 1)
+                        {
+                            std::clog << unsortedtensionkeys[i] << ", ";
+                        }
+                        else
+                        {
+                            std::clog << unsortedtensionkeys[i] << "\n";
+                        }
                     }
                 }
                 printed = true;
@@ -167,12 +178,28 @@ void Fiber::step()
             int index = 0;
             real ten = *tensionkeys.begin();
             // std::clog << "tension is: " << ten << "\n";
-            real rate = 0.01 * std::exp(1.0 * ten);
-            real prob = -std::expm1(-rate * simul().time_step());
+
+            // Existing rate code 1/31/23
+            // real rate = 0.01 * std::exp(1.0 * ten);
+            // real prob = -std::expm1(-rate * simul().time_step());
+
+            // Rate code with new function 2/1/23
+            real rate = 100 * (4 - ten);
+            real prob = 1 / (1 + exp(rate));
+
             // std::clog << "Up to line 130 good" << "\n";
             // std::clog << "testing probability with prob " << prob << "\n";
             // std::clog << "key: " << ten << " size at key: " << segmentmap[ten].size() << "\n";
-            if (RNG.test(prob))
+
+            // TEST SIMULATION WHERE THIS NEVER EVALUATES TO TRUE
+            // bool f = false;
+            bool rngpass = false;
+            if (breakfunctionality)
+            {
+                rngpass = RNG.test(prob);
+            }
+            if (rngpass)
+            // if (f)
             {
                 // std::clog << ten << ", ";
                 //  std::clog << "prop->segmentation: " << prop->segmentation << "\n"
@@ -193,8 +220,12 @@ void Fiber::step()
                 cuts += 1;
                 // std::clog << cuts << std::endl;
 
-                std::clog << segmentmap[ten][index] << "\n";
-                // segment at which break happened
+                if (breaklocoutput)
+                {
+                    std::clog << segmentmap[ten][index] << "\n";
+                }
+
+                //  segment at which break happened
             }
             else
             {

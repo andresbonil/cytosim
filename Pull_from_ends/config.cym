@@ -21,7 +21,7 @@ new cell
 set fiber filament
 {
     rigidity = 5
-    segmentation = 0.5
+    segmentation = 0.1
     binding_key = 2
     %display = ( point=6,1; line=10,2; )
     display = { color=white; line=1, 1; point=2, 2; forces = 0 }
