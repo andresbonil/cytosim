@@ -26,8 +26,6 @@
 
 std::ofstream fout("output.txt", std::ios_base::app);
 int cuts = 0;
-bool tensionoutput = true;
-bool breaklocoutput = false;
 
 void Fiber::step()
 {
@@ -160,16 +158,13 @@ void Fiber::step()
             {
                 for (int i = 0; i < unsortedtensionkeys.size(); i++)
                 {
-                    if (tensionoutput)
+                    if (i != unsortedtensionkeys.size() - 1)
                     {
-                        if (i != unsortedtensionkeys.size() - 1)
-                        {
-                            std::clog << unsortedtensionkeys[i] << ", ";
-                        }
-                        else
-                        {
-                            std::clog << unsortedtensionkeys[i] << "\n";
-                        }
+                        std::clog << unsortedtensionkeys[i] << ", ";
+                    }
+                    else
+                    {
+                        std::clog << unsortedtensionkeys[i] << "\n";
                     }
                 }
                 printed = true;
@@ -215,11 +210,7 @@ void Fiber::step()
                 cuts += 1;
                 // std::clog << cuts << std::endl;
 
-                if (breaklocoutput)
-                {
-                    std::clog << segmentmap[ten][index] << "\n";
-                }
-
+                std::clog << segmentmap[ten][index] << "\n";
                 //  segment at which break happened
             }
             else
