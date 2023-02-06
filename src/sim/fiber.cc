@@ -28,7 +28,6 @@ std::ofstream fout("output.txt", std::ios_base::app);
 int cuts = 0;
 bool tensionoutput = true;
 bool breaklocoutput = false;
-bool breakfunctionality = true;
 
 void Fiber::step()
 {
@@ -193,12 +192,8 @@ void Fiber::step()
 
             // TEST SIMULATION WHERE THIS NEVER EVALUATES TO TRUE
             // bool f = false;
-            bool rngpass = false;
-            if (breakfunctionality)
-            {
-                rngpass = RNG.test(prob);
-            }
-            if (rngpass)
+
+            if (RNG.test(prob))
             // if (f)
             {
                 // std::clog << ten << ", ";
