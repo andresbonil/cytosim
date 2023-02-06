@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Cleans folders, copies new sim function, no need to worry about play/report in cygwin env
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+cd Pull_from_ends
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+cd ..
+
+cd Push_from_ends
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+cd ..
+
+cd tension_pull
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+cd ..
+
+echo "Folders cleaned!"
+
+make sim
+
+cp bin/sim Pull_from_ends/
+cp bin/sim Push_from_ends/
+cp bin/sim tension_pull/
+
+echo "New sim files copied to each test folder"
