@@ -6,7 +6,6 @@ bin1
 bin2
 bin3
 *.cmo
-*.cym
 
 # OSX stuff
 **/.DS_Store
