@@ -109,6 +109,7 @@ void Fiber::step()
     std::map<real, std::deque<int>> segmentmap;
     std::vector<real> tensionkeys;
     std::vector<real> unsortedtensionkeys;
+    std::vector<real> tenbeforebreak;
     // std::clog << nbSegments() << "\n";
     for (int segment = 0; segment < nbSegments(); ++segment)
     {
@@ -160,11 +161,11 @@ void Fiber::step()
                 {
                     if (i != unsortedtensionkeys.size() - 1)
                     {
-                        std::clog << unsortedtensionkeys[i] << ", ";
+                        // std::clog << unsortedtensionkeys[i] << ", ";
                     }
                     else
                     {
-                        std::clog << unsortedtensionkeys[i] << "\n";
+                        // std::clog << unsortedtensionkeys[i] << "\n";
                     }
                 }
                 printed = true;
@@ -185,6 +186,7 @@ void Fiber::step()
             // std::clog << "testing probability with prob " << prob << "\n";
             // std::clog << "key: " << ten << " size at key: " << segmentmap[ten].size() << "\n";
 
+            tenbeforebreak = unsortedtensionkeys;
             // TEST SIMULATION WHERE THIS NEVER EVALUATES TO TRUE
             // bool f = false;
 
@@ -210,8 +212,20 @@ void Fiber::step()
                 cuts += 1;
                 // std::clog << cuts << std::endl;
 
-                std::clog << segmentmap[ten][index] << "\n";
                 //  segment at which break happened
+                std::clog << segmentmap[ten][index] << "\n";
+
+                for (int i = 0; i < tenbeforebreak.size(); i++)
+                {
+                    if (i != tenbeforebreak.size() - 1)
+                    {
+                        std::clog << tenbeforebreak[i] << ", ";
+                    }
+                    else
+                    {
+                        std::clog << tenbeforebreak[i] << "\n";
+                    }
+                }
             }
             else
             {
