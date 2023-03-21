@@ -40,6 +40,7 @@ void Fiber::step()
         setGlue(frGlue, PLUS_END, prop->confine_space_ptr);
     }
 
+
 #if (0)
     // Cut kinked filaments
     unsigned p = hasKink(0);
@@ -111,6 +112,7 @@ void Fiber::step()
     std::vector<real> unsortedtensionkeys;
     std::vector<real> tenbeforebreak;
     // std::clog << nbSegments() << "\n";
+
     for (int segment = 0; segment < nbSegments(); ++segment)
     {
         tensionkeys.push_back(abs(tension(segment)));
@@ -161,11 +163,11 @@ void Fiber::step()
                 {
                     if (i != unsortedtensionkeys.size() - 1)
                     {
-                        // std::clog << unsortedtensionkeys[i] << ", ";
+                        std::clog << unsortedtensionkeys[i] << ", ";
                     }
                     else
                     {
-                        // std::clog << unsortedtensionkeys[i] << "\n";
+                        std::clog << unsortedtensionkeys[i] << "\n";
                     }
                 }
                 printed = true;
@@ -182,23 +184,14 @@ void Fiber::step()
             real rate = 100 * (4 - ten);
             real prob = 1 / (1 + exp(rate));
 
-            // std::clog << "Up to line 130 good" << "\n";
-            // std::clog << "testing probability with prob " << prob << "\n";
-            // std::clog << "key: " << ten << " size at key: " << segmentmap[ten].size() << "\n";
-
             tenbeforebreak = unsortedtensionkeys;
             // TEST SIMULATION WHERE THIS NEVER EVALUATES TO TRUE
             // bool f = false;
 
-            if (RNG.test(prob))
+            if (RNG.test(prob) && Fiber::prop->segmentation == 0.1)
+            // segmentation == .1 to double check that microtubule is the one breaking 
             // if (f)
             {
-                // std::clog << ten << ", ";
-                //  std::clog << "prop->segmentation: " << prop->segmentation << "\n"
-                //            << "Fiber::prop->segmentaiton: " << Fiber::prop->segmentation << "\n"
-                //                                                                             "Fiber::targetsegmentaiton() "
-                //            << Fiber::targetSegmentation() << "\n";
-                //  std::clog << "Passed RNG test with prob : " << prob << "\n";
 
                 if (segmentmap[ten].size() > 1)
                 {
@@ -209,21 +202,22 @@ void Fiber::step()
                 real abscissa = abscissaPoint(segmentmap[ten][index]) + RNG.preal() * Fiber::prop->segmentation;
                 sever(abscissa, STATE_RED, STATE_GREEN);
                 severed = true;
+                std::clog << "BREAK" << "\n";
                 cuts += 1;
                 // std::clog << cuts << std::endl;
 
                 //  segment at which break happened
-                std::clog << segmentmap[ten][index] << "\n";
+                //std::clog << segmentmap[ten][index] << "\n";
 
                 for (int i = 0; i < tenbeforebreak.size(); i++)
                 {
                     if (i != tenbeforebreak.size() - 1)
                     {
-                        std::clog << tenbeforebreak[i] << ", ";
+                        //std::clog << tenbeforebreak[i] << ", ";
                     }
                     else
                     {
-                        std::clog << tenbeforebreak[i] << "\n";
+                        //std::clog << tenbeforebreak[i] << "\n";
                     }
                 }
             }
@@ -233,8 +227,26 @@ void Fiber::step()
                 tensionkeys.erase(tensionkeys.begin());
                 // std::clog << "tensionkeys length = " << tensionkeys.size() << "\n";
             }
+                //check if cuts is ever greater than 1
+            // if (cuts > 1){
+            //     std::clog << cuts << "\n";
+            // }
+        }
+        // Determine what length each of the new segments are 
+        std::clog << nbSegments() << "\n";
+        //Print tension of each of the new segments
+        for (int i = 0; i < nbSegments(); i++){
+            if (i != nbSegments() - 1){
+                std::clog << tension(i) << ", ";
+            }
+            else{
+                std::clog << tension(i) << "\n";
+            }
         }
     }
+    
+
+    
 
     // for (unsigned int segment = 0; segment < nbSegments(); ++segment)
     // {
