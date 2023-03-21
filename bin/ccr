@@ -19,6 +19,14 @@ cd tension_pull
 rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
 cd ..
 
+cd fixed_anchors
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+cd ..
+
+cd moving_anchors
+rm -rf force.txt messages.cmo objects.cmo output.txt play properties.cmo report sim tension.txt
+cd ..
+
 make
 
 echo "Folders cleaned!"
@@ -26,12 +34,18 @@ echo "Folders cleaned!"
 cp bin/play Pull_from_ends/
 cp bin/play Push_from_ends/
 cp bin/play tension_pull/
+cp bin/play fixed_anchors/
+cp bin/play moving_anchors/
 cp bin/report Pull_from_ends/
 cp bin/report Push_from_ends/
 cp bin/report tension_pull/
+cp bin/report fixed_anchors/
+cp bin/report moving_anchors/
 cp bin/sim Pull_from_ends/
 cp bin/sim Push_from_ends/
 cp bin/sim tension_pull/
+cp bin/sim fixed_anchors/
+cp bin/sim moving_anchors/
 
 echo "New make files copied to both test folders"
 ARG=${1:-"default"}
