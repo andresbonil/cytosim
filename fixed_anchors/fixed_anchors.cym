@@ -54,7 +54,10 @@ set hand binder
 set single linker
 {
     hand = binder
+    activity = fixed
     stiffness = 50
+    binding_range = 20
+    display = ( width=10; size=30; color=green )
 }
 
 set solid blob
@@ -71,12 +74,85 @@ new 5 blob
     point2 = 5, sphere 0.2, 0, 1 grafted each
 }
 
-new 50 blob
+new linker
 {
-    point1 = center, 0.2
-    point2 = 10, sphere 0.2, 0, 1 linker each
+    position = 10 0 0
 }
 
+new linker
+{
+    position = 8 0 0
+}
+
+new linker
+{
+    position = -10 0 0
+}
+
+new linker
+{
+    position = -8 0 0
+}
+
+new linker
+{
+    position = 0 10 0
+}
+
+new linker
+{
+    position = 0 8 0
+}
+
+new linker
+{
+    position = 0 -10 0
+}
+
+new linker
+{
+    position = 0 -8 0
+}
+
+new linker
+{
+    position = 10 10 0
+}
+
+new linker
+{
+    position = 8 8 0
+}
+
+new linker
+{
+    position = -10 -10 0
+}
+
+new linker
+{
+    position = -8 -8 0
+}
+
+new linker
+{
+    position = 10 -10 0
+}
+
+new linker
+{
+    position = 8 -8 0
+}
+
+new linker
+{
+    position = -10 10 0
+}
+
+new linker
+{
+    position = -8 8 0
+}
 
 set fiber microtubule
 {
@@ -95,13 +171,37 @@ set fiber microtubule
     display = { color=white; line=1, 1; point=1, 1; forces = 0 }
 }
 
-new 5 microtubule
+new microtubule
 {
     length = 50
     position = 0 0 0
+    orientation = 1 0 0
     end_state = 1, 1
 }
 
+new microtubule
+{
+    length = 50
+    position = 0 0 0
+    orientation = 1 1 0
+    end_state = 1, 1
+}
+
+new microtubule
+{
+    length = 50
+    position = 0 0 0
+    orientation = 0 1 0
+    end_state = 1, 1
+}
+
+new microtubule
+{
+    length = 50
+    position = 0 0 0
+    orientation = 1 -1 0
+    end_state = 1, 1
+}
 
 run system
 {

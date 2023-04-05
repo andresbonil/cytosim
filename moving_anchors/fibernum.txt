@@ -1,0 +1,2505 @@
+
+% frame   0
+% time 0.0000
+% report fiber:num         5
+% end
+
+% frame   1
+% time 0.0100
+% report fiber:num         5
+% end
+
+% frame   2
+% time 0.0200
+% report fiber:num         5
+% end
+
+% frame   3
+% time 0.0300
+% report fiber:num         5
+% end
+
+% frame   4
+% time 0.0400
+% report fiber:num         5
+% end
+
+% frame   5
+% time 0.0500
+% report fiber:num         5
+% end
+
+% frame   6
+% time 0.0600
+% report fiber:num         5
+% end
+
+% frame   7
+% time 0.0700
+% report fiber:num         6
+% end
+
+% frame   8
+% time 0.0800
+% report fiber:num         7
+% end
+
+% frame   9
+% time 0.0900
+% report fiber:num         9
+% end
+
+% frame   10
+% time 0.1000
+% report fiber:num         9
+% end
+
+% frame   11
+% time 0.1100
+% report fiber:num         9
+% end
+
+% frame   12
+% time 0.1200
+% report fiber:num         9
+% end
+
+% frame   13
+% time 0.1300
+% report fiber:num         9
+% end
+
+% frame   14
+% time 0.1400
+% report fiber:num        10
+% end
+
+% frame   15
+% time 0.1500
+% report fiber:num        10
+% end
+
+% frame   16
+% time 0.1600
+% report fiber:num        11
+% end
+
+% frame   17
+% time 0.1700
+% report fiber:num        11
+% end
+
+% frame   18
+% time 0.1800
+% report fiber:num        12
+% end
+
+% frame   19
+% time 0.1900
+% report fiber:num        13
+% end
+
+% frame   20
+% time 0.2000
+% report fiber:num        15
+% end
+
+% frame   21
+% time 0.2100
+% report fiber:num        16
+% end
+
+% frame   22
+% time 0.2200
+% report fiber:num        16
+% end
+
+% frame   23
+% time 0.2300
+% report fiber:num        18
+% end
+
+% frame   24
+% time 0.2400
+% report fiber:num        20
+% end
+
+% frame   25
+% time 0.2500
+% report fiber:num        21
+% end
+
+% frame   26
+% time 0.2600
+% report fiber:num        21
+% end
+
+% frame   27
+% time 0.2700
+% report fiber:num        21
+% end
+
+% frame   28
+% time 0.2800
+% report fiber:num        21
+% end
+
+% frame   29
+% time 0.2900
+% report fiber:num        23
+% end
+
+% frame   30
+% time 0.3000
+% report fiber:num        23
+% end
+
+% frame   31
+% time 0.3100
+% report fiber:num        23
+% end
+
+% frame   32
+% time 0.3200
+% report fiber:num        24
+% end
+
+% frame   33
+% time 0.3300
+% report fiber:num        24
+% end
+
+% frame   34
+% time 0.3400
+% report fiber:num        24
+% end
+
+% frame   35
+% time 0.3500
+% report fiber:num        24
+% end
+
+% frame   36
+% time 0.3600
+% report fiber:num        24
+% end
+
+% frame   37
+% time 0.3700
+% report fiber:num        24
+% end
+
+% frame   38
+% time 0.3800
+% report fiber:num        24
+% end
+
+% frame   39
+% time 0.3900
+% report fiber:num        24
+% end
+
+% frame   40
+% time 0.4000
+% report fiber:num        24
+% end
+
+% frame   41
+% time 0.4100
+% report fiber:num        24
+% end
+
+% frame   42
+% time 0.4200
+% report fiber:num        24
+% end
+
+% frame   43
+% time 0.4300
+% report fiber:num        24
+% end
+
+% frame   44
+% time 0.4400
+% report fiber:num        24
+% end
+
+% frame   45
+% time 0.4500
+% report fiber:num        24
+% end
+
+% frame   46
+% time 0.4600
+% report fiber:num        24
+% end
+
+% frame   47
+% time 0.4700
+% report fiber:num        24
+% end
+
+% frame   48
+% time 0.4800
+% report fiber:num        24
+% end
+
+% frame   49
+% time 0.4900
+% report fiber:num        25
+% end
+
+% frame   50
+% time 0.5000
+% report fiber:num        25
+% end
+
+% frame   51
+% time 0.5100
+% report fiber:num        25
+% end
+
+% frame   52
+% time 0.5200
+% report fiber:num        25
+% end
+
+% frame   53
+% time 0.5300
+% report fiber:num        25
+% end
+
+% frame   54
+% time 0.5400
+% report fiber:num        25
+% end
+
+% frame   55
+% time 0.5500
+% report fiber:num        25
+% end
+
+% frame   56
+% time 0.5600
+% report fiber:num        26
+% end
+
+% frame   57
+% time 0.5700
+% report fiber:num        27
+% end
+
+% frame   58
+% time 0.5800
+% report fiber:num        27
+% end
+
+% frame   59
+% time 0.5900
+% report fiber:num        27
+% end
+
+% frame   60
+% time 0.6000
+% report fiber:num        27
+% end
+
+% frame   61
+% time 0.6100
+% report fiber:num        27
+% end
+
+% frame   62
+% time 0.6200
+% report fiber:num        27
+% end
+
+% frame   63
+% time 0.6300
+% report fiber:num        27
+% end
+
+% frame   64
+% time 0.6400
+% report fiber:num        27
+% end
+
+% frame   65
+% time 0.6500
+% report fiber:num        27
+% end
+
+% frame   66
+% time 0.6600
+% report fiber:num        27
+% end
+
+% frame   67
+% time 0.6700
+% report fiber:num        27
+% end
+
+% frame   68
+% time 0.6800
+% report fiber:num        27
+% end
+
+% frame   69
+% time 0.6900
+% report fiber:num        27
+% end
+
+% frame   70
+% time 0.7000
+% report fiber:num        27
+% end
+
+% frame   71
+% time 0.7100
+% report fiber:num        28
+% end
+
+% frame   72
+% time 0.7200
+% report fiber:num        28
+% end
+
+% frame   73
+% time 0.7300
+% report fiber:num        28
+% end
+
+% frame   74
+% time 0.7400
+% report fiber:num        28
+% end
+
+% frame   75
+% time 0.7500
+% report fiber:num        28
+% end
+
+% frame   76
+% time 0.7600
+% report fiber:num        28
+% end
+
+% frame   77
+% time 0.7700
+% report fiber:num        28
+% end
+
+% frame   78
+% time 0.7800
+% report fiber:num        28
+% end
+
+% frame   79
+% time 0.7900
+% report fiber:num        28
+% end
+
+% frame   80
+% time 0.8000
+% report fiber:num        28
+% end
+
+% frame   81
+% time 0.8100
+% report fiber:num        28
+% end
+
+% frame   82
+% time 0.8200
+% report fiber:num        28
+% end
+
+% frame   83
+% time 0.8300
+% report fiber:num        28
+% end
+
+% frame   84
+% time 0.8400
+% report fiber:num        28
+% end
+
+% frame   85
+% time 0.8500
+% report fiber:num        28
+% end
+
+% frame   86
+% time 0.8600
+% report fiber:num        28
+% end
+
+% frame   87
+% time 0.8700
+% report fiber:num        28
+% end
+
+% frame   88
+% time 0.8800
+% report fiber:num        28
+% end
+
+% frame   89
+% time 0.8900
+% report fiber:num        29
+% end
+
+% frame   90
+% time 0.9000
+% report fiber:num        29
+% end
+
+% frame   91
+% time 0.9100
+% report fiber:num        29
+% end
+
+% frame   92
+% time 0.9200
+% report fiber:num        29
+% end
+
+% frame   93
+% time 0.9300
+% report fiber:num        29
+% end
+
+% frame   94
+% time 0.9400
+% report fiber:num        29
+% end
+
+% frame   95
+% time 0.9500
+% report fiber:num        29
+% end
+
+% frame   96
+% time 0.9600
+% report fiber:num        29
+% end
+
+% frame   97
+% time 0.9700
+% report fiber:num        29
+% end
+
+% frame   98
+% time 0.9800
+% report fiber:num        29
+% end
+
+% frame   99
+% time 0.9900
+% report fiber:num        29
+% end
+
+% frame   100
+% time 1.0000
+% report fiber:num        29
+% end
+
+% frame   101
+% time 1.0100
+% report fiber:num        29
+% end
+
+% frame   102
+% time 1.0200
+% report fiber:num        29
+% end
+
+% frame   103
+% time 1.0300
+% report fiber:num        29
+% end
+
+% frame   104
+% time 1.0400
+% report fiber:num        29
+% end
+
+% frame   105
+% time 1.0500
+% report fiber:num        29
+% end
+
+% frame   106
+% time 1.0600
+% report fiber:num        29
+% end
+
+% frame   107
+% time 1.0700
+% report fiber:num        29
+% end
+
+% frame   108
+% time 1.0800
+% report fiber:num        29
+% end
+
+% frame   109
+% time 1.0900
+% report fiber:num        29
+% end
+
+% frame   110
+% time 1.1000
+% report fiber:num        29
+% end
+
+% frame   111
+% time 1.1100
+% report fiber:num        29
+% end
+
+% frame   112
+% time 1.1200
+% report fiber:num        29
+% end
+
+% frame   113
+% time 1.1300
+% report fiber:num        29
+% end
+
+% frame   114
+% time 1.1400
+% report fiber:num        29
+% end
+
+% frame   115
+% time 1.1500
+% report fiber:num        29
+% end
+
+% frame   116
+% time 1.1600
+% report fiber:num        29
+% end
+
+% frame   117
+% time 1.1700
+% report fiber:num        29
+% end
+
+% frame   118
+% time 1.1800
+% report fiber:num        29
+% end
+
+% frame   119
+% time 1.1900
+% report fiber:num        29
+% end
+
+% frame   120
+% time 1.2000
+% report fiber:num        29
+% end
+
+% frame   121
+% time 1.2100
+% report fiber:num        29
+% end
+
+% frame   122
+% time 1.2200
+% report fiber:num        29
+% end
+
+% frame   123
+% time 1.2300
+% report fiber:num        29
+% end
+
+% frame   124
+% time 1.2400
+% report fiber:num        29
+% end
+
+% frame   125
+% time 1.2500
+% report fiber:num        29
+% end
+
+% frame   126
+% time 1.2600
+% report fiber:num        29
+% end
+
+% frame   127
+% time 1.2700
+% report fiber:num        29
+% end
+
+% frame   128
+% time 1.2800
+% report fiber:num        30
+% end
+
+% frame   129
+% time 1.2900
+% report fiber:num        30
+% end
+
+% frame   130
+% time 1.3000
+% report fiber:num        30
+% end
+
+% frame   131
+% time 1.3100
+% report fiber:num        30
+% end
+
+% frame   132
+% time 1.3200
+% report fiber:num        30
+% end
+
+% frame   133
+% time 1.3300
+% report fiber:num        30
+% end
+
+% frame   134
+% time 1.3400
+% report fiber:num        30
+% end
+
+% frame   135
+% time 1.3500
+% report fiber:num        30
+% end
+
+% frame   136
+% time 1.3600
+% report fiber:num        30
+% end
+
+% frame   137
+% time 1.3700
+% report fiber:num        30
+% end
+
+% frame   138
+% time 1.3800
+% report fiber:num        30
+% end
+
+% frame   139
+% time 1.3900
+% report fiber:num        30
+% end
+
+% frame   140
+% time 1.4000
+% report fiber:num        30
+% end
+
+% frame   141
+% time 1.4100
+% report fiber:num        30
+% end
+
+% frame   142
+% time 1.4200
+% report fiber:num        30
+% end
+
+% frame   143
+% time 1.4300
+% report fiber:num        30
+% end
+
+% frame   144
+% time 1.4400
+% report fiber:num        30
+% end
+
+% frame   145
+% time 1.4500
+% report fiber:num        30
+% end
+
+% frame   146
+% time 1.4600
+% report fiber:num        30
+% end
+
+% frame   147
+% time 1.4700
+% report fiber:num        30
+% end
+
+% frame   148
+% time 1.4800
+% report fiber:num        30
+% end
+
+% frame   149
+% time 1.4900
+% report fiber:num        30
+% end
+
+% frame   150
+% time 1.5000
+% report fiber:num        30
+% end
+
+% frame   151
+% time 1.5100
+% report fiber:num        30
+% end
+
+% frame   152
+% time 1.5200
+% report fiber:num        30
+% end
+
+% frame   153
+% time 1.5300
+% report fiber:num        30
+% end
+
+% frame   154
+% time 1.5400
+% report fiber:num        30
+% end
+
+% frame   155
+% time 1.5500
+% report fiber:num        30
+% end
+
+% frame   156
+% time 1.5600
+% report fiber:num        30
+% end
+
+% frame   157
+% time 1.5700
+% report fiber:num        30
+% end
+
+% frame   158
+% time 1.5800
+% report fiber:num        30
+% end
+
+% frame   159
+% time 1.5900
+% report fiber:num        30
+% end
+
+% frame   160
+% time 1.6000
+% report fiber:num        30
+% end
+
+% frame   161
+% time 1.6100
+% report fiber:num        30
+% end
+
+% frame   162
+% time 1.6200
+% report fiber:num        30
+% end
+
+% frame   163
+% time 1.6300
+% report fiber:num        30
+% end
+
+% frame   164
+% time 1.6400
+% report fiber:num        30
+% end
+
+% frame   165
+% time 1.6500
+% report fiber:num        30
+% end
+
+% frame   166
+% time 1.6600
+% report fiber:num        30
+% end
+
+% frame   167
+% time 1.6700
+% report fiber:num        30
+% end
+
+% frame   168
+% time 1.6800
+% report fiber:num        30
+% end
+
+% frame   169
+% time 1.6900
+% report fiber:num        30
+% end
+
+% frame   170
+% time 1.7000
+% report fiber:num        30
+% end
+
+% frame   171
+% time 1.7100
+% report fiber:num        30
+% end
+
+% frame   172
+% time 1.7200
+% report fiber:num        30
+% end
+
+% frame   173
+% time 1.7300
+% report fiber:num        30
+% end
+
+% frame   174
+% time 1.7400
+% report fiber:num        30
+% end
+
+% frame   175
+% time 1.7500
+% report fiber:num        30
+% end
+
+% frame   176
+% time 1.7600
+% report fiber:num        30
+% end
+
+% frame   177
+% time 1.7700
+% report fiber:num        30
+% end
+
+% frame   178
+% time 1.7800
+% report fiber:num        30
+% end
+
+% frame   179
+% time 1.7900
+% report fiber:num        30
+% end
+
+% frame   180
+% time 1.8000
+% report fiber:num        30
+% end
+
+% frame   181
+% time 1.8100
+% report fiber:num        30
+% end
+
+% frame   182
+% time 1.8200
+% report fiber:num        30
+% end
+
+% frame   183
+% time 1.8300
+% report fiber:num        30
+% end
+
+% frame   184
+% time 1.8400
+% report fiber:num        30
+% end
+
+% frame   185
+% time 1.8500
+% report fiber:num        30
+% end
+
+% frame   186
+% time 1.8600
+% report fiber:num        30
+% end
+
+% frame   187
+% time 1.8700
+% report fiber:num        30
+% end
+
+% frame   188
+% time 1.8800
+% report fiber:num        30
+% end
+
+% frame   189
+% time 1.8900
+% report fiber:num        30
+% end
+
+% frame   190
+% time 1.9000
+% report fiber:num        30
+% end
+
+% frame   191
+% time 1.9100
+% report fiber:num        30
+% end
+
+% frame   192
+% time 1.9200
+% report fiber:num        30
+% end
+
+% frame   193
+% time 1.9300
+% report fiber:num        30
+% end
+
+% frame   194
+% time 1.9400
+% report fiber:num        30
+% end
+
+% frame   195
+% time 1.9500
+% report fiber:num        30
+% end
+
+% frame   196
+% time 1.9600
+% report fiber:num        30
+% end
+
+% frame   197
+% time 1.9700
+% report fiber:num        30
+% end
+
+% frame   198
+% time 1.9800
+% report fiber:num        30
+% end
+
+% frame   199
+% time 1.9900
+% report fiber:num        30
+% end
+
+% frame   200
+% time 2.0000
+% report fiber:num        30
+% end
+
+% frame   201
+% time 2.0100
+% report fiber:num        30
+% end
+
+% frame   202
+% time 2.0200
+% report fiber:num        30
+% end
+
+% frame   203
+% time 2.0300
+% report fiber:num        30
+% end
+
+% frame   204
+% time 2.0400
+% report fiber:num        30
+% end
+
+% frame   205
+% time 2.0500
+% report fiber:num        30
+% end
+
+% frame   206
+% time 2.0600
+% report fiber:num        30
+% end
+
+% frame   207
+% time 2.0700
+% report fiber:num        30
+% end
+
+% frame   208
+% time 2.0800
+% report fiber:num        30
+% end
+
+% frame   209
+% time 2.0900
+% report fiber:num        30
+% end
+
+% frame   210
+% time 2.1000
+% report fiber:num        30
+% end
+
+% frame   211
+% time 2.1100
+% report fiber:num        30
+% end
+
+% frame   212
+% time 2.1200
+% report fiber:num        30
+% end
+
+% frame   213
+% time 2.1300
+% report fiber:num        30
+% end
+
+% frame   214
+% time 2.1400
+% report fiber:num        31
+% end
+
+% frame   215
+% time 2.1500
+% report fiber:num        31
+% end
+
+% frame   216
+% time 2.1600
+% report fiber:num        31
+% end
+
+% frame   217
+% time 2.1700
+% report fiber:num        31
+% end
+
+% frame   218
+% time 2.1800
+% report fiber:num        31
+% end
+
+% frame   219
+% time 2.1900
+% report fiber:num        31
+% end
+
+% frame   220
+% time 2.2000
+% report fiber:num        31
+% end
+
+% frame   221
+% time 2.2100
+% report fiber:num        31
+% end
+
+% frame   222
+% time 2.2200
+% report fiber:num        31
+% end
+
+% frame   223
+% time 2.2300
+% report fiber:num        31
+% end
+
+% frame   224
+% time 2.2400
+% report fiber:num        31
+% end
+
+% frame   225
+% time 2.2500
+% report fiber:num        31
+% end
+
+% frame   226
+% time 2.2600
+% report fiber:num        31
+% end
+
+% frame   227
+% time 2.2700
+% report fiber:num        31
+% end
+
+% frame   228
+% time 2.2800
+% report fiber:num        31
+% end
+
+% frame   229
+% time 2.2900
+% report fiber:num        31
+% end
+
+% frame   230
+% time 2.3000
+% report fiber:num        31
+% end
+
+% frame   231
+% time 2.3100
+% report fiber:num        31
+% end
+
+% frame   232
+% time 2.3200
+% report fiber:num        31
+% end
+
+% frame   233
+% time 2.3300
+% report fiber:num        31
+% end
+
+% frame   234
+% time 2.3400
+% report fiber:num        31
+% end
+
+% frame   235
+% time 2.3500
+% report fiber:num        31
+% end
+
+% frame   236
+% time 2.3600
+% report fiber:num        31
+% end
+
+% frame   237
+% time 2.3700
+% report fiber:num        31
+% end
+
+% frame   238
+% time 2.3800
+% report fiber:num        31
+% end
+
+% frame   239
+% time 2.3900
+% report fiber:num        31
+% end
+
+% frame   240
+% time 2.4000
+% report fiber:num        31
+% end
+
+% frame   241
+% time 2.4100
+% report fiber:num        31
+% end
+
+% frame   242
+% time 2.4200
+% report fiber:num        31
+% end
+
+% frame   243
+% time 2.4300
+% report fiber:num        31
+% end
+
+% frame   244
+% time 2.4400
+% report fiber:num        31
+% end
+
+% frame   245
+% time 2.4500
+% report fiber:num        31
+% end
+
+% frame   246
+% time 2.4600
+% report fiber:num        31
+% end
+
+% frame   247
+% time 2.4700
+% report fiber:num        31
+% end
+
+% frame   248
+% time 2.4800
+% report fiber:num        31
+% end
+
+% frame   249
+% time 2.4900
+% report fiber:num        31
+% end
+
+% frame   250
+% time 2.5000
+% report fiber:num        31
+% end
+
+% frame   251
+% time 2.5100
+% report fiber:num        31
+% end
+
+% frame   252
+% time 2.5200
+% report fiber:num        31
+% end
+
+% frame   253
+% time 2.5300
+% report fiber:num        31
+% end
+
+% frame   254
+% time 2.5400
+% report fiber:num        31
+% end
+
+% frame   255
+% time 2.5500
+% report fiber:num        31
+% end
+
+% frame   256
+% time 2.5600
+% report fiber:num        31
+% end
+
+% frame   257
+% time 2.5700
+% report fiber:num        31
+% end
+
+% frame   258
+% time 2.5800
+% report fiber:num        32
+% end
+
+% frame   259
+% time 2.5900
+% report fiber:num        32
+% end
+
+% frame   260
+% time 2.6000
+% report fiber:num        32
+% end
+
+% frame   261
+% time 2.6100
+% report fiber:num        32
+% end
+
+% frame   262
+% time 2.6200
+% report fiber:num        32
+% end
+
+% frame   263
+% time 2.6300
+% report fiber:num        32
+% end
+
+% frame   264
+% time 2.6400
+% report fiber:num        32
+% end
+
+% frame   265
+% time 2.6500
+% report fiber:num        32
+% end
+
+% frame   266
+% time 2.6600
+% report fiber:num        32
+% end
+
+% frame   267
+% time 2.6700
+% report fiber:num        32
+% end
+
+% frame   268
+% time 2.6800
+% report fiber:num        32
+% end
+
+% frame   269
+% time 2.6900
+% report fiber:num        32
+% end
+
+% frame   270
+% time 2.7000
+% report fiber:num        32
+% end
+
+% frame   271
+% time 2.7100
+% report fiber:num        32
+% end
+
+% frame   272
+% time 2.7200
+% report fiber:num        32
+% end
+
+% frame   273
+% time 2.7300
+% report fiber:num        32
+% end
+
+% frame   274
+% time 2.7400
+% report fiber:num        32
+% end
+
+% frame   275
+% time 2.7500
+% report fiber:num        32
+% end
+
+% frame   276
+% time 2.7600
+% report fiber:num        32
+% end
+
+% frame   277
+% time 2.7700
+% report fiber:num        32
+% end
+
+% frame   278
+% time 2.7800
+% report fiber:num        32
+% end
+
+% frame   279
+% time 2.7900
+% report fiber:num        32
+% end
+
+% frame   280
+% time 2.8000
+% report fiber:num        32
+% end
+
+% frame   281
+% time 2.8100
+% report fiber:num        32
+% end
+
+% frame   282
+% time 2.8200
+% report fiber:num        32
+% end
+
+% frame   283
+% time 2.8300
+% report fiber:num        32
+% end
+
+% frame   284
+% time 2.8400
+% report fiber:num        32
+% end
+
+% frame   285
+% time 2.8500
+% report fiber:num        32
+% end
+
+% frame   286
+% time 2.8600
+% report fiber:num        32
+% end
+
+% frame   287
+% time 2.8700
+% report fiber:num        32
+% end
+
+% frame   288
+% time 2.8800
+% report fiber:num        32
+% end
+
+% frame   289
+% time 2.8900
+% report fiber:num        32
+% end
+
+% frame   290
+% time 2.9000
+% report fiber:num        32
+% end
+
+% frame   291
+% time 2.9100
+% report fiber:num        32
+% end
+
+% frame   292
+% time 2.9200
+% report fiber:num        33
+% end
+
+% frame   293
+% time 2.9300
+% report fiber:num        34
+% end
+
+% frame   294
+% time 2.9400
+% report fiber:num        34
+% end
+
+% frame   295
+% time 2.9500
+% report fiber:num        34
+% end
+
+% frame   296
+% time 2.9600
+% report fiber:num        34
+% end
+
+% frame   297
+% time 2.9700
+% report fiber:num        34
+% end
+
+% frame   298
+% time 2.9800
+% report fiber:num        34
+% end
+
+% frame   299
+% time 2.9900
+% report fiber:num        34
+% end
+
+% frame   300
+% time 3.0000
+% report fiber:num        34
+% end
+
+% frame   301
+% time 3.0100
+% report fiber:num        34
+% end
+
+% frame   302
+% time 3.0200
+% report fiber:num        34
+% end
+
+% frame   303
+% time 3.0300
+% report fiber:num        34
+% end
+
+% frame   304
+% time 3.0400
+% report fiber:num        34
+% end
+
+% frame   305
+% time 3.0500
+% report fiber:num        34
+% end
+
+% frame   306
+% time 3.0600
+% report fiber:num        34
+% end
+
+% frame   307
+% time 3.0700
+% report fiber:num        34
+% end
+
+% frame   308
+% time 3.0800
+% report fiber:num        34
+% end
+
+% frame   309
+% time 3.0900
+% report fiber:num        34
+% end
+
+% frame   310
+% time 3.1000
+% report fiber:num        34
+% end
+
+% frame   311
+% time 3.1100
+% report fiber:num        34
+% end
+
+% frame   312
+% time 3.1200
+% report fiber:num        34
+% end
+
+% frame   313
+% time 3.1300
+% report fiber:num        34
+% end
+
+% frame   314
+% time 3.1400
+% report fiber:num        34
+% end
+
+% frame   315
+% time 3.1500
+% report fiber:num        34
+% end
+
+% frame   316
+% time 3.1600
+% report fiber:num        34
+% end
+
+% frame   317
+% time 3.1700
+% report fiber:num        34
+% end
+
+% frame   318
+% time 3.1800
+% report fiber:num        34
+% end
+
+% frame   319
+% time 3.1900
+% report fiber:num        34
+% end
+
+% frame   320
+% time 3.2000
+% report fiber:num        34
+% end
+
+% frame   321
+% time 3.2100
+% report fiber:num        34
+% end
+
+% frame   322
+% time 3.2200
+% report fiber:num        34
+% end
+
+% frame   323
+% time 3.2300
+% report fiber:num        35
+% end
+
+% frame   324
+% time 3.2400
+% report fiber:num        35
+% end
+
+% frame   325
+% time 3.2500
+% report fiber:num        35
+% end
+
+% frame   326
+% time 3.2600
+% report fiber:num        35
+% end
+
+% frame   327
+% time 3.2700
+% report fiber:num        35
+% end
+
+% frame   328
+% time 3.2800
+% report fiber:num        35
+% end
+
+% frame   329
+% time 3.2900
+% report fiber:num        35
+% end
+
+% frame   330
+% time 3.3000
+% report fiber:num        35
+% end
+
+% frame   331
+% time 3.3100
+% report fiber:num        35
+% end
+
+% frame   332
+% time 3.3200
+% report fiber:num        35
+% end
+
+% frame   333
+% time 3.3300
+% report fiber:num        35
+% end
+
+% frame   334
+% time 3.3400
+% report fiber:num        35
+% end
+
+% frame   335
+% time 3.3500
+% report fiber:num        35
+% end
+
+% frame   336
+% time 3.3600
+% report fiber:num        35
+% end
+
+% frame   337
+% time 3.3700
+% report fiber:num        35
+% end
+
+% frame   338
+% time 3.3800
+% report fiber:num        35
+% end
+
+% frame   339
+% time 3.3900
+% report fiber:num        35
+% end
+
+% frame   340
+% time 3.4000
+% report fiber:num        35
+% end
+
+% frame   341
+% time 3.4100
+% report fiber:num        35
+% end
+
+% frame   342
+% time 3.4200
+% report fiber:num        35
+% end
+
+% frame   343
+% time 3.4300
+% report fiber:num        35
+% end
+
+% frame   344
+% time 3.4400
+% report fiber:num        35
+% end
+
+% frame   345
+% time 3.4500
+% report fiber:num        35
+% end
+
+% frame   346
+% time 3.4600
+% report fiber:num        35
+% end
+
+% frame   347
+% time 3.4700
+% report fiber:num        36
+% end
+
+% frame   348
+% time 3.4800
+% report fiber:num        36
+% end
+
+% frame   349
+% time 3.4900
+% report fiber:num        36
+% end
+
+% frame   350
+% time 3.5000
+% report fiber:num        36
+% end
+
+% frame   351
+% time 3.5100
+% report fiber:num        36
+% end
+
+% frame   352
+% time 3.5200
+% report fiber:num        36
+% end
+
+% frame   353
+% time 3.5300
+% report fiber:num        36
+% end
+
+% frame   354
+% time 3.5400
+% report fiber:num        36
+% end
+
+% frame   355
+% time 3.5500
+% report fiber:num        36
+% end
+
+% frame   356
+% time 3.5600
+% report fiber:num        36
+% end
+
+% frame   357
+% time 3.5700
+% report fiber:num        36
+% end
+
+% frame   358
+% time 3.5800
+% report fiber:num        36
+% end
+
+% frame   359
+% time 3.5900
+% report fiber:num        36
+% end
+
+% frame   360
+% time 3.6000
+% report fiber:num        36
+% end
+
+% frame   361
+% time 3.6100
+% report fiber:num        37
+% end
+
+% frame   362
+% time 3.6200
+% report fiber:num        37
+% end
+
+% frame   363
+% time 3.6300
+% report fiber:num        37
+% end
+
+% frame   364
+% time 3.6400
+% report fiber:num        37
+% end
+
+% frame   365
+% time 3.6500
+% report fiber:num        37
+% end
+
+% frame   366
+% time 3.6600
+% report fiber:num        37
+% end
+
+% frame   367
+% time 3.6700
+% report fiber:num        37
+% end
+
+% frame   368
+% time 3.6800
+% report fiber:num        37
+% end
+
+% frame   369
+% time 3.6900
+% report fiber:num        37
+% end
+
+% frame   370
+% time 3.7000
+% report fiber:num        37
+% end
+
+% frame   371
+% time 3.7100
+% report fiber:num        37
+% end
+
+% frame   372
+% time 3.7200
+% report fiber:num        37
+% end
+
+% frame   373
+% time 3.7300
+% report fiber:num        37
+% end
+
+% frame   374
+% time 3.7400
+% report fiber:num        37
+% end
+
+% frame   375
+% time 3.7500
+% report fiber:num        37
+% end
+
+% frame   376
+% time 3.7600
+% report fiber:num        37
+% end
+
+% frame   377
+% time 3.7700
+% report fiber:num        38
+% end
+
+% frame   378
+% time 3.7800
+% report fiber:num        39
+% end
+
+% frame   379
+% time 3.7900
+% report fiber:num        40
+% end
+
+% frame   380
+% time 3.8000
+% report fiber:num        40
+% end
+
+% frame   381
+% time 3.8100
+% report fiber:num        40
+% end
+
+% frame   382
+% time 3.8200
+% report fiber:num        40
+% end
+
+% frame   383
+% time 3.8300
+% report fiber:num        40
+% end
+
+% frame   384
+% time 3.8400
+% report fiber:num        40
+% end
+
+% frame   385
+% time 3.8500
+% report fiber:num        40
+% end
+
+% frame   386
+% time 3.8600
+% report fiber:num        40
+% end
+
+% frame   387
+% time 3.8700
+% report fiber:num        40
+% end
+
+% frame   388
+% time 3.8800
+% report fiber:num        40
+% end
+
+% frame   389
+% time 3.8900
+% report fiber:num        40
+% end
+
+% frame   390
+% time 3.9000
+% report fiber:num        40
+% end
+
+% frame   391
+% time 3.9100
+% report fiber:num        40
+% end
+
+% frame   392
+% time 3.9200
+% report fiber:num        40
+% end
+
+% frame   393
+% time 3.9300
+% report fiber:num        40
+% end
+
+% frame   394
+% time 3.9400
+% report fiber:num        40
+% end
+
+% frame   395
+% time 3.9500
+% report fiber:num        40
+% end
+
+% frame   396
+% time 3.9600
+% report fiber:num        40
+% end
+
+% frame   397
+% time 3.9700
+% report fiber:num        40
+% end
+
+% frame   398
+% time 3.9800
+% report fiber:num        40
+% end
+
+% frame   399
+% time 3.9900
+% report fiber:num        40
+% end
+
+% frame   400
+% time 4.0000
+% report fiber:num        40
+% end
+
+% frame   401
+% time 4.0100
+% report fiber:num        40
+% end
+
+% frame   402
+% time 4.0200
+% report fiber:num        40
+% end
+
+% frame   403
+% time 4.0300
+% report fiber:num        40
+% end
+
+% frame   404
+% time 4.0400
+% report fiber:num        40
+% end
+
+% frame   405
+% time 4.0500
+% report fiber:num        40
+% end
+
+% frame   406
+% time 4.0600
+% report fiber:num        40
+% end
+
+% frame   407
+% time 4.0700
+% report fiber:num        40
+% end
+
+% frame   408
+% time 4.0800
+% report fiber:num        40
+% end
+
+% frame   409
+% time 4.0900
+% report fiber:num        40
+% end
+
+% frame   410
+% time 4.1000
+% report fiber:num        40
+% end
+
+% frame   411
+% time 4.1100
+% report fiber:num        40
+% end
+
+% frame   412
+% time 4.1200
+% report fiber:num        40
+% end
+
+% frame   413
+% time 4.1300
+% report fiber:num        40
+% end
+
+% frame   414
+% time 4.1400
+% report fiber:num        40
+% end
+
+% frame   415
+% time 4.1500
+% report fiber:num        40
+% end
+
+% frame   416
+% time 4.1600
+% report fiber:num        40
+% end
+
+% frame   417
+% time 4.1700
+% report fiber:num        40
+% end
+
+% frame   418
+% time 4.1800
+% report fiber:num        40
+% end
+
+% frame   419
+% time 4.1900
+% report fiber:num        40
+% end
+
+% frame   420
+% time 4.2000
+% report fiber:num        40
+% end
+
+% frame   421
+% time 4.2100
+% report fiber:num        40
+% end
+
+% frame   422
+% time 4.2200
+% report fiber:num        40
+% end
+
+% frame   423
+% time 4.2300
+% report fiber:num        40
+% end
+
+% frame   424
+% time 4.2400
+% report fiber:num        40
+% end
+
+% frame   425
+% time 4.2500
+% report fiber:num        41
+% end
+
+% frame   426
+% time 4.2600
+% report fiber:num        42
+% end
+
+% frame   427
+% time 4.2700
+% report fiber:num        42
+% end
+
+% frame   428
+% time 4.2800
+% report fiber:num        42
+% end
+
+% frame   429
+% time 4.2900
+% report fiber:num        42
+% end
+
+% frame   430
+% time 4.3000
+% report fiber:num        43
+% end
+
+% frame   431
+% time 4.3100
+% report fiber:num        43
+% end
+
+% frame   432
+% time 4.3200
+% report fiber:num        43
+% end
+
+% frame   433
+% time 4.3300
+% report fiber:num        43
+% end
+
+% frame   434
+% time 4.3400
+% report fiber:num        43
+% end
+
+% frame   435
+% time 4.3500
+% report fiber:num        43
+% end
+
+% frame   436
+% time 4.3600
+% report fiber:num        43
+% end
+
+% frame   437
+% time 4.3700
+% report fiber:num        43
+% end
+
+% frame   438
+% time 4.3800
+% report fiber:num        43
+% end
+
+% frame   439
+% time 4.3900
+% report fiber:num        43
+% end
+
+% frame   440
+% time 4.4000
+% report fiber:num        43
+% end
+
+% frame   441
+% time 4.4100
+% report fiber:num        43
+% end
+
+% frame   442
+% time 4.4200
+% report fiber:num        43
+% end
+
+% frame   443
+% time 4.4300
+% report fiber:num        43
+% end
+
+% frame   444
+% time 4.4400
+% report fiber:num        43
+% end
+
+% frame   445
+% time 4.4500
+% report fiber:num        43
+% end
+
+% frame   446
+% time 4.4600
+% report fiber:num        43
+% end
+
+% frame   447
+% time 4.4700
+% report fiber:num        43
+% end
+
+% frame   448
+% time 4.4800
+% report fiber:num        43
+% end
+
+% frame   449
+% time 4.4900
+% report fiber:num        43
+% end
+
+% frame   450
+% time 4.5000
+% report fiber:num        43
+% end
+
+% frame   451
+% time 4.5100
+% report fiber:num        43
+% end
+
+% frame   452
+% time 4.5200
+% report fiber:num        43
+% end
+
+% frame   453
+% time 4.5300
+% report fiber:num        43
+% end
+
+% frame   454
+% time 4.5400
+% report fiber:num        43
+% end
+
+% frame   455
+% time 4.5500
+% report fiber:num        43
+% end
+
+% frame   456
+% time 4.5600
+% report fiber:num        43
+% end
+
+% frame   457
+% time 4.5700
+% report fiber:num        43
+% end
+
+% frame   458
+% time 4.5800
+% report fiber:num        43
+% end
+
+% frame   459
+% time 4.5900
+% report fiber:num        43
+% end
+
+% frame   460
+% time 4.6000
+% report fiber:num        43
+% end
+
+% frame   461
+% time 4.6100
+% report fiber:num        43
+% end
+
+% frame   462
+% time 4.6200
+% report fiber:num        43
+% end
+
+% frame   463
+% time 4.6300
+% report fiber:num        43
+% end
+
+% frame   464
+% time 4.6400
+% report fiber:num        43
+% end
+
+% frame   465
+% time 4.6500
+% report fiber:num        43
+% end
+
+% frame   466
+% time 4.6600
+% report fiber:num        43
+% end
+
+% frame   467
+% time 4.6700
+% report fiber:num        43
+% end
+
+% frame   468
+% time 4.6800
+% report fiber:num        43
+% end
+
+% frame   469
+% time 4.6900
+% report fiber:num        43
+% end
+
+% frame   470
+% time 4.7000
+% report fiber:num        43
+% end
+
+% frame   471
+% time 4.7100
+% report fiber:num        43
+% end
+
+% frame   472
+% time 4.7200
+% report fiber:num        43
+% end
+
+% frame   473
+% time 4.7300
+% report fiber:num        43
+% end
+
+% frame   474
+% time 4.7400
+% report fiber:num        43
+% end
+
+% frame   475
+% time 4.7500
+% report fiber:num        43
+% end
+
+% frame   476
+% time 4.7600
+% report fiber:num        43
+% end
+
+% frame   477
+% time 4.7700
+% report fiber:num        43
+% end
+
+% frame   478
+% time 4.7800
+% report fiber:num        43
+% end
+
+% frame   479
+% time 4.7900
+% report fiber:num        43
+% end
+
+% frame   480
+% time 4.8000
+% report fiber:num        43
+% end
+
+% frame   481
+% time 4.8100
+% report fiber:num        43
+% end
+
+% frame   482
+% time 4.8200
+% report fiber:num        43
+% end
+
+% frame   483
+% time 4.8300
+% report fiber:num        43
+% end
+
+% frame   484
+% time 4.8400
+% report fiber:num        43
+% end
+
+% frame   485
+% time 4.8500
+% report fiber:num        43
+% end
+
+% frame   486
+% time 4.8600
+% report fiber:num        43
+% end
+
+% frame   487
+% time 4.8700
+% report fiber:num        43
+% end
+
+% frame   488
+% time 4.8800
+% report fiber:num        43
+% end
+
+% frame   489
+% time 4.8900
+% report fiber:num        43
+% end
+
+% frame   490
+% time 4.9000
+% report fiber:num        43
+% end
+
+% frame   491
+% time 4.9100
+% report fiber:num        43
+% end
+
+% frame   492
+% time 4.9200
+% report fiber:num        43
+% end
+
+% frame   493
+% time 4.9300
+% report fiber:num        43
+% end
+
+% frame   494
+% time 4.9400
+% report fiber:num        43
+% end
+
+% frame   495
+% time 4.9500
+% report fiber:num        43
+% end
+
+% frame   496
+% time 4.9600
+% report fiber:num        43
+% end
+
+% frame   497
+% time 4.9700
+% report fiber:num        43
+% end
+
+% frame   498
+% time 4.9800
+% report fiber:num        43
+% end
+
+% frame   499
+% time 4.9900
+% report fiber:num        43
+% end
+
+% frame   500
+% time 5.0000
+% report fiber:num        43
+% end

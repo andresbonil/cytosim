@@ -105,7 +105,7 @@ new 5 microtubule
 
 run system
 {
-    nb_steps  = 500
+    nb_steps  = 5000
     nb_frames = 500
 }
 
