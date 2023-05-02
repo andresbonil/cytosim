@@ -1,0 +1,211 @@
+% This config illustrates different way to assemble Solids
+% and to attach Single on the points, or on the surface
+% Francois Nedelec, August 2010, Feb 2017, March 2017
+
+set simul system
+{
+    time_step = 0.01
+    viscosity = 0.001
+    kT = 0.0042
+    steric = 1, 100
+}
+
+set space cell
+{
+    shape = sphere
+}
+
+new cell
+{
+    radius = 30
+}
+
+
+set hand kinesin
+{
+    binding = 5, 0.5 
+    unbinding = 0.1, 50
+    
+    hold_growing_end = 1
+    % unbinding_rate_end = 0.1
+
+    activity = move
+    unloaded_speed = 5
+    stall_force = 20
+
+    display = ( size=10; color=green, green; )
+}
+
+set single grafted
+{
+    hand = kinesin
+    stiffness = 50
+}
+
+set hand binder
+{
+    binding_key = 2
+    binding = 10, 0.5
+    unbinding = 0, 100
+    bind_also_end = 1
+    display = ( width=3; size=12; color=orange )
+}
+
+set single linker
+{
+    hand = binder
+    activity = fixed
+    stiffness = 50
+    binding_range = 20
+    display = ( width=10; size=30; color=green )
+}
+
+set solid blob
+{
+    steric = 1
+    confine = all_inside, 100
+    display = ( style=3; coloring=0; color=0xFFFFFF88; )
+}
+
+new 5 blob
+{
+    position = 0 0 0
+    point1 = center, 0.2
+    point2 = 5, sphere 0.2, 0, 1 grafted each
+}
+
+new linker
+{
+    position = 10 0 0
+}
+
+new linker
+{
+    position = 8 0 0
+}
+
+new linker
+{
+    position = -10 0 0
+}
+
+new linker
+{
+    position = -8 0 0
+}
+
+new linker
+{
+    position = 0 10 0
+}
+
+new linker
+{
+    position = 0 8 0
+}
+
+new linker
+{
+    position = 0 -10 0
+}
+
+new linker
+{
+    position = 0 -8 0
+}
+
+new linker
+{
+    position = 10 10 0
+}
+
+new linker
+{
+    position = 8 8 0
+}
+
+new linker
+{
+    position = -10 -10 0
+}
+
+new linker
+{
+    position = -8 -8 0
+}
+
+new linker
+{
+    position = 10 -10 0
+}
+
+new linker
+{
+    position = 8 -8 0
+}
+
+new linker
+{
+    position = -10 10 0
+}
+
+new linker
+{
+    position = -8 8 0
+}
+
+set fiber microtubule
+{
+    rigidity = 1
+    segmentation = 0.1
+    % confine = inside, 100
+    % steric = 1, 0.05
+    % activity = classic 
+    % growing_speed   = 0.05
+    % shrinking_speed  = -0.5
+    % catastrophe_rate = 0.03
+    % rescue_rate      = 0
+    % growing_force    = 1.67
+    % persistent       = 0
+    min_length       = 0.02
+    display = { color=white; line=1, 1; point=1, 1; forces = 0 }
+}
+
+new microtubule
+{
+    length = 50
+    position = 0 0 0
+    orientation = 1 0 0
+    end_state = 1, 1
+}
+
+new microtubule
+{
+    length = 50
+    position = 0 0 0
+    orientation = 1 1 0
+    end_state = 1, 1
+}
+
+new microtubule
+{
+    length = 50
+    position = 0 0 0
+    orientation = 0 1 0
+    end_state = 1, 1
+}
+
+new microtubule
+{
+    length = 50
+    position = 0 0 0
+    orientation = 1 -1 0
+    end_state = 1, 1
+}
+
+run system
+{
+    nb_steps  = 500
+    nb_frames = 250
+}
+

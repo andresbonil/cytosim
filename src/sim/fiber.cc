@@ -40,7 +40,6 @@ void Fiber::step()
         setGlue(frGlue, PLUS_END, prop->confine_space_ptr);
     }
 
-
 #if (0)
     // Cut kinked filaments
     unsigned p = hasKink(0);
@@ -59,77 +58,46 @@ void Fiber::step()
         return;
     }
 #endif
-    /*
-     Force breaking prototype
-     Any way to specify which microtubule is being acted upon?
-     */
 
     bool severed = false;
     bool printed = false;
 
-
-    // RANDOM BREAKING TIE PROTOTYPE
-
-    std::map<real, std::deque<int>> segmentmap;
-    std::vector<real> tensionkeys;
-    std::vector<real> unsortedtensionkeys;
-    std::vector<real> tenbeforebreak;
-
-    for (int segment = 0; segment < nbSegments(); ++segment)
+    // Microtubule breaking
+    if (Fiber::prop->breaking)
     {
-        tensionkeys.push_back(abs(tension(segment)));
-        unsortedtensionkeys.push_back(abs(tension(segment)));
-        if (segmentmap[abs(tension(segment))].size() > 0)
-        {
-            segmentmap[abs(tension(segment))].push_back(segment);
-        }
-        else
-        {
-            std::deque<int> seg = {segment};
-            segmentmap[abs(tension(segment))] = seg;
-        }
-    }
-    std::sort(tensionkeys.begin(), tensionkeys.end(), std::greater<real>());
-    if (Fiber::prop->segmentation == 0.2)
-    {
-        while (!severed && !tensionkeys.empty())
-        { 
-            if (!printed && unsortedtensionkeys.size() == 60)
-            // TESTING CLAUSE, asserting size so only unbroken microtubules are measured
+        std::map<real, std::deque<int>> segmentmap;
+        std::vector<real> tensionkeys;
+        std::vector<real> unsortedtensionkeys;
+        std::vector<real> tenbeforebreak;
 
-            // *****TENSION PULL = 65 seg, PULL/PUSH = 60******
+        for (int segment = 0; segment < nbSegments(); ++segment)
+        {
+            tensionkeys.push_back(abs(tension(segment)));
+            unsortedtensionkeys.push_back(abs(tension(segment)));
+            if (segmentmap[abs(tension(segment))].size() > 0)
             {
-                for (int i = 0; i < unsortedtensionkeys.size(); i++)
-                {
-                    if (i != unsortedtensionkeys.size() - 1)
-                    {
-                        //std::clog << unsortedtensionkeys[i] << ", ";
-                    }
-                    else
-                    {
-                        //std::clog << unsortedtensionkeys[i] << "\n";
-                    }
-                }
-                printed = true;
+                segmentmap[abs(tension(segment))].push_back(segment);
             }
+            else
+            {
+                std::deque<int> seg = {segment};
+                segmentmap[abs(tension(segment))] = seg;
+            }
+        }
+        std::sort(tensionkeys.begin(), tensionkeys.end(), std::greater<real>());
+        while (!severed && !tensionkeys.empty())
+        {
+
             int index = 0;
             real ten = *tensionkeys.begin();
-            // std::clog << "tension is: " << ten << "\n";
 
-            // Existing rate code 1/31/23
-            // real rate = 0.01 * std::exp(1.0 * ten);
-            // real prob = -std::expm1(-rate * simul().time_step());
-
-            // Rate code with new function 2/1/23
-            real rate = 100 * (4 - ten);
+            // Rate code with threshold 5/2/23
+            real rate = 100 * (Fiber::prop->breakingthreshold - ten);
             real prob = 1 / (1 + exp(rate));
 
             tenbeforebreak = unsortedtensionkeys;
-            // TEST SIMULATION WHERE THIS NEVER EVALUATES TO TRUE
-            // bool f = false;
-            if (RNG.test(prob) && Fiber::prop->segmentation == 0.2)
-            // segmentation == .1 to double check that microtubule is the one breaking 
-            // if (f)
+
+            if (RNG.test(prob))
             {
 
                 if (segmentmap[ten].size() > 1)
@@ -149,26 +117,17 @@ void Fiber::step()
                     }
                 }
 
-                //segments before break 
-                std::clog << nbSegments() << "\n";
-                // std::clog << segmentmap[ten][index] << ", ";
-                //  std::clog << "Index before access is " << index << "\n";
                 real abscissa = abscissaPoint(segmentmap[ten][index]) + RNG.preal() * Fiber::prop->segmentation;
                 sever(abscissa, STATE_RED, STATE_GREEN);
                 severed = true;
                 int breakloc = segmentmap[ten][index];
-                std::clog << breakloc << "\n" << nbSegments() - breakloc << "\n";
-                //segments after break 
-
-                //  segment at which break happened
-
-                //std::clog << segmentmap[ten][index] << "\n";
-
+                std::clog << breakloc << "\n"
+                          << nbSegments() - breakloc << "\n";
             }
             else
             {
                 tensionkeys.erase(tensionkeys.begin());
-            }       
+            }
         }
     }
 

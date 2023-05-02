@@ -2503,3 +2503,16 @@
 % time 5.0000
 % report fiber:num        43
 % end
+
+% time 5.0000
+% report fiber:num
+% error: I only know fiber: position, end, point, moment, speckle, sample, segment, dynamic, length, distribution, tension, force, cluster, age, energy, hand, link
+% end
+
+% time 5.0000
+% report fiber:num        27
+% end
+
+% time 5.0000
+% report fiber:num         5
+% end

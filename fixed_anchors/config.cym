@@ -156,7 +156,7 @@ new linker
 
 set fiber microtubule
 {
-    rigidity = 40
+    rigidity = 20
     segmentation = 0.2
     % confine = inside, 100
     % steric = 1, 0.05
@@ -205,7 +205,7 @@ new microtubule
 
 run system
 {
-    nb_steps  = 5000
-    nb_frames = 500
+    nb_steps  = 500
+    nb_frames = 250
 }
-
+]
