@@ -257,7 +257,7 @@ void FiberProp::clear()
     total_polymer = INFINITY;
     persistent = false;
     breaking = false;
-    breakingthreshold = 1;
+    breaking_threshold = 1;
 
     viscosity = -1;
     drag_radius = 0.0125; // radius of a Microtubule
@@ -317,7 +317,7 @@ void FiberProp::read(Glossary &glos)
     glos.set(total_polymer, "total_polymer");
     glos.set(persistent, "persistent");
     glos.set(breaking, "breaking");
-    glos.set(breakingthreshold, "breakingthreshold");
+    glos.set(breaking_threshold, "breaking_threshold");
 #ifdef BACKWARD_COMPATIBILITY
     bool ds;
     if (glos.set(ds, "delete_stub"))

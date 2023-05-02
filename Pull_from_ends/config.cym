@@ -26,7 +26,7 @@ set fiber filament
     %display = ( point=6,1; line=10,2; )
     display = { color=white; line=1, 1; point=2, 2; forces = 0 }
     breaking = 0
-    breakingthreshold = 1
+    breaking_threshold = 1
 }
 
 

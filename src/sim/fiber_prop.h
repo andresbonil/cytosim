@@ -120,7 +120,7 @@ public:
     bool breaking;
 
     /// breaking threshold of microtubules in piconewtons
-    int breakingthreshold;
+    int breaking_threshold;
 
     /// effective viscosity (if unspecified, simul:viscosity is used)
     /**

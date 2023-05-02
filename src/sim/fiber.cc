@@ -29,7 +29,8 @@ int cuts = 0;
 
 void Fiber::step()
 {
-    auto foutbuf = fout.rdbuf();
+    std::filebuf *foutbuf;
+    foutbuf = fout.rdbuf();
     std::clog.rdbuf(foutbuf);
     // fout << "STEP FUNCTION" << std::endl;
     assert_small(length1() - length());
@@ -92,7 +93,7 @@ void Fiber::step()
             real ten = *tensionkeys.begin();
 
             // Rate code with threshold 5/2/23
-            real rate = 100 * (Fiber::prop->breakingthreshold - ten);
+            real rate = 100 * (Fiber::prop->breaking_threshold - ten);
             real prob = 1 / (1 + exp(rate));
 
             tenbeforebreak = unsortedtensionkeys;
