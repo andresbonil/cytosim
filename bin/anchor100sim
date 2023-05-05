@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+cd moving_anchors
+
+for run in {1..100}; do
+    ./sim.exe 
+    ./report.exe fiber:num >> fibernum.txt 
+done
+
+echo "Finished moving_anchors simulations"
+
+cd ..
+
+cd fixed_anchors
+
+for run in {1..100}; do
+    ./sim.exe
+    ./report.exe fiber:num >> fibernum.txt 
+done
+
+echo "Finished fixed_anchors simulations"
+
+cd ..
+
+echo "Finished 100 simulations for each model"
