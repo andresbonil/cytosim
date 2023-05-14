@@ -96,8 +96,8 @@ set fiber microtubule
     % growing_force    = 1.67
     % persistent       = 0
     min_length       = 0.02
-    breaking = 0
-    breaking_threshold = 1
+    breaking = 1
+    breaking_threshold = 30
     display = { color=white; line=1, 1; point=1, 1; forces = 0 }
 }
 

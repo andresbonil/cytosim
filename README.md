@@ -1,102 +1,37 @@
-# Cytosim
-
-Cytosim is a cytoskeleton simulation suite designed to handle large systems of flexible filaments with associated proteins such as molecular motors. It is a versatile base that has been used to study actin and microtubule systems in 1D, 2D and 3D. It is built around a cross-platform C++ core engine running on UNIX, Mac OSX, GNU/Linux and within Cygwin on Windows. The code is modular and extensible, making Cytosim a convenient base that can be customized to meet particular tasks. Some of the most common tasks encountered during a simulation project are implemented in Python.
+# Cytosim - Microtubule Breaking Functionality 
 
 ![Cytosim](doc/data/cytosim.png)
 
-Cytosim is a suite of command-line tools with simulation and display capabilities. The simulation is specified in a [configuration file](doc/sim/config.md), defining objects with their parameters and a suite of operations, such as advancing time, saving frames or [generating reports](doc/sim/report.md). Here is a basic example, with parameters specified in [units of seconds, micrometers and pico-Newtons](doc/sim/units.md).
+This branch of Cytosim contains microtubule breaking functionality based on cultured cell in-vitro experiments from the Verhey Lab at Michigan Medicine's Cell and Developmental Biology department. Live imaging data has revealed that clustered kinesin can cause microtubule crosslinking, sliding, and breakage. Through this plugin, we hope to obtain data that influences future experimental design, along with utilizing experimental data and literature to fine-tune representations of the microtubule breaking phenomena. 
 
-	set simul system
+# Fiber.cc Added Functionality 
+
+We have created an algorithm which utilizes a user-selected threshold in order to determine the probability of certain segments in microtubules to break within a simulation. During each frame of a simulation, when breaking is enabled, tensions at segments are evaluated, and if that tension value passes the probability check, a severing event is queued and executed. These changes are located in ```/src/sim/fiber.cc```.
+
+# Changes in Fiber Objects
+
+Fiber props have been given two new parameters, ```breaking``` and ```breaking_threshold```. ```breaking``` is a boolean value that specifies whether breaking is enabled for said fiber object (0 for false, 1 for true). ```breaking_threshold``` is an int that is the force threshold (in piconewtons) needed for a microtubule to break. These parameters can be specified for any fiber object in each simulation's config.cym file. The addition of these parameters can be found in ```fiber_prop.h```/```fiber_prop.cc```.
+
+An example of specifying afiber object with breaking enabled and a threshold of 20 piconewtons in config.cym would be as follows:
+
+set fiber microtubule
 	{
-	    time_step = 0.005
-	    viscosity = 0.02
-	}
-	
-	set space cell
-	{
-	    shape = sphere
-	}
-	
-	set fiber microtubule
-	{
-	    rigidity = 20
-	    segmentation = 0.5
-	    confine = inside, 200, cell
-	}
-	    
-	new cell
-	{
-	    radius = 5
-	}
-	
-	new 5 microtubule
-	{
-	    length = 11
-	}
-	
-	run 5000 system
-	{
-	    nb_frames = 10
+	    rigidity = 10
+	    segmentation = 0.1
+	    breaking = 1
+		breaking_threshold = 20
 	}
 
-# Documentation
+# Changes in Report Executable
 
-[Link to documentation](doc/index.md)
+Through testing this plugin, we have found it useful to output the total number of fibers in each frame of the simulation to assess the quantity of breaking events. Thus, we have added the function ```reportFiberNum()``` to ```simul_report.cc``` and ```simul.h```. Through executing ```./report fiber:num``` and parsing the output, we can receieve informative output relating to microtubule quantity over time. 
 
-The Brownian dynamics approach was described in:  
-[Collective Langevin Dynamics of Flexible Cytoskeletal Fibers](http://iopscience.iop.org/article/10.1088/1367-2630/9/11/427/meta)
-
-The documentation source files use [Markdown](https://en.wikipedia.org/wiki/Markdown) and are best viewed with [MacDown (Mac OSX only)](https://macdown.uranusjr.com) or [Typora (Cross platform)](https://typora.io) 
-
-# Installation
-
-Cytosim is distributed as source code and [must be compiled](doc/compile/index.md) before use. On Mac OS X and Linux this should be uncomplicated even if you are not familiar with program development. Compiling natively on Windows would require changes to the code, but Cytosim should [compile within Cygwin](doc/compile/cygwin.md).
-
-To download the source code, enter these commands in a terminal window:
-
-	git clone https://gitlab.com/f.nedelec/cytosim
-	cd cytosim
-	
-To compile using [make](https://www.gnu.org/software/make), try:
-	
-	make
-
-If this fails, parameters of `makefile.inc` need to be updated.
-Altermatively, it is possible to use [cmake](https://cmake.org) to configure `make` automatically:
-
-	mkdir build
-	cd build
-	cmake ..
-	make
-
-For troubleshooting, please check [the compile instructions](doc/compile/index.md).
-Once *cytosim* is running on your machine, proceed with the [tutorials](doc/tutorials/index.md), the page on [running simulations](doc/main/runs.md), and the examples contained in the folder `cym`. 
-Inspect in particular the short configuration files (e.g. fiber.cym, self.cym). 
 
 # Contributors
-
- The project was started in 1995, and received its name in 1999.
- We hope cytosim can be useful for your research. 
- Sincerely yours, The Developers of Cytosim:
-
-*  Francois J. Nedelec     1995-
-*  Dietrich Foethke        2003-2007
-*  Cleopatra Kozlowski     2003-2007
-*  Elizabeth Loughlin      2006-2010
-*  Ludovic Brun            2008-2010
-*  Beat Rupp               2008-2011
-*  Jonathan Ward           2008-2014
-*  Antonio Politi          2010-2012
-*  Andre-Claude Clapson    2011-2013
-*  Jamie-Li Rickman        2014-2019
-*  Serge Dmitrieff         2013-
-*  Julio Belmonte          2014-
-*  Gaelle Letort           2014-
-*  Manuel Lera-Ramirez     2017-
-*  Maud Formanek           2020-
+This plugin was developed by Andres Bonilla and Qi (Archie) Geng with assistance from Dr. Kristen Verhey and Dr. Francois Nedelec 
 
 # Contact
+Email: abonil@umich.edu
 
-Email: cytosim@cytosim.org
-
-
+# Cytosim Documentation/Troubleshooting 
+Please refer to the original release of Cytosim by Dr. Francois Nedelec for documentation regarding the application and installation: https://gitlab.com/f-nedelec/cytosim
