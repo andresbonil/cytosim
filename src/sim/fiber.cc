@@ -96,7 +96,7 @@ void Fiber::step()
             real rate = 100 * (Fiber::prop->breaking_threshold - ten);
             real prob = 1 / (1 + exp(rate));
 
-            tenbeforebreak = unsortedtensionkeys;
+            // tenbeforebreak = unsortedtensionkeys;
 
             if (RNG.test(prob))
             {
@@ -106,24 +106,24 @@ void Fiber::step()
                     index = rand() % segmentmap[ten].size();
                 }
 
-                for (int i = 0; i < tenbeforebreak.size(); i++)
-                {
-                    if (i != tenbeforebreak.size() - 1)
-                    {
-                        std::clog << tenbeforebreak[i] << ", ";
-                    }
-                    else
-                    {
-                        std::clog << tenbeforebreak[i] << "\n";
-                    }
-                }
+                // for (int i = 0; i < tenbeforebreak.size(); i++)
+                // {
+                //     if (i != tenbeforebreak.size() - 1)
+                //     {
+                //         std::clog << tenbeforebreak[i] << ", ";
+                //     }
+                //     else
+                //     {
+                //         std::clog << tenbeforebreak[i] << "\n";
+                //     }
+                // }
 
                 real abscissa = abscissaPoint(segmentmap[ten][index]) + RNG.preal() * Fiber::prop->segmentation;
                 sever(abscissa, STATE_RED, STATE_GREEN);
                 severed = true;
                 int breakloc = segmentmap[ten][index];
-                std::clog << breakloc << "\n"
-                          << nbSegments() - breakloc << "\n";
+                // std::clog << breakloc << "\n"
+                //           << nbSegments() - breakloc << "\n";
             }
             else
             {
