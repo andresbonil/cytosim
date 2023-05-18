@@ -2,7 +2,8 @@ from string import Template
 import random 
 
 
-# TODO discuss randomized parameters/ranges with Archie 
+# TODO discuss/add randomized parameters/ranges
+
 
 replacements = {
     'mt_quantity': random.randint(1, 100),
