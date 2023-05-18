@@ -96,7 +96,7 @@ void Fiber::step()
             real rate = 100 * (Fiber::prop->breaking_threshold - ten);
             real prob = 1 / (1 + exp(rate));
 
-            // tenbeforebreak = unsortedtensionkeys
+            // tenbeforebreak = unsortedtensionkeys;
 
             if (RNG.test(prob))
             {
