@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+make
+
+for i in {1..10}; do
+    mkdir random_$i
+    cp bin/play random_$i/
+    cp bin/report random_$i/
+    cp bin/sim random_$i/
+    cd config_randomizer
+    python randomizer.py
+    cp config.cym ../random_$i/
+    cd ../random_$i/
+    # ./sim
+    cd ..
+done
