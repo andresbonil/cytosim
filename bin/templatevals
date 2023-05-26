@@ -6,17 +6,17 @@ set -u
 set -o nounset
 
 ARRAY=(1 15 30)
-
+#Kinesin binding rate
 ./bin/templaterun k "${ARRAY[@]}"
 
 ARRAY=(1 2 3 4 5 10 20 100)
-
+#Blob motor quantity
 ./bin/templaterun b "${ARRAY[@]}"
 
 ARRAY=(30 60)
-
+#Breaking Threshold
 ./bin/templaterun t "${ARRAY[@]}"
 
 ARRAY=(10 40)
-
+#Grafted stiffness
 ./bin/templaterun s "${ARRAY[@]}"
