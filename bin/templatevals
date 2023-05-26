@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+ARRAY=(1 15 30)
+
+./bin/templaterun k "${ARRAY[@]}"
+
+ARRAY=(1 2 3 4 5 10 20 100)
+
+./bin/templaterun b "${ARRAY[@]}"
+
+ARRAY=(30 60)
+
+./bin/templaterun t "${ARRAY[@]}"
+
+ARRAY=(10 40)
+
+./bin/templaterun s "${ARRAY[@]}"

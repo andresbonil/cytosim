@@ -1,0 +1,81 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+make
+
+ARG=${1:-"default"}
+shift
+ARRAY=("$@")
+
+if [ $ARG != "default" ]; then
+    case $ARG in
+    "k")
+        rm -rf kinesinbindingrate_*/
+
+        for i in ${ARRAY[@]}; do
+            mkdir kinesinbindingrate_$i
+            cp bin/play kinesinbindingrate_$i/
+            cp bin/report kinesinbindingrate_$i/
+            cp bin/sim kinesinbindingrate_$i/
+            cd template_generate
+            python template_generate.py -k $i
+            cp config.cym ../kinesinbindingrate_$i/
+            cd ../kinesinbindingrate_$i/
+            ./sim
+            cd ..
+        done
+        ;;
+    "b")
+        rm -rf blobmotorquantity_*/
+
+        for i in {1..10}; do
+            mkdir blobmotorquantity_$i
+            cp bin/play blobmotorquantity_$i/
+            cp bin/report blobmotorquantity_$i/
+            cp bin/sim blobmotorquantity_$i/
+            cd template_generate
+            python template_generate.py -b $i
+            cp config.cym ../blobmotorquantity_$i/
+            cd ../blobmotorquantity_$i/
+            ./sim
+            cd ..
+        done
+        ;;
+    "t")
+        rm -rf breakingthreshold_*/
+
+        for i in {1..10}; do
+            mkdir breakingthreshold_$i
+            cp bin/play breakingthreshold_$i/
+            cp bin/report breakingthreshold_$i/
+            cp bin/sim breakingthreshold_$i/
+            cd template_generate
+            python template_generate.py -t $i
+            cp config.cym ../breakingthreshold_$i/
+            cd ../breakingthreshold_$i/
+            ./sim
+            cd ..
+        done
+        ;;
+    "s")
+        rm -rf stiffnessgrafted_*/
+
+        for i in {1..10}; do
+            mkdir stiffnessgrafted_$i
+            cp bin/play stiffnessgrafted_$i/
+            cp bin/report stiffnessgrafted_$i/
+            cp bin/sim stiffnessgrafted_$i/
+            cd template_generate
+            python template_generate.py -s $i
+            cp config.cym ../stiffnessgrafted_$i/
+            cd ../stiffnessgrafted_$i/
+            ./sim
+            cd ..
+        done
+        ;;
+    esac
+fi

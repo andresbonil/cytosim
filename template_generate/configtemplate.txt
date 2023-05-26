@@ -1,4 +1,4 @@
-% config.cym template 
+% template generate config.cym 
 
 set simul system
 {
@@ -21,7 +21,7 @@ new cell
 
 set hand kinesin
 {
-    binding_rate = 10
+    binding_rate = $kinesin_binding_rate
     binding_range = 0.5
     unbinding_rate = 1
     unbinding_force = 3
@@ -39,7 +39,7 @@ set hand kinesin
 set single grafted
 {
     hand = kinesin
-    stiffness = 40
+    stiffness = $stiffness_grafted
 }
 
 set hand binder
@@ -69,11 +69,11 @@ set solid blob
     display = ( style=3; coloring=0; color=0xFFFFFF88; )
 }
 
-new 24 blob
+new 50 blob
 {
     %position = 0 0 0
     point1 = center, 0.2
-    point2 = 5, sphere 0.2, 0, 1 grafted each
+    point2 = $blob_motor_quantity, sphere 0.2, 0, 1 grafted each
 }
 
 new 50 linker
@@ -95,13 +95,13 @@ set fiber microtubule
     % persistent       = 0
     min_length       = 0.02
     breaking = 1
-    breaking_threshold = 30
+    breaking_threshold = $breaking_threshold
     display = { color=white; line=1, 1; point=1, 1; forces = 0 }
 }
 
-new 7 microtubule
+new 40 microtubule
 {
-    length = 95
+    length = 40
     % position = 0 0 0
     % orientation = 1 0 0
     end_state = 1, 1

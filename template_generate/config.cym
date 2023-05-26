@@ -1,4 +1,4 @@
-% config.cym template 
+% template generate config.cym 
 
 set simul system
 {
@@ -69,7 +69,7 @@ set solid blob
     display = ( style=3; coloring=0; color=0xFFFFFF88; )
 }
 
-new 24 blob
+new 50 blob
 {
     %position = 0 0 0
     point1 = center, 0.2
@@ -99,9 +99,9 @@ set fiber microtubule
     display = { color=white; line=1, 1; point=1, 1; forces = 0 }
 }
 
-new 7 microtubule
+new 40 microtubule
 {
-    length = 95
+    length = 40
     % position = 0 0 0
     % orientation = 1 0 0
     end_state = 1, 1

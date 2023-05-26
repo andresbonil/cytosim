@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+rm -rf kinesinbindingrate_*/
+
+rm -rf blobmotorquantity_*/
+
+rm -rf breakingthreshold_*/
+
+rm -rf stiffnessgrafted_*/

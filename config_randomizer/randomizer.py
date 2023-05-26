@@ -14,7 +14,7 @@ replacements = {
 
 }
 
-with open('configtemplate', 'r') as file:
+with open('configtemplate.txt', 'r') as file:
     src = Template(file.read())
     print(src)
     result = src.substitute(replacements)

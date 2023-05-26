@@ -7,6 +7,8 @@ set -o nounset
 
 make
 
+rm -rf random_*/
+
 for i in {1..10}; do
     mkdir random_$i
     cp bin/play random_$i/
