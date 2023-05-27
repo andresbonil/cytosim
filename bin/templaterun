@@ -32,7 +32,7 @@ if [ $ARG != "default" ]; then
     "b")
         rm -rf blobmotorquantity_*/
 
-        for i in {1..10}; do
+        for i in ${ARRAY[@]}; do
             mkdir blobmotorquantity_$i
             cp bin/play blobmotorquantity_$i/
             cp bin/report blobmotorquantity_$i/
@@ -48,7 +48,7 @@ if [ $ARG != "default" ]; then
     "t")
         rm -rf breakingthreshold_*/
 
-        for i in {1..10}; do
+        for i in ${ARRAY[@]}; do
             mkdir breakingthreshold_$i
             cp bin/play breakingthreshold_$i/
             cp bin/report breakingthreshold_$i/
@@ -64,7 +64,7 @@ if [ $ARG != "default" ]; then
     "s")
         rm -rf stiffnessgrafted_*/
 
-        for i in {1..10}; do
+        for i in ${ARRAY[@]}; do
             mkdir stiffnessgrafted_$i
             cp bin/play stiffnessgrafted_$i/
             cp bin/report stiffnessgrafted_$i/
