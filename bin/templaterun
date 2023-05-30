@@ -25,7 +25,7 @@ if [ $ARG != "default" ]; then
             python template_generate.py -k $i
             cp config.cym ../kinesinbindingrate_$i/
             cd ../kinesinbindingrate_$i/
-            ./sim
+            ./sim.exe
             cd ..
         done
         ;;
@@ -41,7 +41,7 @@ if [ $ARG != "default" ]; then
             python template_generate.py -b $i
             cp config.cym ../blobmotorquantity_$i/
             cd ../blobmotorquantity_$i/
-            ./sim
+            ./sim.exe
             cd ..
         done
         ;;
@@ -57,7 +57,7 @@ if [ $ARG != "default" ]; then
             python template_generate.py -t $i
             cp config.cym ../breakingthreshold_$i/
             cd ../breakingthreshold_$i/
-            ./sim
+            ./sim.exe
             cd ..
         done
         ;;
@@ -73,7 +73,7 @@ if [ $ARG != "default" ]; then
             python template_generate.py -s $i
             cp config.cym ../stiffnessgrafted_$i/
             cd ../stiffnessgrafted_$i/
-            ./sim
+            ./sim.exe
             cd ..
         done
         ;;
