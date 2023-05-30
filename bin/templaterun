@@ -18,9 +18,9 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir kinesinbindingrate_$i
-            cp bin/play kinesinbindingrate_$i/
-            cp bin/report kinesinbindingrate_$i/
-            cp bin/sim kinesinbindingrate_$i/
+            cp bin/play.exe kinesinbindingrate_$i/
+            cp bin/report.exe kinesinbindingrate_$i/
+            cp bin/sim.exe kinesinbindingrate_$i/
             cd template_generate
             python template_generate.py -k $i
             cp config.cym ../kinesinbindingrate_$i/
@@ -34,9 +34,9 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir blobmotorquantity_$i
-            cp bin/play blobmotorquantity_$i/
-            cp bin/report blobmotorquantity_$i/
-            cp bin/sim blobmotorquantity_$i/
+            cp bin/play.exe blobmotorquantity_$i/
+            cp bin/report.exe blobmotorquantity_$i/
+            cp bin/sim.exe blobmotorquantity_$i/
             cd template_generate
             python template_generate.py -b $i
             cp config.cym ../blobmotorquantity_$i/
@@ -50,9 +50,9 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir breakingthreshold_$i
-            cp bin/play breakingthreshold_$i/
-            cp bin/report breakingthreshold_$i/
-            cp bin/sim breakingthreshold_$i/
+            cp bin/play.exe breakingthreshold_$i/
+            cp bin/report.exe breakingthreshold_$i/
+            cp bin/sim.exe breakingthreshold_$i/
             cd template_generate
             python template_generate.py -t $i
             cp config.cym ../breakingthreshold_$i/
@@ -66,9 +66,9 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir stiffnessgrafted_$i
-            cp bin/play stiffnessgrafted_$i/
-            cp bin/report stiffnessgrafted_$i/
-            cp bin/sim stiffnessgrafted_$i/
+            cp bin/play.exe stiffnessgrafted_$i/
+            cp bin/report.exe stiffnessgrafted_$i/
+            cp bin/sim.exe stiffnessgrafted_$i/
             cd template_generate
             python template_generate.py -s $i
             cp config.cym ../stiffnessgrafted_$i/
