@@ -18,7 +18,6 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir kinesinbindingrate_$i
-            cp bin/play.exe kinesinbindingrate_$i/
             cp bin/report.exe kinesinbindingrate_$i/
             cp bin/sim.exe kinesinbindingrate_$i/
             cd template_generate
@@ -34,7 +33,6 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir blobmotorquantity_$i
-            cp bin/play.exe blobmotorquantity_$i/
             cp bin/report.exe blobmotorquantity_$i/
             cp bin/sim.exe blobmotorquantity_$i/
             cd template_generate
@@ -50,7 +48,6 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir breakingthreshold_$i
-            cp bin/play.exe breakingthreshold_$i/
             cp bin/report.exe breakingthreshold_$i/
             cp bin/sim.exe breakingthreshold_$i/
             cd template_generate
@@ -66,7 +63,6 @@ if [ $ARG != "default" ]; then
 
         for i in ${ARRAY[@]}; do
             mkdir stiffnessgrafted_$i
-            cp bin/play.exe stiffnessgrafted_$i/
             cp bin/report.exe stiffnessgrafted_$i/
             cp bin/sim.exe stiffnessgrafted_$i/
             cd template_generate
