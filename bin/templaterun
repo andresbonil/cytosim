@@ -5,6 +5,7 @@ set -x
 set -u
 set -o nounset
 
+rm -rf bin/play bin/report bin/sim
 make
 
 ARG=${1:-"default"}
