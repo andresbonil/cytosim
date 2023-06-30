@@ -21,7 +21,7 @@ new cell
 
 set hand kinesin
 {
-    binding_rate = 100000
+    binding_rate = 10
     binding_range = 0.5
     unbinding_rate = 1
     unbinding_force = 3
@@ -73,7 +73,7 @@ new 50 blob
 {
     %position = 0 0 0
     point1 = center, 0.2
-    point2 = 100000, sphere 0.2, 0, 1 grafted each
+    point2 = 5, sphere 0.2, 0, 1 grafted each
 }
 
 new 50 linker

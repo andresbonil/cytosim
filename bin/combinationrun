@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+rm -rf bin/play bin/report bin/sim
+make
+
+rm -rf fix_bt_*/
+
+# Breaking threshold fixed to 60, test combinations of binding rate (br), blob quantity (bq)
+for i in 1 15 30; do
+    for j in 1 2 3 4 5 10 20 50 100; do
+        mkdir fix_bt_br_${i}_bq_${j}
+        cp bin/report fix_bt_br_${i}_bq_${j}/
+        cp bin/sim fix_bt_br_${i}_bq_${j}/
+        cd template_generate
+        python template_generate.py -k $i -b $j -t 60
+        cp config.cym ../fix_bt_br_${i}_bq_${j}
+        cd ../fix_bt_br_${i}_bq_${j}
+        #./sim.exe
+        cd ..
+    done
+done
+
+rm -rf fix_br_*/
+
+# Binding rate fixed to 15, test combinations of breaking threshold(bt), blob quantity (bq)
+
+for i in 60 80 100 120 140 160 180 200 250 300 350 400 450 500; do
+    for j in 1 2 3 4 5 10 20 50 100; do
+        mkdir fix_br_bt_${i}_bq_${j}
+        cp bin/report fix_br_bt_${i}_bq_${j}/
+        cp bin/sim fix_br_bt_${i}_bq_${j}/
+        cd template_generate
+        python template_generate.py -k 15 -b $j -t $i
+        cp config.cym ../fix_br_bt_${i}_bq_${j}
+        cd ../fix_br_bt_${i}_bq_${j}
+        #./sim.exe
+        cd ..
+    done
+done
+
+
+# Blob quantity fixed to 10, test combinations of breaking threshold and binding rate
+
+for i in 60 80 100 120 140 160 180 200 250 300 350 400 450 500; do
+    for j in 1 15 30; do
+        mkdir fix_bq_bt_${i}_bq_${j}
+        cp bin/report fix_bq_bt_${i}_bq_${j}/
+        cp bin/sim fix_bq_bt_${i}_bq_${j}/
+        cd template_generate
+        python template_generate.py -k $j -b 10 -t $i
+        cp config.cym ../fix_bq_bt_${i}_bq_${j}
+        cd ../fix_bq_bt_${i}_bq_${j}
+        #./sim.exe
+        cd ..
+    done
+done
