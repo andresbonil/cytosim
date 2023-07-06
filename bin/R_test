@@ -1,0 +1,9 @@
+set -Eeuo pipefail
+set -x
+set -u
+set -o nounset
+
+cd fix_bt_test
+#./sim.exe
+Rscript ../bin/analysis.R $PWD
+cd ..
