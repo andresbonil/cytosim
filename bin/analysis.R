@@ -13,6 +13,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # This code takes the folder name with parameters/values to use as the filename
 split <- unlist(strsplit(args[1], "/"))
+location <- args[2]
 fileName <- split[length(split)]
 
 # Initial paramter before simulation
@@ -22,7 +23,7 @@ segmentation = 0.1
 nb_frames = 200
 
 # Creating path for the output file and reading it 
-data <- read.csv(paste(args, "/output.txt", sep=""))
+data <- read.csv(paste(args[1], "/output.txt", sep=""))
 
 sum = 0
 k = 0
@@ -39,7 +40,8 @@ lastFrameData = data.frame(MT_length = data[lastFrameIndex, ]*segmentation)
 
 # Embedded paste() used to create path to output folder and add .pdf extension
 # Change the path in the first paste to the folder's name on your machine 
-pdf(file = paste("/Users/andresbonilla/Desktop/tst/", paste(fileName, ".pdf", sep=""), sep = ""),   # The directory you want to save the file in
+location <- paste(location, "/", sep = "")
+pdf(file = paste(location, paste(fileName, ".pdf", sep=""), sep = ""),   # The directory you want to save the file in
     width = 6, # The width of the plot in inches
     height = 4)
 print(

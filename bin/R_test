@@ -3,7 +3,13 @@ set -x
 set -u
 set -o nounset
 
+rm -r combination_graphs
+mkdir combination_graphs
+cd combination_graphs
+OUTPUT_PATH=$PWD
+cd ..
+
 cd fix_bt_test
 #./sim.exe
-Rscript ../bin/analysis.R $PWD
+Rscript ../bin/analysis.R $PWD $OUTPUT_PATH
 cd ..

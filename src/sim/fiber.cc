@@ -71,6 +71,8 @@ void Fiber::step()
         std::vector<real> unsortedtensionkeys;
         std::vector<real> tenbeforebreak;
 
+        std::clog << nbSegments() << "\n";
+
         for (int segment = 0; segment < nbSegments(); ++segment)
         {
             tensionkeys.push_back(abs(tension(segment)));
@@ -122,8 +124,6 @@ void Fiber::step()
                 sever(abscissa, STATE_RED, STATE_GREEN);
                 severed = true;
                 int breakloc = segmentmap[ten][index];
-                // std::clog << breakloc << "\n"
-                //           << nbSegments() - breakloc << "\n";
             }
             else
             {
